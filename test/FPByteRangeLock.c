@@ -385,6 +385,104 @@ char *name = "t80 RF FPByteLock Read write";
 	test_bytelock5(VolID, name, OPENFORK_DATA);
 }
 
+/* --------------- */
+STATIC void test329()
+{
+char *name = "t329 DF FPByteLock 2 users";
+int fork;
+int fork1 = 0;
+int fork2 = 0;
+u_int16_t vol = VolID;
+u_int16_t bitmap = 0;
+u_int16_t vol2;
+DSI *dsi2;
+int type = OPENFORK_DATA;
+#if 0
+int len = (type == OPENFORK_RSCS)?(1<<FILPBIT_RFLEN):(1<<FILPBIT_DFLEN);
+#endif
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPByteRangeLock:test329: FPByteLock 2users DATA FORK\n");
+    
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}
+	if (Locking) {
+		test_skipped(T_LOCKING);
+		return;
+	}
+	
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		return;
+	}
+
+	fork = FPOpenFork(Conn, vol, type , bitmap ,DIRDID_ROOT, name,OPENACC_WR |OPENACC_RD);
+	if (!fork) {
+		nottested();
+		FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+		return;
+	}
+
+	fork1 = FPOpenFork(Conn, vol, type , bitmap ,DIRDID_ROOT, name,OPENACC_WR |OPENACC_RD);
+	if (!fork1) {
+		nottested();
+		FAIL (FPCloseFork(Conn,fork))
+		FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+		return;
+	}
+
+#if 0
+	FAIL (FPSetForkParam(Conn, fork, len , 50))
+	FAIL (FPByteLock(Conn, fork, 0, 0 , 0 , 100))
+#endif
+
+	dsi2 = &Conn2->dsi;
+	vol2  = FPOpenVol(Conn2, Vol);
+	if (vol2 == 0xffff) {
+		nottested();
+		goto fin;
+	}
+
+	fork2 = FPOpenFork(Conn2, vol2, type , bitmap ,DIRDID_ROOT, name,OPENACC_DWR |OPENACC_RD);
+	if (fork2) {
+		FPCloseFork(Conn2,fork2);
+		failed();
+	}
+	fork2 = FPOpenFork(Conn2, vol2, type , bitmap ,DIRDID_ROOT, name,OPENACC_WR |OPENACC_RD);
+	if (!fork2) {
+		failed();
+	}
+	
+#if 0
+	if (!fork1) {
+		failed();
+	}
+	else {
+		FAIL (htonl(AFPERR_LOCK) != FPRead(Conn2, fork1, 0, 40, Data)) 
+		FAIL (htonl(AFPERR_LOCK) != FPWrite(Conn2, fork1, 10, 40, Data, 0))
+		FAIL (htonl(AFPERR_LOCK) != FPWrite(Conn2, fork1, 55, 40, Data, 0))
+		FAIL (FPSetForkParam(Conn2, fork1, len , 60)) 
+		FAIL (FPWrite(Conn, fork, 55, 40, Data, 0)) 
+		FAIL (htonl(AFPERR_LOCK) != FPSetForkParam(Conn2, fork1, len , 60)) 
+		FAIL (htonl(AFPERR_LOCK) != FPByteLock(Conn2, fork1, 0, 0 /* set */ , 20, 60))
+		FAIL (FPSetForkParam(Conn, fork, len , 200))
+		FAIL (FPSetForkParam(Conn2, fork1, len ,120))
+		
+	}
+#endif
+	
+	FAIL (FPCloseFork(Conn,fork))
+	if (fork1) FPCloseFork(Conn,fork1);
+	if (fork2) FPCloseFork(Conn2,fork2);
+
+	FAIL (FPCloseVol(Conn2,vol2))
+fin:
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+}
+
+
 /* ----------- */
 void FPByteRangeLock_test()
 {
@@ -397,5 +495,6 @@ void FPByteRangeLock_test()
 	test78();
 	test79();
 	test80();
+	test329();
 }
 
