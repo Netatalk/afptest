@@ -9,7 +9,7 @@ char *name  = "t54 dir no access";
 char *name1 = "t54 file.txt";
 char *name2 = "t54 ro dir";
 char *name3  = "t54 --rwx-- dir";
-int pdir;
+int pdir = 0;
 int rdir = 0;
 int dir;
 int ret;
@@ -26,11 +26,11 @@ char *cmt;
 		return;
 	}		
 
-	if (!(pdir = no_access_folder(vol, DIRDID_ROOT, name))) {
+	if (!(rdir = read_only_folder(vol, DIRDID_ROOT, name2) ) ) {
 		return;
 	}
-	if (!(rdir = read_only_folder(vol, DIRDID_ROOT, name2) ) ) {
-		goto fin;
+	if (!(pdir = no_access_folder(vol, DIRDID_ROOT, name))) {
+		fprintf(stderr,"\tWARNING folder without access failed\n");
 	}
 	dsi2 = &Conn2->dsi;
 	vol2  = FPOpenVol(Conn2, Vol);
@@ -90,7 +90,9 @@ char *cmt;
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1)) 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name3)) 
-	delete_folder(vol, DIRDID_ROOT, name);
+	if (pdir) {
+		delete_folder(vol, DIRDID_ROOT, name);
+	}
 	if (rdir) {
 		delete_folder(vol, DIRDID_ROOT, name2);
 	}

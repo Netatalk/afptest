@@ -31,6 +31,11 @@ u_int16_t vol = VolID;
 		return;
 	}	
 	FAIL (FPGetSrvrInfo(Conn))
+	FPEnumerate_ext(Conn, vol, DIRDID_ROOT  , "", 
+			                (1 << FILPBIT_PDINFO )| (1 << FILPBIT_EXTDFLEN) | (1 << FILPBIT_EXTRFLEN)
+		        	            |(1 << FILPBIT_DFLEN) |(1 << FILPBIT_RFLEN),
+	                        (1 << DIRPBIT_PDINFO ) | (1 << DIRPBIT_OFFCNT));
+
 	dir1 = FPCreateDir(Conn,vol, dir , name1);
 	if (dir1) {
 		FAIL (FPGetFileDirParams(Conn, vol,  dir , name1, 0, (1 << DIRPBIT_PDINFO ) | (1 << DIRPBIT_OFFCNT)))

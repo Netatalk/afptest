@@ -34,8 +34,7 @@ spectest_SOURCES = spectest.c FPAddAPPL.c FPAddComment.c FPAddIcon.c \
         FPSetFileDirParms.c FPSetFileParms.c FPDisconnectOldSession.c\
         FPSetForkParms.c FPSetVolParms.c FPRead.c FPReadExt.c FPRename.c FPRemoveAPPL.c \
 	FPRemoveComment.c FPResolveID.c FPGetSessionToken.c \
-        FPWrite.c FPWriteExt.c FPzzz.c Error.c
- 
+        FPWrite.c FPWriteExt.c FPzzz.c Error.c Utf8.c
  
 spectest_LDADD = libafptest.la
 #

@@ -1,5 +1,5 @@
 /*
- * $Id: spectest.c,v 1.7 2003-05-26 10:57:03 rlewczuk Exp $
+ * $Id: spectest.c,v 1.8 2003-06-10 14:05:47 didg Exp $
  * MANIFEST
  */
 #include "specs.h"
@@ -75,6 +75,7 @@ EXT_FN(FPWrite);
 EXT_FN(FPWriteExt);
 EXT_FN(FPzzz);
 EXT_FN(Error);
+EXT_FN(Utf8);
 
 
 struct test_fn {
@@ -148,6 +149,7 @@ FN_N(FPWrite)
 FN_N(FPWriteExt)
 FN_N(FPzzz)
 FN_N(Error)
+FN_N(Utf8)
 #endif
 
 {NULL, NULL},

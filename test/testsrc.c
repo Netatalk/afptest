@@ -2725,11 +2725,9 @@ int fork;
 
     fprintf(stderr,"===================\n");
 	fprintf(stderr, "test54: remove comment\n");
-
 	if (ntohl(AFPERR_ACCESS) != FPRemoveComment(Conn, vol,  DIRDID_ROOT , "bar")) {
 		fprintf(stderr,"\tFAILED\n");
 	}
-
 	if (ntohl(AFPERR_ACCESS) != FPRemoveComment(Conn, vol,  DIRDID_ROOT , "new")) {
 		fprintf(stderr,"\tFAILED\n");
 	}
@@ -7089,7 +7087,7 @@ u_int16_t bitmap = (1<<DIRPBIT_ATTR) | (1<<DIRPBIT_FINFO)| (1<<DIRPBIT_CDATE) |
 		fprintf(stderr,"\tFAILED\n");
 		return;
 	}
-
+	memset(&filedir, 0, sizeof(filedir));
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, 0, bitmap)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
@@ -7145,6 +7143,7 @@ u_int16_t bitmap = (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO)| (1<<FILPBIT_CDATE) |
 		return;
 	}
 
+	memset(&filedir, 0, sizeof(filedir));
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, bitmap,0)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
@@ -11651,11 +11650,17 @@ u_int16_t dt;
 	test26();test45();test46();test47();test48();test49();
 	test50();test51();test52();
 	test1();
-	test53();test54();test55();test56();
+	test53();
+	test54();
+	test55();test56();
 	test57();test58();
-	test60();test61();test62();test63();
+	test60();
+	test61();
+	test62();
+	test63();
 	test64();
-	test68();test69();test70();
+	test68();
+	test69();test70();
 	test71();test72();test73();
 	test75();
 

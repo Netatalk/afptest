@@ -78,7 +78,6 @@ struct sigaction action;
 	if (ret) {
 		failed();
 		goto fin;
-		return;
 	}
 	memcpy(&len, dsi3->data, sizeof(u_int32_t)); 
 	len = ntohl(len);
@@ -113,17 +112,18 @@ struct sigaction action;
 		failed();
 		goto fin;
 	}
+	sleep(2);
 
 	fork1 = FPOpenFork(Conn, vol, OPENFORK_RSCS , 0 ,DIRDID_ROOT, name, OPENACC_WR |OPENACC_RD| OPENACC_DWR| OPENACC_DRD);
 	if (!fork1) {
 	    /* arg we are there */
 		failed();
+		FAIL (FPCloseFork(conn,fork))
 		goto fin;
 	}
 	FAIL (FPCloseFork(Conn,fork1))
 	
 fin:
-	FAIL (FPLogOut(conn))
     action.sa_handler =  SIG_DFL;
     sigemptyset(&action.sa_mask);
     action.sa_flags = 0;

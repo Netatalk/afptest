@@ -175,9 +175,10 @@ int ret = 0;
 int dir = 0;
 u_int16_t vol2;
 int  ofs =  3 * sizeof( u_int16_t );
-u_int16_t bitmap =  (1 << DIRPBIT_ACCESS);
+u_int16_t bitmap =  (1 << DIRPBIT_ACCESS) | (1<<DIRPBIT_UID) | (1 << DIRPBIT_GID);
 struct afp_filedir_parms filedir;
 DSI *dsi, *dsi2;
+u_int32_t uid;
 
     if (!Conn2) {
     	return 0;
@@ -190,9 +191,24 @@ DSI *dsi, *dsi2;
 		nottested();
 		return 0;
 	}
-	if (!(dir = FPCreateDir(Conn2,vol2, did , name))) {
+	ret = FPGetUserInfo(Conn, 1, 0, 1); /* who I am */
+	if (ret) {
 		nottested();
 		goto fin;
+	}
+	ret = FPGetUserInfo(Conn2, 1, 0, 1); /* who I am */
+	if (ret) {
+		nottested();
+		goto fin;
+	}
+	memcpy(&uid, dsi2->commands + sizeof(u_int16_t), sizeof(u_int32_t));
+	uid = ntohl(uid);
+	
+	if (!(dir = FPCreateDir(Conn2,vol2, did , name))) {
+		nottested();
+		if (!(dir = get_did(Conn2, vol2, did, name))) {
+			goto fin;
+		}
 	}
 
 	if (FPGetFileDirParams(Conn2, vol2,  dir , "", 0,bitmap )) {
@@ -201,10 +217,12 @@ DSI *dsi, *dsi2;
 	}
 	filedir.isdir = 1;
 	afp_filedir_unpack(&filedir, dsi2->data +ofs, 0, bitmap);
+
+    bitmap =  (1 << DIRPBIT_ACCESS);    
     filedir.access[0] = 0; 
     filedir.access[1] = 0; 
     filedir.access[2] = 0; 
-    filedir.access[3] = 7; 
+    filedir.access[3] = 3;  /* was 7 */
  	if (FPSetDirParms(Conn2, vol2, dir , "", bitmap, &filedir)) {
 		nottested();
 		goto fin;
@@ -220,6 +238,7 @@ DSI *dsi, *dsi2;
 		ret = dir;
 	}
 	if (FPCreateDir(Conn, vol, ret , name)) {
+	    /* Mac OSX here does strange things 
 	    /* for when things go wrong */
 		nottested();
 
@@ -234,7 +253,13 @@ DSI *dsi, *dsi2;
 		     | (1<<DIRPBIT_UID) | (1 << DIRPBIT_GID));
 		
 		FPDelete(Conn, vol,  ret, name);
-		FPDelete(Conn2, vol2,  dir, name);
+    	bitmap =  (1 << DIRPBIT_ACCESS);    
+    	filedir.access[0] = 0; 
+    	filedir.access[1] = 0; 
+    	filedir.access[2] = 0; 
+    	filedir.access[3] = 7;  /* was 7 */
+ 		FPSetDirParms(Conn2, vol2, dir , "", bitmap, &filedir);
+		FPDelete(Conn2, vol2,  dir, name); /* dir and ret should be the same */
 		ret = 0;
 	}
 fin:
@@ -362,8 +387,8 @@ DSI *dsi2;
 	ret = get_did(Conn, vol, did, name);
 	if (FPCreateDir(Conn, vol, ret , name)) {
 		nottested();
-		FPDelete(Conn, vol,  ret, name);
-		FPDelete(Conn, vol,  did, name);
+		FPDelete(Conn2, vol2,  ret, name);
+		FPDelete(Conn2, vol2,  did, name);
 		ret = 0;
 	}
 fin:
@@ -699,6 +724,9 @@ char *s;
 		break;
 	case T_UNIX_PREV:
 		s =" Volume with unix privilege";
+		break;
+	case T_UTF8:
+		s = "Volume with UTF8 encoding";
 		break;
 	}
 	fprintf(stderr,"\tSKIPPED (need %s)\n",s);

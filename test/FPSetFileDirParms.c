@@ -130,14 +130,23 @@ DSI *dsi;
 		}
 		bitmap = (1<< DIRPBIT_UNIXPR);
 		filedir.unix_priv &= ~S_IWUSR;
+        filedir.access[0] = 0;
+        filedir.access[1] = filedir.access[2] = filedir.access[3] = 3;
  		FAIL (FPSetFilDirParam(Conn, vol, dir , "", bitmap, &filedir)) 
  		FAIL (FPGetFileDirParams(Conn, vol, dir, "", 0, bitmap))
 
 		filedir.unix_priv &= ~(S_IWUSR |S_IWGRP| S_IWOTH);
+        filedir.access[0] = 0;
+        filedir.access[1] = filedir.access[2] = filedir.access[3] = 3;
  		FAIL (FPSetFilDirParam(Conn, vol, dir , "", bitmap, &filedir)) 
  		FAIL (FPGetFileDirParams(Conn, vol, dir, "", 0, bitmap))
 		
- 		FAIL (!FPDelete(Conn, vol,  dir , name))
+ 		if (!FPDelete(Conn, vol,  dir , name)) {
+ 		    /* FIXME OSX delete it*/
+			if (FPCreateFile(Conn, vol,  0, dir , name)) {
+				nottested();
+			}
+ 		}
 
  		/* open fork read write in a read only folder */
 		fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0 ,dir, name,OPENACC_WR | OPENACC_RD);
@@ -202,6 +211,204 @@ fin:
 	FAIL (FPDelete(Conn, vol,  dir , ""))
 }
 
+/* ------------------------- */
+STATIC void test231()
+{
+int  dir = 0;
+char *name = "t231 file";
+char *name1 = "t231 file user 2";
+char *ndir = "t231 dir";
+u_int16_t vol = VolID;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+u_int16_t bitmap = 0;
+int fork;
+u_int16_t vol2;
+DSI *dsi2;
+
+DSI *dsi;
+
+	dsi = &Conn->dsi;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPSetFileDirParms:t231: set unix access privilege two users\n");
+
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		return;
+	}
+
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		return;
+	}
+
+	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
+		test_skipped(T_UNIX_PREV);
+	    return;
+	}
+	dsi2 = &Conn2->dsi;
+	vol2  = FPOpenVol(Conn2, Vol);
+	if (vol2 == 0xffff) {
+		nottested();
+		return;
+	}
+
+	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
+		nottested();
+		return;
+	}
+
+	if (FPCreateFile(Conn, vol,  0, dir , name)) {
+		nottested();
+		goto fin;
+	}
+
+	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) |
+		(1 << DIRPBIT_UNIXPR);
+
+	FAIL (FPGetFileDirParams(Conn, vol, dir, name, bitmap, 0))
+
+	bitmap = (1<< DIRPBIT_PDINFO) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID) |
+	         (1<< DIRPBIT_UNIXPR);
+
+	if (FPGetFileDirParams(Conn, vol, dir, "", 0, bitmap)) {
+	    failed();
+	}
+	else {
+		filedir.isdir = 1;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
+		bitmap = (1<< DIRPBIT_UNIXPR);
+		filedir.unix_priv |= S_IWUSR |S_IWGRP| S_IRGRP | S_IWOTH | S_IROTH;
+ 		FAIL (FPSetFilDirParam(Conn, vol, dir , "", bitmap, &filedir)) 
+		if (FPCreateFile(Conn2, vol2,  0, dir , name1)) {
+			nottested();
+		}
+	    bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) |
+		(1 << DIRPBIT_UNIXPR);
+
+	    FAIL (FPGetFileDirParams(Conn, vol, dir, name, bitmap, 0))
+	    FAIL (FPGetFileDirParams(Conn2, vol2, dir, name, bitmap, 0))
+	    FAIL (FPGetFileDirParams(Conn, vol, dir, name1, bitmap, 0))
+	}
+
+	bitmap = (1<< DIRPBIT_PDINFO) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID) |
+	         (1<< DIRPBIT_UNIXPR);
+
+	if (FPGetFileDirParams(Conn, vol, dir, "", 0, bitmap)) {
+	    failed();
+	}
+	else {
+		filedir.isdir = 1;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
+		bitmap = (1<< DIRPBIT_UNIXPR);
+		filedir.unix_priv &= ~(S_IWUSR |S_IWGRP| S_IWOTH);
+ 		FAIL (FPSetFilDirParam(Conn, vol, dir , "", bitmap, &filedir)) 
+ 		FAIL (FPGetFileDirParams(Conn2, vol2, dir, "", 0, bitmap))
+		
+ 		FAIL (htonl(AFPERR_ACCESS) != FPDelete(Conn2, vol2,  dir , name1))
+ 		FAIL (htonl(AFPERR_ACCESS) != FPDelete(Conn2, vol2,  dir , name))
+	}
+
+	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) |
+		(1 << DIRPBIT_UNIXPR);
+
+	FAIL (FPGetFileDirParams(Conn, vol, dir, name, bitmap, 0))
+	FAIL (FPGetFileDirParams(Conn2, vol2, dir, name, bitmap, 0))
+
+	/* ----------------- */
+	bitmap = (1<< DIRPBIT_PDINFO) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID) |
+	         (1<< DIRPBIT_UNIXPR);
+	if (FPGetFileDirParams(Conn, vol, dir, "", 0, bitmap)) {
+	    failed();
+	}
+	else {
+		filedir.isdir = 1;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
+		bitmap = (1<< DIRPBIT_UNIXPR);
+		filedir.unix_priv |= S_IWUSR;
+ 		FAIL (FPSetFilDirParam(Conn, vol, dir , "", bitmap, &filedir)) 
+	}
+	
+	
+	FAIL (FPDelete(Conn, vol,  dir , name1))
+	FAIL (FPDelete(Conn, vol,  dir , name))
+	
+fin:	
+	FAIL (FPDelete(Conn, vol,  dir , ""))
+}
+
+/* ------------------------- */
+STATIC void test232()
+{
+int  dir = 0;
+char *name = "t232 file";
+char *ndir = "t232 dir";
+u_int16_t vol = VolID;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+u_int16_t bitmap = 0;
+int fork;
+
+DSI *dsi;
+
+	dsi = &Conn->dsi;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPSetFileDirParms:t232: unix access privilege delete ro file in a rw folder\n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
+
+	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
+		test_skipped(T_UNIX_PREV);
+	    return;
+	}
+
+	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
+		nottested();
+		return;
+	}
+
+	if (FPCreateFile(Conn, vol,  0, dir , name)) {
+		nottested();
+		goto fin;
+	}
+	bitmap = (1<< DIRPBIT_PDINFO) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID) |
+	         (1<< DIRPBIT_UNIXPR);
+
+	FAIL (FPGetFileDirParams(Conn, vol, dir, "", 0, bitmap))
+		
+	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) |
+		(1 << DIRPBIT_UNIXPR);
+
+	if (FPGetFileDirParams(Conn, vol, dir, name, bitmap, 0)) {
+	    failed();
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap,0);
+		bitmap = (1<< DIRPBIT_UNIXPR);
+		filedir.unix_priv &= ~(S_IWUSR |S_IWGRP| S_IWOTH);
+        filedir.access[0] = 0;
+        filedir.access[1] = filedir.access[2] = filedir.access[3] = 3;
+ 		FAIL (FPSetFilDirParam(Conn, vol, dir , name, bitmap, &filedir)) 
+ 		if (FPDelete(Conn, vol,  dir , name)) {
+ 			failed();
+			bitmap = (1<< DIRPBIT_UNIXPR);
+			filedir.unix_priv |= S_IWUSR |S_IWGRP| S_IWOTH;
+        	filedir.access[0] = 0;
+        	filedir.access[1] = filedir.access[2] = filedir.access[3] = 3;
+ 			FAIL (FPSetFilDirParam(Conn, vol, dir , name, bitmap, &filedir)) 
+			FAIL (FPDelete(Conn, vol,  dir , name))
+		}
+	}
+	
+fin:	
+	FAIL (FPDelete(Conn, vol,  dir , ""))
+}
+
 /* ----------- */
 void FPSetFileDirParms_test()
 {
@@ -209,5 +416,7 @@ void FPSetFileDirParms_test()
     fprintf(stderr,"FPSetFileDirParms page 258\n");
     test98();
     test230();
+    test231();
+    test232();
 }
 
