@@ -222,7 +222,6 @@ u_int16_t vol = VolID;
 int  ofs =  3 * sizeof( u_int16_t );
 struct afp_filedir_parms filedir;
 u_int16_t bitmap = 0;
-int fork;
 u_int16_t vol2;
 DSI *dsi2;
 
@@ -238,10 +237,10 @@ DSI *dsi;
 		return;
 	}
 
-	if (Conn->afp_version < 30) {
-		test_skipped(T_AFP3);
+	if (!Conn2) {
+		test_skipped(T_CONN2);
 		return;
-	}
+	}		
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
@@ -348,7 +347,6 @@ u_int16_t vol = VolID;
 int  ofs =  3 * sizeof( u_int16_t );
 struct afp_filedir_parms filedir;
 u_int16_t bitmap = 0;
-int fork;
 
 DSI *dsi;
 
