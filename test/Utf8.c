@@ -529,6 +529,249 @@ test_exit:
 	exit_test("test337");
 }
 
+/* ------------------------- */
+extern int Force_type2;
+
+STATIC void test381()
+{
+char nfile[8];
+u_int16_t bitmap;
+u_int16_t vol = VolID;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+DSI *dsi = &Conn->dsi;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"Utf8:test381: utf8 use type 2 name with AFP3 connection\n");
+
+	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
+		test_skipped(T_UTF8);
+		goto test_exit;
+	}
+
+    bitmap = (1<< FILPBIT_PDID) | (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_RFLEN);
+	strcpy(nfile, "laaa");
+	nfile[2] = 0xcc;         /* là */
+	nfile[3] = 0x80;
+	
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , nfile)) {
+		nottested();
+		goto test_exit;
+	}
+    bitmap = (1<< FILPBIT_PDID)|(1<< FILPBIT_LNAME)|(1 << FILPBIT_PDINFO );
+
+	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, nfile, bitmap,0)) {
+		failed();
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap,0);
+	    if (strcmp(filedir.lname, "l\210")) {
+		    fprintf(stderr,"\tFAILED %s should be l\\210\n",filedir.lname);
+		    failed_nomsg();
+	    }
+	}
+	Force_type2 = 1;
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , filedir.lname))
+	Force_type2 = 0;
+
+	FAIL (ntohl(AFPERR_NOOBJ) !=  FPDelete(Conn, vol,  DIRDID_ROOT , nfile))
+test_exit:
+	exit_test("test381");
+}
+
+/* ------------------------- */
+STATIC void test382()
+{
+char nfile[8];
+u_int16_t bitmap;
+u_int16_t vol = VolID;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+DSI *dsi = &Conn->dsi;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"Utf8:test382: utf8 use type 2 name with AFP3 connection\n");
+
+	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
+		test_skipped(T_UTF8);
+		goto test_exit;
+	}
+
+    bitmap = (1<< FILPBIT_PDID) | (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_RFLEN);
+	strcpy(nfile, "laaa");
+	nfile[2] = 0xcc;         /* là */
+	nfile[3] = 0x80;
+	
+	if (!FPCreateDir(Conn, vol, DIRDID_ROOT , nfile)) {
+		nottested();
+		goto test_exit;
+	}
+    bitmap = (1<< FILPBIT_PDID)|(1<< FILPBIT_LNAME)|(1 << FILPBIT_PDINFO );
+
+	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, nfile, 0, bitmap)) {
+		failed();
+	}
+	else {
+		filedir.isdir = 1;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
+	    if (strcmp(filedir.lname, "l\210")) {
+		    fprintf(stderr,"\tFAILED %s should be l\\210\n",filedir.lname);
+		    failed_nomsg();
+	    }
+	}
+	Force_type2 = 1;
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , filedir.lname))
+	Force_type2 = 0;
+
+	FAIL (ntohl(AFPERR_NOOBJ) != FPDelete(Conn, vol,  DIRDID_ROOT , nfile))
+test_exit:
+	exit_test("test382");
+}
+
+/* ------------------------- */
+STATIC void test383()
+{
+char *file = "test 383 la\xcc\x80";/* là */
+char *file2 = "test 383 l\210";
+char *nfile2 = "test 383 new name l\210";
+char *nfile = "test 383 new name la\xcc\x80";/* là */
+u_int16_t bitmap;
+u_int16_t vol = VolID;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"Utf8:test383: utf8 rename type 2 name, AFP3 connection\n");
+
+	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
+		test_skipped(T_UTF8);
+		goto test_exit;
+	}
+
+    bitmap = (1<< FILPBIT_PDID) | (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_RFLEN);
+	
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , file)) {
+		nottested();
+		goto test_exit;
+	}
+	Force_type2 = 1;
+	FAIL (FPRename(Conn, vol, DIRDID_ROOT, file2, nfile2))
+	Force_type2 = 0;
+
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , nfile))
+	FPDelete(Conn, vol,  DIRDID_ROOT , file);
+test_exit:
+	exit_test("test383");
+}
+
+/* ------------------------- */
+STATIC void test384()
+{
+char *file = "test 384 la\xcc\x80";/* là */
+char *file2 = "test 384 l\210";
+char *nfile2 = "test 384 /new name l\210";
+char *nfile = "test 384 new name la\xcc\x80";/* là */
+u_int16_t bitmap;
+u_int16_t vol = VolID;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"Utf8:test384: utf8 rename type 2 name, AFP3 connection wrong parameter\n");
+
+	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
+		test_skipped(T_UTF8);
+		goto test_exit;
+	}
+
+    bitmap = (1<< FILPBIT_PDID) | (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_RFLEN);
+	
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , file)) {
+		nottested();
+		goto test_exit;
+	}
+	Force_type2 = 1;
+	FAIL (ntohl(AFPERR_PARAM) != FPRename(Conn, vol, DIRDID_ROOT, file2, nfile2))
+	Force_type2 = 0;
+
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , file))
+	FPDelete(Conn, vol,  DIRDID_ROOT , nfile);
+test_exit:
+	exit_test("test384");
+}
+
+/* ------------------------- */
+STATIC void test385()
+{
+char *file = "test 385 la\xcc\x80";/* là */
+char *file2 = "test 385 l\210";
+char *nfile2 = "test 385 new name l\210";
+char *nfile = "test 385 new name la\xcc\x80";/* là */
+u_int16_t bitmap;
+u_int16_t vol = VolID;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"Utf8:test385: utf8 copyfile type 2 name, AFP3 connection\n");
+
+	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
+		test_skipped(T_UTF8);
+		goto test_exit;
+	}
+
+    bitmap = (1<< FILPBIT_PDID) | (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_RFLEN);
+	
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , file)) {
+		nottested();
+		goto test_exit;
+	}
+	Force_type2 = 1;
+	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, file2, nfile2))
+	Force_type2 = 0;
+
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , nfile))
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , file));
+test_exit:
+	exit_test("test385");
+}
+
+/* ------------------------- */
+STATIC void test386()
+{
+char *file = "test 386 la\xcc\x80";/* là */
+char *file2 = "test 386 l\210";
+char *nfile2 = "test 386 new name l\210";
+char *nfile = "test 386 new name la\xcc\x80";/* là */
+u_int16_t bitmap;
+u_int16_t vol = VolID;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"Utf8:test386: utf8 moveandrename type 2 name, AFP3 connection\n");
+
+	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
+		test_skipped(T_UTF8);
+		goto test_exit;
+	}
+
+    bitmap = (1<< FILPBIT_PDID) | (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_RFLEN);
+	
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , file)) {
+		nottested();
+		goto test_exit;
+	}
+	Force_type2 = 1;
+	FAIL (FPMoveAndRename(Conn, vol, DIRDID_ROOT, DIRDID_ROOT, file2, nfile2)) 
+	Force_type2 = 0;
+
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , nfile))
+	FPDelete(Conn, vol,  DIRDID_ROOT , file);
+test_exit:
+	exit_test("test386");
+}
+
+
 /* ----------- */
 void Utf8_test()
 {
@@ -545,5 +788,11 @@ void Utf8_test()
 	test313();
 	test314();
 	test337();
+	test381();
+	test382();
+	test383();
+	test384();
+	test385();
+	test386();
 }
 

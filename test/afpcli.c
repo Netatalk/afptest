@@ -1465,6 +1465,8 @@ void u2mac(char *dst, char *name, int len)
 }
 
 /* ------------------------- */
+int Force_type2;
+
 int FPset_name(CONN *conn, int ofs, char *name)
 {
 int len;
@@ -1474,7 +1476,7 @@ DSI *dsi;
 
 	dsi = &conn->dsi;
 
-	if (UNICODE(conn)) {
+	if (UNICODE(conn) && !Force_type2) {
 		dsi->commands[ofs++] = 3;		/* long name */
 		memcpy(&dsi->commands[ofs], &hint, sizeof(hint));
 		ofs += sizeof(hint);
