@@ -4,6 +4,7 @@
 #include "adoublehelper.h"
 
 static char temp[MAXPATHLEN];   
+static char temp1[MAXPATHLEN];
 
 STATIC void test136()
 {
@@ -145,6 +146,54 @@ u_int16_t vol = VolID;
 	FAIL (FPDelete(Conn, vol,  dir , ""))
 }
 
+/* ------------------------- */
+STATIC void test302()
+{
+char *name = "t302 dir";
+char *name1 = "t302 file";
+char *name2 = "t302 file1";
+int  dir;
+u_int16_t vol = VolID;
+int id,id1;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPMoveAndRename:test302: file renamed someone else, cnid not updated\n");
+
+	if (!Mac && !Path) {
+		test_skipped(T_MAC_PATH);
+		return;
+	}
+
+	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
+	if (!dir) {
+		nottested();
+		return;
+	}
+
+	FAIL (FPCreateFile(Conn, vol,  0, dir , name1))
+
+	id = get_fid(Conn, vol, dir , name1);     
+
+	if (!Mac) {
+		sprintf(temp,"%s/%s/%s", Path, name, name1);
+		sprintf(temp1,"%s/%s/%s", Path, name, name2);
+		if (rename(temp, temp1) < 0) {
+			fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+			failed_nomsg();
+		}
+	}
+	else {
+		FAIL (FPMoveAndRename(Conn, vol, DIRDID_ROOT, dir, name1, name2))
+	}
+	id1 = get_fid(Conn, vol, dir , name2);
+	if (id != id1) {
+		fprintf(stderr,"\tFAILED id are not the same %d %d\n", id, id1);
+		failed_nomsg();
+	}
+	FAIL (FPDelete(Conn, vol,  dir , name2))
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+}
+
 /* ----------- */
 void FPMoveAndRename_test()
 {
@@ -153,5 +202,6 @@ void FPMoveAndRename_test()
     test136();
     test137();
     test139();
+    test302();
 }
 

@@ -1,5 +1,7 @@
 #include "afpclient.h"
 
+int     Throttle;
+
 #define UNICODE(a) (a->afp_version >= 30)
 
 #define kTextEncodingUTF8 0x08000103
@@ -152,6 +154,9 @@ int my_dsi_stream_send(DSI *dsi, void *buf, size_t length)
   memcpy(block + 8, &dsi->header.dsi_len, sizeof(dsi->header.dsi_len));
   memcpy(block + 12, &dsi->header.dsi_reserved, sizeof(dsi->header.dsi_reserved));
 
+  if (Throttle) {
+      sleep(1);
+  }
   if (!length) { /* just write the header */
     length = (my_dsi_stream_write(dsi, block, sizeof(block)) == sizeof(block));
     return length; /* really 0 on failure, 1 on success */

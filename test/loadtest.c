@@ -1,5 +1,5 @@
 /*
- * $Id: loadtest.c,v 1.1 2003-04-28 10:19:20 didg Exp $
+ * $Id: loadtest.c,v 1.2 2003-08-18 13:47:16 didg Exp $
  * MANIFEST
  */
 
@@ -23,6 +23,12 @@ void failed(void)
 		ExitCode = 1;
 }
 
+/* ------------------------- */
+void fatal_failed(void)
+{
+	fprintf(stderr,"\tFAILED\n");
+	exit(1);
+}
 /* ------------------------- */
 void nottested(void)
 {
@@ -93,47 +99,46 @@ static char temp[MAXPATHLEN];
 	for (i=1; i <= 100; i++) {
 		sprintf(temp, "File.small%d", i);
 		if (ntohl(AFPERR_NOOBJ) != is_there(Conn, dir, temp)) {
-			failed();
+			fatal_failed();
 		}
 		else {
 			if (FPGetFileDirParams(Conn, vol,  dir, "", 0, (1<< DIRPBIT_DID) )) {
-				failed();
+				fatal_failed();
 			}
 		    if (FPCreateFile(Conn, vol,  0, dir , temp)){
-				failed();
-				break;
+				fatal_failed();
 			}
 			if (is_there(Conn, dir, temp)) {
-				failed();
+				fatal_failed();
 			}
 			if (FPGetFileDirParams(Conn, vol,  dir, temp, 
 	    	     	(1<<FILPBIT_FNUM )|(1<<FILPBIT_PDID)|(1<<FILPBIT_FINFO)|
 		    	     (1<<FILPBIT_CDATE)|(1<<FILPBIT_MDATE)|(1<<FILPBIT_DFLEN)|(1<<FILPBIT_RFLEN)
 	            , 0)) {
-				failed();
+				fatal_failed();
 			}
 			if (FPGetFileDirParams(Conn, vol,  dir, temp, 
 	    	     	(1<<FILPBIT_FNUM )|(1<<FILPBIT_PDID)|(1<<FILPBIT_FINFO)|
 	    	     	 (1<< DIRPBIT_ATTR)|(1<<DIRPBIT_BDATE)|
 		    	     (1<<FILPBIT_CDATE)|(1<<FILPBIT_MDATE)|(1<<FILPBIT_DFLEN)|(1<<FILPBIT_RFLEN)
 	            , 0)) {
-				failed();
+				fatal_failed();
 			}
 			fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 
 			            (1<<FILPBIT_PDID)|(1<< DIRPBIT_LNAME)|(1<<FILPBIT_FNUM)|(1<<FILPBIT_DFLEN)
 			            , dir, temp, OPENACC_WR |OPENACC_RD| OPENACC_DWR| OPENACC_DRD);
 			if (!fork) {
-				failed();
+				fatal_failed();
 			}
 			else {
 				if (FPGetForkParam(Conn, fork, (1<<FILPBIT_PDID)|(1<< DIRPBIT_LNAME)|(1<<FILPBIT_DFLEN))
 				) {
-					failed();
+					fatal_failed();
 				}
 				if (FPWrite(Conn, fork, 0, 20480, data, 0 )) {
-					failed();
+					fatal_failed();
 				}
-				if (FPCloseFork(Conn,fork)) {failed();}
+				if (FPCloseFork(Conn,fork)) {fatal_failed();}
 			}
 		}
 		maxi = i;
@@ -147,196 +152,196 @@ static char temp[MAXPATHLEN];
 	         (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE) |
 		    (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
 		)) {
-		failed();
+		fatal_failed();
 	}
 	for (i=1; i <= maxi; i++) {
 		sprintf(temp, "File.small%d", i);
 		if (is_there(Conn, dir, temp)) {
-			failed();
+			fatal_failed();
 		}
 		if (FPGetFileDirParams(Conn, vol,  dir, temp, 0x72d,0)) {
-			failed();
+			fatal_failed();
 		}
 		if (FPGetFileDirParams(Conn, vol,  dir, temp, 0x73f, 0x133f )) {
-			failed();
+			fatal_failed();
 		}
 		fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0x342, dir, temp, OPENACC_RD);
 		if (!fork) {
-			failed();
+			fatal_failed();
 		}
 		else {
-			if (FPGetForkParam(Conn, fork, (1<<FILPBIT_DFLEN))) {failed();}
-			if (FPRead(Conn, fork, 0, 512, data)) {failed();}
-			if (FPCloseFork(Conn,fork)) {failed();}
+			if (FPGetForkParam(Conn, fork, (1<<FILPBIT_DFLEN))) {fatal_failed();}
+			if (FPRead(Conn, fork, 0, 512, data)) {fatal_failed();}
+			if (FPCloseFork(Conn,fork)) {fatal_failed();}
 		}
 		fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0x342 , dir, temp,OPENACC_RD| OPENACC_DWR);
 		if (!fork) {
-			failed();
+			fatal_failed();
 		}
 		else {
-			if (FPGetForkParam(Conn, fork, 0x242)) {failed();}
+			if (FPGetForkParam(Conn, fork, 0x242)) {fatal_failed();}
 			if (FPGetFileDirParams(Conn, vol,  dir, temp, 0x72d,0)) {
-				failed();
+				fatal_failed();
 			}
-			if (FPCloseFork(Conn,fork)) {failed();}
+			if (FPCloseFork(Conn,fork)) {fatal_failed();}
 		}
 	}
 	/* ---------------- */
 	for (i=1; i <= maxi; i++) {
 		sprintf(temp, "File.small%d", i);
 		if (is_there(Conn, dir, temp)) {
-			failed();
+			fatal_failed();
 		}
 		if (FPGetFileDirParams(Conn, vol,  dir, temp, 0, (1<< FILPBIT_FNUM) )) {
-			failed();
+			fatal_failed();
 		}
 
-		if (FPDelete(Conn, vol,  dir, temp)) {failed();}
+		if (FPDelete(Conn, vol,  dir, temp)) {fatal_failed();}
 	}
 	    
  	if (FPGetVolParam(Conn, vol, (1 << VOLPBIT_MDATE )|(1 << VOLPBIT_XBFREE))) {
-		failed();
+		fatal_failed();
 	}
 	/* --------------- */
 	strcpy(temp, "File.big");
-	if (is_there(Conn, dir, temp)) {failed();}
-	if (FPGetFileDirParams(Conn, vol,  dir, temp, 0x72d,0)) {failed();}
+	if (is_there(Conn, dir, temp)) {fatal_failed();}
+	if (FPGetFileDirParams(Conn, vol,  dir, temp, 0x72d,0)) {fatal_failed();}
 	if (FPGetFileDirParams(Conn, vol,  dir, temp, 0x73f, 0x133f )) {
-		failed();
+		fatal_failed();
 	}
 	nowrite = 0;
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 
 			            (1<<FILPBIT_PDID)|(1<< DIRPBIT_LNAME)|(1<<FILPBIT_FNUM)|(1<<FILPBIT_DFLEN)
 			            , dir, temp, OPENACC_WR |OPENACC_RD| OPENACC_DWR| OPENACC_DRD);
 	if (!fork) {
-		failed();
+		fatal_failed();
 	}
 	else {
 		if (FPGetForkParam(Conn, fork, (1<<FILPBIT_PDID)|(1<< DIRPBIT_LNAME)|(1<<FILPBIT_DFLEN))) {
-			failed();
+			fatal_failed();
 		}
 		for (i=0; i <= numread ; i++) {
 			if (FPWrite(Conn, fork, i*65536, 65536, data, 0 )) {
-				failed();
+				fatal_failed();
 				nowrite = 1;
 			}
 		}
-		if (FPCloseFork(Conn,fork)) {failed();}
+		if (FPCloseFork(Conn,fork)) {fatal_failed();}
 	}
 
-	if (is_there(Conn, dir, temp)) {failed();}
-	if (FPGetFileDirParams(Conn, vol,  dir, temp, 0x72d, 0)) {failed();}
+	if (is_there(Conn, dir, temp)) {fatal_failed();}
+	if (FPGetFileDirParams(Conn, vol,  dir, temp, 0x72d, 0)) {fatal_failed();}
 	if (FPGetFileDirParams(Conn, vol,  dir, temp, 0x73f, 0x133f )) {
-		failed();
+		fatal_failed();
 	}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0x342 , dir, temp,OPENACC_RD);
 
 	if (!fork) {
-		failed();
+		fatal_failed();
 	}
 	else {
-		if (FPGetForkParam(Conn, fork, (1<<FILPBIT_DFLEN))) {failed();}
-		if (FPRead(Conn, fork, 0, 512, data)) {failed();}
-		if (FPCloseFork(Conn,fork)) {failed();}
+		if (FPGetForkParam(Conn, fork, (1<<FILPBIT_DFLEN))) {fatal_failed();}
+		if (FPRead(Conn, fork, 0, 512, data)) {fatal_failed();}
+		if (FPCloseFork(Conn,fork)) {fatal_failed();}
 	}
 	if (!nowrite) {	
 		fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0x342 , dir, temp,OPENACC_RD| OPENACC_DWR);
 		if (!fork) {
-			failed();
+			fatal_failed();
 		}
 		else {
-			if (FPGetForkParam(Conn, fork, 0x242)) {failed();}
+			if (FPGetForkParam(Conn, fork, 0x242)) {fatal_failed();}
 			if (FPGetFileDirParams(Conn, vol,  dir, temp, 0x72d,0)) {
-				failed();
+				fatal_failed();
 			}
 			for (i=0; i <= numread ; i++) {
 				if (FPRead(Conn, fork, i*65536, 65536, data)) {
-					failed();
+					fatal_failed();
 				}
 			}
-			if (FPCloseFork(Conn,fork)) {failed();}
+			if (FPCloseFork(Conn,fork)) {fatal_failed();}
 		}
 	}
 	/* --------------- */
 	strcpy(temp, "File.lock");
 	
 	if (ntohl(AFPERR_NOOBJ) != is_there(Conn, dir, temp)) {
-		failed();
+		fatal_failed();
 	}
 	if (FPGetFileDirParams(Conn, vol,  dir, "", 0, (1<< DIRPBIT_DID) )) {
-		failed();
+		fatal_failed();
 	}
-	if (FPCreateFile(Conn, vol,  0, dir , temp)){ failed();}
+	if (FPCreateFile(Conn, vol,  0, dir , temp)){ fatal_failed();}
 
-	if (is_there(Conn, dir, temp)) {failed();}
+	if (is_there(Conn, dir, temp)) {fatal_failed();}
 
 	if (FPGetFileDirParams(Conn, vol,  dir, temp, 
 	 		(1<<FILPBIT_FNUM )|(1<<FILPBIT_PDID)|(1<<FILPBIT_FINFO)|
 		    (1<<FILPBIT_CDATE)|(1<<FILPBIT_MDATE)|(1<<FILPBIT_DFLEN)|(1<<FILPBIT_RFLEN)
 	        , 0)) {
-		failed();
+		fatal_failed();
 	}
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 
 			(1<<FILPBIT_PDID)|(1<< DIRPBIT_LNAME)|(1<<FILPBIT_FNUM)|(1<<FILPBIT_DFLEN)
 			            , dir, temp, OPENACC_WR |OPENACC_RD| OPENACC_DWR| OPENACC_DRD);
 
 	if (!fork) {
-		failed();
+		fatal_failed();
 	}
 	else {
 		if (FPGetForkParam(Conn, fork, (1<<FILPBIT_PDID)|(1<< DIRPBIT_LNAME)|(1<<FILPBIT_DFLEN))
 				) {
-			failed();
+			fatal_failed();
 		}
 		if (FPGetFileDirParams(Conn, vol,  dir, temp, 
 				(1<< DIRPBIT_ATTR)|(1<<FILPBIT_CDATE)|(1<<FILPBIT_MDATE)|
 				(1<<FILPBIT_FNUM)|
 		 		(1<<FILPBIT_FINFO)|(1<<FILPBIT_DFLEN)|(1<<FILPBIT_RFLEN)
 		        , 0)) {
-			failed();
+			fatal_failed();
 		}
 		if (FPWrite(Conn, fork, 0, 40000, data, 0 )) {
-			failed();
+			fatal_failed();
 		}
-		if (FPCloseFork(Conn,fork)) {failed();}
+		if (FPCloseFork(Conn,fork)) {fatal_failed();}
 	}
 	/* -------------- */
-	if (is_there(Conn, dir, temp)) {failed();}
+	if (is_there(Conn, dir, temp)) {fatal_failed();}
 	if (FPGetFileDirParams(Conn, vol,  dir, temp, 0x73f, 0x133f)) {
-		failed();
+		fatal_failed();
 	}
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0x342 , dir, temp,OPENACC_RD);
 
 	if (!fork) {
-		failed();
+		fatal_failed();
 	}
 	else {
-		if (FPGetForkParam(Conn, fork, (1<<FILPBIT_DFLEN))) {failed();}
-		if (FPRead(Conn, fork, 0, 512, data)) {failed();}
-		if (FPCloseFork(Conn,fork)) {failed();}
+		if (FPGetForkParam(Conn, fork, (1<<FILPBIT_DFLEN))) {fatal_failed();}
+		if (FPRead(Conn, fork, 0, 512, data)) {fatal_failed();}
+		if (FPCloseFork(Conn,fork)) {fatal_failed();}
 		/* ----------------- */
 		fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0x342 , dir, temp,OPENACC_RD| OPENACC_WR);
 
 		if (!fork) {
-			failed();
+			fatal_failed();
 		}
 		else {
-			if (FPGetForkParam(Conn, fork, 0x242)) {failed();}
+			if (FPGetForkParam(Conn, fork, 0x242)) {fatal_failed();}
 			if (FPGetFileDirParams(Conn, vol,  dir, temp, 0x72d, 0)) {
-				failed();
+				fatal_failed();
 			}
 			for (j = 0; j <= 10; j++) {
 				for (i = 0;i <= 390; i += 10) {
-					if (FPByteLock(Conn, fork, 0, 0 , i , 10)) {failed();}
+					if (FPByteLock(Conn, fork, 0, 0 , i , 10)) {fatal_failed();}
 				}	
 				for (i = 390;i >= 0; i -= 10) {
-					if (FPByteLock(Conn, fork, 0, 1 , i , 10)) {failed();}
+					if (FPByteLock(Conn, fork, 0, 1 , i , 10)) {fatal_failed();}
 				}
 			}	
-			if (is_there(Conn, dir, temp)) {failed();}
-			if (FPCloseFork(Conn,fork)) {failed();}
-			if (FPDelete(Conn, vol,  dir, "File.lock")) {failed();}
+			if (is_there(Conn, dir, temp)) {fatal_failed();}
+			if (FPCloseFork(Conn,fork)) {fatal_failed();}
+			if (FPDelete(Conn, vol,  dir, "File.lock")) {fatal_failed();}
 		}
 	}		
 
@@ -344,14 +349,14 @@ static char temp[MAXPATHLEN];
 	for (i=1; i <= 320; i++) {
 		sprintf(temp, "File.0k%d", i);
 		if (ntohl(AFPERR_NOOBJ) != is_there(Conn, dir, temp)) {
-			failed();
+			fatal_failed();
 		}
 		else {
 			if (FPGetFileDirParams(Conn, vol,  dir, "", 0, (1<< DIRPBIT_DID) )) {
-				failed();
+				fatal_failed();
 			}
 		    if (FPCreateFile(Conn, vol,  0, dir , temp)){
-				failed();
+				fatal_failed();
 				break;
 			}
 		}
@@ -366,19 +371,19 @@ static char temp[MAXPATHLEN];
 	         (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE) |
 		    (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
 		)) {
-		failed();
+		fatal_failed();
 	}
 	/* ---------------- */
 	for (i=1; i <= maxi; i++) {
 		sprintf(temp, "File.0k%d", i);
 		if (is_there(Conn, dir, temp)) {
-			failed();
+			fatal_failed();
 		}
 		if (FPGetFileDirParams(Conn, vol,  dir, temp, 0, (1<< FILPBIT_FNUM) )) {
-			failed();
+			fatal_failed();
 		}
 
-		if (FPDelete(Conn, vol,  dir, temp)) {failed();}
+		if (FPDelete(Conn, vol,  dir, temp)) {fatal_failed();}
 	}
 	    
 	
@@ -433,10 +438,13 @@ int     Version = 21;
 int     Loop = 0;
 int     Mac = 0;
 
+extern  int     Throttle;
+
 /* =============================== */
 void usage( char * av0 )
 {
     fprintf( stderr, "usage:\t%s [-m] [-n] [-t] [-h host] [-p port] [-s vol] [-u user] [-w password]\n", av0 );
+    fprintf( stderr,"\t-t\tthrottle execution\n");
     fprintf( stderr,"\t-m\tserver is a Mac\n");
     fprintf( stderr,"\t-h\tserver host name (default localhost)\n");
     fprintf( stderr,"\t-p\tserver port (default 548)\n");
@@ -462,8 +470,11 @@ int cc;
 static char *vers = "AFPVersion 2.1";
 static char *uam = "Cleartxt Passwrd";
 
-    while (( cc = getopt( ac, av, "mlv34h:p:s:u:w:c:" )) != EOF ) {
+    while (( cc = getopt( ac, av, "tmlv34h:p:s:u:w:c:" )) != EOF ) {
         switch ( cc ) {
+        case 't':
+        	Throttle = 1;
+            break;
         case '3':
 			vers = "AFPX03";
 			Version = 30;

@@ -1,5 +1,5 @@
 /*
- * $Id: logintest.c,v 1.2 2003-05-05 14:46:37 didg Exp $
+ * $Id: logintest.c,v 1.3 2003-08-18 13:47:16 didg Exp $
  * MANIFEST
  */
 #include "specs.h"
@@ -8,7 +8,7 @@ int Verbose = 0;
 int Quirk = 0;
 
 u_int16_t VolID;
-static DSI *dsi;
+
 CONN *Conn;
 CONN *Conn2;
 
@@ -33,27 +33,28 @@ int     Mac = 0;
 char    *Test;
 static char  *vers = "AFPVersion 2.1";
 
-static void connect_server(void)
+static void connect_server(CONN *conn)
 {
-    Conn->type = Proto;
+DSI *dsi;
+
+    conn->type = Proto;
     if (!Proto) {
 	int sock;
-    	Dsi = &Conn->dsi;
-		dsi = Dsi;         
+    	dsi = &conn->dsi;
 	    sock = OpenClientSocket(Server, Port);
         if ( sock < 0) {
         	nottested();
 	    	exit(ExitCode);
         }
-     	Dsi->protocol = DSI_TCPIP; 
-	    Dsi->socket = sock;
+     	dsi->protocol = DSI_TCPIP; 
+	    dsi->socket = sock;
     }
     else {
 	}
 }
 
 /* ------------------------- */
-void test3(void)
+static void test3(void)
 {
 static char *uam = "No User Authent";
 int ret;
@@ -79,6 +80,46 @@ int ret;
 	if (FPLogOut(Conn)) {
 		failed();
     }   
+}
+
+/* ------------------------- */
+static void test4(void)
+{
+CONN conn[50];
+int  i;
+int  cnt = 0;
+int  ret;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"test4: too many connections\n");
+    for (i = 0; i < 50; i++) {
+    	connect_server(&conn[i]);
+        Dsi = &conn[i].dsi;
+
+        fprintf(stderr,"===================\n");
+
+     	fprintf(stderr,"DSIOpenSession number %d\n", i);
+	    if ((ret = DSIOpenSession(&conn[i]))) {
+	    	if (ret != DSIERR_TOOMANY) {
+				failed();
+				return ;
+	    	}
+	    	cnt = i;
+	    	break;
+	    }
+	}
+	if (!cnt) {
+		nottested();
+		return ;
+	}
+	for (i = 0; i < cnt; i++) {
+        Dsi = &conn[i].dsi;
+		if (DSICloseSession(&conn[i])) {
+			failed();
+			return;
+		}
+		CloseClientSocket(Dsi->socket);
+	}
 }
 
 /* =============================== */
@@ -157,7 +198,7 @@ unsigned int ret;
     if ((Conn = (CONN *)calloc(1, sizeof(CONN))) == NULL) {
     	return 1;
     }
-    connect_server();
+    connect_server(Conn);
 	/* dsi with no open session */    
     Dsi = &Conn->dsi;
 
@@ -170,7 +211,8 @@ unsigned int ret;
 	CloseClientSocket(Dsi->socket);
 
 	/* ------------------------ */	
-    connect_server();
+    connect_server(Conn);
+    Dsi = &Conn->dsi;
 
     fprintf(stderr,"===================\n");
 
@@ -195,12 +237,16 @@ unsigned int ret;
 
 	/* ------------------------ */	
     /* guest login */	
-    connect_server();
+    connect_server(Conn);
+    Dsi = &Conn->dsi;
     test3();
 	CloseClientSocket(Dsi->socket);
     
-	/* ------------------------ */	
-    connect_server();
+	/* ------------------------ 
+	 * clear text login
+	*/
+    connect_server(Conn);
+    Dsi = &Conn->dsi;
     if (Version >= 30) {
 		ret = FPopenLoginExt(Conn, vers, uam, User, Password);
 	}
@@ -216,6 +262,11 @@ unsigned int ret;
    	if (FPLogOut(Conn)) {
    		failed();
    	}
+
+	/* ------------------------ 
+	 * too many login
+	*/
+	test4();
 
 	return ExitCode;
 }
