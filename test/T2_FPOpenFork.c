@@ -462,10 +462,7 @@ test_exit:
 	exit_test("test321");
 }
 
-/* ------------------------- 
- * for this test you need a volume with options:crlf
- * in AppleVolumes.default
-*/
+/* --------------------- */
 STATIC void test372()
 {
 char *name  = "t372 file name.txt";
@@ -553,6 +550,276 @@ test_exit:
 	exit_test("test372");
 }
 
+/* ------------------------- 
+ * for this test you need a volume with options:crlf
+ * in AppleVolumes.default
+ *
+ * not run by default (need -f test387)
+*/
+
+/* --------------------- */
+STATIC void test387()
+{
+char *name  = "t387 file name.txt";
+char data[20];
+u_int16_t vol = VolID;
+int fork;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+DSI *dsi = &Conn->dsi; 
+u_int16_t bitmap;
+int fd;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPRead:test387: crlf convertion for TEXT file\n");
+
+	if (!Mac && !Path) {
+		test_skipped(T_MAC_PATH);
+		goto test_exit;
+	}
+	
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		goto fin;
+	}
+	bitmap = (1<< DIRPBIT_ATTR) |  (1<<DIRPBIT_ATTR) | (1<<FILPBIT_FINFO) |
+	         (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE) |
+		     (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID);
+
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, bitmap,0)) {
+		failed();
+		goto fin;
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+		memcpy(filedir.finder_info, "TEXTttxt", 8);
+		
+ 		FAIL (FPSetFileParams(Conn, vol, DIRDID_ROOT , name, (1<<FILPBIT_FINFO), &filedir)) 
+	    FAIL (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, bitmap,0))
+	}
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
+	if (!fork) {
+		failed();
+		goto fin;
+	}
+	if (FPWrite(Conn, fork, 0, 5, "test\r", 0 )) {
+		failed();
+		goto fin1;
+	}
+	
+	if (FPRead(Conn, fork, 0, 5, data)) {
+		failed();
+		goto fin1;
+	}
+	if (memcmp(data, "test\r", 5)) {
+		fprintf(stderr, "\tFAILED wrote \"test\\r\" get \"%s\"\n", data);
+	    failed_nomsg();
+	}
+	if (!Mac) {
+		sprintf(temp,"%s/%s", Path, name);
+		fd = open(temp, O_RDWR , 0666);
+		if (fd < 0) {
+			fprintf(stderr,"\tFAILED unable to open %s :%s\n", temp, strerror(errno));
+			failed_nomsg();
+			goto fin1;
+		}
+		if (read(fd, data, 5) != 5) {
+			fprintf(stderr,"\tFAILED unable to read data:%s\n", strerror(errno));
+			failed_nomsg();
+		}
+		if (memcmp(data, "test\n", 5)) {
+		    fprintf(stderr, "\tFAILED not \"test\\n\" get 0x%x 0x%x 0x%x 0x%x 0x%x\n",
+		    data[0],data[1],data[2],data[3],data[4]);
+		    failed_nomsg();
+		}
+		close(fd);
+	}
+
+fin1:
+	FAIL (FPCloseFork(Conn,fork))
+fin:
+	FPDelete(Conn, vol,  DIRDID_ROOT , name);
+test_exit:
+	exit_test("test387");
+}
+
+/* --------------------- */
+STATIC void test388()
+{
+char *name  = "t388 file name.rtf";
+char data[20];
+u_int16_t vol = VolID;
+int fork;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+DSI *dsi = &Conn->dsi; 
+u_int16_t bitmap;
+int fd;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPRead:test388: crlf convertion for TEXT file (not default type)\n");
+
+	if (!Mac && !Path) {
+		test_skipped(T_MAC_PATH);
+		goto test_exit;
+	}
+	
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		goto fin;
+	}
+	bitmap = (1<< DIRPBIT_ATTR) |  (1<<DIRPBIT_ATTR) | (1<<FILPBIT_FINFO) |
+	         (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE) |
+		     (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID);
+
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, bitmap,0)) {
+		failed();
+		goto fin;
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+		memcpy(filedir.finder_info, "TEXTttxt", 8);
+		
+ 		FAIL (FPSetFileParams(Conn, vol, DIRDID_ROOT , name, (1<<FILPBIT_FINFO), &filedir)) 
+	    FAIL (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, bitmap,0))
+	}
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
+	if (!fork) {
+		failed();
+		goto fin;
+	}
+	if (FPWrite(Conn, fork, 0, 5, "test\r", 0 )) {
+		failed();
+		goto fin1;
+	}
+	
+	if (FPRead(Conn, fork, 0, 5, data)) {
+		failed();
+		goto fin1;
+	}
+	if (memcmp(data, "test\r", 5)) {
+		fprintf(stderr, "\tFAILED wrote \"test\\r\" get \"%s\"\n", data);
+	    failed_nomsg();
+	}
+	if (!Mac) {
+		sprintf(temp,"%s/%s", Path, name);
+		fd = open(temp, O_RDWR , 0666);
+		if (fd < 0) {
+			fprintf(stderr,"\tFAILED unable to open %s :%s\n", temp, strerror(errno));
+			failed_nomsg();
+			goto fin1;
+		}
+		if (read(fd, data, 5) != 5) {
+			fprintf(stderr,"\tFAILED unable to read data:%s\n", strerror(errno));
+			failed_nomsg();
+		}
+		if (memcmp(data, "test\n", 5)) {
+		    fprintf(stderr, "\tFAILED not \"test\\n\" get 0x%x 0x%x 0x%x 0x%x 0x%x\n",
+		    data[0],data[1],data[2],data[3],data[4]);
+		    failed_nomsg();
+		}
+		close(fd);
+	}
+
+fin1:
+	FAIL (FPCloseFork(Conn,fork))
+fin:
+	FPDelete(Conn, vol,  DIRDID_ROOT , name);
+test_exit:
+	exit_test("test388");
+}
+
+/* --------------------- */
+STATIC void test392()
+{
+char *name  = "t392 file name.pdf";
+char data[20];
+u_int16_t vol = VolID;
+int fork;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+DSI *dsi = &Conn->dsi; 
+u_int16_t bitmap;
+int fd;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPRead:test392: no crlf convertion for no TEXT file\n");
+
+	if (!Mac && !Path) {
+		test_skipped(T_MAC_PATH);
+		goto test_exit;
+	}
+	
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		goto fin;
+	}
+	bitmap = (1<< DIRPBIT_ATTR) |  (1<<DIRPBIT_ATTR) | (1<<FILPBIT_FINFO) |
+	         (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE) |
+		     (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID);
+
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, bitmap,0)) {
+		failed();
+		goto fin;
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+		memcpy(filedir.finder_info, "PDF CARO", 8);
+		
+ 		FAIL (FPSetFileParams(Conn, vol, DIRDID_ROOT , name, (1<<FILPBIT_FINFO), &filedir)) 
+	    FAIL (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, bitmap,0))
+	}
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
+	if (!fork) {
+		failed();
+		goto fin;
+	}
+	if (FPWrite(Conn, fork, 0, 5, "test\r", 0 )) {
+		failed();
+		goto fin1;
+	}
+	
+	if (FPRead(Conn, fork, 0, 5, data)) {
+		failed();
+		goto fin1;
+	}
+	if (memcmp(data, "test\r", 5)) {
+		fprintf(stderr, "\tFAILED wrote \"test\\r\" get \"%s\"\n", data);
+	    failed_nomsg();
+	}
+	if (!Mac) {
+		sprintf(temp,"%s/%s", Path, name);
+		fd = open(temp, O_RDWR , 0666);
+		if (fd < 0) {
+			fprintf(stderr,"\tFAILED unable to open %s :%s\n", temp, strerror(errno));
+			failed_nomsg();
+			goto fin1;
+		}
+		if (read(fd, data, 5) != 5) {
+			fprintf(stderr,"\tFAILED unable to read data:%s\n", strerror(errno));
+			failed_nomsg();
+		}
+		if (memcmp(data, "test\r", 5)) {
+		    fprintf(stderr, "\tFAILED not \"test\\r\" get 0x%x 0x%x 0x%x 0x%x 0x%x\n",
+		    data[0],data[1],data[2],data[3],data[4]);
+		    failed_nomsg();
+		}
+		close(fd);
+	}
+
+fin1:
+	FAIL (FPCloseFork(Conn,fork))
+fin:
+	FPDelete(Conn, vol,  DIRDID_ROOT , name);
+test_exit:
+	exit_test("test392");
+}
 
 /* ----------- */
 void FPOpenFork_test()
@@ -568,5 +835,6 @@ void FPOpenFork_test()
 	test156();
 	test321();
 	test372();
+	test392();
 }
 
