@@ -1,5 +1,5 @@
 /*
- * $Id: T2_spectest.c,v 1.7 2004-05-10 18:39:26 didg Exp $
+ * $Id: T2_spectest.c,v 1.8 2004-09-18 08:58:32 didg Exp $
  * MANIFEST
  */
 #include "afpclient.h"
@@ -25,7 +25,6 @@ EXT_FN(FPAddComment);
 EXT_FN(FPByteRangeLock);
 EXT_FN(FPByteRangeLockExt);
 EXT_FN(FPCloseFork);
-EXT_FN(FPCopyFile);
 EXT_FN(FPCreateDir);
 EXT_FN(FPCreateFile);
 EXT_FN(FPEnumerate);
@@ -45,6 +44,7 @@ EXT_FN(Error);
 #endif
 
 EXT_FN(FPByteRangeLock);
+EXT_FN(FPCopyFile);
 EXT_FN(FPCreateFile);
 EXT_FN(FPDelete);
 EXT_FN(FPGetFileDirParms);
@@ -94,6 +94,7 @@ FN_N(Error)
 #endif
 FN_N(FPByteRangeLock)
 FN_N(FPCreateFile)
+FN_N(FPCopyFile)
 FN_N(FPDelete)
 FN_N(FPGetFileDirParms)
 FN_N(FPMoveAndRename)
