@@ -1607,7 +1607,7 @@ u_int16_t param = vol+1;
 		dsi->header.dsi_code = 0; // htonl(err);
  
    		my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
-		my_dsi_receive(dsi);
+		my_dsi_cmd_receive(dsi);
 		
     	if (ntohl(AFPERR_PARAM) != dsi->header.dsi_code) {
 			fprintf(stderr,"\tFAILED command %i\n", afp_cmd_with_vol[i]);
@@ -1676,7 +1676,7 @@ int  did;
 		dsi->header.dsi_code = 0; // htonl(err);
  
    		my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
-		my_dsi_receive(dsi);
+		my_dsi_cmd_receive(dsi);
 		
     	if (ntohl(AFPERR_NOOBJ) != dsi->header.dsi_code) {
 			fprintf(stderr,"\tFAILED command %i\n", afp_cmd_with_vol_did[i]);
@@ -1735,7 +1735,7 @@ int  did;
 		dsi->header.dsi_code = 0; // htonl(err);
  
    		my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
-		my_dsi_receive(dsi);
+		my_dsi_cmd_receive(dsi);
 		
     	if (ntohl(AFPERR_NOOBJ) != dsi->header.dsi_code) {
 			fprintf(stderr,"\tFAILED command %i code ! %d\n", afp_cmd_with_vol_did1[i],
@@ -2990,7 +2990,7 @@ u_int16_t bitmap = 0;
 		dsi->header.dsi_code = 0; // htonl(err);
  
    		my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
-		my_dsi_receive(dsi);
+		my_dsi_cmd_receive(dsi);
 		
     	if (ntohl(AFPERR_PARAM) != dsi->header.dsi_code) {
 			fprintf(stderr,"\tFAILED command %i\n", afp_cmd_with_fork[i]);
@@ -9178,6 +9178,8 @@ int fork = 0, fork1 = 0;
 	if (!unlink(temp)) {
 	    if (Noadouble) {
 			fprintf(stderr,"\tFAILED unlink %s was there\n", temp);
+			sprintf(temp, "%s/.AppleDouble/.Parent", Path);
+			unlink(temp);
 			sprintf(temp, "%s/.AppleDouble", Path);
 			if (rmdir(temp)) {
 				fprintf(stderr,"\tFAILED rmdir %s  %s\n", temp, strerror(errno));
@@ -9254,6 +9256,8 @@ end:
 		fprintf(stderr,"\tFAILED\n");
 	}
 	if (Noadouble) {
+		sprintf(temp, "%s/.AppleDouble/.Parent", Path);
+		unlink(temp);
 		sprintf(temp, "%s/.AppleDouble", Path);
 		if (rmdir(temp)) {
 			fprintf(stderr,"\tFAILED rmdir %s  %s\n", temp, strerror(errno));
@@ -11530,6 +11534,7 @@ u_int32_t pid;
 void test998()
 {
 u_int16_t vol2;
+int overbose = Verbose;
 
 	if (!Conn2) {
 		return;
@@ -11538,10 +11543,17 @@ u_int16_t vol2;
     fprintf(stderr,"test998: bad packet disconnect\n");
 	dsi2 = &Conn2->dsi;
 	vol2  = FPOpenVol(Conn2, Vol);
-	if (FPBadPacket(Conn2, 4, "staff")) {
+	memset(w_buf, 0, sizeof(w_buf));
+	strcpy(w_buf, "staff");
+	if (ntohl(AFPERR_NOITEM) != FPBadPacket(Conn2, 4, w_buf)) {
 		fprintf(stderr,"\tFAILED\n");
 	} 
-	FPCloseVol(Conn2,vol2);
+	overbose = Verbose;
+	Verbose = 1;
+	if (FPCloseVol(Conn2,vol2) || dsi2->header.dsi_command != DSIFUNC_CMD) {
+		fprintf(stderr,"\tFIXME FAILED\n");
+	}
+	Verbose = overbose;
 }
 
 /* ------------------------- */
@@ -11560,8 +11572,11 @@ void run_one()
 	if (Conn->afp_version < 10)
 		return;
 	vol  = FPOpenVol(Conn, Vol);
-
+test998();
+/*
+test164();
     test997();	
+    */
 	FPCloseVol(Conn,vol);
 }
 

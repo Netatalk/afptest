@@ -1,6 +1,6 @@
 SUBDIRS =
  
-bin_PROGRAMS = afpclient loadtest spectest postmark fail_spectest T2_spectest logintest rotest
+bin_PROGRAMS = afpclient afp_ls loadtest spectest postmark fail_spectest T2_spectest logintest rotest
  
 noinst_LTLIBRARIES = libafptest.la
  
@@ -16,6 +16,9 @@ postmark_LDADD = libafptest.la
 #
 loadtest_SOURCES = loadtest.c
 loadtest_LDADD = libafptest.la
+ 
+afp_ls_SOURCES = afp_ls.c
+afp_ls_LDADD = libafptest.la
  
 logintest_SOURCES = logintest.c
 logintest_LDADD = libafptest.la
@@ -48,7 +51,7 @@ fail_spectest_LDADD = libafptest.la
 #
 T2_spectest_SOURCES = T2_spectest.c \
         T2_FPDelete.c T2_FPGetFileDirParms.c T2_FPOpenFork.c T2_FPSetDirParms.c T2_FPSetFileParms.c \
-	T2_FPMoveAndRename.c
+	T2_FPMoveAndRename.c T2_FPResolveID.c
 
 T2_spectest_LDADD = libafptest.la
  

@@ -1,5 +1,5 @@
 /*
- * $Id: main.c,v 1.1 2003-04-28 10:19:16 didg Exp $
+ * $Id: main.c,v 1.2 2003-08-11 17:37:13 didg Exp $
  *
  */
 
@@ -47,7 +47,7 @@ void test2(void)
 	dsi->header.dsi_code = 0;
 	dsi->header.dsi_len = 0;
 	my_dsi_stream_send(dsi, NULL, 0);
-	my_dsi_receive(dsi);
+	my_dsi_cmd_receive(dsi);
 	dump_header(dsi);
 }
 /* ------------------------- */

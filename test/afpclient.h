@@ -195,7 +195,7 @@ typedef struct CONN {
     my_dsi_stream_send((x), (x)->commands, (x)->cmdlen); \
 } while (0)
 
-int my_dsi_receive(DSI *x);
+int my_dsi_cmd_receive(DSI *x);
 int my_dsi_data_receive(DSI *x);
 
 /* from

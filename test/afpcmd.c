@@ -1,5 +1,5 @@
 /*
- * $Id: afpcmd.c,v 1.5 2003-05-19 17:10:36 didg Exp $
+ * $Id: afpcmd.c,v 1.6 2003-08-11 17:37:13 didg Exp $
  *
  */
 #include "afpclient.h"
@@ -489,7 +489,7 @@ DSI *dsi;
  
    	my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
 	/* ------------------ */
-	my_dsi_receive(dsi);
+	my_dsi_cmd_receive(dsi);
 	dump_header(dsi);
 	if (!dsi->header.dsi_code) {
 		ofs = 0;
@@ -543,7 +543,7 @@ DSI *dsi;
  
    	my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
 	/* ------------------ */
-	my_dsi_receive(dsi);
+	my_dsi_cmd_receive(dsi);
 	dump_header(dsi);
 	return dsi->header.dsi_code;
 }
@@ -594,7 +594,7 @@ u_int16_t temp;
    	my_dsi_stream_send(dsi, dsi->commands, ofs);
 	my_dsi_stream_write(dsi, data, size);
 	/* ------------------ */
-	my_dsi_receive(dsi);
+	my_dsi_cmd_receive(dsi);
 	dump_header(dsi);
 	return dsi->header.dsi_code;
 }
@@ -634,7 +634,7 @@ DSI *dsi;
  
    	my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
 	/* ------------------ */
-	my_dsi_receive(dsi);
+	my_dsi_cmd_receive(dsi);
 	dump_header(dsi);
 	return dsi->header.dsi_code;
 }
@@ -787,7 +787,7 @@ DSI *dsi;
  
    	my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
 	/* ------------------ */
-	my_dsi_receive(dsi);
+	my_dsi_cmd_receive(dsi);
 	dump_header(dsi);
 	return(dsi->header.dsi_code);
 }
@@ -1527,7 +1527,7 @@ DSI *dsi;
  
    	my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
 	/* ------------------ */
-	my_dsi_receive(dsi);
+	my_dsi_cmd_receive(dsi);
 	dump_header(dsi);
 	return dsi->header.dsi_code;
 }
@@ -1575,7 +1575,7 @@ DSI *dsi;
  
    	my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
 	/* ------------------ */
-	my_dsi_receive(dsi);
+	my_dsi_cmd_receive(dsi);
 	dump_header(dsi);
 	return dsi->header.dsi_code;
 	
@@ -1656,7 +1656,7 @@ DSI *dsi;
  
    	my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
 	/* ------------------ */
-	my_dsi_receive(dsi);
+	my_dsi_cmd_receive(dsi);
 	dump_header(dsi);
 	return dsi->header.dsi_code;
 	

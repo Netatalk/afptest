@@ -4,6 +4,7 @@
 #include "adoublehelper.h"
 
 static char temp[MAXPATHLEN];   
+static char temp1[MAXPATHLEN];   
 
 STATIC void test32()
 {
@@ -630,6 +631,67 @@ u_int16_t vol = VolID;
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
 }
 
+/* ------------------------- */
+STATIC void test235()
+{
+char *name = "t235 dir";
+char *name1 = "t235 file";
+char *name2 = "t235 file1";
+int  dir;
+u_int16_t vol = VolID;
+int id,id1;
+int fd;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPGetFileDirParms:test235: file deleted and recreated by someone else, cnid not updated\n");
+
+	if (!Mac && !Path) {
+		test_skipped(T_MAC_PATH);
+		return;
+	}
+
+	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
+	if (!dir) {
+		nottested();
+		return;
+	}
+
+	FAIL (FPCreateFile(Conn, vol,  0, dir , name1))
+
+	id = get_fid(Conn, vol, dir , name1);     
+
+	if (!Mac) {
+		sprintf(temp,"%s/%s/%s", Path, name, name2);
+		fd = open(temp, O_RDWR | O_CREAT, 0666);
+		if (fd < 0) {
+			fprintf(stderr,"\tFAILED unable to create %s :%s\n", temp, strerror(errno));
+			failed_nomsg();
+			goto fin;
+		}
+		close(fd);
+		if (delete_unix_file(Path, name, name1)) {
+			failed();
+		}
+		sprintf(temp1,"%s/%s/%s", Path, name, name1);
+		if (rename(temp, temp1) < 0) {
+			fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+			failed_nomsg();
+		}
+	}
+	else {
+		FAIL (FPDelete(Conn, vol,  dir , name))
+		FAIL (FPCreateFile(Conn, vol,  0, dir , name1))
+	}
+	id1 = get_fid(Conn, vol, dir , name1);     
+	if (id == id1) {
+		fprintf(stderr,"\tFAILED id are the same  %d %d\n", id, id1);
+		failed_nomsg();
+	}
+fin:
+	FAIL (FPDelete(Conn, vol,  dir , name1))
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+}
+
 /* ----------- */
 void FPGetFileDirParms_test()
 {
@@ -642,5 +704,6 @@ void FPGetFileDirParms_test()
 	test127();
 	test128();	
 	test182();
+	test235();
 }
 

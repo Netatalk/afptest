@@ -71,7 +71,7 @@ unsigned int ret;
 		dsi->header.dsi_code = 0; // htonl(err);
  
    		my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
-		my_dsi_receive(dsi);
+		my_dsi_cmd_receive(dsi);
 		ret = dsi->header.dsi_code;
     	if (ntohl(AFPERR_NOOBJ) != ret) {
 			fprintf(stderr,"\tFAILED command %3i %s\t result %d %s\n", cmd, AfpNum2name(cmd),ntohl(ret), afp_error(ret));

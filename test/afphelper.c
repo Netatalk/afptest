@@ -60,7 +60,7 @@ u_int16_t bitmap = 0;
 	fprintf(stderr,"---------------------\n");
 	fprintf(stderr,"AFP call  %d\n\n", cmd);
    	my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
-	my_dsi_receive(dsi);
+	my_dsi_cmd_receive(dsi);
 	dump_header(dsi);
 		
     if (ntohl(AFPERR_PARAM) != dsi->header.dsi_code) {
@@ -239,7 +239,7 @@ u_int32_t uid;
 	}
 	if (FPCreateDir(Conn, vol, ret , name)) {
 	    /* Mac OSX here does strange things 
-	    /* for when things go wrong */
+	     * for when things go wrong */
 		nottested();
 
 	    FPEnumerate(Conn2, vol2,  DIRDID_ROOT , "", 

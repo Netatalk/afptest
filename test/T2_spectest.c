@@ -1,5 +1,5 @@
 /*
- * $Id: T2_spectest.c,v 1.2 2003-04-28 11:28:59 didg Exp $
+ * $Id: T2_spectest.c,v 1.3 2003-08-11 17:37:13 didg Exp $
  * MANIFEST
  */
 #include "afpclient.h"
@@ -38,7 +38,6 @@ EXT_FN(FPSetForkParms);
 EXT_FN(FPRead);
 EXT_FN(FPRemoveComment);
 EXT_FN(FPRename);
-EXT_FN(FPResolveID);
 EXT_FN(Error);
 #endif
 
@@ -48,6 +47,7 @@ EXT_FN(FPMoveAndRename);
 EXT_FN(FPOpenFork);
 EXT_FN(FPSetDirParms);
 EXT_FN(FPSetFileParms);
+EXT_FN(FPResolveID);
 
 struct test_fn {
 char *name;
@@ -93,6 +93,7 @@ FN_N(FPMoveAndRename)
 FN_N(FPOpenFork)
 FN_N(FPSetDirParms)
 FN_N(FPSetFileParms)
+FN_N(FPResolveID)
 
 {NULL, NULL},
 };

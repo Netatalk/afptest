@@ -279,7 +279,6 @@ u_int16_t vol = VolID;
 	ret = FPDelete(Conn, vol,  DIRDID_ROOT , "");
 	if (not_valid_bitmap(ret, BITERR_PARAM | BITERR_BUSY, AFPERR_ACCESS)) {
 		failed();
-		goto fin;
 	}
 
 	ret = FPEnumerate(Conn, vol,  DIRDID_ROOT , name, 
@@ -290,9 +289,8 @@ u_int16_t vol = VolID;
 		 (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
 		);
 
-	if (not_valid(ret, /* MAC */AFPERR_NODIR, AFPERR_BADTYPE)) {
+	if (not_valid_bitmap(ret, BITERR_BADTYPE | BITERR_NODIR, AFPERR_BADTYPE)) {
 		failed();
-		goto fin;
 	}
 	FAIL (htonl( AFPERR_DIRNEMPT) != FPDelete(Conn, vol,  DIRDID_ROOT , name1))
 
@@ -387,7 +385,6 @@ fin:
 	FPDelete(Conn, vol,  DIRDID_ROOT, ndir);
 	FPDelete(Conn, vol,  DIRDID_ROOT, ndir1);
 	FAIL (htonl(AFPERR_NOOBJ) != FPEnumerateFull(Conn, vol, 1, 1, 800,  DIRDID_ROOT, "", bitmap, bitmap))
-
 }
 
 /* ----------- */
@@ -395,6 +392,7 @@ void FPEnumerate_test()
 {
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPEnumerate page 150\n");
+
     test38();
     test40();
     test41();

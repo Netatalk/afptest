@@ -55,7 +55,7 @@ int ret;
 	if (vol2 == 0xffff) {
 		failed();
 	}
-	FAIL (FPEnumerate(Conn2, vol2,  DIRDID_ROOT , "", 0, bitmap)) 
+	FAIL (FPEnumerate(Conn2, vol2,  DIRDID_ROOT , "", 0, bitmap))
 	FAIL (ntohl(AFPERR_ACCESS) != FPDelete(Conn2, vol2,  dir , name)) 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0 ,dir , name,OPENACC_WR |OPENACC_RD);
 	if (!fork) {

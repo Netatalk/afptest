@@ -25,6 +25,24 @@ int delete_unix_rf(char *path, char *name, char *file)
 	return 0;
 }
 
+/* ---------------------- 
+ * delete a file
+*/
+int delete_unix_file(char *path, char *name, char *file)
+{
+        if (delete_unix_rf(path, name, file))
+		return -1;
+		
+	sprintf(temp, "%s/%s/%s", path, name, file);
+	fprintf(stderr,"unlink(%s)\n", temp);
+	if (unlink(temp) <0) {
+		fprintf(stderr,"\tFAILED unlink(%s) %s\n", temp, strerror(errno));
+		failed_nomsg();
+		return -1;
+	}
+	return 0;
+}
+
 /* ----------------------------- */
 int delete_unix_adouble(char *path, char *name)
 {
