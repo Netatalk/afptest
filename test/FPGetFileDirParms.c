@@ -566,6 +566,59 @@ u_int16_t vol = VolID;
 	}
 }
 
+/* ------------------------- */
+STATIC void test324()
+{
+char *name = "t324 very long filename more than 31 bytes.txt";
+u_int16_t vol = VolID;
+DSI *dsi;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+u_int16_t bitmap = 0;
+unsigned int dir;
+char *result;
+int ret;
+int id;
+
+	dsi = &Conn->dsi;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPGetFileDirParms::test324: long file name >31 bytes\n");
+
+	ret = FPCreateFile(Conn, vol,  0, DIRDID_ROOT, name);
+	if (ret) {
+		nottested();
+		return;
+	}
+	if (Conn->afp_version >= 30) {
+		bitmap = (1<<FILPBIT_PDINFO);
+	}
+	else {
+		bitmap = (1<<DIRPBIT_LNAME);
+	}
+	/* hack if filename < 255 it works with afp 2.x too */
+	id = get_fid(Conn, vol, DIRDID_ROOT , name);
+	
+	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, name, bitmap, 0)) {
+		nottested();
+	}
+#if 0
+	else {
+		filedir.isdir = 1;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
+		result = (Conn->afp_version >= 30)?filedir.utf8_name:filedir.lname;
+		if (strcmp(result, name)) {
+			failed();
+		}
+	}
+#endif	
+	sprintf(temp,"t324 very long filename #%X.txt", ntohl(id));
+	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, temp, bitmap, 0)) {
+		failed();
+	}
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+}
+
 
 /* ----------- */
 void FPGetFileDirParms_test()
@@ -583,5 +636,6 @@ void FPGetFileDirParms_test()
 	test307();
 	test308();
 	test319();
+	test324();
 }
 
