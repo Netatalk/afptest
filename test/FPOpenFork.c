@@ -605,6 +605,7 @@ DSI *dsi;
 		failed();
 		goto end;
  	}
+
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
 
 	if (fork || dsi->header.dsi_code != ntohl(AFPERR_OLOCK)) {

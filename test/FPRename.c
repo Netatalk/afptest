@@ -387,22 +387,27 @@ STATIC void test377()
 char *name =  "t377 name";
 char *name1 = "t377 Name";
 u_int16_t vol = VolID;
+int ret;
 
 	enter_test();
     fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPRename:test376: dest file exist but diff only by case, is this one OK \n");
+    fprintf(stderr,"FPRename:test377: dest file exist but diff only by case, is this one OK \n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		failed();
 		goto test_exit;
 	}
 
-	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name1)) {
+	if ((ret = FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name1)) && ret != htonl(AFPERR_EXIST) ) {
 		failed();
 		goto fin;
 	}
-	
-	FAIL (FPRename(Conn, vol, DIRDID_ROOT, name, name1)) 
+	if (ret == htonl(AFPERR_EXIST)) {
+		FAIL (FPRename(Conn, vol, DIRDID_ROOT, name, name1))
+	}
+	else {
+		FAIL (htonl(AFPERR_EXIST) != FPRename(Conn, vol, DIRDID_ROOT, name, name1))
+	}
 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1)) 
 fin:

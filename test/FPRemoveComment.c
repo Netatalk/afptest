@@ -95,11 +95,40 @@ test_exit:
 }
 
 
+/* -------------------------- */
+STATIC void test379()
+{
+int fork;
+char *name1 = "t379 file.txt";
+u_int16_t vol = VolID;
+
+		
+	enter_test();
+    fprintf(stderr,"===================\n");
+	fprintf(stderr, "FPRemoveComment:test379: remove comment\n");
+
+	FAIL (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name1))
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA  , 0 ,DIRDID_ROOT, name1,OPENACC_RD );
+	if (!fork) {
+		failed();
+		goto fin;
+	}
+	FAIL (FPAddComment(Conn, vol,  DIRDID_ROOT , name1, "essai")) 
+	FAIL (FPRemoveComment(Conn, vol,  DIRDID_ROOT , name1))
+	FPCloseFork(Conn,fork);
+fin:
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1)) 
+	exit_test("test379");
+}
+
+
 /* ----------- */
 void FPRemoveComment_test()
 {
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPRemoveComment page 247\n");
 	test54();
+	test379();
 }
 

@@ -10,6 +10,7 @@ STATIC void test115()
 u_int16_t vol = VolID;
 u_int16_t dt;
 unsigned int ret;
+u_char   u_null[] = { 0, 0, 0, 0 };
 
 	enter_test();
     fprintf(stderr,"===================\n");
@@ -26,7 +27,13 @@ unsigned int ret;
 	
 	if (!Mac) {
 		FAIL (htonl(AFPERR_NOITEM) != FPGetIcon(Conn,  dt, "UNIX", "TEXT",  2 ,512))
-		FAIL (FPGetIcon(Conn,  dt, "UNIX", "TEXT", 1, 256 ))
+		ret = FPGetIcon(Conn,  dt, "UNIX", "TEXT", 1, 256 );
+		if (ret == htonl(AFPERR_NOITEM)) {
+			FAIL(FPGetIcon(Conn,  dt, u_null, u_null, 1, 256 ))
+		}
+		else if (ret) {
+			failed();
+		}
 	}
 	
 	FPCloseDT(Conn,dt);

@@ -129,7 +129,6 @@ int  dir;
     fprintf(stderr,"FPEnumerate:test40: enumerate deleted folder\n");
 
 	dir   = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
-
 	if (!dir) {
 		nottested();
 		goto test_exit;

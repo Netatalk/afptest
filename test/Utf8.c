@@ -281,11 +281,13 @@ u_int16_t bitmap = 0;
 	sprintf(temp,"t23#%X", ntohl(dir));
 
 	if (ntohl(AFPERR_NOOBJ) != FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, temp, 0, bitmap)) {
+	    /* MAC OK */
 		failed();
 	}
 	sprintf(temp,"t233 dire#%X", ntohl(dir));
 
 	if (ntohl(AFPERR_NOOBJ) != FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, temp, 0,bitmap )) {
+	    /* MAC OK */
 		failed();
 	}
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
@@ -465,7 +467,9 @@ test_exit:
 	exit_test("test314");
 }
 
-/* ------------------------- */
+/* ------------------------- 
+ * MAC FAILED
+*/
 STATIC void test337()
 {
 char *name = "\xd7\xa4\xd7\xaa\xd7\x99\xd7\x97\xd7\x94 test 337.mp3";
@@ -499,6 +503,7 @@ u_int16_t bitmap = 0;
 
         sprintf(temp,"???#%X", ntohl(filedir.did));
 		if (ntohl(AFPERR_NOOBJ) != 	FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, temp, bitmap,0 )) {
+	    	/* MAC OK */
 			failed();
 		}
 
@@ -515,6 +520,7 @@ u_int16_t bitmap = 0;
 		}
         sprintf(temp,"t#%X.mp3", ntohl(filedir.did));
 		if (ntohl(AFPERR_NOOBJ) != 	FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, temp, bitmap,0 )) {
+	    	/* MAC OK */
 			failed();
 		}
 	}

@@ -149,7 +149,7 @@ u_int16_t vol = VolID;
 		goto fin;
 	}
 
-	FAIL (FPMoveAndRename(Conn, vol, DIRDID_ROOT, dir, name, "")) 
+	FAIL (ntohl(AFPERR_CANTMOVE) != FPMoveAndRename(Conn, vol, DIRDID_ROOT, dir, name, "")) 
 	FAIL (ntohl(AFPERR_CANTMOVE) != FPMoveAndRename(Conn, vol, DIRDID_ROOT, dir, name, "new")) 
 	FAIL (FPMoveAndRename(Conn, vol, dir2, dir4, "", "")) 
 
@@ -220,6 +220,44 @@ test_exit:
 	exit_test("test138");
 }
 
+/* ------------------------- 
+*/
+STATIC void test378()
+{
+char *name =  "t378 name";
+char *name1 = "t378 Name";
+u_int16_t vol = VolID;
+int ret;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPMoveAndRename:test378: dest file exist but diff only by case, is this one OK \n");
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		failed();
+		goto test_exit;
+	}
+
+	if ((ret = FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name1)) && ret != htonl(AFPERR_EXIST)) {
+		failed();
+		goto fin;
+	}
+	
+	if (ret == htonl(AFPERR_EXIST)) {
+	 	FAIL (FPMoveAndRename(Conn, vol, DIRDID_ROOT, DIRDID_ROOT, name, name1)) 
+	}
+	else {
+	 	FAIL (htonl(AFPERR_EXIST) != FPMoveAndRename(Conn, vol, DIRDID_ROOT, DIRDID_ROOT, name, name1)) 
+	}
+	
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1)) 
+fin:
+	FPDelete(Conn, vol,  DIRDID_ROOT , name);
+	
+test_exit:
+	exit_test("test378");
+}
+
 /* ----------- */
 void FPMoveAndRename_test()
 {
@@ -228,5 +266,6 @@ void FPMoveAndRename_test()
     test43();
     test77();
     test138();
+    test378();
 }
 

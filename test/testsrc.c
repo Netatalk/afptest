@@ -3748,8 +3748,8 @@ int  ret;
 		fprintf(stderr,"\tFAILED\n");
 		return;
 	}
-	/* FIXME should FAIL! */
-	if (!FPRename(Conn, vol, DIRDID_ROOT, name2, name2)) {
+
+	if (FPRename(Conn, vol, DIRDID_ROOT, name2, name2)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 
@@ -7214,7 +7214,7 @@ char *dest1  = "t123 dest_1";
 	if (!(dir4 = FPCreateDir(Conn,vol, DIRDID_ROOT, dest))) {fprintf(stderr,"\tFAILED\n");}
 	if (!(dir5 = FPCreateDir(Conn,vol, dir4 , dest1))) {fprintf(stderr,"\tFAILED\n");}
 
-	if (FPMoveAndRename(Conn, vol, DIRDID_ROOT, dir, name, "")) {
+	if (ntohl(AFPERR_CANTMOVE) != FPMoveAndRename(Conn, vol, DIRDID_ROOT, dir, name, "")) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 	if (ntohl(AFPERR_CANTMOVE) != FPMoveAndRename(Conn, vol, DIRDID_ROOT, dir, name, "new")) {
