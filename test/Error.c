@@ -1133,7 +1133,7 @@ DSI *dsi2;
 		failed();
 	}
 
-	if (FPDelete(Conn2, vol2,  tdir , "")) { 
+	if (FPDelete(Conn2, vol2,  DIRDID_ROOT , tname)) { 
 		failed();
 		FPDelete(Conn, vol,  tdir , "");
 		FPCloseVol(Conn2,vol2);
