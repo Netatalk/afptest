@@ -16,6 +16,7 @@ DSI *dsi;
 char pos[16];
 int  ofs =  3 * sizeof( u_int16_t );
 struct afp_filedir_parms filedir;
+struct afp_filedir_parms filedir2;
 unsigned int ret;
 
 	dsi = &Conn->dsi;
@@ -31,10 +32,10 @@ unsigned int ret;
 	memset(&filedir, 0, sizeof(filedir));
 	filedir.attr = 0x01a0;			/* various lock attributes */
 	
-	FAIL( htonl(AFPERR_BITMAP) != FPCatSearch(Conn, vol, 10, pos, 0,  /* d_bitmap*/ 0, bitmap, &filedir))
+	FAIL( htonl(AFPERR_BITMAP) != FPCatSearch(Conn, vol, 10, pos, 0,  /* d_bitmap*/ 0, bitmap, &filedir, &filedir))
 
 	filedir.attr = 0x01a0;			/* various lock attributes */
-	ret = FPCatSearch(Conn, vol, 10, pos, 0x42,  /* d_bitmap*/ 0, bitmap, &filedir);
+	ret = FPCatSearch(Conn, vol, 10, pos, 0x42,  /* d_bitmap*/ 0, bitmap, &filedir, &filedir);
 	if (ret != htonl(AFPERR_EOF)) {
 		failed();
 	}
@@ -51,8 +52,9 @@ unsigned int ret;
  	FAIL (FPSetFileParams(Conn, vol, DIRDID_ROOT , name, bitmap, &filedir)) 
 
 	memset(&filedir, 0, sizeof(filedir));
+	/* ------------------- */
 	filedir.attr = 0x01a0;			/* lock attributes */
-	ret  = FPCatSearch(Conn, vol, 10, pos, 0x42,  /* d_bitmap*/ 0, bitmap, &filedir);
+	ret  = FPCatSearch(Conn, vol, 10, pos, 0x42,  /* d_bitmap*/ 0, bitmap, &filedir, &filedir);
 	if (ret != htonl(AFPERR_EOF)) {
 		failed();
 	}
@@ -63,6 +65,28 @@ unsigned int ret;
 		failed_nomsg();
 	}
 
+	/* ------------------- */
+	filedir.attr = 0x0100;			/* lock attributes */
+	ret  = FPCatSearch(Conn, vol, 10, pos, 0x42,  /* d_bitmap*/ 0, bitmap, &filedir, &filedir);
+	if (ret != htonl(AFPERR_EOF)) {
+		failed();
+	}
+	memcpy(&temp, dsi->data + 20, sizeof(temp));
+	temp = ntohl(temp);
+	if (temp != 1) {
+		fprintf(stderr,"\tFAILED want 1 get %d\n", temp);
+		failed_nomsg();
+	}
+	/* -------------------- */
+#if 0
+	memset(&filedir, 0, sizeof(filedir));
+	memset(&filedir2, 0, sizeof(filedir2));
+	filedir.lname = "Data";
+
+	ret  = FPCatSearch(Conn, vol, 20, pos, 0x42,  0x42, 0x80000000UL| (1<< FILPBIT_LNAME), &filedir, &filedir2);
+	/* -------------------- */
+#endif
+	memset(&filedir, 0, sizeof(filedir));
 	filedir.attr = 0x01a0;
  	FAIL (FPSetFileParams(Conn, vol, DIRDID_ROOT , name, bitmap, &filedir)) 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 

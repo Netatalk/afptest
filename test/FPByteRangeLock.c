@@ -44,7 +44,8 @@ int len = (type == OPENFORK_RSCS)?(1<<FILPBIT_RFLEN):(1<<FILPBIT_DFLEN);
 	}
 
 	FAIL (FPByteLock(Conn, fork, 0, 0 /* set */, 0, 100))
-
+	
+	/* some Mac OS do nothing here */
 	FAIL (htonl(AFPERR_PARAM) != FPByteLock(Conn, fork, 0, 0 , -1, 75)) 
 
 	FAIL (htonl(AFPERR_NORANGE) != FPByteLock(Conn, fork, 0, 1 /* clear */ , 0, 75)) 
@@ -77,6 +78,7 @@ int len = (type == OPENFORK_RSCS)?(1<<FILPBIT_RFLEN):(1<<FILPBIT_DFLEN);
 		failed();
 	}
 
+    /* RANGEOVR */
 	if (FPByteLock(Conn, fork, 0 /* end */, 0 /* set */, 0, -1)) {
 		failed();
 	}
@@ -84,6 +86,8 @@ int len = (type == OPENFORK_RSCS)?(1<<FILPBIT_RFLEN):(1<<FILPBIT_DFLEN);
 		failed();
 	}
 	FAIL (htonl(AFPERR_PARAM) != FPByteLock(Conn, fork, 0 /* start */, 0 /* set */, 0, 0)) 
+
+	/* some Mac OS do nothing here */
 	FAIL (htonl(AFPERR_PARAM) != FPByteLock(Conn, fork, 0 /* start */, 0 /* set */, 0, -2))
 
 	if (FPCloseFork(Conn,fork)) {

@@ -1211,11 +1211,13 @@ void afp_filedir_unpack(struct afp_filedir_parms *filedir, char *b, u_int16_t rf
 int afp_filedir_pack(char *b, struct afp_filedir_parms *filedir, u_int16_t rfbitmap, u_int16_t rdbitmap)
 {
     char isdir;
-    u_int16_t i;
+    u_int16_t i,tp;
     u_int32_t l;
     int bit = 0;
 	u_int16_t bitmap;
 	char *beg = b;
+	char *l_ofs = NULL;
+	char *u_ofs = NULL;
 
     isdir = filedir->isdir;
 	bitmap = (isdir)?rdbitmap:rfbitmap;
@@ -1250,10 +1252,15 @@ int afp_filedir_pack(char *b, struct afp_filedir_parms *filedir, u_int16_t rfbit
         	b += 32;
         	break;
 		case FILPBIT_LNAME: /* DIRPBIT_LNAME */
+		    l_ofs = b;
+		    b += 2;
+		    break;
         case FILPBIT_SNAME:	/* DIRPBIT_SNAME */
         case FILPBIT_FNUM: /* DIRPBIT_DID */
+        	break;
         case FILPBIT_PDINFO: /* utf8 name */
-            /* error */
+		    u_ofs = b;
+		    b += 2;
         	break;
         default: /* File specific parameters */
         	if (!isdir) switch (bit) {
@@ -1282,6 +1289,43 @@ int afp_filedir_pack(char *b, struct afp_filedir_parms *filedir, u_int16_t rfbit
         }
         bitmap = bitmap>>1;
         bit++;
+    }
+    if (l_ofs) {
+        i = htons(b -beg);
+        memcpy(l_ofs, &i, sizeof(i));
+        if (filedir->lname) {
+        	i = strlen(filedir->lname);
+        	*b = i; 
+        	b++;
+        	memcpy(b, filedir->lname, i);
+        	b += i;
+        }
+        else {
+        	*b = 0; 
+        	b++;
+        }
+    }
+    if (u_ofs) {
+        i = htons(b -beg);
+        memcpy(u_ofs, &i, sizeof(i));
+
+        l = htonl(0x8000103);
+        memcpy(b, &l, sizeof(l));
+        b += sizeof(l);
+        
+        if (filedir->utf8_name) {
+        	i = strlen(filedir->utf8_name);
+        	tp = htons(i);
+        	memcpy(b, &tp, sizeof(tp));
+        	b += sizeof(tp);
+        	memcpy(b, filedir->utf8_name, i);
+        	b += i;
+        }
+        else {
+        	tp = 0;
+        	memcpy(b, &tp, sizeof(tp));
+        	b += sizeof(tp);
+        }
     }
     return (b -beg);
 } 
@@ -2131,7 +2175,7 @@ DSI *dsi;
 /* ------------------------------- 
 */
 int AFPCatSearch(CONN *conn, u_int16_t vol, u_int32_t  nbe, char *pos, u_int16_t f_bitmap,u_int16_t d_bitmap,
-u_int32_t rbitmap, struct afp_filedir_parms *filedir)
+u_int32_t rbitmap, struct afp_filedir_parms *filedir, struct afp_filedir_parms *filedir2)
 {
 int ofs;
 int len;
@@ -2176,8 +2220,73 @@ u_int16_t bitmap;
 	dsi->commands[ofs] = len;
 	ofs += len +2;
 	
-	len = afp_filedir_pack(dsi->commands +ofs +2, filedir, rbitmap & 0xffff,0);
+	len = afp_filedir_pack(dsi->commands +ofs +2, filedir2, rbitmap & 0xffff,0);
 	dsi->commands[ofs] = len;
+	ofs += len +2;
+
+	dsi->datalen = ofs;
+	dsi->header.dsi_len = htonl(dsi->datalen);
+	dsi->header.dsi_code = 0; 
+ 
+   	my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
+	/* ------------------ */
+	my_dsi_data_receive(dsi);
+	return(dsi->header.dsi_code);
+}
+
+/* ------------------------------- 
+*/
+int AFPCatSearchExt(CONN *conn, u_int16_t vol, u_int32_t  nbe, char *pos, u_int16_t f_bitmap,u_int16_t d_bitmap,
+u_int32_t rbitmap, struct afp_filedir_parms *filedir, struct afp_filedir_parms *filedir2)
+{
+int ofs;
+int len;
+DSI *dsi;
+u_int32_t temp;
+u_int16_t bitmap;
+u_int16_t i;
+
+	dsi = &conn->dsi;
+
+	SendInit(dsi);
+	ofs = 0;
+	dsi->commands[ofs++] = AFP_CATSEARCH_EXT;
+	dsi->commands[ofs++] = 0;
+
+	memcpy(dsi->commands +ofs, &vol, sizeof(vol));
+	ofs += sizeof(vol);
+	
+	temp = htonl(nbe);
+	memcpy(dsi->commands +ofs, &temp, sizeof(temp));
+	ofs += sizeof(temp);
+
+	temp = 0;
+	memcpy(dsi->commands +ofs, &temp, sizeof(temp));	/* reserved */
+	ofs += sizeof(temp);
+	
+	memcpy(dsi->commands +ofs, pos, 16);	/* cat pos (server stack)*/
+	ofs += 16;
+
+	bitmap = htons(f_bitmap);
+	memcpy(dsi->commands +ofs, &bitmap, sizeof(bitmap));
+	ofs += sizeof(bitmap);
+
+	bitmap = htons(d_bitmap);
+	memcpy(dsi->commands +ofs, &bitmap, sizeof(bitmap));
+	ofs += sizeof(bitmap);
+
+	temp = htonl(rbitmap);
+	memcpy(dsi->commands +ofs, &temp, sizeof(temp));
+	ofs += sizeof(temp);
+
+	len = afp_filedir_pack(dsi->commands +ofs +2, filedir, rbitmap & 0xffff,0);
+	i = htons(len);
+	memcpy(dsi->commands +ofs, &i, sizeof(i));
+	ofs += len +2;
+	
+	len = afp_filedir_pack(dsi->commands +ofs +2, filedir2, rbitmap & 0xffff,0);
+	i = htons(len);
+	memcpy(dsi->commands +ofs, &i, sizeof(i));
 	ofs += len +2;
 
 	dsi->datalen = ofs;

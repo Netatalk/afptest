@@ -81,7 +81,10 @@ extern unsigned int FPAddAPPL(CONN *conn, u_int16_t dt, int did, char *creator, 
 extern unsigned int FPRemoveAPPL(CONN *conn, u_int16_t dt, int did, char *creator, char *name);
 
 extern unsigned int FPCatSearch(CONN *conn, u_int16_t vol, u_int32_t  nbe, char *pos, u_int16_t f_bitmap, u_int16_t d_bitmap,
-                                u_int32_t rbitmap, struct afp_filedir_parms *filedir);
+                                u_int32_t rbitmap, struct afp_filedir_parms *filedir, struct afp_filedir_parms *filedir2);
+
+extern unsigned int FPCatSearchExt(CONN *conn, u_int16_t vol, u_int32_t  nbe, char *pos, u_int16_t f_bitmap, u_int16_t d_bitmap,
+                                u_int32_t rbitmap, struct afp_filedir_parms *filedir, struct afp_filedir_parms *filedir2);
 
 extern unsigned int FPBadPacket(CONN *conn, char fn, char *name );
 

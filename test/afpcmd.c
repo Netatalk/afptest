@@ -1,5 +1,5 @@
 /*
- * $Id: afpcmd.c,v 1.3 2003-05-11 01:30:28 didg Exp $
+ * $Id: afpcmd.c,v 1.4 2003-05-12 09:40:59 didg Exp $
  *
  */
 #include "afpclient.h"
@@ -1582,7 +1582,7 @@ DSI *dsi;
 
 /* ------------------------------- */
 unsigned int FPCatSearch(CONN *conn, u_int16_t vol, u_int32_t  nbe, char *pos, u_int16_t f_bitmap, u_int16_t d_bitmap,
-                                u_int32_t rbitmap, struct afp_filedir_parms *filedir)
+                                u_int32_t rbitmap, struct afp_filedir_parms *filedir, struct afp_filedir_parms *filedir2)
 {
 int ret;
 DSI *dsi;
@@ -1591,7 +1591,23 @@ DSI *dsi;
 
 	fprintf(stderr,"---------------------\n");
 	fprintf(stderr,"FPCatSearch vol: %d bitmap 0x%x\n\n", vol, rbitmap);
-	ret = AFPCatSearch(conn, vol, nbe, pos, f_bitmap, d_bitmap, rbitmap, filedir);
+	ret = AFPCatSearch(conn, vol, nbe, pos, f_bitmap, d_bitmap, rbitmap, filedir, filedir2);
+	dump_header(dsi);
+	return ret;
+}
+
+/* ------------------------------- */
+unsigned int FPCatSearchExt(CONN *conn, u_int16_t vol, u_int32_t  nbe, char *pos, u_int16_t f_bitmap, u_int16_t d_bitmap,
+                                u_int32_t rbitmap, struct afp_filedir_parms *filedir, struct afp_filedir_parms *filedir2)
+{
+int ret;
+DSI *dsi;
+
+	dsi = &conn->dsi;
+
+	fprintf(stderr,"---------------------\n");
+	fprintf(stderr,"FPCatSearchExt vol: %d bitmap 0x%x\n\n", vol, rbitmap);
+	ret = AFPCatSearchExt(conn, vol, nbe, pos, f_bitmap, d_bitmap, rbitmap, filedir, filedir2);
 	dump_header(dsi);
 	return ret;
 }
