@@ -46,6 +46,25 @@
 #include <atalk/afp.h>
 #endif
 
+#ifndef SA_ONESHOT
+#define SA_ONESHOT SA_RESETHAND
+#endif
+
+
+#ifndef u_int16_t
+#define u_int16_t uint16_t
+#endif
+#ifndef u_int32_t
+#define u_int32_t uint32_t
+#endif
+#ifndef u_int64_t
+#define u_int64_t uint64_t
+#endif
+#ifndef u_int8_t
+#define u_int8_t uint8_t
+#endif
+
+
 #include "dsi.h"
 #include "afp.h"
 /* AFP functions */

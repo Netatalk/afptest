@@ -8,7 +8,11 @@
 #ifndef _ATALK_DSI_H 
 #define _ATALK_DSI_H
 
+#if HAVE_SYS_CDEFS_H
 #include <sys/cdefs.h>
+#else
+#include "cdefs.h"
+#endif
 #include <sys/types.h>
 #include <sys/time.h>
 #include <signal.h>
