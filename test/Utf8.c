@@ -244,7 +244,7 @@ int  dir;
 	dsi = &Conn->dsi;
 
     fprintf(stderr,"===================\n");
-    fprintf(stderr,"Utf8:test233: mangled UTF8 dirname\n");
+    fprintf(stderr,"Utf8:test233: false mangled UTF8 dirname\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
@@ -261,7 +261,13 @@ int  dir;
 	}
 	sprintf(temp,"t23#%X", ntohl(dir));
 
-	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, temp, 0,
+	if (ntohl(AFPERR_NOOBJ) != FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, temp, 0,
+	     (1<< DIRPBIT_DID) | (1<< DIRPBIT_PDID)  | (1<< DIRPBIT_PDINFO) )) {
+		failed();
+	}
+	sprintf(temp,"t233 dir#%X", ntohl(dir));
+
+	if (ntohl(AFPERR_NOOBJ) != FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, temp, 0,
 	     (1<< DIRPBIT_DID) | (1<< DIRPBIT_PDID)  | (1<< DIRPBIT_PDINFO) )) {
 		failed();
 	}
@@ -281,7 +287,7 @@ u_int16_t bitmap = 0;
 	dsi = &Conn->dsi;
 
     fprintf(stderr,"===================\n");
-    fprintf(stderr,"Utf8:test233: mangled UTF8 filename\n");
+    fprintf(stderr,"Utf8:test234: false mangled UTF8 filename\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
@@ -299,6 +305,54 @@ u_int16_t bitmap = 0;
 		filedir.isdir = 0;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap,0);
 		sprintf(temp,"t23#%X", ntohl(filedir.did));
+		if (ntohl(AFPERR_NOOBJ) != FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, temp, bitmap,0 )) {
+			failed();
+		}
+		sprintf(temp,"t234 file#%X", ntohl(filedir.did));
+		if (ntohl(AFPERR_NOOBJ) != FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, temp, bitmap,0 )) {
+			failed();
+		}
+	}
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+}
+
+/* ------------------------- */
+STATIC void test312()
+{
+char *name = "t312-\xd7\xa4\xd7\xaa\xd7\x99\xd7\x97\xd7\x94.mp3";
+u_int16_t vol = VolID;
+DSI *dsi;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+u_int16_t bitmap = 0;
+
+	dsi = &Conn->dsi;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"Utf8:test312: mangled UTF8 filename\n");
+
+	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
+		test_skipped(T_UTF8);
+	    return;
+	}
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		return;
+	}
+	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) | (1<<FILPBIT_LNAME) ;
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, name, bitmap,0 )) {
+		failed();
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap,0);
+
+        sprintf(temp,"t312-#%X", ntohl(filedir.did));
+		if (ntohl(AFPERR_NOOBJ) != 	FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, temp, bitmap,0 )) {
+			failed();
+		}
+
+        sprintf(temp,"t312-#%X.mp3", ntohl(filedir.did));
 		if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, temp, bitmap,0 )) {
 			failed();
 		}
@@ -314,6 +368,42 @@ u_int16_t bitmap = 0;
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
 }
 
+/* ------------------------- */
+STATIC void test313()
+{
+char *name = "t313-\xd7\xa4\xd7\xaa\xd7\x99\xd7\x97\xd7\x94 dir";
+u_int16_t vol = VolID;
+DSI *dsi;
+int  dir;
+u_int16_t bitmap = 0;
+
+	dsi = &Conn->dsi;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"Utf8:test233: false mangled UTF8 dirname\n");
+
+	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
+		test_skipped(T_UTF8);
+	    return;
+	}
+	dir   = FPCreateDir(Conn, vol, DIRDID_ROOT , name);
+	if (!dir) {
+		nottested();
+		return;
+	}
+	bitmap = (1<< DIRPBIT_DID) | (1<< DIRPBIT_PDID)  | (1<< DIRPBIT_PDINFO) | (1<<DIRPBIT_LNAME);
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, name, 0, bitmap )) {
+		failed();
+	}
+	sprintf(temp,"t313-#%X", ntohl(dir));
+
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, temp, 0, bitmap )) {
+		failed();
+	}
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+}
+
+
 /* ----------- */
 void Utf8_test()
 {
@@ -326,5 +416,7 @@ void Utf8_test()
     test185();
 	test233();
 	test234();
+	test312();
+	test313();
 }
 
