@@ -31,10 +31,10 @@ spectest_SOURCES = spectest.c FPAddAPPL.c FPAddComment.c FPAddIcon.c \
         FPGetComment.c FPGetForkParms.c FPGetFileDirParms.c FPGetVolParms.c FPGetUserInfo.c\
         FPEnumerate.c FPEnumerateExt.c FPEnumerateExt2.c FPFlush.c FPFlushFork.c FPMapID.c FPMapName.c \
 	FPMoveAndRename.c FPOpenDir.c FPSetDirParms.c \
-        FPSetFileDirParms.c FPSetFileParms.c \
+        FPSetFileDirParms.c FPSetFileParms.c FPDisconnectOldSession.c\
         FPSetForkParms.c FPSetVolParms.c FPRead.c FPReadExt.c FPRename.c FPRemoveAPPL.c \
-	FPRemoveComment.c FPResolveID.c \
-        FPWriteExt.c Error.c
+	FPRemoveComment.c FPResolveID.c FPGetSessionToken.c \
+        FPWrite.c FPWriteExt.c Error.c
  
  
 spectest_LDADD = libafptest.la

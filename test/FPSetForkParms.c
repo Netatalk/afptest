@@ -129,6 +129,50 @@ fin:
 }
 
 
+/* ------------------------- */
+STATIC void test217()
+{
+int fork;
+u_int16_t bitmap = 0;
+char *name  = "t217 setforkparms file";
+u_int16_t vol = VolID;
+DSI *dsi;
+unsigned int ret;
+
+	dsi = &Conn->dsi;
+
+	if (Conn->afp_version < 30) {
+		return;
+	}
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPSetForkParms:test217: Setfork size 64 bits\n");
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){
+		nottested();
+		return;
+	}
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR |OPENACC_RD);
+	if (!fork) {
+		failed();
+		goto fin;
+	}
+	FAIL (FPSetForkParam(Conn, fork, (1<<FILPBIT_EXTDFLEN), 0)) 
+	FAIL (ntohl(AFPERR_EOF) != FPRead(Conn, fork, 1, 1, Data)) 
+	FAIL (ntohl(AFPERR_PARAM) != FPSetForkParam(Conn, fork, (1<<FILPBIT_EXTDFLEN), 1<<31))
+	ret = FPSetForkParam(Conn, fork, (1<<FILPBIT_EXTDFLEN), (1UL<<31));
+	if (ret) {
+		failed();
+		goto fin;
+	}
+	FAIL (ntohl(AFPERR_PARAM) != FPRead_ext(Conn, fork, (1 << 31) +1, 1, Data)) 
+	FAIL (ntohl(AFPERR_EOF) != FPRead_ext(Conn, fork, (1UL << 31) +1, 1, Data)) 
+	FAIL (FPRead(Conn, fork, (1UL << 31) -1, 1, Data)) 
+
+fin:
+	FAIL (fork && FPCloseFork(Conn,fork))
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name)) 
+}
+
 /* ----------- */
 void FPSetForkParms_test()
 {
@@ -136,5 +180,6 @@ void FPSetForkParms_test()
     fprintf(stderr,"FPSetForkParms page 266\n");
     test62();
     test141();
+    test217();
 }
 

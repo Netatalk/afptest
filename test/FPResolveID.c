@@ -57,7 +57,7 @@ char *name1 = "t91 test ID dir";
 int  ofs =  3 * sizeof( u_int16_t );
 u_int16_t bitmap = (1<<FILPBIT_FNUM );
 struct afp_filedir_parms filedir;
-int ret;
+unsigned int ret;
 u_int16_t vol = VolID;
 DSI *dsi;
 

@@ -82,7 +82,6 @@ u_int16_t vol = VolID;
 		FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
 		return;
 	}	
-	FAIL (FPGetSessionToken(Conn, 1))
 	FAIL (FPGetSrvrInfo(Conn))
 	dir1 = FPCreateDir(Conn,vol, dir , name1);
 	if (dir1) {

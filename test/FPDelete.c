@@ -141,7 +141,7 @@ struct afp_filedir_parms filedir;
 int tdir;
 int fork;
 int dir;
-int ret;
+unsigned int ret;
 u_int16_t vol = VolID;
 DSI *dsi;
 
@@ -299,7 +299,12 @@ u_int16_t bitmap = (1 <<  DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPDelete:test196: delete a folder in a deleted folder\n");
 
-
+	if (Exclude) {
+		fprintf(stderr, "\tFAILED (not run kill 1.6.x servers)\n");
+		failed_nomsg(); 
+		return;
+	}
+	
 	tdir  = FPCreateDir(Conn,vol, DIRDID_ROOT, name);
 	if (!tdir) {
 		nottested();

@@ -15,7 +15,7 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
     fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPread:test5: read/write data fork\n");
+    fprintf(stderr,"FPRead:test5: read/write data fork\n");
 	size = min(10000, dsi->server_quantum);
 	if (size < 2000) {
 		fprintf(stderr,"\t server quantum (%d) too small\n", size);

@@ -5,7 +5,6 @@
 /* ------------------------- */
 STATIC void test205()
 {
-u_int16_t bitmap = (1<<DIRPBIT_ATTR) | (1<<DIRPBIT_MDATE);
 u_int16_t vol = VolID;
 DSI *dsi = &Conn->dsi;
 u_int16_t ret;

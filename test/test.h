@@ -1,11 +1,14 @@
 /* -------------------------------- */
 extern unsigned int FPopenLogin(CONN *conn, char *vers, char *uam, char *usr, char *pwd);
 extern unsigned int FPopenLoginExt(CONN *conn, char *vers, char *uam, char *usr, char *pwd);
+extern unsigned int FPzzz(CONN *conn);
 extern unsigned int FPLogOut(CONN *conn);
 extern unsigned int FPMapID(CONN *conn, char fn, int id);
 extern unsigned int FPMapName(CONN *conn, char fn, char *name );
 extern unsigned int FPCreateDir(CONN *conn, u_int16_t vol, int did , char *name);
-extern unsigned int FPGetSessionToken(CONN *conn, int type);
+extern unsigned int FPGetSessionToken(CONN *conn, int type, u_int32_t time, int len, char *token);
+extern unsigned int FPDisconnectOldSession(CONN *conn, u_int16_t type, int len, char *token);
+
 extern unsigned int FPGetSrvrInfo(CONN *conn);
 extern unsigned int FPGetSrvrParms(CONN *conn);
 extern unsigned int FPGetSrvrMsg(CONN *conn, u_int16_t type, u_int16_t bitmap);

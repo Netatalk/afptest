@@ -599,6 +599,33 @@ DSI *dsi;
 }
 
 /* ------------------------------- */
+int AFPzzz(CONN *conn)
+{
+int 		ofs;
+DSI			*dsi;
+u_int32_t   temp = 0;
+
+	dsi = &conn->dsi;
+
+	SendInit(dsi);
+	ofs = 0;
+	dsi->commands[ofs++] = AFP_ZZZ;
+	dsi->commands[ofs++] = 0;
+
+	memcpy(dsi->commands +ofs, &temp, sizeof(temp));	/* parameter unknown */
+	ofs += sizeof(temp);
+
+	dsi->datalen = ofs;
+	dsi->header.dsi_len = htonl(dsi->datalen);
+	dsi->header.dsi_code = 0; 
+ 
+   	my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
+	/* ------------------ */
+	my_dsi_receive(dsi);
+	return(dsi->header.dsi_code);
+}
+
+/* ------------------------------- */
 int AFPGetSrvrInfo(CONN *conn)
 {
 DSI *dsi;
@@ -1608,10 +1635,11 @@ DSI *dsi;
 }
 
 /* ------------------------------- */
-int AFPGetSessionToken(CONN *conn, int type)
+int AFPGetSessionToken(CONN *conn, int type, u_int32_t time, int len, char *token)
 {
 int ofs;
 u_int16_t tp = htons(type);
+u_int32_t temp;
 DSI *dsi;
 
 	dsi = &conn->dsi;
@@ -1623,6 +1651,51 @@ DSI *dsi;
 
 	memcpy(dsi->commands +ofs, &tp, sizeof(tp));
 	ofs += sizeof(tp);
+	if (type) {
+		temp = htonl(len);
+		memcpy(dsi->commands +ofs, &temp, sizeof(temp));
+		ofs += sizeof(temp);
+		if ((type & 0x02)) {
+			time = htonl(time);
+			memcpy(dsi->commands +ofs, &time, sizeof(time));
+			ofs += sizeof(time);
+		}
+		memcpy(dsi->commands +ofs, token, len);
+		ofs += len;
+	}
+	dsi->datalen = ofs;
+	dsi->header.dsi_len = htonl(dsi->datalen);
+	dsi->header.dsi_code = 0; 
+ 
+   	my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
+	/* ------------------ */
+	my_dsi_data_receive(dsi);
+
+	return(dsi->header.dsi_code);
+}
+
+/* ------------------------------- */
+int AFPDisconnectOldSession(CONN *conn, u_int16_t type, int len, char *token)
+{
+int ofs;
+u_int16_t tp = htons(type);
+u_int32_t temp;
+DSI *dsi;
+
+	dsi = &conn->dsi;
+
+	SendInit(dsi);
+	ofs = 0;
+	dsi->commands[ofs++] = AFP_DISCTOLDSESS;
+	dsi->commands[ofs++] = 0;
+
+	memcpy(dsi->commands +ofs, &tp, sizeof(tp));
+	ofs += sizeof(tp);
+	temp = htonl(len);
+	memcpy(dsi->commands +ofs, &temp, sizeof(temp));
+	ofs += sizeof(temp);
+	memcpy(dsi->commands +ofs, token, len);
+	ofs += len;
 
 	dsi->datalen = ofs;
 	dsi->header.dsi_len = htonl(dsi->datalen);
@@ -1633,7 +1706,6 @@ DSI *dsi;
 	my_dsi_data_receive(dsi);
 
 	return(dsi->header.dsi_code);
-
 }
 
 /* ------------------------------- */

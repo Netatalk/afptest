@@ -260,6 +260,7 @@ int AFPopenLoginExt(CONN *conn, char *vers, char *uam, char *usr, char *pwd);
 int AFPLogOut(CONN *conn);
 int AFPChangePW(CONN *conn, char *uam, char *usr, char *opwd, char *pwd);
 
+int AFPzzz(CONN *conn);
 
 int AFPGetSrvrInfo(CONN *conn);
 int AFPGetSrvrParms(CONN *conn);
@@ -296,7 +297,9 @@ int AFPRead_ext(CONN *conn, u_int16_t fork, off_t offset, off_t size, char *data
 
 int AFPGetForkParam(CONN *conn, u_int16_t fork, u_int16_t bitmap);
 
-int AFPGetSessionToken(CONN *conn, int type);
+int AFPGetSessionToken(CONN *conn, int type, u_int32_t time, int len, char *token);
+int AFPDisconnectOldSession(CONN *conn, u_int16_t type, int len, char *token);
+
 int AFPMapID(CONN *conn, char fn, int id);
 int AFPMapName(CONN *conn, char fn, char *name );
 

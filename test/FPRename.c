@@ -47,7 +47,7 @@ char *name  = "t72 check rename input";
 char *ndel = "t72 no delete dir";
 char *name1 = "t72 new folder";
 char *name2 = "t72 dir";
-int  ret;
+unsigned int ret;
 int  ofs =  3 * sizeof( u_int16_t );
 struct afp_filedir_parms filedir;
 u_int16_t vol = VolID;
@@ -255,6 +255,7 @@ char *name1= "t191 subdir";
 char *dest = "t191 newname";
 u_int16_t vol = VolID;
 int  dir = 0,dir1 = 0,dir2 = 0;
+
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPRename:test191: rename folders\n");
 
@@ -285,6 +286,48 @@ fin:
 	FAIL (dir && FPDelete(Conn, vol,  dir, "")) 
 }
 
+/* ------------------------- */
+STATIC void test219()
+{
+char *name = "t191 dir";
+char *dest = "t191 newname";
+u_int16_t vol = VolID;
+u_int16_t vol2, bitmap;
+int  dir = 0;
+DSI	*dsi2 = &Conn2->dsi;
+
+	if (!Conn2) {
+		return;
+	}
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPRename:test219: rename folders two users\n");
+
+	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
+	if (!dir) {
+		nottested();
+		return;
+	}
+	dsi2 = &Conn2->dsi;
+	vol2  = FPOpenVol(Conn2, Vol);
+	if (vol2 == 0xffff) {
+		nottested();
+		goto fin;
+	}
+
+	bitmap = (1 << FILPBIT_LNAME);
+	FAIL (FPEnumerate(Conn, vol,  DIRDID_ROOT , "", bitmap,bitmap)) 
+	FAIL (FPEnumerate(Conn2, vol2,  DIRDID_ROOT , "", bitmap,bitmap)) 
+	
+	if (FPRename(Conn2, vol2, DIRDID_ROOT, name, dest)) {
+		failed();
+	}
+	FAIL (FPEnumerate(Conn, vol,  DIRDID_ROOT , "", bitmap,bitmap)) 
+	FAIL (FPCloseVol(Conn2,vol2))
+fin:
+	FAIL (dir && FPDelete(Conn, vol,  dir, "")) 
+}
+
+
 /* ----------- */
 void FPRename_test()
 {
@@ -295,5 +338,6 @@ void FPRename_test()
 	test183();
 	test184();
 	test191();
+	test219();
 }
 

@@ -1,5 +1,5 @@
 /*
- * $Id: afpcmd.c,v 1.1 2003-04-28 10:19:23 didg Exp $
+ * $Id: afpcmd.c,v 1.2 2003-05-03 21:14:53 didg Exp $
  *
  */
 #include "afpclient.h"
@@ -281,7 +281,21 @@ DSI *dsi;
 }
 
 /* ------------------------------- */
-unsigned int FPGetSessionToken(CONN *conn, int type)
+unsigned int FPzzz(CONN *conn)
+{
+int ret;
+DSI *dsi;
+
+	dsi = &conn->dsi;
+	fprintf(stderr,"---------------------\n");
+	fprintf(stderr,"FPzzz enter sleep mode\n\n");
+	ret = AFPzzz(conn);
+	dump_header(dsi);
+	return ret;
+}
+
+/* ------------------------------- */
+unsigned int FPGetSessionToken(CONN *conn, int type, u_int32_t time, int len, char *token)
 {
 int ret;
 DSI *dsi;
@@ -289,7 +303,21 @@ DSI *dsi;
 	dsi = &conn->dsi;
 	fprintf(stderr,"---------------------\n");
 	fprintf(stderr,"Get Session Token type %d\n\n", type);
-	ret = AFPGetSessionToken(conn,type);
+	ret = AFPGetSessionToken(conn,type, time, len, token);
+	dump_header(dsi);
+	return ret;
+}
+
+/* ------------------------------- */
+unsigned int FPDisconnectOldSession(CONN *conn, u_int16_t type, int len, char *token)
+{
+int ret;
+DSI *dsi;
+
+	dsi = &conn->dsi;
+	fprintf(stderr,"---------------------\n");
+	fprintf(stderr,"Disconnect old session type %d token len %d\n\n", type, len);
+	ret = AFPDisconnectOldSession(conn, type, len, token);
 	dump_header(dsi);
 	return ret;
 }

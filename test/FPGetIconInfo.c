@@ -9,7 +9,7 @@ STATIC void test213()
 {
 u_int16_t vol = VolID;
 u_int16_t dt;
-int ret;
+unsigned int ret;
 
     fprintf(stderr,"===================\n");
 	fprintf(stderr, "FPGetIconInfo:test213: get Icon Info call\n");

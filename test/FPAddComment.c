@@ -16,6 +16,8 @@ int ret;
 u_int16_t vol = VolID;
 u_int16_t vol2;
 DSI *dsi2;
+DSI *dsi = &Conn->dsi;
+char *cmt;
 
 	if (!Conn2) 
 		return;
@@ -43,14 +45,21 @@ DSI *dsi2;
 
 	FAIL (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name1))
 
-	ret = FPAddComment(Conn, vol,  DIRDID_ROOT , name, "essai");
+	cmt = "essai";
+	ret = FPAddComment(Conn, vol,  DIRDID_ROOT , name, cmt);
 	if (not_valid(ret, /* MAC */0, AFPERR_ACCESS)) {
 		failed();
 	}
 
-	ret = FPAddComment(Conn, vol,  DIRDID_ROOT , name2,"essai");
+	ret = FPAddComment(Conn, vol,  DIRDID_ROOT , name2, cmt);
 	if (not_valid(ret, /* MAC */0, AFPERR_ACCESS)) {
 		failed();
+	}
+	if (!ret) {
+		ret = FPGetComment(Conn, vol,  DIRDID_ROOT , name2);
+		if (ret || strncmp(cmt, dsi->commands +1, strlen(cmt))) {
+			failed();
+		}
 	}
 
 	FAIL (FPAddComment(Conn, vol,  DIRDID_ROOT , name1, "Comment for toto.txt"))

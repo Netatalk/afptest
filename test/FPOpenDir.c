@@ -5,7 +5,7 @@
 /* -------------------------- */
 STATIC void test57()
 {
-int dir;
+unsigned int dir;
 int pdir;
 int rdir = 0;
 char *name = "t57 dir no access";

@@ -10,7 +10,7 @@ int  ofs =  3 * sizeof( u_int16_t );
 struct afp_filedir_parms filedir;
 u_int16_t bitmap =  (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE)
 |(1 << DIRPBIT_ACCESS) | (1<<DIRPBIT_FINFO)| (1<<DIRPBIT_UID) | (1 << DIRPBIT_GID) ;
-int ret;
+unsigned int ret;
 u_int16_t vol = VolID;
 DSI *dsi = &Conn->dsi;
 

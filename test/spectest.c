@@ -1,5 +1,5 @@
 /*
- * $Id: spectest.c,v 1.2 2003-04-28 11:29:00 didg Exp $
+ * $Id: spectest.c,v 1.3 2003-05-03 21:14:53 didg Exp $
  * MANIFEST
  */
 #include "specs.h"
@@ -30,6 +30,7 @@ EXT_FN(FPCopyFile);
 EXT_FN(FPCreateDir);
 EXT_FN(FPCreateFile);
 EXT_FN(FPDelete);
+EXT_FN(FPDisconnectOldSession);
 EXT_FN(FPEnumerate);
 EXT_FN(FPEnumerateExt);
 EXT_FN(FPEnumerateExt2);
@@ -39,6 +40,7 @@ EXT_FN(FPFlushFork);
 EXT_FN(FPGetAPPL);
 EXT_FN(FPGetComment);
 EXT_FN(FPGetFileDirParms);
+EXT_FN(FPGetSessionToken);
 EXT_FN(FPGetSrvrInfo);
 EXT_FN(FPGetSrvrMsg);
 EXT_FN(FPGetSrvrParms);
@@ -66,6 +68,7 @@ EXT_FN(FPSetFileDirParms);
 EXT_FN(FPSetFileParms);
 EXT_FN(FPSetForkParms);
 EXT_FN(FPSetVolParms);
+EXT_FN(FPWrite);
 EXT_FN(FPWriteExt);
 EXT_FN(Error);
 
@@ -98,6 +101,7 @@ FN_N(FPCreateDir)
 FN_N(FPCreateFile)
 FN_N(FPCopyFile)
 FN_N(FPDelete)
+FN_N(FPDisconnectOldSession)
 FN_N(FPEnumerate)
 FN_N(FPEnumerateExt)
 FN_N(FPEnumerateExt2)
@@ -110,6 +114,7 @@ FN_N(FPGetFileDirParms)
 FN_N(FPGetForkParms)
 FN_N(FPGetIcon)
 FN_N(FPGetIconInfo)
+FN_N(FPGetSessionToken)
 FN_N(FPGetSrvrInfo)
 FN_N(FPGetSrvrMsg)
 FN_N(FPGetSrvrParms)
@@ -133,6 +138,7 @@ FN_N(FPSetFileDirParms)
 FN_N(FPSetFileParms)
 FN_N(FPSetForkParms)
 FN_N(FPSetVolParms)
+FN_N(FPWrite)
 FN_N(FPWriteExt)
 FN_N(Error)
 #endif
@@ -210,6 +216,7 @@ int     Version = 21;
 int     List = 0;
 int     Mac = 0;
 char    *Test;
+int     Exclude = 0;
 
 /* =============================== */
 void usage( char * av0 )
@@ -230,21 +237,22 @@ void usage( char * av0 )
     fprintf( stderr,"\t-4\tAFP 3.1 version\n");
     fprintf( stderr,"\t-v\tverbose\n");
 
+    fprintf( stderr,"\t-x\tdon't run tests known to kill some afpd versions\n");
     fprintf( stderr,"\t-f\ttest to run\n");
     fprintf( stderr,"\t-l\tlist tests\n");
     exit (1);
 }
 
+char *vers = "AFPVersion 2.1";
+char *uam = "Cleartxt Passwrd";
 /* ------------------------------- */
 int main( ac, av )
 int		ac;
 char	**av;
 {
 int cc;
-static char *vers = "AFPVersion 2.1";
-static char *uam = "Cleartxt Passwrd";
 
-    while (( cc = getopt( ac, av, "v234h:H:p:s:u:d:w:c:f:lm" )) != EOF ) {
+    while (( cc = getopt( ac, av, "v234h:H:p:s:u:d:w:c:f:lmx" )) != EOF ) {
         switch ( cc ) {
         case '2':
 			vers = "AFP2.2";
@@ -291,6 +299,9 @@ static char *uam = "Cleartxt Passwrd";
         case 'f' :
             Test = strdup(optarg);
             break;
+        case 'x':
+        	Exclude = 1;
+        	break;
         case 'p' :
             Port = atoi( optarg );
             if (Port <= 0) {

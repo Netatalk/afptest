@@ -7,6 +7,7 @@ extern u_int16_t VolID;
 extern DSI *dsi, *dsi2; 
 extern int Mac;
 extern int ExitCode;
+extern int Exclude;
 
 #include <signal.h>  
 
@@ -28,11 +29,12 @@ extern void read_fork(CONN *conn, u_int16_t vol,int dir, char *name,int len);
 extern int read_only_folder_with_file(u_int16_t vol, int did, char *name, char *file);
 extern int delete_folder_with_file(u_int16_t vol, int did, char *name, char *file);
 extern int get_vol_attrib(u_int16_t vol) ;
+extern int group_folder(u_int16_t vol, int did, char *name);
 
 extern void failed_nomsg(void);
 extern void failed(void);
 extern void nottested(void);
-extern int not_valid(int ret, int mac_error, int afpd_error);
+extern int not_valid(unsigned int ret, int mac_error, int afpd_error);
 
 /* ---------------------------------
 */

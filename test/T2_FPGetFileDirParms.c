@@ -444,14 +444,11 @@ fin:
 /* ------------------------- */
 STATIC void test127()
 {
-int fork;
 char *name  = "t127 smb afp dir1";
 char *name1 = "t127 dir1_1";
 int  dir1,dir;
 
-int  ofs =  3 * sizeof( u_int16_t );
 u_int16_t bitmap = (1<<FILPBIT_FNUM );
-struct afp_filedir_parms filedir;
 u_int16_t vol = VolID;
 
 	if (!Path && !Mac) {

@@ -23,6 +23,7 @@ unsigned int ret;
 
 	FAIL (FPAddAPPL(Conn , dt, DIRDID_ROOT, "ttxt", 0xafb471c0, file))
 
+	FAIL (htonl(AFPERR_PARAM) != FPRemoveAPPL(Conn , dt, DIRDID_ROOT_PARENT, "ttxt", file1))
 	ret = FPRemoveAPPL(Conn , dt, DIRDID_ROOT, "ttut", file1);
 	if (not_valid(ret, /* MAC */AFPERR_NOITEM, AFPERR_NOOBJ)) {
 		failed();

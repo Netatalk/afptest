@@ -3,7 +3,7 @@
 #include "specs.h"
 
 /* ------------------------- */
-STATIC void test23()
+STATIC void test220()
 {
 char *name = "t23 dir";
 char *name1 = "t23 subdir";
@@ -11,10 +11,13 @@ char *name2 = "t23 file";
 int  dir,dir1;
 u_int16_t vol = VolID;
 
-
+	if (Conn->afp_version != 30) {
+		return;
+	}
     fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPEnumerateExt:test23: AFP 3.0 FPEnumerate ext\n");
+    fprintf(stderr,"FPGetSessionToken:test220: AFP 3.0 get session token\n");
 
+	FAIL (FPGetSessionToken(Conn,0 ,0 ,0 ,NULL))
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!dir) {
 		nottested();
@@ -61,11 +64,32 @@ u_int16_t vol = VolID;
 	}
 }
 
+/* ------------------------- */
+STATIC void test221()
+{
+char *name = "t23 dir";
+char *name1 = "t23 subdir";
+char *name2 = "t23 file";
+int  dir,dir1;
+u_int16_t vol = VolID;
+
+	if (Conn->afp_version != 31) {
+		return;
+	}
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPGetSessionToken:test221: AFP 3.1 get session token\n");
+
+	FAIL (FPGetSessionToken(Conn, 3, 0, 5, "token"))
+	FAIL (FPzzz(Conn))
+	    
+}
+
 /* ----------- */
-void FPEnumerateExt_test()
+void FPGetSessionToken_test()
 {
     fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPEnumerateExt page 155\n");
-    test23();
+    fprintf(stderr,"FPGetSessionToken page 191\n");
+    test220();
+    test221();
 }
 

@@ -6,8 +6,7 @@
 STATIC void test44()
 {
 char *name = "t44 dir";
-int  dir;
-int did;
+unsigned int  dir, did;
 u_int16_t vol = VolID;
 DSI *dsi;
 
@@ -224,7 +223,7 @@ char *name3 = "t104 dir3";
 char *name4 = "t104 dir4";
 char *name5 = "t104 file";
 
-int  dir1 = 0, dir2 = 0, dir3 = 0, dir4 = 0;
+unsigned int  dir1 = 0, dir2 = 0, dir3 = 0, dir4 = 0;
 
 int  ofs =  3 * sizeof( u_int16_t );
 struct afp_filedir_parms filedir;

@@ -2847,7 +2847,7 @@ u_int32_t pid;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"test997: send SIGHUP\n");
 
-	if (FPGetSessionToken(Conn, 0)) {
+	if (FPGetSessionToken(Conn,0 ,0 ,0 ,NULL)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 	memcpy(&len, dsi->data, sizeof(len));

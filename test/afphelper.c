@@ -182,7 +182,7 @@ DSI *dsi, *dsi2;
     if (!Conn2) {
     	return 0;
     }
-	fprintf(stderr,"\t>>>>>>>> Create folder <<<<<<<<<< \n");
+	fprintf(stderr,"\t>>>>>>>> Create no access folder <<<<<<<<<< \n");
 	dsi2 = &Conn2->dsi;
 	dsi = &Conn->dsi;
 	vol2  = FPOpenVol(Conn2, Vol);
@@ -235,6 +235,73 @@ fin:
 	return ret;
 }
 
+/* ---------------------- */
+int group_folder(u_int16_t vol, int did, char *name)
+{
+int ret = 0;
+int dir = 0;
+u_int16_t vol2;
+int  ofs =  3 * sizeof( u_int16_t );
+u_int16_t bitmap =  (1 << DIRPBIT_ACCESS);
+struct afp_filedir_parms filedir;
+DSI *dsi, *dsi2;
+
+    if (!Conn2) {
+    	return 0;
+    }
+	fprintf(stderr,"\t>>>>>>>> Create ---rwx--- folder <<<<<<<<<< \n");
+	dsi2 = &Conn2->dsi;
+	dsi = &Conn->dsi;
+	vol2  = FPOpenVol(Conn2, Vol);
+	if (vol2 == 0xffff) {
+		nottested();
+		return 0;
+	}
+	if (!(dir = FPCreateDir(Conn2,vol2, did , name))) {
+		nottested();
+		goto fin;
+	}
+
+	if (FPGetFileDirParams(Conn2, vol2,  dir , "", 0,bitmap )) {
+		nottested();
+		goto fin;
+	}
+	filedir.isdir = 1;
+	afp_filedir_unpack(&filedir, dsi2->data +ofs, 0, bitmap);
+    filedir.access[0] = 0; 
+    filedir.access[1] = 0; 
+    filedir.access[2] = 7; 
+    filedir.access[3] = 0; 
+ 	if (FPSetDirParms(Conn2, vol2, dir , "", bitmap, &filedir)) {
+		nottested();
+		goto fin;
+	}
+	/* double check the first user can't create a dir in it */
+	ret = get_did(Conn, vol, did, name);
+	if (!ret) {
+		if (ntohl(AFPERR_ACCESS) != dsi->header.dsi_code) {   
+			goto fin;
+		}
+		/* 1.6.x fails here, so cheat a little, it doesn't work with did=last though */
+		ret = dir;
+	}
+	if (FPCreateDir(Conn, vol, ret , name)) {
+		nottested();
+		FPDelete(Conn, vol,  ret, name);
+		FPDelete(Conn, vol,  did, name);
+		ret = 0;
+	}
+fin:
+	if (!ret && dir) {
+		if (FPDelete(Conn2, vol2,  did, name)) {
+			nottested();
+		}
+	}
+	FPCloseVol(Conn2,vol2);
+	fprintf(stderr,"\t>>>>>>>> done <<<<<<<<<< \n");
+	return ret;
+}
+
 /* ---------------------- 
  * Use the second user for creating a folder with read only access right
  * assume did are the same for != user
@@ -252,7 +319,7 @@ DSI *dsi2;
     if (!Conn2) {
     	return 0;
     }
-	fprintf(stderr,"\t>>>>>>>> Create folder <<<<<<<<<< \n");
+	fprintf(stderr,"\t>>>>>>>> Create read only folder <<<<<<<<<< \n");
 	dsi2 = &Conn2->dsi;
 	vol2  = FPOpenVol(Conn2, Vol);
 	if (vol2 == 0xffff) {
@@ -480,7 +547,7 @@ DSI *dsi;
 }
 
 /* ---------------------- */
-int not_valid(int ret, int mac_error, int netatalk_error)
+int not_valid(unsigned int ret, int mac_error, int netatalk_error)
 {
 	if (htonl(mac_error) != ret) {
 		if (!Mac) {
