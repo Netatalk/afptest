@@ -697,6 +697,9 @@ char *s;
 	case T_MAC_PATH:
 		s = "-m (Mac server) or the volume path";
 		break;
+	case T_UNIX_PREV:
+		s =" Volume with unix privilege";
+		break;
 	}
 	fprintf(stderr,"\tSKIPPED (need %s)\n",s);
 }

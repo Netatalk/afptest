@@ -404,6 +404,57 @@ DSI *dsi;
 	delete_folder(vol, DIRDID_ROOT, name);
 }
 
+/* ------------------------- */
+STATIC void test229()
+{
+int  dir = 0;
+char *name = "t229 file";
+char *ndir = "t229 dir";
+u_int16_t vol = VolID;
+DSI *dsi;
+
+	dsi = &Conn->dsi;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPGetFileDirParms:test229: unix access privilege\n");
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		return;
+	}
+
+	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
+		test_skipped(T_UNIX_PREV);
+	    return;
+	}
+
+	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
+		nottested();
+		return;
+	}
+
+	if (FPCreateFile(Conn, vol,  0, dir , name)) {
+		nottested();
+		goto fin;
+	}
+
+	if (FPGetFileDirParams(Conn, vol, dir, "", 0, 
+	    (1 <<  DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID) |
+	    (1 << DIRPBIT_UNIXPR))) {
+	    failed();
+	}
+
+	if (FPGetFileDirParams(Conn, vol, dir, name,  
+	    (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) |
+	    (1 << DIRPBIT_UNIXPR), 
+	    0)) {
+	    failed();
+	}
+
+	FAIL (FPDelete(Conn, vol,  dir , name))
+fin:	
+	FAIL (FPDelete(Conn, vol,  dir , ""))
+}
+
 /* ----------- */
 void FPGetFileDirParms_test()
 {
@@ -416,5 +467,6 @@ void FPGetFileDirParms_test()
 	test104();
 	test132();
 	test194();
+	test229();
 }
 

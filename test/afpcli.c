@@ -1157,6 +1157,19 @@ void afp_filedir_unpack(struct afp_filedir_parms *filedir, char *b, u_int16_t rf
         	memcpy(filedir->pdinfo, b, sizeof(filedir->pdinfo));
         	b += sizeof(filedir->pdinfo);
         	break;
+        case FILPBIT_UNIXPR:
+			memcpy(&l, b, sizeof(l)); b += sizeof(l);
+			filedir->uid = ntohl(l);
+
+        	memcpy(&l, b, sizeof(l)); b += sizeof(l);
+        	filedir->gid = ntohl(l);
+
+        	memcpy(&l, b, sizeof(l)); b += sizeof(l);
+        	filedir->unix_priv = ntohl(l);
+
+        	memcpy(filedir->access, b, sizeof(filedir->access));
+        	b += sizeof(filedir->access);
+        	break;
         default: /* File specific parameters */
         	if (!isdir) switch (bit) {
         		case FILPBIT_DFLEN:
@@ -1248,6 +1261,20 @@ int afp_filedir_pack(char *b, struct afp_filedir_parms *filedir, u_int16_t rfbit
 		    u_ofs = b;
 		    b += 2;
         	break;
+        case FILPBIT_UNIXPR:
+        	l = htonl(filedir->uid);
+        	memcpy(b, &l, sizeof(l)); b += sizeof(l);
+        	
+        	l = htonl(filedir->gid);
+        	memcpy(b, &l, sizeof(l)); b += sizeof(l);
+        	
+        	l = htonl(filedir->unix_priv);
+        	memcpy(b, &l, sizeof(l)); b += sizeof(l);
+
+        	memcpy(b, filedir->access, sizeof(filedir->access));
+        	b += sizeof(filedir->access);
+        	break;
+
         default: /* File specific parameters */
         	if (!isdir) switch (bit) {
         		case FILPBIT_DFLEN:

@@ -81,7 +81,8 @@
 #define DIRPBIT_UID     10
 #define DIRPBIT_GID     11
 #define DIRPBIT_ACCESS  12
-#define DIRPBIT_PDINFO  13         /* ProDOS Info */
+#define DIRPBIT_PDINFO  13         /* ProDOS Info /UTF8 name */
+#define DIRPBIT_UNIXPR  15 
  
 /* directory attribute bits (see file.h for other bits) */
 #define ATTRBIT_EXPFOLDER   (1 << 1) /* shared point */
@@ -111,7 +112,8 @@
 #define FILPBIT_EXTDFLEN 11
 #define FILPBIT_PDINFO   13    /* ProDOS Info/ UTF8 name */
 #define FILPBIT_EXTRFLEN 14
- 
+#define FILPBIT_UNIXPR   15   
+
 /* attribute bits. (d) = directory attribute bit as well. */
 #define ATTRBIT_INVISIBLE (1<<0)  /* invisible (d) */
 #define ATTRBIT_MULTIUSER (1<<1)  /* multiuser */
@@ -213,6 +215,7 @@ struct afp_filedir_parms {
     u_int64_t ext_rflen;
     u_int16_t offcnt;
     u_int32_t uid, gid;
+    u_int32_t unix_priv;   /* FIXME what if mode_t != u_int32_t */
     u_int8_t access[4];    /* Access bits */
     u_int8_t pdinfo[6];    /* ProDOS info... */
     char finder_info[32];            // FIXME: Finder info !

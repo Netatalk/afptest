@@ -78,11 +78,130 @@ fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
 }
 
+/* ------------------------- */
+STATIC void test230()
+{
+int  dir = 0;
+char *name = "t230 file";
+char *ndir = "t230 dir";
+u_int16_t vol = VolID;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+u_int16_t bitmap = 0;
+int fork;
+
+DSI *dsi;
+
+	dsi = &Conn->dsi;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPSetFileDirParms:t230: set unix access privilege\n");
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		return;
+	}
+
+	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
+		test_skipped(T_UNIX_PREV);
+	    return;
+	}
+
+	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
+		nottested();
+		return;
+	}
+
+	if (FPCreateFile(Conn, vol,  0, dir , name)) {
+		nottested();
+		goto fin;
+	}
+	bitmap = (1<< DIRPBIT_PDINFO) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID) |
+	         (1<< DIRPBIT_UNIXPR);
+
+	if (FPGetFileDirParams(Conn, vol, dir, "", 0, bitmap)) {
+	    failed();
+	}
+	else {
+		filedir.isdir = 1;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
+		if (!(S_ISDIR(filedir.unix_priv))) {
+			fprintf(stderr, "FAILED %o not a dir\n", filedir.unix_priv);
+			failed_nomsg();
+		}
+		bitmap = (1<< DIRPBIT_UNIXPR);
+		filedir.unix_priv &= ~S_IWUSR;
+ 		FAIL (FPSetFilDirParam(Conn, vol, dir , "", bitmap, &filedir)) 
+ 		FAIL (!FPDelete(Conn, vol,  dir , name))
+
+ 		/* open fork read write in a read only folder */
+		fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0 ,dir, name,OPENACC_WR | OPENACC_RD);
+		if (!fork) {
+			failed();
+		}
+		else {
+			FPCloseFork(Conn, fork);
+		}
+
+		fork = FPOpenFork(Conn, vol, OPENFORK_RSCS , 0 ,dir, name,OPENACC_WR | OPENACC_RD);
+		if (!fork) {
+			failed();
+		}
+		else {
+			FPCloseFork(Conn, fork);
+		}
+	}
+
+	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) |
+		(1 << DIRPBIT_UNIXPR);
+
+	if (FPGetFileDirParams(Conn, vol, dir, name, bitmap, 0)) {
+	    failed();
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap,0);
+		bitmap = (1<< DIRPBIT_UNIXPR);
+		filedir.unix_priv &= ~S_IWUSR;
+ 		FAIL (FPSetFilDirParam(Conn, vol, dir , name, bitmap, &filedir)) 
+
+		fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0 ,dir, name,OPENACC_WR | OPENACC_RD);
+		if (fork) {
+			failed();
+			FPCloseFork(Conn, fork);
+		}
+		fork = FPOpenFork(Conn, vol, OPENFORK_RSCS , 0 ,dir, name,OPENACC_WR | OPENACC_RD);
+		if (fork) {
+			failed();
+			FPCloseFork(Conn, fork);
+		}
+	
+	}
+
+	/* ----------------- */
+	bitmap = (1<< DIRPBIT_PDINFO) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID) |
+	         (1<< DIRPBIT_UNIXPR);
+	if (FPGetFileDirParams(Conn, vol, dir, "", 0, bitmap)) {
+	    failed();
+	}
+	else {
+		filedir.isdir = 1;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
+		bitmap = (1<< DIRPBIT_UNIXPR);
+		filedir.unix_priv |= S_IWUSR;
+ 		FAIL (FPSetFilDirParam(Conn, vol, dir , "", bitmap, &filedir)) 
+	}
+	
+	FAIL (FPDelete(Conn, vol,  dir , name))
+fin:	
+	FAIL (FPDelete(Conn, vol,  dir , ""))
+}
+
 /* ----------- */
 void FPSetFileDirParms_test()
 {
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetFileDirParms page 258\n");
     test98();
+    test230();
 }
 
