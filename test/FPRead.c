@@ -340,23 +340,43 @@ test_exit:
 	exit_test("test61");
 }
 
+extern char *Server;
+extern int  Port;
+extern char *Password;
+extern char *vers;
+extern char *uam; 
+extern int  Proto;
+
+static volatile int sigp = 0;
+static int sock = -1;
+
+static void alarm_handler()
+{
+	sigp = 1;
+	if (sock != -1)
+		close(sock);
+}
+
 /* -------------------------- */
 static void write_test(int size)
 {
-int fork, fork1;
+int fork = 0, fork1 = 0;
 u_int16_t bitmap = 0;
 char *name = "t309 FPRead,FPWrite deadlock";
 char *name1 = "t309 second file";
 u_int16_t vol = VolID;
+u_int16_t vol2;
+int ret;
 DSI *dsi;
-DSI dsi1, dsi2, dsi3;
+DSI *dsi2;
 int offset;
 int quantum;
+struct sigaction action;    
+struct itimerval    it;     
 
 	dsi = &Conn->dsi;
-	dsi1 = *dsi;
-	dsi2 = dsi1;
-	dsi3 = dsi1;
+	sock = -1;
+	sigp = 0;
 
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPRread:test309: FPRead, FPWrite deadlock\n");
@@ -366,6 +386,25 @@ int quantum;
 		nottested();
 		return;
 	}
+	if (Conn2) {
+		fprintf(stderr,"\tSKIPPED (need %s)\n"," only one client");
+		skipped_nomsg();
+		return;
+	}
+
+   	it.it_interval.tv_sec = 0;
+    it.it_interval.tv_usec = 0;
+    it.it_value.tv_sec = 15;
+    it.it_value.tv_usec = 0;
+
+    action.sa_handler = alarm_handler;
+    sigemptyset(&action.sa_mask);
+    action.sa_flags = SA_RESTART | SA_ONESHOT;
+    if ((sigaction(SIGALRM, &action, NULL) < 0) ||
+            (setitimer(ITIMER_REAL, &it, NULL) < 0)) {
+		nottested();
+		return;
+    }
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -374,61 +413,105 @@ int quantum;
 		nottested();
 		goto fin;
 	}
-	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR|OPENACC_RD );
+    if ((Conn2 = (CONN *)calloc(1, sizeof(CONN))) == NULL) {
+    	nottested();
+    	goto fin;
+	}
+	Conn2->type = Proto;
+    dsi2 = &Conn2->dsi;
+	sock = OpenClientSocket(Server, Port);
+    if ( sock < 0) {
+    	nottested();
+    	goto fin;
+    }
+    dsi2->protocol = DSI_TCPIP; 
+	dsi2->socket = sock;
+	ret = FPopenLogin(Conn2, vers, uam, User, Password);
+	if (ret) {
+    	nottested();
+    	goto fin;
+	}
+	vol2 = VolID  = FPOpenVol(Conn2, Vol);
+	if (vol2 == 0xffff) {
+    	nottested();
+	    goto fin;
+	}
+	fork = FPOpenFork(Conn2, vol2, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR|OPENACC_RD );
 	if (!fork) {
 		failed();
 		goto fin;
 	}
-	fork1 = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name1,OPENACC_WR|OPENACC_RD );
+	fork1 = FPOpenFork(Conn2, vol2, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name1,OPENACC_WR|OPENACC_RD );
 	if (!fork1) {
 		failed();
 		goto fin;
 	}
- 	FAIL (FPSetForkParam(Conn, fork, (1<<FILPBIT_DFLEN), 4*128*1024))
+ 	FAIL (FPSetForkParam(Conn2, fork, (1<<FILPBIT_DFLEN), 4*128*1024))
 
 	offset = 0;
-	FAIL (FPReadHeader(dsi, fork, offset, size, Data))
+	FAIL (FPReadHeader(dsi2, fork, offset, size, Data))
 	offset += size;	
-	FAIL (FPReadHeader(dsi, fork, offset, size, Data))
+	FAIL (FPReadHeader(dsi2, fork, offset, size, Data))
 	offset += size;	
-	FAIL (FPReadHeader(dsi, fork, offset, size, Data))
+	FAIL (FPReadHeader(dsi2, fork, offset, size, Data))
 
-	FAIL (FPReadFooter(dsi, fork, 0, size, Data))
+	FAIL (FPReadFooter(dsi2, fork, 0, size, Data))
 
 	offset += size;	
-	FAIL (FPReadHeader(dsi, fork, offset, size, Data))
+	FAIL (FPReadHeader(dsi2, fork, offset, size, Data))
 
 	offset = 0;
-	FAIL (FPWriteHeader(dsi, fork1, offset, size, Data, 0)) 
+	FAIL (FPWriteHeader(dsi2, fork1, offset, size, Data, 0)) 
 	offset += size;	
-	FAIL (FPWriteHeader(dsi, fork1, offset, size, Data, 0)) 
+	FAIL (FPWriteHeader(dsi2, fork1, offset, size, Data, 0)) 
 	offset += size;	
-	FAIL (FPWriteHeader(dsi, fork1, offset, size, Data, 0)) 
+	FAIL (FPWriteHeader(dsi2, fork1, offset, size, Data, 0)) 
 	offset += size;	
-	FAIL (FPWriteHeader(dsi, fork1, offset, size, Data, 0)) 
+	FAIL (FPWriteHeader(dsi2, fork1, offset, size, Data, 0)) 
 
 	offset = 0;
 	offset += size;
-	FAIL (FPReadFooter(dsi, fork, offset, size, Data))
+	FAIL (FPReadFooter(dsi2, fork, offset, size, Data))
 	offset += size;
-	FAIL (FPReadFooter(dsi, fork, offset, size, Data))
+	FAIL (FPReadFooter(dsi2, fork, offset, size, Data))
 	offset += size;
-	FAIL (FPReadFooter(dsi, fork, offset, size, Data))
+	FAIL (FPReadFooter(dsi2, fork, offset, size, Data))
 
 	offset = 0;
-	FAIL (FPWriteFooter(dsi, fork1, offset, size, Data, 0)) 
+	FAIL (FPWriteFooter(dsi2, fork1, offset, size, Data, 0)) 
 	offset += size;	
-	FAIL (FPWriteFooter(dsi, fork1, offset, size, Data, 0)) 
+	FAIL (FPWriteFooter(dsi2, fork1, offset, size, Data, 0)) 
 	offset += size;	
-	FAIL (FPWriteFooter(dsi, fork1, offset, size, Data, 0)) 
+	FAIL (FPWriteFooter(dsi2, fork1, offset, size, Data, 0)) 
 	offset += size;	
-	FAIL (FPWriteFooter(dsi, fork1, offset, size, Data, 0)) 
+	FAIL (FPWriteFooter(dsi2, fork1, offset, size, Data, 0)) 
+	
 
 fin:
-	FPCloseFork(Conn,fork1);
-	FPCloseFork(Conn,fork);
+	if (sigp ) {
+		fprintf(stderr,"\tFAILED deadlock\n");
+		failed_nomsg();
+		sleep(5);
+	}
+	else {
+		if (fork1) FPCloseFork(Conn2,fork1);
+		if (fork) FPCloseFork(Conn2,fork);
+	}
+	free(Conn2);
+	Conn2 = NULL;
+	
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name1))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+    it.it_interval.tv_usec = 0;
+    it.it_value.tv_sec = 0;
+    it.it_value.tv_usec = 0;
+   	setitimer(ITIMER_REAL, &it, NULL);
+    action.sa_handler = SIG_DFL;
+    sigemptyset(&action.sa_mask);
+    action.sa_flags = SA_RESTART;
+    if ((sigaction(SIGALRM, &action, NULL) < 0)) {
+		nottested();
+    }
 	sleep(1);
 }
 
@@ -460,6 +543,10 @@ int nowrite;
 int numread = /*2*/ 469;
 u_int16_t vol = VolID;
 static char temp[MAXPATHLEN];   
+int	size;
+DSI *dsi;
+
+	dsi = &Conn->dsi;
 
 	enter_test();
     fprintf(stderr,"===================\n");
@@ -472,7 +559,8 @@ static char temp[MAXPATHLEN];
 	}		
 
 	ndir = strdup(temp);
-	data = calloc(1, 65536);
+	size = min(65536, dsi->server_quantum);
+	data = calloc(1, size);
 	if (ntohl(AFPERR_NOOBJ) != is_there(Conn, DIRDID_ROOT, ndir)) {
 		nottested();
 		goto fin;
@@ -529,7 +617,7 @@ static char temp[MAXPATHLEN];
 			goto fin1;
 		}
 		for (i=0; i <= numread ; i++) {
-			if (FPWrite(Conn, fork, i*65536, 65536, data, 0 )) {
+			if (FPWrite(Conn, fork, i*size, size, data, 0 )) {
 				nottested();
 				nowrite = 1;
 				break;
@@ -584,7 +672,7 @@ static char temp[MAXPATHLEN];
 				goto fin1;
 			}
 			for (i=0; i <= numread ; i++) {
-				if (FPRead(Conn, fork, i*65536, 65536, data)) {
+				if (FPRead(Conn, fork, i*size, size, data)) {
 					failed();
 					goto fin1;
 				}

@@ -548,15 +548,20 @@ char *result;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms::test308: mangled dirname\n");
 
-	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
-		failed();
-		goto test_exit;
-	}
 	if (Conn->afp_version >= 30) {
 		bitmap = (1<<FILPBIT_PDINFO);
 	}
 	else {
+		if (Mac) { /* a Mac AFP 2.x can't create filename longer than 31 bytes*/
+			test_skipped(T_MAC);
+			goto test_exit;
+		}
 		bitmap = (1<<DIRPBIT_LNAME);
+	}
+
+	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
+		failed();
+		goto test_exit;
 	}
 	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, name, 0, bitmap)) {
 		nottested();
@@ -617,16 +622,21 @@ int id;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms::test324: long file name >31 bytes\n");
 
-	ret = FPCreateFile(Conn, vol,  0, DIRDID_ROOT, name);
-	if (ret) {
-		nottested();
-		goto test_exit;
-	}
 	if (Conn->afp_version >= 30) {
 		bitmap = (1<<FILPBIT_PDINFO);
 	}
 	else {
+		if (Mac) { /* a Mac AFP 2.x can't create filename longer than 31 bytes*/
+			test_skipped(T_MAC);
+			goto test_exit;
+		}
 		bitmap = (1<<DIRPBIT_LNAME);
+	}
+
+	ret = FPCreateFile(Conn, vol,  0, DIRDID_ROOT, name);
+	if (ret) {
+		nottested();
+		goto test_exit;
 	}
 	/* hack if filename < 255 it works with afp 2.x too */
 	id = get_fid(Conn, vol, DIRDID_ROOT , name);
@@ -749,16 +759,20 @@ int id;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms::test333: long file name >31 bytes\n");
 
-	ret = FPCreateFile(Conn, vol,  0, DIRDID_ROOT, name);
-	if (ret) {
-		nottested();
-		goto test_exit;
-	}
 	if (Conn->afp_version >= 30) {
 		bitmap = (1<<FILPBIT_PDINFO);
 	}
 	else {
+		if (Mac) { /* a Mac AFP 2.x can't create filename longer than 31 bytes*/
+			test_skipped(T_MAC);
+			goto test_exit;
+		}
 		bitmap = (1<<DIRPBIT_LNAME);
+	}
+	ret = FPCreateFile(Conn, vol,  0, DIRDID_ROOT, name);
+	if (ret) {
+		nottested();
+		goto test_exit;
 	}
 	/* hack if filename < 255 it works with afp 2.x too */
 	id = get_fid(Conn, vol, DIRDID_ROOT , name);
@@ -813,17 +827,22 @@ int id;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms::test334: long file name >31 bytes (no ext)\n");
 
+	if (Conn->afp_version >= 30) {
+		bitmap = (1<<FILPBIT_PDINFO);
+	}
+	else {
+		if (Mac) { /* a Mac AFP 2.x can't create filename longer than 31 bytes*/
+			test_skipped(T_MAC);
+			goto test_exit;
+		}
+		bitmap = (1<<DIRPBIT_LNAME);
+	}
 	ret = FPCreateFile(Conn, vol,  0, DIRDID_ROOT, name);
 	if (ret) {
 		nottested();
 		goto test_exit;
 	}
-	if (Conn->afp_version >= 30) {
-		bitmap = (1<<FILPBIT_PDINFO);
-	}
-	else {
-		bitmap = (1<<DIRPBIT_LNAME);
-	}
+
 	/* hack if filename < 255 it works with afp 2.x too */
 	id = get_fid(Conn, vol, DIRDID_ROOT , name);
 	
@@ -879,6 +898,17 @@ int id;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms::test335: long file name >31 bytes\n");
 
+	if (Conn->afp_version >= 30) {
+		bitmap = (1<<FILPBIT_PDINFO);
+	}
+	else {
+		if (Mac) { /* a Mac AFP 2.x can't create filename longer than 31 bytes*/
+			test_skipped(T_MAC);
+			goto test_exit;
+		}
+		bitmap = (1<<DIRPBIT_LNAME);
+	}
+
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir);
 	if (!dir) {
 		nottested();
@@ -889,12 +919,7 @@ int id;
 		nottested();
 		goto fin;
 	}
-	if (Conn->afp_version >= 30) {
-		bitmap = (1<<FILPBIT_PDINFO);
-	}
-	else {
-		bitmap = (1<<DIRPBIT_LNAME);
-	}
+
 	/* hack if filename < 255 it works with afp 2.x too */
 	id = get_fid(Conn, vol, DIRDID_ROOT , name);
 	

@@ -2,9 +2,9 @@
 */
 #include "specs.h"
 
-extern char  *Server;
-extern int     Port;
-extern char    *Password;
+extern char *Server;
+extern int  Port;
+extern char *Password;
 extern char *vers;
 extern char *uam; 
 
@@ -47,7 +47,6 @@ int sock;
 	if (sigp || ret == (unsigned)-1) {
 		fprintf(stderr,"\tFAILED disconnected %d\n", sigp);
 		failed_nomsg();
-		/* try to reconnect */
 		/* try to reconnect */
     	dsi = &Conn->dsi;
 		sock = OpenClientSocket(Server, Port);

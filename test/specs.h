@@ -34,6 +34,7 @@ extern int group_folder(u_int16_t vol, int did, char *name);
 extern unsigned int get_vol_free(u_int16_t vol) ;
 
 extern void failed_nomsg(void);
+extern void skipped_nomsg(void);
 extern void failed(void);
 extern void enter_test(void);
 extern void exit_test(char *name);
@@ -55,6 +56,7 @@ extern void test_skipped(int why);
 #define T_VOL_SMALL  10
 #define T_ID         11
 #define T_AFP2       12
+#define T_MAC        13
 
 /* ---------------------------------
 */

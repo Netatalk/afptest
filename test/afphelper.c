@@ -610,7 +610,11 @@ int not_valid(unsigned int ret, int mac_error, int netatalk_error)
 				return 1;
 			}
     	}
-    	else
+    	else if (htonl(netatalk_error) == ret) {
+    	    fprintf(stderr,"Warning MAC and Netatalk now same RESULT!\n");
+    		return 0;
+    	}
+    	else 
     		return 1;
 	}
 	else if (!Mac) {
@@ -760,6 +764,9 @@ char *s;
 	case T_ID:
 		s = "AFP FileID calls";
 		break;
+	case T_MAC:
+		s = "a server which is not a Mac";
+		break;
 	}
 	fprintf(stderr,"\tSKIPPED (need %s)\n",s);
 	CurTestResult = 3;
@@ -771,6 +778,14 @@ void failed_nomsg(void)
 	if (!ExitCode)
 		ExitCode = 1;
 	CurTestResult = 1;
+}
+
+/* ------------------------- */
+void skipped_nomsg(void)
+{
+	if (!ExitCode)
+		ExitCode = 3;
+	CurTestResult = 3;
 }
 
 /* ------------------------- */

@@ -532,6 +532,7 @@ DSI *dsi;
 
 	if ((get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		fprintf(stderr,"\tSKIPPED (need %s)\n","a no unix priv vol");
+		skipped_nomsg();
 		goto test_exit;
 	}
 
@@ -547,7 +548,7 @@ DSI *dsi;
 	bitmap = (1<< DIRPBIT_PDINFO) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID) |
 	         (1<< DIRPBIT_UNIXPR);
 
-	if (FPGetFileDirParams(Conn, vol, dir, "", 0, bitmap)) {
+	if (htonl(AFPERR_BITMAP) != FPGetFileDirParams(Conn, vol, dir, "", 0, bitmap)) {
 		failed();
 		goto fin1;
 	}

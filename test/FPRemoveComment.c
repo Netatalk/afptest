@@ -104,6 +104,7 @@ STATIC void test379()
 int fork;
 char *name1 = "t379 file.txt";
 u_int16_t vol = VolID;
+int  dt;
 
 		
 	enter_test();
@@ -117,9 +118,11 @@ u_int16_t vol = VolID;
 		failed();
 		goto fin;
 	}
+	dt = FPOpenDT(Conn,vol);
 	FAIL (FPAddComment(Conn, vol,  DIRDID_ROOT , name1, "essai")) 
 	FAIL (FPRemoveComment(Conn, vol,  DIRDID_ROOT , name1))
 	FPCloseFork(Conn,fork);
+	FAIL (FPCloseDT(Conn, dt))
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1)) 
 	exit_test("test379");

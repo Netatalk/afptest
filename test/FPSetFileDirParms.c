@@ -598,7 +598,7 @@ DSI *dsi;
 
 	if ((get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		fprintf(stderr,"\tSKIPPED (need %s)\n","a no unix priv vol");
-		/* FIXME */
+		skipped_nomsg();
 		goto test_exit;
 	}
 
