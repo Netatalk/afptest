@@ -1,5 +1,5 @@
 /*
- * $Id: afp_ls.c,v 1.4 2004-05-10 18:39:26 didg Exp $
+ * $Id: afp_ls.c,v 1.5 2004-09-02 12:23:12 didg Exp $
  * MANIFEST
  */
 
@@ -31,7 +31,7 @@ int  dir;
 u_int16_t  tp;
 int  i, j;
 DSI *dsi;
-char *b;
+unsigned char *b;
 struct afp_filedir_parms filedir;
 int *stack;
 int cnt = 0;
@@ -50,8 +50,8 @@ int size = 1000;
 		    (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS);
 
 	if (Conn->afp_version >= 30) {
-		f_bitmap |= (1<<FILPBIT_PDINFO);
-		d_bitmap |= (1<<FILPBIT_PDINFO);
+		f_bitmap |= (1<<FILPBIT_PDINFO) | (1<<FILPBIT_LNAME);
+		d_bitmap |= (1<<FILPBIT_PDINFO) | (1<<FILPBIT_LNAME);
 	}
 	else {
 		f_bitmap |= (1<<FILPBIT_LNAME);
