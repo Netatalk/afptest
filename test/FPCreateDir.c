@@ -246,7 +246,6 @@ unsigned int ret;
 		return;
 	}		
 	
-
 	tdir  = FPCreateDir(Conn,vol, DIRDID_ROOT, name);
 	if (!tdir) {
 		nottested();
@@ -284,6 +283,72 @@ unsigned int ret;
 fin:
 	FAIL (tdir && FPDelete(Conn, vol, tdir , ""))
 	FAIL (tdir1 && FPDelete(Conn, vol, tdir1 , ""))
+}
+
+/* ----------- */
+STATIC void test357()
+{
+char *name = "test357 dir";
+int tdir;
+u_int16_t vol = VolID;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+u_int16_t bitmap = (1<<DIRPBIT_ATTR) | (1<<DIRPBIT_FINFO)| (1<<DIRPBIT_CDATE) | 
+					(1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE)| (1<<DIRPBIT_UID) |
+	    			(1 << DIRPBIT_GID);
+
+u_int16_t vol2;
+DSI *dsi;
+DSI *dsi2;
+unsigned int ret;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPCreateDir:test357: admin user \n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
+	
+	dsi = &Conn->dsi;
+	tdir  = FPCreateDir(Conn,vol, DIRDID_ROOT, name);
+	if (!tdir) {
+		nottested();
+		return;
+	}
+
+	FAIL (FPGetFileDirParams(Conn, vol,  tdir , "", 0, bitmap))
+	filedir.isdir = 1;
+	afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
+    filedir.access[0] = 0; 
+    filedir.access[1] = 0; 
+    filedir.access[2] = 0; 
+    filedir.access[3] = 7; /* only owner */
+ 	FAIL (FPSetDirParms(Conn, vol, tdir , "", (1 << DIRPBIT_ACCESS), &filedir)) 
+
+	FAIL (FPGetFileDirParams(Conn, vol,  tdir , "", 0, bitmap))
+	dsi2 = &Conn2->dsi;
+	vol2  = FPOpenVol(Conn2, Vol);
+	if (vol2 == 0xffff) {
+		nottested();
+		FAIL (FPDelete(Conn, vol, tdir , ""))
+		return;
+	}
+
+	filedir.isdir = 1;
+	afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
+	filedir.attr = ATTRBIT_NODELETE | ATTRBIT_SETCLR ;
+ 	FAIL (FPSetDirParms(Conn2, vol2, DIRDID_ROOT , name, bitmap, &filedir)) 
+	if (ntohl(AFPERR_OLOCK) != FPDelete(Conn, vol,  DIRDID_ROOT , name)) { 
+		failed();
+		return;
+	}
+	filedir.attr = ATTRBIT_NODELETE;
+ 	FAIL (FPSetDirParms(Conn2, vol2, DIRDID_ROOT , name, bitmap, &filedir)) 
+	ret = FPDelete(Conn2, vol2,  DIRDID_ROOT , name);
+	if (ret) {
+		failed();
+		FAIL (FPDelete(Conn, vol, tdir , ""))
+	}
 }
 
 /* ----------- */
