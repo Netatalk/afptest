@@ -648,12 +648,22 @@ int id;
 	memset(temp, 0, sizeof(temp));
 	strncpy(temp, name, 31 - strlen(temp1));
 	strcat(temp, temp1);
-	/* for afp3 it's not valid mangled filename */
+	/* for afp3 it was not valid mangled filename 
+	 * Updated 2004-07-12
+	 * we changed mangled handling, now it's a valid filename for AFP3.x.
+	*/
 	ret = FPGetFileDirParams(Conn, vol, DIRDID_ROOT, temp, bitmap, 0);
+#ifdef OLD_MANGLING
 	if ((Conn->afp_version >= 30 && ret != ntohl(AFPERR_NOOBJ)) 
 	    || ( Conn->afp_version < 30 && ret)) {
 		failed();
 	}
+#else
+	if ( ret ) {
+		failed();
+	}
+#endif
+
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
 test_exit:
 	exit_test("test324");
@@ -762,10 +772,16 @@ int id;
 	strcat(temp, temp1);
 	/* for afp3 it's not valid mangled filename */
 	ret = FPGetFileDirParams(Conn, vol, DIRDID_ROOT, temp, bitmap, 0);
+#ifdef OLD_MANGLING
 	if ((Conn->afp_version >= 30 && ret != ntohl(AFPERR_NOOBJ)) 
 	    || ( Conn->afp_version < 30 && ret)) {
 		failed();
 	}
+#else
+	if ( ret ) {
+		failed();
+	}
+#endif
 
 	sprintf(temp1,"#0%X.txt",ntohl(id));
 	memset(temp, 0, sizeof(temp));
@@ -820,10 +836,16 @@ int id;
 	strcat(temp, temp1);
 	/* for afp3 it's not valid mangled filename */
 	ret = FPGetFileDirParams(Conn, vol, DIRDID_ROOT, temp, bitmap, 0);
+#ifdef OLD_MANGLING
 	if ((Conn->afp_version >= 30 && ret != ntohl(AFPERR_NOOBJ)) 
 	    || ( Conn->afp_version < 30 && ret)) {
 		failed();
 	}
+#else
+	if ( ret ) {
+		failed();
+	}
+#endif
 
 	sprintf(temp1,"#%X.",ntohl(id));
 	memset(temp, 0, sizeof(temp));
@@ -885,10 +907,16 @@ int id;
 	strcat(temp, temp1);
 	/* for afp3 it's not valid mangled filename */
 	ret = FPGetFileDirParams(Conn, vol, DIRDID_ROOT, temp, bitmap, 0);
+#ifdef OLD_MANGLING
 	if ((Conn->afp_version >= 30 && ret != ntohl(AFPERR_NOOBJ)) 
 	    || ( Conn->afp_version < 30 && ret)) {
 		failed();
 	}
+#else
+	if ( ret ) {
+		failed();
+	}
+#endif
 
 	ret = FPCreateFile(Conn, vol,  0, dir, temp);
 	if (ret) {
@@ -902,6 +930,63 @@ fin:
 	FAIL (FPDelete(Conn, vol,  dir, ""))
 test_exit:
 	exit_test("test335");
+}
+
+/* ------------------------- 
+ * for this test you need
+.         "TEXT"  "LMAN"      ASCII Text                     SimpleText  
+in AppleVolume.system
+*/
+STATIC void test371()
+{
+char *name  = "t371 file name";
+char *name1  = "t371 new name.pdf";
+u_int16_t vol = VolID;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+DSI *dsi = &Conn->dsi; 
+u_int16_t bitmap;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPGetFileDirParms:test371: check default type\n");
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		goto fin;
+	}
+	bitmap = (1<< DIRPBIT_ATTR) |  (1<<DIRPBIT_ATTR) | (1<<FILPBIT_FINFO) |
+	         (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE) |
+		     (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID);
+
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, bitmap,0)) {
+		failed();
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+		if (memcmp(filedir.finder_info, "TEXTLMAN", 8)) {
+			fprintf(stderr,"FAILED not text\n");
+			failed_nomsg();
+		}
+	}
+	FAIL (FPRename(Conn, vol, DIRDID_ROOT, name, name1))
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name1, bitmap,0)) {
+		failed();
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+		if (memcmp(filedir.finder_info, "PDF CARO", 8)) {
+			fprintf(stderr,"FAILED not PDFt\n");
+			failed_nomsg();
+		}
+	}
+fin:
+	FPDelete(Conn, vol,  DIRDID_ROOT , name);
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1)) 
+
+	exit_test("test371");
 }
 
 /* ----------- */
@@ -924,5 +1009,8 @@ void FPGetFileDirParms_test()
 	test333();
 	test334();
 	test335();
+#if 0
+	test371();
+#endif	
 }
 
