@@ -638,6 +638,74 @@ fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
 }
 
+/* ------------------------- */
+STATIC void test344()
+{
+u_int16_t bitmap = 0;
+int fork = 0;
+int fork1;
+char *name = "t344 file.txt";
+u_int16_t vol = VolID;
+int size;
+int offset;
+DSI *dsi;
+int ret;
+
+	dsi = &Conn->dsi;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPread:test344: read after EOF\n");
+	size = 100;
+	offset = 128;
+
+	if (Locking) {
+		test_skipped(T_LOCKING);
+		return;
+	}		
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		return;
+	}
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
+
+	if (!fork) {
+		failed();
+		goto fin;
+	}		
+
+	if (FPSetForkParam(Conn, fork, (1<<FILPBIT_DFLEN), size)) {
+		failed();
+		goto fin;
+	}
+
+	if (ntohl(AFPERR_EOF) != FPRead(Conn, fork, offset, 10, Data)) {
+		failed();
+		goto fin;
+	}
+	if (FPByteLock(Conn, fork, 0, 0 /* set */, 0, 200)) {
+		failed();
+		goto fin;
+	}
+
+	fork1 = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name, OPENACC_WR | OPENACC_RD);
+	if (!fork1) {
+		failed();
+		goto fin;
+	}
+	ret= FPRead(Conn, fork1, offset, 10, Data);
+	if (not_valid(ret, /* Mac */ AFPERR_EOF, AFPERR_LOCK)) {
+		failed();
+	}
+
+	FPCloseFork(Conn,fork1);
+fin:
+	if (fork) FPCloseFork(Conn,fork);
+
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
+}
+
 
 /* ----------- */
 void FPRead_test()
@@ -649,7 +717,9 @@ void FPRead_test()
 	test59();
 	test61();
 	test309();
+	test327();
 	test328();
 	test343();
+	test344();
 }
 
