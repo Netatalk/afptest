@@ -1024,12 +1024,9 @@ DSI *dsi;
 	FAIL (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) 
 	FAIL (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name1)) 
 	ret = FPExchangeFile(Conn, vol, tdir,dir, tname, name1);
-	FAIL (htonl(AFPERR_PARAM) != ret) 
-#if 0	
-	if (not_valid(ret, /* MAC */AFPERR_NOOBJ, AFPERR_PARAM)) {
+	if (htonl(AFPERR_PARAM) != ret && not_valid(ret, /* MAC */AFPERR_NOOBJ, AFPERR_PARAM)) {
 		failed();
 	}
-#endif
 	FAIL (ntohl(AFPERR_PARAM) != FPExchangeFile(Conn, vol, DIRDID_ROOT, tdir, name, tname)) 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1)) 
@@ -1175,9 +1172,11 @@ DSI *dsi2;
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
 	
 	/* -------------------- */
-	ret = FPCreateID(Conn,vol, tdir, tname);
-	if (htonl(AFPERR_NOOBJ) != ret && htonl(AFPERR_PARAM) != ret ) {
-		failed();
+	if ((get_vol_attrib(vol) & VOLPBIT_ATTR_FILEID) ) {
+		ret = FPCreateID(Conn,vol, tdir, tname);
+		if (htonl(AFPERR_NOOBJ) != ret && htonl(AFPERR_PARAM) != ret ) {
+			failed();
+		}
 	}
 
 	/* -------------------- */
