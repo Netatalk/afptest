@@ -6,7 +6,7 @@ AM_CONFIG_HEADER(config.h)
 
 AC_PROG_CC
 
-AC_CHECK_HEADERS(fcntl.h strings.h sys/fcntl.h unistd.hi sys/cdefs.h)
+AC_CHECK_HEADERS(fcntl.h strings.h sys/fcntl.h unistd.h sys/cdefs.h)
 
 AM_PROG_LIBTOOL
 AM_ICONV
