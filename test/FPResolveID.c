@@ -117,6 +117,94 @@ DSI *dsi;
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1)) 
 }
 
+/* ------------------------- 
+*/
+STATIC void test310()
+{
+int  dir;
+char *name = "t310 test ID file";
+char *name1 = "t310 new name";
+int  ofs =  3 * sizeof( u_int16_t );
+u_int16_t bitmap = (1<<FILPBIT_FNUM );
+struct afp_filedir_parms filedir;
+u_int16_t vol = VolID;
+DSI *dsi;
+
+	dsi = &Conn->dsi;
+
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPResolveID:test310: Resolve ID after rename\n");
+
+	if (!(get_vol_attrib(vol) & VOLPBIT_ATTR_FILEID) ) {
+		fprintf(stderr,"FileID calls Not supported\n");
+		return;
+	}
+	dir = DIRDID_ROOT;
+
+	FAIL (FPCreateFile(Conn, vol,  0, dir , name))
+
+	if (FPGetFileDirParams(Conn, vol,  dir , name, bitmap,0)) {
+		failed();
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+	}	
+
+	FAIL (FPResolveID(Conn, vol, filedir.did, bitmap))
+	FAIL (FPMoveAndRename(Conn, vol, DIRDID_ROOT, DIRDID_ROOT, name, name1)) 
+	FAIL (FPResolveID(Conn, vol, filedir.did, bitmap))
+
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1)) 
+}
+
+/* ------------------------- 
+*/
+STATIC void test311()
+{
+int  dir;
+char *name =  "t311-\xd7\xa4\xd7\xaa\xd7\x99\xd7\x97\xd7\x94#113F.mp3";
+char *name1 = "t311-\xd7\xa4\xd7\xaa\xd7\x99\xd7\x97\xd7\x94#11.mp3";
+int  ofs =  3 * sizeof( u_int16_t );
+u_int16_t bitmap = 0xe93f;
+struct afp_filedir_parms filedir;
+u_int16_t vol = VolID;
+DSI *dsi;
+
+	dsi = &Conn->dsi;
+
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		return;
+	}
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPResolveID:test311: Resolve ID after rename\n");
+
+	if (!(get_vol_attrib(vol) & VOLPBIT_ATTR_FILEID) ) {
+		fprintf(stderr,"FileID calls Not supported\n");
+		return;
+	}
+	dir = DIRDID_ROOT;
+
+	FAIL (FPCreateFile(Conn, vol,  0, dir , name))
+
+	if (FPGetFileDirParams(Conn, vol,  dir , name, bitmap,0)) {
+		failed();
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+	}	
+
+	FAIL (FPResolveID(Conn, vol, filedir.did, bitmap))
+	FAIL (FPMoveAndRename(Conn, vol, DIRDID_ROOT, DIRDID_ROOT, name, name1)) 
+	FAIL (FPResolveID(Conn, vol, filedir.did, bitmap))
+
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1)) 
+}
+
 /* ----------- */
 void FPResolveID_test()
 {
@@ -124,5 +212,7 @@ void FPResolveID_test()
     fprintf(stderr,"FPResolveID page 252\n");
 	test76();
 	test91();
+	test310();
+	test311();
 }
 

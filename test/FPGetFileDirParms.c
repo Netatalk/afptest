@@ -2,6 +2,8 @@
 */
 #include "specs.h"
 
+static char temp[MAXPATHLEN];
+
 /* ------------------------- */
 STATIC void test44()
 {
@@ -455,6 +457,101 @@ fin:
 	FAIL (FPDelete(Conn, vol,  dir , ""))
 }
 
+/* ------------------------- */
+STATIC void test307()
+{
+char *name = "t307 dir#2";
+u_int16_t vol = VolID;
+DSI *dsi;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+u_int16_t bitmap = 0;
+unsigned int dir;
+char *result;
+
+	dsi = &Conn->dsi;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPGetFileDirParms::test307: mangled dirname\n");
+
+	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
+		failed();
+		return;
+	}
+	if (Conn->afp_version >= 30) {
+		bitmap = (1<<FILPBIT_PDINFO);
+	}
+	else {
+		bitmap = (1<<DIRPBIT_LNAME);
+	}
+	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, name, 0, bitmap)) {
+		nottested();
+	}
+	else {
+		filedir.isdir = 1;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
+		result = (Conn->afp_version >= 30)?filedir.utf8_name:filedir.lname;
+		if (strcmp(result, name)) {
+			failed();
+		}
+	}
+	if (!FPGetFileDirParams(Conn, vol, DIRDID_ROOT, "bad name #2", 0, bitmap)) {
+		failed();
+	}
+	if (ntohl(AFPERR_NOOBJ) != FPGetFileDirParams(Conn, vol, DIRDID_ROOT, "???#2", 0, bitmap)) {
+		failed();
+	}
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+}
+
+/* ------------------------- */
+STATIC void test308()
+{
+char *name = "t308 dir";
+u_int16_t vol = VolID;
+DSI *dsi;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+u_int16_t bitmap = 0;
+unsigned int dir;
+char *result;
+
+	dsi = &Conn->dsi;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPGetFileDirParms::test308: mangled dirname\n");
+
+	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
+		failed();
+		return;
+	}
+	if (Conn->afp_version >= 30) {
+		bitmap = (1<<FILPBIT_PDINFO);
+	}
+	else {
+		bitmap = (1<<DIRPBIT_LNAME);
+	}
+	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, name, 0, bitmap)) {
+		nottested();
+	}
+	else {
+		filedir.isdir = 1;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
+		result = (Conn->afp_version >= 30)?filedir.utf8_name:filedir.lname;
+		if (strcmp(result, name)) {
+			failed();
+		}
+	}
+	sprintf(temp,"t307#%X", ntohl(dir));
+	if (!FPGetFileDirParams(Conn, vol, DIRDID_ROOT, temp, 0, bitmap)) {
+		failed();
+	}
+	sprintf(temp,"t308#%X", ntohl(dir));
+	if (!FPGetFileDirParams(Conn, vol, DIRDID_ROOT, temp, 0, bitmap)) {
+		failed();
+	}
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+}
 /* ----------- */
 void FPGetFileDirParms_test()
 {
@@ -468,5 +565,7 @@ void FPGetFileDirParms_test()
 	test132();
 	test194();
 	test229();
+	test307();
+	test308();
 }
 

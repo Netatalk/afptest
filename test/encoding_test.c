@@ -1,5 +1,5 @@
 /*
- * $Id: encoding_test.c,v 1.2 2003-09-14 20:24:15 didg Exp $
+ * $Id: encoding_test.c,v 1.3 2003-10-13 22:54:17 didg Exp $
  * MANIFEST
  */
 
@@ -22,6 +22,7 @@ int ExitCode = 0;
 int Recurse = 0;
 char *Encoding = "western";
 extern int Convert;
+static char temp[MAXPATHLEN];
 
 /* ------------------------- */
 int empty_volume()
@@ -156,6 +157,19 @@ DSI *dsi;
 	    }
     	name[i] = 0;
 	}
+	if (Path) {
+	int fd;
+	
+		sprintf(temp,"%s/:test", Path);
+		fd = open(temp, O_RDWR | O_CREAT, 0666);
+		if (fd < 0) {
+			fprintf(stderr,"\tFAILED unable to create %s :%s\n", temp, strerror(errno));
+			failed_nomsg();
+		}
+		else {
+			close(fd);
+		}
+	}
 }
 
 /* ------------------ */
@@ -221,7 +235,7 @@ int cc;
 static char *vers = "AFPVersion 2.1";
 static char *uam = "Cleartxt Passwrd";
 
-    while (( cc = getopt( ac, av, "Rmlv34h:p:s:u:w:d:" )) != EOF ) {
+    while (( cc = getopt( ac, av, "Rmlv34h:p:s:u:w:d:c:" )) != EOF ) {
         switch ( cc ) {
         case '3':
 			vers = "AFPX03";

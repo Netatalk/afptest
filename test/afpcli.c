@@ -1497,15 +1497,11 @@ DSI *dsi;
 }
 
 /* ------------------------------- */
-int AFPWrite(CONN *conn, u_int16_t fork, int offset, int size, char *data, char whence)
+int AFPWriteHeader(DSI *dsi, u_int16_t fork, int offset, int size, char *data, char whence)
 {
 int ofs;
 int rsize;
-DSI *dsi;
-u_int32_t last;
 u_int32_t temp;
-
-	dsi = &conn->dsi;
 
 	memset(dsi->commands, 0, DSI_CMDSIZ);
 	memset(&dsi->header, 0, sizeof(dsi->header));
@@ -1534,7 +1530,15 @@ u_int32_t temp;
  
    	my_dsi_stream_send(dsi, dsi->commands, ofs);
 	my_dsi_stream_write(dsi, data, size);
-	my_dsi_cmd_receive(dsi);
+	return 0;
+}
+
+/* ------------------------------- */
+int AFPWriteFooter(DSI *dsi, u_int16_t fork, int offset, int size, char *data, char whence)
+{
+u_int32_t last;
+
+	my_dsi_cmd_receive(dsi);  
 	if (!dsi->header.dsi_code) {
 	        if (dsi->cmdlen != 4) {
 	            return -1;
@@ -1548,6 +1552,16 @@ u_int32_t temp;
 		return (last == size +offset)?0:-1;
 	}
 	return dsi->header.dsi_code;
+}
+
+/* ------------------------------- */
+int AFPWrite(CONN *conn, u_int16_t fork, int offset, int size, char *data, char whence)
+{
+DSI *dsi;
+
+	dsi = &conn->dsi;
+	AFPWriteHeader(dsi, fork, offset, size, data, whence);
+	return AFPWriteFooter(dsi, fork, offset, size, data, whence);
 }
 
 /* ------------------------------- */
@@ -1898,16 +1912,11 @@ DSI *dsi;
 	return(dsi->header.dsi_code);
 }
 
-
 /* ------------------------------- */
-int AFPRead(CONN *conn, u_int16_t fork, int offset, int size, char *data)
+int AFPReadHeader(DSI *dsi, u_int16_t fork, int offset, int size, char *data)
 {
 int ofs;
-int rsize;
-DSI *dsi;
 u_int32_t  temp;
-
-	dsi = &conn->dsi;
 
 	SendInit(dsi);
 	ofs = 0;
@@ -1930,26 +1939,31 @@ u_int32_t  temp;
 	SetLen(dsi, ofs);
  
    	my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
-	/* ------------------ */
-#if 0	
-	my_dsi_stream_receive(dsi, dsi->data, DSI_DATASIZ, &dsi->datalen);
-	dump_header(dsi);
-	rsize =  ntohl(dsi->header.dsi_len);
-	rsize -= dsi->datalen;
-	while (rsize > 0) {
-	int len = min(rsize, DSI_DATASIZ);
-		if (my_dsi_stream_read(dsi, dsi->data, len) != len) {
-			break;
-		}	
-		rsize -= len;
-	}	
-#endif
+   	return 0;
+}
+
+/* ------------------------------- */
+int AFPReadFooter(DSI *dsi, u_int16_t fork, int offset, int size, char *data)
+{
+int rsize;
+
 	my_dsi_cmd_receive(dsi);
 	memcpy(data, dsi->commands, dsi->cmdlen);
 	rsize =  ntohl(dsi->header.dsi_len);
 	rsize -= dsi->cmdlen;
 	my_dsi_stream_read(dsi, data +dsi->cmdlen, rsize);
 	return dsi->header.dsi_code?dsi->header.dsi_code:(rsize +dsi->cmdlen== size)?0:-1;
+}
+
+/* ------------------------------- */
+int AFPRead(CONN *conn, u_int16_t fork, int offset, int size, char *data)
+{
+DSI *dsi;
+
+	dsi = &conn->dsi;
+
+	AFPReadHeader(dsi, fork, offset, size, data);
+	return AFPReadFooter(dsi, fork, offset, size, data);
 }
 
 /* ---------------------- 

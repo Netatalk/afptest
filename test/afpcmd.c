@@ -1,5 +1,5 @@
 /*
- * $Id: afpcmd.c,v 1.6 2003-08-11 17:37:13 didg Exp $
+ * $Id: afpcmd.c,v 1.7 2003-10-13 22:54:17 didg Exp $
  *
  */
 #include "afpclient.h"
@@ -1839,6 +1839,34 @@ DSI *dsi;
 }
 
 /* ------------------------------- */
+unsigned int FPReadHeader(DSI *dsi, u_int16_t fork, int offset, int size, char *data)
+{
+int ret;
+
+	fprintf(stderr,"---------------------\n");
+	fprintf(stderr,"send read header fork %d  offset %d size %d\n\n", fork , offset, size);
+
+	ret = AFPReadHeader(dsi,fork, offset, size, data);
+
+	dump_header(dsi);
+	return ret;
+}
+
+/* ------------------------------- */
+unsigned int FPReadFooter(DSI *dsi, u_int16_t fork, int offset, int size, char *data)
+{
+int ret;
+
+	fprintf(stderr,"---------------------\n");
+	fprintf(stderr,"get read reply fork %d  offset %d size %d\n\n", fork , offset, size);
+
+	ret = AFPReadFooter(dsi,fork, offset, size, data);
+
+	dump_header(dsi);
+	return ret;
+}
+
+/* ------------------------------- */
 unsigned int FPRead(CONN *conn, u_int16_t fork, int offset, int size, char *data)
 {
 int ret;
@@ -1868,6 +1896,30 @@ DSI *dsi;
 
 	ret = AFPRead_ext(conn,fork, offset, size, data);
 
+	dump_header(dsi);
+	return ret;
+}
+
+/* ------------------------------- */
+unsigned int FPWriteHeader(DSI *dsi, u_int16_t fork, int offset, int size, char *data, char whence)
+{
+int ret;
+	fprintf(stderr,"---------------------\n");
+	fprintf(stderr,"send write header fork %d  offset %d size %d from 0x%x\n\n", fork , offset, size, (unsigned)whence);
+
+	ret = AFPWriteHeader(dsi ,fork, offset, size, data, whence);
+	dump_header(dsi);
+	return ret;
+}
+
+/* ------------------------------- */
+unsigned int FPWriteFooter(DSI *dsi, u_int16_t fork, int offset, int size, char *data, char whence)
+{
+int ret;
+	fprintf(stderr,"---------------------\n");
+	fprintf(stderr,"get write footer fork %d  offset %d size %d from 0x%x\n\n", fork , offset, size, (unsigned)whence);
+
+	ret = AFPWriteFooter(dsi ,fork, offset, size, data, whence);
 	dump_header(dsi);
 	return ret;
 }

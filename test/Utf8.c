@@ -236,10 +236,11 @@ u_int16_t vol = VolID;
 /* ------------------------- */
 STATIC void test233()
 {
-char *name = "t233 dir\314\201";
+char *name = "t233 dire\314\201";
 u_int16_t vol = VolID;
 DSI *dsi;
 int  dir;
+u_int16_t bitmap = 0;
 
 	dsi = &Conn->dsi;
 
@@ -255,20 +256,18 @@ int  dir;
 		nottested();
 		return;
 	}
-	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, name, 0,
-	     (1<< DIRPBIT_DID) | (1<< DIRPBIT_PDID)  | (1<< DIRPBIT_PDINFO) )) {
+	bitmap =(1<< DIRPBIT_DID) | (1<< DIRPBIT_PDID)  | (1<< DIRPBIT_PDINFO) |(1<<DIRPBIT_LNAME);
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, name, 0,bitmap )) {
 		failed();
 	}
 	sprintf(temp,"t23#%X", ntohl(dir));
 
-	if (ntohl(AFPERR_NOOBJ) != FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, temp, 0,
-	     (1<< DIRPBIT_DID) | (1<< DIRPBIT_PDID)  | (1<< DIRPBIT_PDINFO) )) {
+	if (ntohl(AFPERR_NOOBJ) != FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, temp, 0, bitmap)) {
 		failed();
 	}
-	sprintf(temp,"t233 dir#%X", ntohl(dir));
+	sprintf(temp,"t233 dire#%X", ntohl(dir));
 
-	if (ntohl(AFPERR_NOOBJ) != FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, temp, 0,
-	     (1<< DIRPBIT_DID) | (1<< DIRPBIT_PDID)  | (1<< DIRPBIT_PDINFO) )) {
+	if (ntohl(AFPERR_NOOBJ) != FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, temp, 0,bitmap )) {
 		failed();
 	}
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
@@ -297,7 +296,7 @@ u_int16_t bitmap = 0;
 		nottested();
 		return;
 	}
-	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM);
+	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM)|(1<<FILPBIT_LNAME);
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, name, bitmap,0 )) {
 		failed();
 	}
@@ -339,7 +338,7 @@ u_int16_t bitmap = 0;
 		nottested();
 		return;
 	}
-	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) | (1<<FILPBIT_LNAME) ;
+	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) | (1<<FILPBIT_LNAME);
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, name, bitmap,0 )) {
 		failed();
 	}
@@ -362,7 +361,10 @@ u_int16_t bitmap = 0;
 		    if (strcmp(filedir.utf8_name, name)) {
 				fprintf(stderr,"\tFAILED %s should be %s\n",filedir.utf8_name, name); 		    
 		    }
-
+		}
+        sprintf(temp,"t3-#%X.mp3", ntohl(filedir.did));
+		if (ntohl(AFPERR_NOOBJ) != 	FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, temp, bitmap,0 )) {
+			failed();
 		}
 	}
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
@@ -380,7 +382,7 @@ u_int16_t bitmap = 0;
 	dsi = &Conn->dsi;
 
     fprintf(stderr,"===================\n");
-    fprintf(stderr,"Utf8:test233: false mangled UTF8 dirname\n");
+    fprintf(stderr,"Utf8:test313: mangled UTF8 dirname\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
@@ -403,6 +405,33 @@ u_int16_t bitmap = 0;
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
 }
 
+/* ------------------------- */
+STATIC void test314()
+{
+char *name = "test314#1";
+u_int16_t vol = VolID;
+DSI *dsi;
+u_int16_t bitmap = 0;
+
+	dsi = &Conn->dsi;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"Utf8:test314: invalid mangled UTF8 name\n");
+
+	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
+		test_skipped(T_UTF8);
+	    return;
+	}
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		return;
+	}
+	bitmap = (1<< FILPBIT_PDINFO) | (1<<FILPBIT_LNAME);
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, name, bitmap, 0 )) {
+		failed();
+	}
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+}
 
 /* ----------- */
 void Utf8_test()
@@ -418,5 +447,6 @@ void Utf8_test()
 	test234();
 	test312();
 	test313();
+	test314();
 }
 

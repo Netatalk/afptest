@@ -307,6 +307,7 @@ fin:
 STATIC void test218()
 {
 u_int16_t bitmap = 0;
+char *base  = "t218 test dir";
 char *name  = "t218 enumerate file";
 char *ndir1  = "t218 enumerate dir1";
 char *ndir  = "t218 enumerate dir";
@@ -315,6 +316,7 @@ int  ofs =  4 * sizeof( u_int16_t );
 struct afp_filedir_parms filedir;
 DSI *dsi;
 unsigned int ret;
+int bdir;
 int dir;
 int dir1;
 int isdir;
@@ -328,42 +330,48 @@ int isdir;
 		return;
 	}
 
-	bitmap = (1 << FILPBIT_LNAME);
-	if (htonl(AFPERR_NOOBJ) != FPEnumerateFull(Conn, vol, 1, 1, 800,  DIRDID_ROOT, "", bitmap, bitmap)) {
+	bdir  = FPCreateDir(Conn,vol, DIRDID_ROOT , base);
+	if (!bdir) {
 		nottested();
 		return;
 	}
-	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){
+	
+	bitmap = (1 << FILPBIT_LNAME);
+	if (htonl(AFPERR_NOOBJ) != FPEnumerateFull(Conn, vol, 1, 1, 800,  bdir, "", bitmap, bitmap)) {
+		nottested();
+		goto fin;
+	}
+	if (FPCreateFile(Conn, vol,  0, bdir , name)){
 		nottested();
 		return;
 	}
 
-	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir);
+	dir  = FPCreateDir(Conn,vol, bdir , ndir);
 	if (!dir) {
 		nottested();
 		goto fin;
 	}
-	dir1  = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir1);
+	dir1  = FPCreateDir(Conn,vol, bdir , ndir1);
 	if (!dir1) {
 		nottested();
 		goto fin;
 	}
 
-	FAIL (htonl(AFPERR_PARAM) != FPEnumerateFull(Conn, vol, 0, 1, 800,  DIRDID_ROOT, "", bitmap, 0))
-	FAIL (htonl(AFPERR_PARAM) != FPEnumerateFull(Conn, vol, 1, 1, 2,  DIRDID_ROOT, "", bitmap, bitmap))
+	FAIL (htonl(AFPERR_PARAM) != FPEnumerateFull(Conn, vol, 0, 1, 800,  bdir, "", bitmap, 0))
+	FAIL (htonl(AFPERR_PARAM) != FPEnumerateFull(Conn, vol, 1, 1, 2,  bdir, "", bitmap, bitmap))
 
-	FAIL (FPEnumerateFull(Conn, vol, 1, 5, 800,  DIRDID_ROOT, "", bitmap, bitmap))
-	FAIL (htonl(AFPERR_NOOBJ) != FPEnumerateFull(Conn, vol, 1, 0, 800,  DIRDID_ROOT, "", bitmap, bitmap))
-	FAIL (FPEnumerateFull(Conn, vol, 2, 5, 800,  DIRDID_ROOT, "", bitmap, bitmap))
-	FAIL (htonl(AFPERR_NOOBJ) != FPEnumerateFull(Conn, vol, 4, 1, 800,  DIRDID_ROOT, "", bitmap, bitmap))
-	FAIL (htonl(AFPERR_NOOBJ) != FPEnumerateFull(Conn, vol, 5, 1, 800,  DIRDID_ROOT, "", bitmap, bitmap))
+	FAIL (FPEnumerateFull(Conn, vol, 1, 5, 800,  bdir, "", bitmap, bitmap))
+	FAIL (htonl(AFPERR_NOOBJ) != FPEnumerateFull(Conn, vol, 1, 0, 800,  bdir, "", bitmap, bitmap))
+	FAIL (FPEnumerateFull(Conn, vol, 2, 5, 800,  bdir, "", bitmap, bitmap))
+	FAIL (htonl(AFPERR_NOOBJ) != FPEnumerateFull(Conn, vol, 4, 1, 800,  bdir, "", bitmap, bitmap))
+	FAIL (htonl(AFPERR_NOOBJ) != FPEnumerateFull(Conn, vol, 5, 1, 800,  bdir, "", bitmap, bitmap))
 
 	/* get the third */
 	isdir = 0;
-	ret = FPEnumerateFull(Conn, VolID, 3, 1, 800,  DIRDID_ROOT, "", bitmap, 0);
+	ret = FPEnumerateFull(Conn, VolID, 3, 1, 800,  bdir, "", bitmap, 0);
 	if (htonl(AFPERR_NOOBJ) == ret) {
 		isdir = 1;
-		ret = FPEnumerateFull(Conn, VolID, 3, 1, 800,  DIRDID_ROOT, "", 0,bitmap);
+		ret = FPEnumerateFull(Conn, VolID, 3, 1, 800,  bdir, "", 0,bitmap);
 	}	
 	if (ret) {
 		failed();
@@ -376,15 +384,16 @@ int isdir;
 	else {
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 	}
-	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, filedir.lname))
-	FAIL (FPEnumerateFull(Conn, vol, 2, 5, 800,  DIRDID_ROOT, "", bitmap, bitmap))
-	FAIL (FPEnumerateFull(Conn, vol, 2, 5, 800,  DIRDID_ROOT, "", bitmap, bitmap))
+	FAIL (FPDelete(Conn, vol,  bdir, filedir.lname))
+	FAIL (FPEnumerateFull(Conn, vol, 2, 5, 800,  bdir, "", bitmap, bitmap))
+	FAIL (FPEnumerateFull(Conn, vol, 2, 5, 800,  bdir, "", bitmap, bitmap))
 
 fin:
-	FPDelete(Conn, vol,  DIRDID_ROOT, name); 
-	FPDelete(Conn, vol,  DIRDID_ROOT, ndir);
-	FPDelete(Conn, vol,  DIRDID_ROOT, ndir1);
-	FAIL (htonl(AFPERR_NOOBJ) != FPEnumerateFull(Conn, vol, 1, 1, 800,  DIRDID_ROOT, "", bitmap, bitmap))
+	FPDelete(Conn, vol,  bdir, name); 
+	FPDelete(Conn, vol,  bdir, ndir);
+	FPDelete(Conn, vol,  bdir, ndir1);
+	FAIL (htonl(AFPERR_NOOBJ) != FPEnumerateFull(Conn, vol, 1, 1, 800,  bdir, "", bitmap, bitmap))
+	FPDelete(Conn, vol,  DIRDID_ROOT, base);
 }
 
 /* ----------- */

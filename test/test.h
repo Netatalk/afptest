@@ -45,10 +45,18 @@ extern unsigned int FPExchangeFile(CONN *conn, u_int16_t vol, int sdid, int ddid
 
 extern unsigned int FPMoveAndRename(CONN *conn, u_int16_t svol, int sdid, int ddid, char *src, char *dst);
 extern unsigned int FPRename(CONN *conn, u_int16_t svol, int sdid, char *src, char *dst);
+
+extern unsigned int FPReadHeader(DSI *dsi, u_int16_t fork, int offset, int size, char *data);
+extern unsigned int FPReadFooter(DSI *dsi, u_int16_t fork, int offset, int size, char *data);
 extern unsigned int FPRead(CONN *conn, u_int16_t fork, int offset, int size, char *data);
+
 extern unsigned int FPRead_ext (CONN *conn, u_int16_t fork, off_t offset, off_t size, char *data);
+
+extern unsigned int FPWriteHeader(DSI *dsi, u_int16_t fork, int offset, int size, char *data, char whence);
+extern unsigned int FPWriteFooter(DSI *dsi, u_int16_t fork, int offset, int size, char *data, char whence);
 extern unsigned int FPWrite(CONN *conn, u_int16_t fork, int offset, int size, char *data, char whence);
 extern unsigned int FPWrite_ext(CONN *conn, u_int16_t fork, off_t  offset, off_t size, char *data, char whence);
+
 extern unsigned int FPSetForkParam(CONN *conn, u_int16_t fork,  u_int16_t bitmap, off_t size);
 
 extern unsigned int FPGetComment(CONN *conn, u_int16_t vol, int did , char *name);
