@@ -1,10 +1,11 @@
 /*
- * $Id: spectest.c,v 1.6 2003-05-12 09:40:59 didg Exp $
+ * $Id: spectest.c,v 1.7 2003-05-26 10:57:03 rlewczuk Exp $
  * MANIFEST
  */
 #include "specs.h"
 
 int Verbose = 0;
+int Interactive = 0;
 int Quirk = 0;
 
 u_int16_t VolID;
@@ -153,6 +154,20 @@ FN_N(Error)
 };
 
 /* =============================== */
+static void press_enter(char *s)
+{
+    if (!Interactive)
+	return;
+	
+    if (s) 
+	fprintf(stderr, "--> Performing: %s\n", s);
+    fprintf(stderr, "Press <ENTER> to continue.\n");
+    
+    while (fgetc(stdin) != '\n') 
+	;
+}
+
+/* =============================== */
 static void list_tests(void)
 {
 int i = 0;
@@ -177,11 +192,13 @@ int i = 0;
 	}
 
 	dsi = &Conn->dsi;
+	press_enter("Opening volume.");
 	VolID = FPOpenVol(Conn, Vol);
 	if (VolID == 0xffff) {
 		nottested();
 		return;
 	}
+	press_enter(Test_list[i].name);
 	Test_list[i].fn();
 
 	FPCloseVol(Conn,VolID);
@@ -192,12 +209,14 @@ static void run_all()
 int i = 0;
 
 	dsi = &Conn->dsi;
+	press_enter("Opening volume.");
 	VolID = FPOpenVol(Conn, Vol);
 	if (VolID == 0xffff) {
 		nottested();
 		return;
 	}
 	while (Test_list[i].name != NULL) {
+		press_enter(Test_list[i].name);
 		Test_list[i].fn();
 		i++;
 	}
@@ -246,6 +265,7 @@ void usage( char * av0 )
     fprintf( stderr,"\t-x\tdon't run tests known to kill some afpd versions\n");
     fprintf( stderr,"\t-f\ttest to run\n");
     fprintf( stderr,"\t-l\tlist tests\n");
+    fprintf( stderr,"\t-i\tinteractive mode, prompts before every test (debug purposes)\n");
     exit (1);
 }
 
@@ -258,7 +278,7 @@ char	**av;
 {
 int cc;
 
-    while (( cc = getopt( ac, av, "v234h:H:p:s:u:d:w:c:f:lmx" )) != EOF ) {
+    while (( cc = getopt( ac, av, "v234h:H:p:s:u:d:w:c:f:lmxi" )) != EOF ) {
         switch ( cc ) {
         case '2':
 			vers = "AFP2.2";
@@ -315,9 +335,13 @@ int cc;
                 exit(1);
             }
             break;
-		case 'v':
-			Verbose = 1;
-			break;
+	case 'v':
+		Verbose = 1;
+		break;
+	case 'i':
+		Interactive = 1;
+		break;
+			
         default :
             usage( av[ 0 ] );
         }
