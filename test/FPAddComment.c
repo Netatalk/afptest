@@ -19,12 +19,12 @@ DSI *dsi2;
 DSI *dsi = &Conn->dsi;
 char *cmt;
 
-	if (!Conn2) 
-		return;
-		
-
     fprintf(stderr,"===================\n");
 	fprintf(stderr, "FPAddComment:test55: add comment\n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
 
 	if (!(pdir = no_access_folder(vol, DIRDID_ROOT, name))) {
 		return;

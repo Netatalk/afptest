@@ -19,12 +19,12 @@ u_int16_t vol = VolID;
 int tdir;
 DSI *dsi = &Conn->dsi;
 
- 	if (Conn->afp_version < 30) { 
- 		return;
- 	}
-
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPWriteExt:test148: AFP 3.0 FPWriteExt\n");
+ 	if (Conn->afp_version < 30) { 
+		test_skipped(T_AFP3);
+ 		return;
+ 	}
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -119,11 +119,12 @@ char *name = "t207 file";
 u_int16_t vol = VolID;
 int i;
 
- 	if (Conn->afp_version < 30) { 
- 		return;
- 	}
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPWriteExt:test207: AFP 3.0 read/Write\n");
+ 	if (Conn->afp_version < 30) { 
+		test_skipped(T_AFP3);
+ 		return;
+ 	}
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();

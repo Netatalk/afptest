@@ -17,7 +17,7 @@ u_int16_t vol = VolID;
     fprintf(stderr,"FPGetFileDirParms:test32: dir deleted by someone else, access with ID\n");
 
 	if (!Mac && !Path) {
-		nottested();
+		test_skipped(T_MAC_PATH);
 		return;
 	}
 
@@ -125,7 +125,7 @@ int ret;
     fprintf(stderr,"FPGetFileDirParms:test33: dir deleted by someone else, access with name\n");
 
 	if (!Mac && !Path) {
-		nottested();
+		test_skipped(T_MAC_PATH);
 		return;
 	}
 
@@ -228,7 +228,7 @@ u_int16_t vol = VolID;
     fprintf(stderr,"FPGetFileDirParms:test42: dir deleted by someone else, access with ID from another dir\n");
 
 	if (!Mac && !Path) {
-		nottested();
+		test_skipped(T_MAC_PATH);
 		return;
 	}
 
@@ -303,7 +303,7 @@ char name ".t52 invisible";
 	fprintf(stderr, "FPGetFileDirParms:test52: test .file without AppleDouble\n");
 
 	if (!Mac && !Path) {
-		nottested();
+		test_skipped(T_MAC_PATH);
 		return;
 	}
 	if (!FPGetFileDirParams(Conn, vol, DIRDID_ROOT, "new/.invisible", 
@@ -339,7 +339,7 @@ u_int16_t bitmap = (1<< DIRPBIT_DID)|(1<< DIRPBIT_LNAME);
     fprintf(stderr,"FPGetFileDirParms:t106: cname with trailing 0 and chdir\n");
 
 	if (!Mac && !Path) {
-		nottested();
+		test_skipped(T_MAC_PATH);
 		return;
 	}
 
@@ -451,11 +451,13 @@ int  dir1,dir;
 u_int16_t bitmap = (1<<FILPBIT_FNUM );
 u_int16_t vol = VolID;
 
-	if (!Path && !Mac) {
-		return;
-	}
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms:test127: dir removed with cnid not updated\n");
+
+	if (!Path && !Mac) {
+		test_skipped(T_MAC_PATH);
+		return;
+	}
 
 	if (!(dir = FPCreateDir(Conn, vol, DIRDID_ROOT , name))) {
 		nottested();
@@ -499,12 +501,13 @@ int  dir1,dir;
 u_int16_t bitmap = (1<<FILPBIT_FNUM );
 u_int16_t vol = VolID;
 
-	if (!Path && !Mac) {
-		return;
-	}
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms:test128: dir removed with cnid not updated\n");
 
+	if (!Path && !Mac) {
+		test_skipped(T_MAC_PATH);
+		return;
+	}
 
 	if (!(dir = FPCreateDir(Conn, vol, DIRDID_ROOT , name))) {
 		nottested();
@@ -548,7 +551,7 @@ u_int16_t vol = VolID;
     fprintf(stderr,"FPGetFileDirParms:test182: dir deleted by someone else, access with ID (dirlookup)\n");
 
 	if (!Mac && !Path) {
-		nottested();
+		test_skipped(T_MAC_PATH);
 		return;
 	}
 

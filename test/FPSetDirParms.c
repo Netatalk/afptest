@@ -111,13 +111,16 @@ u_int16_t vol = VolID;
 DSI *dsi;
 unsigned int ret;
 
-	if (!Conn2) 
-		return;
 	dsi = &Conn->dsi;
 
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetDirParms:test88: test error setdirparam\n");
     
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
+
 	if (!(pdir = no_access_folder(vol, DIRDID_ROOT, ndir))) {
 		return;
 	}
@@ -192,12 +195,15 @@ u_int16_t vol = VolID;
 DSI *dsi;
 DSI *dsi2;
 
-	if (!Conn2) 
-		return;
 	dsi = &Conn->dsi;
 
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetDirParms:t107: test dir\n");
+
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
 
 	if (!(pdir = no_access_folder(vol, DIRDID_ROOT, ndir))) {
 		return;

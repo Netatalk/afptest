@@ -23,11 +23,12 @@ u_int16_t vol = VolID;
 unsigned int ret;
 struct sigaction action;    
 
-	if (Conn->afp_version < 30 || Conn2) {
-		return;
-	}
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPzzz:test223: AFP 3.x enter sleep mode\n");
+	if (Conn->afp_version < 30 || Conn2) {
+		test_skipped(T_AFP3_CONN2);
+		return;
+	}
 
     action.sa_handler = pipe_handler;
     sigemptyset(&action.sa_mask);
@@ -78,11 +79,12 @@ struct sigaction action;
 DSI *dsi;
 int sock;
 
-	if (Conn->afp_version < 30 || Conn2) {
-		return;
-	}
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPzzz:test224: disconnected after 2 mn\n");
+	if (Conn->afp_version < 30 || Conn2) {
+		test_skipped(T_AFP3_CONN2);
+		return;
+	}
 
 	sigp = 0;
     action.sa_handler = pipe_handler;

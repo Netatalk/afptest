@@ -35,6 +35,13 @@ extern void failed_nomsg(void);
 extern void failed(void);
 extern void nottested(void);
 extern int not_valid(unsigned int ret, int mac_error, int afpd_error);
+extern void test_skipped(int why);
+
+#define T_CONN2      1
+#define T_PATH       2
+#define T_AFP3       3
+#define T_AFP3_CONN2 4
+#define T_MAC_PATH   5
 
 /* ---------------------------------
 */

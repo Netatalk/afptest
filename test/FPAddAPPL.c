@@ -15,11 +15,13 @@ unsigned int pdir;
 
 int dir;
 
-	if (!Conn2) 
-		return;
 
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPAddAPPL:test214: test appl\n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name)) ) {
 		nottested();

@@ -18,11 +18,12 @@ u_int16_t vol = VolID;
 char utf8name[20];
 int i;
 
-	if (Conn->afp_version < 30)
-		return;
-
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPReadExt:test22: AFP 3.0 read/Write\n");
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		return;
+	}
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();

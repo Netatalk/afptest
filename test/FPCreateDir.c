@@ -34,11 +34,13 @@ char *name = "test26 dir";
 int pdir;
 u_int16_t vol = VolID;
 		
-	if (!Conn2) 
-		return;
-		
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPCreateDir:test26: folder without right access\n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
+		
 
 	if (!(pdir = no_access_folder(vol, DIRDID_ROOT, name))) {
 		return;
@@ -78,12 +80,14 @@ int rdir = 0;
 u_int16_t vol = VolID;
 DSI *dsi;
 
-	if (!Conn2) 
-		return;
 	dsi = &Conn->dsi;
 
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPCreateDir:test45: Folder Creation\n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
 	if (!(pdir = no_access_folder(vol, DIRDID_ROOT, ndir))) {
 		return;
 	}
@@ -163,11 +167,13 @@ u_int16_t vol = VolID;
 DSI *dsi;
 unsigned int ret;
 
-	if (!Conn2) 
-		return;
 	
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPCreateDir:test175: did error two users in  folder did=<deleted> name=test175\n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
 
 	dsi = &Conn->dsi;
     /* ---- file.c ---- */
@@ -233,11 +239,13 @@ u_int16_t vol2;
 DSI *dsi2;
 unsigned int ret;
 
-	if (!Conn2) 
-		return;
-	
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPCreateDir:test198: second user delete folder\n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
+	
 
 	tdir  = FPCreateDir(Conn,vol, DIRDID_ROOT, name);
 	if (!tdir) {

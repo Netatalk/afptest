@@ -18,12 +18,14 @@ int pdir = 0;
 u_int16_t vol = VolID;
 DSI *dsi;
 
-	if (!Conn2) 
-		return;
 	dsi = &Conn->dsi;
 
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPCopyFile:test71: Copy file\n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
 
 	if (!(pdir = no_access_folder(vol, DIRDID_ROOT, ndir))) {
 		return;

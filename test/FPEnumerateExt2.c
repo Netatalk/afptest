@@ -11,11 +11,12 @@ char *name2 = "t25 file";
 int  dir,dir1;
 u_int16_t vol = VolID;
 
-	if (Conn->afp_version < 31) {
-		return;
-	}
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPEnumerateExt2:test25: FPEnumerate ext2\n");
+	if (Conn->afp_version < 31) {
+		test_skipped(T_AFP3);
+		return;
+	}
 
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!dir) {

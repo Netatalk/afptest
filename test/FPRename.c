@@ -206,11 +206,13 @@ char *name1 = "test183.new";
 int tdir;
 u_int16_t vol = VolID;
 
-	if (!Conn2) 
-		return;
 	
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPRename:test183: did error two users in  folder did=<deleted> name=test183\n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
 
 	/* ---- directory.c ---- */
 	if (!(tdir = create_double_deleted_folder(vol, tname))) {
@@ -296,11 +298,12 @@ u_int16_t vol2, bitmap;
 int  dir = 0;
 DSI	*dsi2 = &Conn2->dsi;
 
-	if (!Conn2) {
-		return;
-	}
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPRename:test219: rename folders two users\n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
 
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!dir) {

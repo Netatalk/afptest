@@ -17,12 +17,15 @@ int rdir = 0;
 u_int16_t vol = VolID;
 DSI *dsi;
 int ret;
-	if (!Conn2) 
-		return;
+
 	dsi = &Conn->dsi;
 
     fprintf(stderr,"===================\n");
 	fprintf(stderr, "FPCreateFile:test51:  Create file with errors\n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
 
 	if (!(rdir = read_only_folder(vol, DIRDID_ROOT, rodir) ) ) {
 		return;

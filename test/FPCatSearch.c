@@ -1,0 +1,78 @@
+/* ----------------------------------------------
+*/
+#include "specs.h"
+
+
+/* ------------------------- */
+STATIC void test225()
+{
+u_int16_t bitmap = (1<<FILPBIT_ATTR);
+int fork;
+char *name = "t225 file.txt";
+u_int16_t vol = VolID;
+u_int32_t temp;
+int size;
+DSI *dsi;
+char pos[16];
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+unsigned int ret;
+
+	dsi = &Conn->dsi;
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPCatSearch:test225: Catalog search\n");
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		return;
+	}
+
+	memset(pos, 0, sizeof(pos));
+	memset(&filedir, 0, sizeof(filedir));
+	filedir.attr = 0x01a0;			/* various lock attributes */
+	
+	FAIL( htonl(AFPERR_BITMAP) != FPCatSearch(Conn, vol, 10, pos, 0,  /* d_bitmap*/ 0, bitmap, &filedir))
+
+	filedir.attr = 0x01a0;			/* various lock attributes */
+	ret = FPCatSearch(Conn, vol, 10, pos, 0x42,  /* d_bitmap*/ 0, bitmap, &filedir);
+	if (ret != htonl(AFPERR_EOF)) {
+		failed();
+	}
+	memcpy(&temp, dsi->data + 20, sizeof(temp));
+	temp = ntohl(temp);
+	if (temp) {
+		fprintf(stderr,"\tFAILED want 0 get %d\n", temp);
+		failed_nomsg();
+	}
+
+	filedir.isdir = 0;
+	afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+	filedir.attr = 0x01a0 | ATTRBIT_SETCLR ;
+ 	FAIL (FPSetFileParams(Conn, vol, DIRDID_ROOT , name, bitmap, &filedir)) 
+
+	memset(&filedir, 0, sizeof(filedir));
+	filedir.attr = 0x01a0;			/* lock attributes */
+	ret  = FPCatSearch(Conn, vol, 10, pos, 0x42,  /* d_bitmap*/ 0, bitmap, &filedir);
+	if (ret != htonl(AFPERR_EOF)) {
+		failed();
+	}
+	memcpy(&temp, dsi->data + 20, sizeof(temp));
+	temp = ntohl(temp);
+	if (temp != 1) {
+		fprintf(stderr,"\tFAILED want 1 get %d\n", temp);
+		failed_nomsg();
+	}
+
+	filedir.attr = 0x01a0;
+ 	FAIL (FPSetFileParams(Conn, vol, DIRDID_ROOT , name, bitmap, &filedir)) 
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+}
+
+/* ----------- */
+void FPCatSearch_test()
+{
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPCatSearch page 110\n");
+	test225();
+}
+

@@ -21,7 +21,7 @@ unsigned ret;
     fprintf(stderr,"FPSetFileParms:test89: test set file setfilparam\n");
 
 	if (!Mac && !Path) {
-		nottested();
+		test_skipped(T_MAC_PATH);
 		return;
 	}
  	if (!(dir = folder_with_ro_adouble(vol, DIRDID_ROOT, name, file))) {
@@ -71,7 +71,7 @@ DSI *dsi = &Conn->dsi;
     fprintf(stderr,"FPSetFileParms:t120: test set file setfilparam (create .AppleDouble)\n");
 
 	if (!Mac && !Path) {
-		nottested();
+		test_skipped(T_MAC_PATH);
 		return;
 	}
 

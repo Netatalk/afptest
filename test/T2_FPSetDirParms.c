@@ -18,7 +18,7 @@ DSI *dsi;
     fprintf(stderr,"FPSetDirParms:t121: test set dir setfilparam (create .AppleDouble)\n");
 
 	if (!Mac && !Path) {
-		nottested();
+		test_skipped(T_MAC_PATH);
 		return;
 	}
 	dsi = &Conn->dsi;

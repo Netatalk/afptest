@@ -170,11 +170,12 @@ int pdir;
 int ret;
 u_int16_t vol = VolID;
 
-	if (!Conn2) 
-		return;
-
     fprintf(stderr,"===================\n");
     fprintf(stderr,"test95: exchange files\n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
 
 	if (!(pdir = no_access_folder(vol, DIRDID_ROOT, pname))) {
 		return;
@@ -253,11 +254,12 @@ int  dir = 0;
 char *name = "t99 dir no access";
 u_int16_t vol = VolID;
 
-	if (!Conn2)
-		return;
-		
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Error:t99: test folder without access right\n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
 
 	if (!(dir = no_access_folder(vol, DIRDID_ROOT, name))) {
 		return;
@@ -358,11 +360,12 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
-	if (!Conn2)
-		return;
-		
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Error:t101: access error cname \n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
 
 	if (!(dir = no_access_folder(vol, DIRDID_ROOT, ndir))) {
 		return;
@@ -459,11 +462,12 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
-	if (!Conn2)
-		return;
-
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Error:t102: access error but not cname \n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
 
 	if (!(dir = no_access_folder(vol, DIRDID_ROOT, name1))) {
 		return;
@@ -556,11 +560,12 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
-	if (!Conn2)
-		return;
-
     fprintf(stderr,"===================\n");
     fprintf(stderr,"t103: did access error \n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
 
 	if (!(dir = no_access_folder(vol, DIRDID_ROOT, name1))) {
 		return;
@@ -1108,11 +1113,12 @@ u_int16_t vol = VolID;
 DSI *dsi = &Conn->dsi;
 DSI *dsi2;
 
-	if (!Conn2) 
-		return;
-	
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Error:test174: did error two users from parent folder did=<deleted> name=test174 name\n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
 
 	tdir  = FPCreateDir(Conn,vol, DIRDID_ROOT, tname);
 	if (!tdir) {

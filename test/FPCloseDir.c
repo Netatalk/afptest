@@ -11,11 +11,13 @@ u_int16_t vol = VolID;
 int ret;
 DSI *dsi;
 
-	if (!Conn2) 
-		return;
 		
     fprintf(stderr,"===================\n");
 	fprintf(stderr, "FPCloseDir:test199: FPCloseDir call\n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
 
 	dsi = &Conn->dsi;
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {

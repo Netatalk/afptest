@@ -11,11 +11,11 @@ char *name2 = "t23 file";
 int  dir,dir1;
 u_int16_t vol = VolID;
 
-	if (Conn->afp_version != 30) {
-		return;
-	}
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetSessionToken:test220: AFP 3.0 get session token\n");
+	if (Conn->afp_version != 30) {
+		test_skipped(T_AFP3);
+	}
 
 	FAIL (FPGetSessionToken(Conn,0 ,0 ,0 ,NULL))
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
@@ -73,11 +73,12 @@ char *name2 = "t23 file";
 int  dir,dir1;
 u_int16_t vol = VolID;
 
-	if (Conn->afp_version != 31) {
-		return;
-	}
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetSessionToken:test221: AFP 3.1 get session token\n");
+	if (Conn->afp_version != 31) {
+		test_skipped(T_AFP3);
+		return;
+	}
 
 	FAIL (FPGetSessionToken(Conn, 3, 0, 5, "token"))
 	FAIL (FPzzz(Conn))

@@ -180,11 +180,12 @@ STATIC void test65()
 {
 char *name = "t65 DF FPByteLock 2 users";
 
-    if (!Conn2) {
-    	return;
-    }
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPByteRangeLock:test65: FPByteLock 2users DATA FORK\n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
     test_bytelock3(name, OPENFORK_DATA);
 
 	name = "t65 RF FPByteLock 2 users";

@@ -141,11 +141,12 @@ unsigned int ret;
 
 	dsi = &Conn->dsi;
 
-	if (Conn->afp_version < 30) {
-		return;
-	}
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetForkParms:test217: Setfork size 64 bits\n");
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		return;
+	}
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){
 		nottested();

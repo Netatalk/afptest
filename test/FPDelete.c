@@ -76,11 +76,12 @@ int len = (type == OPENFORK_RSCS)?(1<<FILPBIT_RFLEN):(1<<FILPBIT_DFLEN);
 u_int16_t vol = VolID;
 DSI *dsi2;
 
-    if (!Conn2) {
-    	return;
-    }
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPDelete:test74: Delete File 2 users\n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
 
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
@@ -114,13 +115,14 @@ char *name = "t90 dir";
 u_int16_t vol = VolID;
 DSI *dsi;
 
-	if (!Conn2) 
-		return;
 	dsi = &Conn->dsi;
-
 
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPDelete:test90: delete a dir without access\n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
 
 	if (!(dir = no_access_folder(vol, DIRDID_ROOT, name))) {
 		return;
@@ -293,11 +295,17 @@ DSI *dsi = &Conn->dsi;
 u_int16_t bitmap = (1 <<  DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID) | (1<<DIRPBIT_UID) |
 	    	(1 << DIRPBIT_GID) |(1 << DIRPBIT_ACCESS);
 
-	if (!Conn2) 
+	if (!Conn2) {
+		test_skipped(T_CONN2);
 		return;
+	}		
 	
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPDelete:test196: delete a folder in a deleted folder\n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
 
 	if (Exclude) {
 		fprintf(stderr, "\tFAILED (not run kill 1.6.x servers)\n");

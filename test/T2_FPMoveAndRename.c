@@ -16,11 +16,13 @@ u_int16_t vol = VolID;
 unsigned int ret;
 
 
-	if (!Path && !Mac) {
-		return;
-	}
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPMoveAndRename:test136: move and rename in a dir without .AppleDouble\n");
+
+	if (!Path && !Mac) {
+		test_skipped(T_MAC_PATH);
+		return;
+	}
 
 	FAIL (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name))
 	if (!Mac) {
@@ -66,11 +68,13 @@ u_int16_t vol = VolID;
 unsigned int ret;
 
 
-	if (!Path && !Mac) {
-		return;
-	}
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPMoveAndRename:test137: move and rename open file in dir without .AppleDouble\n");
+
+	if (!Path && !Mac) {
+		test_skipped(T_MAC_PATH);
+		return;
+	}
 
 	FAIL (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name))
 	if (!Mac) {
@@ -116,12 +120,13 @@ char *name = "t139 file";
 char *name1 = "t139 dir";
 u_int16_t vol = VolID;
 
-	if (!Path && !Mac) {
-		return;
-	}
-
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPMoveAndRename:test139: Move And Rename \n");
+
+	if (!Path && !Mac) {
+		test_skipped(T_MAC_PATH);
+		return;
+	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
 		nottested();

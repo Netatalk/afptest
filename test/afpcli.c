@@ -2128,3 +2128,65 @@ DSI *dsi;
 	return(dsi->header.dsi_code);
 }
 
+/* ------------------------------- 
+*/
+int AFPCatSearch(CONN *conn, u_int16_t vol, u_int32_t  nbe, char *pos, u_int16_t f_bitmap,u_int16_t d_bitmap,
+u_int32_t rbitmap, struct afp_filedir_parms *filedir)
+{
+int ofs;
+int len;
+DSI *dsi;
+u_int32_t temp;
+u_int16_t bitmap;
+
+	dsi = &conn->dsi;
+
+	SendInit(dsi);
+	ofs = 0;
+	dsi->commands[ofs++] = AFP_CATSEARCH;
+	dsi->commands[ofs++] = 0;
+
+	memcpy(dsi->commands +ofs, &vol, sizeof(vol));
+	ofs += sizeof(vol);
+	
+	temp = htonl(nbe);
+	memcpy(dsi->commands +ofs, &temp, sizeof(temp));
+	ofs += sizeof(temp);
+
+	temp = 0;
+	memcpy(dsi->commands +ofs, &temp, sizeof(temp));	/* reserved */
+	ofs += sizeof(temp);
+	
+	memcpy(dsi->commands +ofs, pos, 16);	/* cat pos (server stack)*/
+	ofs += 16;
+
+	bitmap = htons(f_bitmap);
+	memcpy(dsi->commands +ofs, &bitmap, sizeof(bitmap));
+	ofs += sizeof(bitmap);
+
+	bitmap = htons(d_bitmap);
+	memcpy(dsi->commands +ofs, &bitmap, sizeof(bitmap));
+	ofs += sizeof(bitmap);
+
+	temp = htonl(rbitmap);
+	memcpy(dsi->commands +ofs, &temp, sizeof(temp));
+	ofs += sizeof(temp);
+
+	len = afp_filedir_pack(dsi->commands +ofs +2, filedir, rbitmap & 0xffff,0);
+	dsi->commands[ofs] = len;
+	ofs += len +2;
+	
+	len = afp_filedir_pack(dsi->commands +ofs +2, filedir, rbitmap & 0xffff,0);
+	dsi->commands[ofs] = len;
+	ofs += len +2;
+
+	dsi->datalen = ofs;
+	dsi->header.dsi_len = htonl(dsi->datalen);
+	dsi->header.dsi_code = 0; 
+ 
+   	my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
+	/* ------------------ */
+	my_dsi_data_receive(dsi);
+	return(dsi->header.dsi_code);
+}
+

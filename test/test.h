@@ -78,7 +78,10 @@ extern unsigned int FPGetIconInfo(CONN *conn, u_int16_t dt, char *creator, u_int
 
 extern unsigned int FPGetAppl(CONN *conn, u_int16_t dt, char *name, u_int16_t index, u_int16_t f_bitmap);
 extern unsigned int FPAddAPPL(CONN *conn, u_int16_t dt, int did, char *creator, u_int32_t tag, char *name);
-unsigned int FPRemoveAPPL(CONN *conn, u_int16_t dt, int did, char *creator, char *name);
+extern unsigned int FPRemoveAPPL(CONN *conn, u_int16_t dt, int did, char *creator, char *name);
+
+extern unsigned int FPCatSearch(CONN *conn, u_int16_t vol, u_int32_t  nbe, char *pos, u_int16_t f_bitmap, u_int16_t d_bitmap,
+                                u_int32_t rbitmap, struct afp_filedir_parms *filedir);
 
 extern unsigned int FPBadPacket(CONN *conn, char fn, char *name );
 

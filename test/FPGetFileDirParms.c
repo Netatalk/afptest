@@ -91,11 +91,12 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
-	if (Conn->afp_version >= 30)
-		return;
-
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms:test70: bogus cname (unknow type)\n");
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		return;
+	}
 
 	fprintf(stderr,"---------------------\n");
 	fprintf(stderr,"GetFileDirParams Vol %d \n\n", vol);
@@ -382,12 +383,14 @@ char *name = "t194 dir";
 u_int16_t vol = VolID;
 DSI *dsi;
 
-	if (!Conn2) 
-		return;
 	dsi = &Conn->dsi;
 
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms:test194: dir without access\n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
 
 	if (!(dir = no_access_folder(vol, DIRDID_ROOT, name))) {
 		return;

@@ -310,6 +310,9 @@ int AFPRemoveAPPL(CONN *conn, u_int16_t dt, int did, char *creator, char *name);
 int AFPGetUserInfo(CONN *conn, char flag, int id, u_int16_t bitmap);
 int AFPBadPacket(CONN *conn, char fn, char *name );
 
+int AFPCatSearch(CONN *conn, u_int16_t vol, u_int32_t  nbe, char *pos, u_int16_t f_bitmap,u_int16_t d_bitmap,
+u_int32_t rbitmap, struct afp_filedir_parms *filedir);
+
 unsigned int AFPSetFileParams(CONN *, u_int16_t vol, int did, char *name, u_int16_t bitmap, struct afp_filedir_parms *);
 unsigned int AFPSetForkParam(CONN *conn, u_int16_t fork,  u_int16_t bitmap, off_t size);
 

@@ -22,6 +22,8 @@ common:user1, usr2
 - an empty volume:
 drwxrwsr-x    5 user1   common         176 avr 27 23:56 test/ 
 
+- some tests need a small read write volume, I'm using a 2 MBytes loopback
+
 example for 
 afpd.conf:
 #<<<<<<
@@ -65,6 +67,7 @@ rotest
 Tests on a read only volume.
 
 Ex:
+---
 Run all test on server 192.168.2.123
 spectest  -h 192.168.2.123 -u user1 -d usr2 -s test -w  toto
 Same but on a Mac

@@ -566,6 +566,30 @@ int not_valid(unsigned int ret, int mac_error, int netatalk_error)
 }
 
 /* ------------------------- */
+void test_skipped(int why) 
+{
+char *s;
+	switch(why) {
+	case T_CONN2:
+		s = "second user";
+		break;
+	case T_PATH:
+		s = "volume path";
+		break;
+	case T_AFP3:
+		s = "AFP 3.x";
+		break;
+	case T_AFP3_CONN2:
+		s = "AFP 3.x and no second user";
+		break;
+	case T_MAC_PATH:
+		s = "-m (Mac server) or the volume path";
+		break;
+	}
+	fprintf(stderr,"\tSKIPPED (need %s)\n",s);
+}
+
+/* ------------------------- */
 void failed_nomsg(void)
 {
 	if (!ExitCode)

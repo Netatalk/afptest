@@ -16,11 +16,13 @@ u_int16_t vol = VolID;
 int ret;
 DSI *dsi;
 
-	if (!Conn2) 
-		return;
 		
     fprintf(stderr,"===================\n");
 	fprintf(stderr, "FPOpenDir:test57: OpenDir call\n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
 
 	if (!(pdir = no_access_folder(vol, DIRDID_ROOT, name))) {
 		return;

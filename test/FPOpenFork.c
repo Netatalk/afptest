@@ -512,11 +512,12 @@ STATIC void test81()
 {
 char *name = "t81 Denymode RF 2users";
 
-    if (!Conn2) {
-    	return;
-    }
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPOpenFork:test81: Deny mode 2 users RF\n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
 		test_denymode(name, OPENFORK_RSCS);
 
     fprintf(stderr,"===================\n");

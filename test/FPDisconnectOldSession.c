@@ -22,11 +22,12 @@ int sock;
 int fork = 0, fork1;
 struct sigaction action;    
 
-	if (Conn->afp_version < 30 || Conn2) {
-		return;
-	}
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPDisconnectOldSession :test222: AFP 3.x disconnect old session\n");
+	if (Conn->afp_version < 30 || Conn2) {
+		test_skipped(T_AFP3_CONN2);
+		return;
+	}
 
 	ret = FPGetSessionToken(Conn, 0, 0, 0, NULL);
 	if (ret) {
@@ -85,7 +86,7 @@ struct sigaction action;
 		failed();
 		goto fin;
 	}
-	if (!(token = malloc(len))) {
+	if (!(token = malloc(len +4))) {
 		fprintf(stderr, "\tFAILED malloc(%x) %s\n", len, strerror(errno));
 		failed_nomsg();
 		goto fin;
@@ -100,6 +101,12 @@ struct sigaction action;
     }
 
 	memcpy(token, dsi3->data + sizeof(u_int32_t), len);
+	ret =  FPDisconnectOldSession(Conn, 0, len +4, token);
+	if (ret != htonl(AFPERR_MISC)) {
+		failed();
+		goto fin;
+	}
+
 	ret =  FPDisconnectOldSession(Conn, 0, len, token);
 
 

@@ -13,12 +13,18 @@ char *name = "t38 read only access dir";
 char *nfile = "t38 read write file";
 DSI *dsi;
 
-	if (!Conn2) 
+	if (!Conn2) {
+		test_skipped(T_CONN2);
 		return;
+	}		
 
 	dsi = &Conn->dsi;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPEnumerate:test38: enumerate folder with no write access\n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
 
 	if (!(rdir = read_only_folder_with_file(vol, DIRDID_ROOT, name, nfile) ) ) {
 		return;
@@ -310,11 +316,12 @@ int isdir;
 
 	dsi = &Conn->dsi;
 
-	if (Conn->afp_version < 30) {
-		return;
-	}
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPEnumerate:test218: enumerate arguments\n");
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		return;
+	}
 
 	bitmap = (1 << FILPBIT_LNAME);
 	if (htonl(AFPERR_NOOBJ) != FPEnumerateFull(Conn, vol, 1, 1, 800,  DIRDID_ROOT, "", bitmap, bitmap)) {

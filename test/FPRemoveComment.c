@@ -17,11 +17,14 @@ u_int16_t vol = VolID;
 u_int16_t vol2;
 DSI *dsi2;
 
-	if (!Conn2) 
-		return;
 		
     fprintf(stderr,"===================\n");
 	fprintf(stderr, "FPRemoveComment:test54: remove comment\n");
+
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
 
 	if (!(pdir = no_access_folder(vol, DIRDID_ROOT, name))) {
 		return;

@@ -1,5 +1,5 @@
 /*
- * $Id: spectest.c,v 1.4 2003-05-05 14:46:37 didg Exp $
+ * $Id: spectest.c,v 1.5 2003-05-11 01:30:28 didg Exp $
  * MANIFEST
  */
 #include "specs.h"
@@ -22,6 +22,7 @@ EXT_FN(FPAddComment);
 EXT_FN(FPAddIcon);
 EXT_FN(FPByteRangeLock);
 EXT_FN(FPByteRangeLockExt);
+EXT_FN(FPCatSearch);
 EXT_FN(FPCloseDir);
 EXT_FN(FPCloseDT);
 EXT_FN(FPCloseFork);
@@ -94,6 +95,7 @@ FN_N(FPAddComment)
 FN_N(FPAddIcon)
 FN_N(FPByteRangeLock)
 FN_N(FPByteRangeLockExt)
+FN_N(FPCatSearch)
 FN_N(FPCloseDir)
 FN_N(FPCloseDT)
 FN_N(FPCloseFork)

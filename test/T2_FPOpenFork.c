@@ -20,7 +20,7 @@ int dir;
     fprintf(stderr,"FPOpenFork:test49: in a read-write folder\n");
 
 	if (!Mac && !Path) {
-		nottested();
+		test_skipped(T_MAC_PATH);
 		return;
 	}
 
@@ -87,7 +87,7 @@ unsigned int ret;
     fprintf(stderr,"FPOpenFork:test152: Error when no write access to .AppleDouble\n");
 
 	if (!Mac && !Path) {
-		nottested();
+		test_skipped(T_MAC_PATH);
 		return;
 	}
 
@@ -124,7 +124,7 @@ u_int16_t vol = VolID;
     fprintf(stderr,"FPOpenFork:test153: open data fork without ressource fork\n");
 
 	if (!Mac && !Path) {
-		nottested();
+		test_skipped(T_MAC_PATH);
 		return;
 	}
 
@@ -165,7 +165,7 @@ u_int16_t vol = VolID;
     fprintf(stderr,"FPOpenFork:test156: Open data fork with no write access to .AppleDouble\n");
 
 	if (!Mac && !Path) {
-		nottested();
+		test_skipped(T_MAC_PATH);
 		return;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * $Id: afpcmd.c,v 1.2 2003-05-03 21:14:53 didg Exp $
+ * $Id: afpcmd.c,v 1.3 2003-05-11 01:30:28 didg Exp $
  *
  */
 #include "afpclient.h"
@@ -1581,6 +1581,22 @@ DSI *dsi;
 }
 
 /* ------------------------------- */
+unsigned int FPCatSearch(CONN *conn, u_int16_t vol, u_int32_t  nbe, char *pos, u_int16_t f_bitmap, u_int16_t d_bitmap,
+                                u_int32_t rbitmap, struct afp_filedir_parms *filedir)
+{
+int ret;
+DSI *dsi;
+
+	dsi = &conn->dsi;
+
+	fprintf(stderr,"---------------------\n");
+	fprintf(stderr,"FPCatSearch vol: %d bitmap 0x%x\n\n", vol, rbitmap);
+	ret = AFPCatSearch(conn, vol, nbe, pos, f_bitmap, d_bitmap, rbitmap, filedir);
+	dump_header(dsi);
+	return ret;
+}
+
+/* ------------------------------- */
 unsigned int FPSetFilDirParam(CONN *conn, u_int16_t vol, int did, char *name, u_int16_t bitmap,
                   struct afp_filedir_parms *fil )
 {
@@ -1848,7 +1864,7 @@ DSI *dsi;
 	dsi = &conn->dsi;
 
 	fprintf(stderr,"---------------------\n");
-	fprintf(stderr,"write fork %d  offset %d size %d from 0x%x\n\n", fork , offset, size, whence);
+	fprintf(stderr,"write fork %d  offset %d size %d from 0x%x\n\n", fork , offset, size, (unsigned)whence);
 
 	ret = AFPWrite(conn,fork, offset, size, data, whence);
 	dump_header(dsi);
