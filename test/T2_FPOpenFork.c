@@ -15,6 +15,7 @@ u_int16_t bitmap = 0;
 int fork = 0, fork1 = 0;
 int dir;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPOpenFork:test47: open read only file read only then read write\n");
     fprintf(stderr,"FPOpenFork:test47: in a read only folder\n");
@@ -200,6 +201,7 @@ int fork, fork1;
 u_int16_t vol = VolID;
 int dir;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPOpenFork:test49: open read-write file without ressource fork\n");
     fprintf(stderr,"FPOpenFork:test49: in a read-write folder\n");
@@ -270,6 +272,7 @@ u_int16_t vol = VolID;
 DSI *dsi = &Conn->dsi;
 unsigned int ret;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPOpenFork:test152: Error when no write access to .AppleDouble\n");
 
@@ -309,6 +312,7 @@ u_int16_t bitmap = 0;
 int fork;
 u_int16_t vol = VolID;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPOpenFork:test153: open data fork without ressource fork\n");
 
@@ -352,6 +356,7 @@ char *name  = "t156 ro AppleDouble";
 char *file  = "t156 test.pdf";
 u_int16_t vol = VolID;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPOpenFork:test156: Open data fork with no write access to .AppleDouble\n");
 
@@ -396,6 +401,7 @@ char *file  = "t321 test.txt";
 u_int16_t vol = VolID;
 int fd;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPOpenFork:test321: Bogus (empty) resource fork\n");
 
@@ -456,6 +462,98 @@ test_exit:
 	exit_test("test321");
 }
 
+/* ------------------------- 
+ * for this test you need a volume with options:crlf
+ * in AppleVolumes.default
+*/
+STATIC void test372()
+{
+char *name  = "t372 file name.txt";
+char data[20];
+u_int16_t vol = VolID;
+int fork;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+DSI *dsi = &Conn->dsi; 
+u_int16_t bitmap;
+int fd;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPRead:test372: no crlf convertion for TEXT file\n");
+
+	if (!Mac && !Path) {
+		test_skipped(T_MAC_PATH);
+		goto test_exit;
+	}
+	
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		goto fin;
+	}
+	bitmap = (1<< DIRPBIT_ATTR) |  (1<<DIRPBIT_ATTR) | (1<<FILPBIT_FINFO) |
+	         (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE) |
+		     (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID);
+
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, bitmap,0)) {
+		failed();
+		goto fin;
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+		memcpy(filedir.finder_info, "TEXTttxt", 8);
+		
+ 		FAIL (FPSetFileParams(Conn, vol, DIRDID_ROOT , name, (1<<FILPBIT_FINFO), &filedir)) 
+	    FAIL (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, bitmap,0))
+	}
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
+	if (!fork) {
+		failed();
+		goto fin;
+	}
+	if (FPWrite(Conn, fork, 0, 5, "test\r", 0 )) {
+		failed();
+		goto fin1;
+	}
+	
+	if (FPRead(Conn, fork, 0, 5, data)) {
+		failed();
+		goto fin1;
+	}
+	if (memcmp(data, "test\r", 5)) {
+		fprintf(stderr, "\tFAILED wrote \"test\\r\" get \"%s\"\n", data);
+	    failed_nomsg();
+	}
+	if (!Mac) {
+		sprintf(temp,"%s/%s", Path, name);
+		fd = open(temp, O_RDWR , 0666);
+		if (fd < 0) {
+			fprintf(stderr,"\tFAILED unable to open %s :%s\n", temp, strerror(errno));
+			failed_nomsg();
+			goto fin1;
+		}
+		if (read(fd, data, 5) != 5) {
+			fprintf(stderr,"\tFAILED unable to read data:%s\n", strerror(errno));
+			failed_nomsg();
+		}
+		if (memcmp(data, "test\r", 5)) {
+		    fprintf(stderr, "\tFAILED not \"test\\r\" get 0x%x 0x%x 0x%x 0x%x 0x%x\n",
+		    data[0],data[1],data[2],data[3],data[4]);
+		    failed_nomsg();
+		}
+		close(fd);
+	}
+
+fin1:
+	FAIL (FPCloseFork(Conn,fork))
+fin:
+	FPDelete(Conn, vol,  DIRDID_ROOT , name);
+test_exit:
+	exit_test("test372");
+}
+
+
 /* ----------- */
 void FPOpenFork_test()
 {
@@ -469,5 +567,6 @@ void FPOpenFork_test()
 	test153();
 	test156();
 	test321();
+	test372();
 }
 
