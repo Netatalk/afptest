@@ -565,6 +565,69 @@ int not_valid(unsigned int ret, int mac_error, int netatalk_error)
 	return 0;
 }
 
+/* ---------------------- */
+static int error_in_list(unsigned int bitmap, unsigned int error)
+{
+	if ((BITERR_NOOBJ & bitmap) && htonl(error) == AFPERR_NOOBJ)
+		return 1;
+	if ((BITERR_NODIR & bitmap) && htonl(error) == AFPERR_NODIR)
+		return 1;
+	if ((BITERR_PARAM & bitmap) && htonl(error) == AFPERR_PARAM)
+		return 1;
+	if ((BITERR_BUSY & bitmap) && htonl(error) == AFPERR_BUSY)
+		return 1;
+	if ((BITERR_BADTYPE & bitmap) && htonl(error) == AFPERR_BADTYPE)
+		return 1;
+
+	return 0;
+}
+
+/* ---------------------- */
+static char *bitmap2text(unsigned int bitmap)
+{
+static char temp[4096];
+static char temp1[4096];
+
+	temp[0] = 0;
+	if ((BITERR_NOOBJ & bitmap)) {
+	    sprintf(temp, "%d %s ", AFPERR_NOOBJ, afp_error(htonl(AFPERR_NOOBJ)));
+	}
+	if ((BITERR_NODIR & bitmap)) {
+	    sprintf(temp1, "%d %s ", AFPERR_NODIR, afp_error(htonl(AFPERR_NODIR)));
+		strcat(temp, temp1);
+	}
+
+	if ((BITERR_PARAM & bitmap)) {
+	    sprintf(temp1, "%d %s ", AFPERR_PARAM, afp_error(htonl(AFPERR_PARAM)));
+		strcat(temp, temp1);
+	}
+
+	if ((BITERR_BUSY & bitmap)) {
+	    sprintf(temp1, "%d %s ", AFPERR_BUSY, afp_error(htonl(AFPERR_BUSY)));
+		strcat(temp, temp1);
+	}
+	if ((BITERR_BADTYPE & bitmap)) {
+	    sprintf(temp1, "%d %s ", AFPERR_BUSY, afp_error(htonl(AFPERR_BADTYPE)));
+		strcat(temp, temp1);
+	}
+	return temp;
+}
+
+/* ---------------------- */
+int not_valid_bitmap(unsigned int ret, unsigned int bitmap, int netatalk_error)
+{
+	if (!Mac) {
+    	fprintf(stderr,"MAC RESULT: %s\n", bitmap2text(bitmap));
+    }
+	if (!error_in_list(bitmap,ret)) {
+		if (htonl(netatalk_error) == ret) {
+		    return 0;
+		}
+    	return 1;
+	}
+	return 0;
+}
+
 /* ------------------------- */
 void test_skipped(int why) 
 {

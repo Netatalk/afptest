@@ -35,6 +35,7 @@ extern void failed_nomsg(void);
 extern void failed(void);
 extern void nottested(void);
 extern int not_valid(unsigned int ret, int mac_error, int afpd_error);
+extern int not_valid_bitmap(unsigned int ret, unsigned int bitmap, int afpd_error);
 extern void test_skipped(int why);
 
 #define T_CONN2      1

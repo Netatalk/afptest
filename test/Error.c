@@ -309,13 +309,14 @@ DSI *dsi;
     if (dir || ntohl(AFPERR_NOOBJ) != dsi->header.dsi_code) 
 		failed();
 
-	if (ntohl(AFPERR_NODIR) != FPEnumerate(Conn, vol,  DIRDID_ROOT , name1, 
+	ret = FPEnumerate(Conn, vol,  DIRDID_ROOT , name1, 
 	     (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO)|
 	     (1<<FILPBIT_CDATE) | (1<< FILPBIT_PDID)
 	      ,
 		 (1<< DIRPBIT_ATTR) |
 		 (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
-		)) {
+		);
+	if (not_valid_bitmap(ret, BITERR_NOOBJ | BITERR_NODIR, AFPERR_NODIR)) {
 		failed();
 	}
 
@@ -776,8 +777,16 @@ DSI *dsi;
 	/* -------------------- */
 	FAIL (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) 
 	FAIL (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name1))
-	FAIL (ntohl(AFPERR_NOOBJ) != FPExchangeFile(Conn, vol, DIRDID_ROOT_PARENT,dir, "", name1)) 
-	FAIL (ntohl(AFPERR_NOOBJ) != FPExchangeFile(Conn, vol, DIRDID_ROOT, DIRDID_ROOT_PARENT, name, ""))
+
+	ret = FPExchangeFile(Conn, vol, DIRDID_ROOT_PARENT,dir, "", name1);
+	if (not_valid_bitmap(ret, BITERR_NOOBJ | BITERR_BADTYPE, AFPERR_NOOBJ)) {
+		failed();
+	}
+
+	ret = FPExchangeFile(Conn, vol, DIRDID_ROOT, DIRDID_ROOT_PARENT, name, "");
+	if (not_valid_bitmap(ret, BITERR_NOOBJ | BITERR_BADTYPE, AFPERR_NOOBJ)) {
+		failed();
+	}
 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1)) 
@@ -951,13 +960,14 @@ DSI *dsi;
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
 
 	/* ---- enumerate.c ---- */
-	if (ntohl(AFPERR_NODIR) != FPEnumerate(Conn, vol,  tdir, tname, 
+	ret = FPEnumerate(Conn, vol,  tdir, tname, 
 	     (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO)|
 	     (1<<FILPBIT_CDATE) | (1<< FILPBIT_PDID)
 	      ,
 		 (1<< DIRPBIT_ATTR) |
 		 (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
-		)) {
+		);
+	if (not_valid_bitmap(ret, BITERR_NOOBJ | BITERR_NODIR, AFPERR_NODIR)) {
 		failed();
 	}
 	/* ---- desktop.c ---- */

@@ -265,13 +265,15 @@ DSI *dsi;
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
 
 	/* ---- enumerate.c ---- */
-	if (ntohl(AFPERR_NODIR) != FPEnumerate(Conn, vol,  tdir, tname, 
+	ret = FPEnumerate(Conn, vol,  tdir, tname, 
 	     (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO)|
 	     (1<<FILPBIT_CDATE) | (1<< FILPBIT_PDID)
 	      ,
 		 (1<< DIRPBIT_ATTR) |
 		 (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
-		)) {
+		);
+
+	if (not_valid_bitmap(ret, BITERR_NOOBJ | BITERR_NODIR, AFPERR_NODIR)) {
 		failed();
 	}
 	/* ---- desktop.c ---- */
@@ -296,11 +298,6 @@ DSI *dsi = &Conn->dsi;
 u_int16_t bitmap = (1 <<  DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID) | (1<<DIRPBIT_UID) |
 	    	(1 << DIRPBIT_GID) |(1 << DIRPBIT_ACCESS);
 
-	if (!Conn2) {
-		test_skipped(T_CONN2);
-		return;
-	}		
-	
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPDelete:test196: delete a folder in a deleted folder\n");
 	if (!Conn2) {

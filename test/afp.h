@@ -110,6 +110,12 @@ typedef u_int16_t AFPUserBytes;
 #define AFPERR_PWDPOLCY -5046   /* password fails policy check */
 #define AFPERR_USRLOGIN -5047   /* user already logged on */
 
+#define BITERR_NOOBJ     (1 << 0)
+#define BITERR_NODIR     (1 << 1)
+#define BITERR_PARAM     (1 << 2)
+#define BITERR_BUSY      (1 << 2)
+#define BITERR_BADTYPE   (1 << 3)
+
 /* AFP Attention Codes -- 4 bits */
 #define AFPATTN_SHUTDOWN     (1 << 15)            /* shutdown/disconnect */
 #define AFPATTN_CRASH        (1 << 14)            /* server crashed */

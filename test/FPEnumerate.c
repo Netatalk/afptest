@@ -120,6 +120,7 @@ STATIC void test40()
 char *name  = "t40 dir";
 char *name1 = "t40 file";
 u_int16_t vol = VolID;
+unsigned int ret;
 int  dir;
 
     fprintf(stderr,"===================\n");
@@ -155,17 +156,18 @@ int  dir;
 	{
 		failed();
 	}
-	if (ntohl(AFPERR_NODIR) != FPEnumerate(Conn, vol,  dir , "", 
+	ret = FPEnumerate(Conn, vol,  dir , "", 
 	         (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO)|
 	         (1<<FILPBIT_CDATE) | (1<<FILPBIT_BDATE) | (1<<FILPBIT_MDATE)
 	         ,
 		     (1<< DIRPBIT_ATTR) | (1<<DIRPBIT_FINFO) |
 	         (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE) |
 		    (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
-		)
-	) {
+		);
+	if (not_valid_bitmap(ret, BITERR_NOOBJ | BITERR_NODIR, AFPERR_NODIR)) {
 		failed();
 	}
+	
 }
 
 /* ------------------------- */
@@ -177,6 +179,7 @@ char *name  = "t41 dir";
 char *name1 = "t41 dir/file";
 char *name2 = "t41 dir/sub dir/foo";
 char *name3 = "t41 dir/sub dir";
+unsigned int ret;
 
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPEnumerate:test41: enumerate folder not there\n");
@@ -204,28 +207,32 @@ char *name3 = "t41 dir/sub dir";
 		goto fin;
 	}
 	
-	if (ntohl(AFPERR_NODIR) != FPEnumerate(Conn, vol,  DIRDID_ROOT , name2, 
+	ret = FPEnumerate(Conn, vol,  DIRDID_ROOT , name2, 
 	         (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO)|
 	         (1<<FILPBIT_CDATE) | (1<<FILPBIT_BDATE) | (1<<FILPBIT_MDATE)
 	         ,
 		     (1<< DIRPBIT_ATTR) | (1<<DIRPBIT_FINFO) |
 	         (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE) |
 		    (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
-		)
-	) {
+		);
+
+	if (not_valid_bitmap(ret, BITERR_NOOBJ | BITERR_NODIR, AFPERR_NODIR)) {
 		failed();
 	}
-	if (ntohl(AFPERR_NODIR) != FPEnumerate(Conn, vol,  DIRDID_ROOT , name3, 
+	
+	ret = FPEnumerate(Conn, vol,  DIRDID_ROOT , name3, 
 	         (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO)|
 	         (1<<FILPBIT_CDATE) | (1<<FILPBIT_BDATE) | (1<<FILPBIT_MDATE)
 	         ,
 		     (1<< DIRPBIT_ATTR) | (1<<DIRPBIT_FINFO) |
 	         (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE) |
 		    (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
-		)
-	) {
+		);
+
+	if (not_valid_bitmap(ret, BITERR_NOOBJ | BITERR_NODIR, AFPERR_NODIR)) {
 		failed();
 	}
+
 	if (ntohl(AFPERR_PARAM) != FPEnumerate(Conn, vol,  0 , "", 
 	         (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO)|
 	         (1<<FILPBIT_CDATE) | (1<<FILPBIT_BDATE) | (1<<FILPBIT_MDATE)
@@ -270,7 +277,7 @@ u_int16_t vol = VolID;
 	}
 
 	ret = FPDelete(Conn, vol,  DIRDID_ROOT , "");
-	if (not_valid(ret, /* MAC */AFPERR_PARAM, AFPERR_ACCESS)) {
+	if (not_valid_bitmap(ret, BITERR_PARAM | BITERR_BUSY, AFPERR_ACCESS)) {
 		failed();
 		goto fin;
 	}
