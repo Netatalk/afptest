@@ -1094,7 +1094,7 @@ int afp_volume_pack(char *b, struct afp_volume_parms *parms, u_int16_t bitmap)
 void afp_filedir_unpack(struct afp_filedir_parms *filedir, char *b, u_int16_t rfbitmap, u_int16_t rdbitmap)
 {
     char isdir;
-    u_int16_t i;
+    u_int16_t i,j;
     u_int32_t l;
     int r;
     int bit = 0;
@@ -1155,6 +1155,18 @@ void afp_filedir_unpack(struct afp_filedir_parms *filedir, char *b, u_int16_t rf
         	break;
         case FILPBIT_PDINFO: /* utf8 name */
         	memcpy(filedir->pdinfo, b, sizeof(filedir->pdinfo));
+        	/* blindly try utf8 name */
+        	memcpy(&i, b, sizeof(i));
+        	i = ntohs(i);
+        	if (i != 0) {
+        	    memcpy(&j, beg+i+4, sizeof(j));
+        	    j = ntohs(j);
+        	    /* hack */
+            	if (j && j < 512 && (filedir->utf8_name = fp_malloc(j+1))) {
+            	    memcpy(filedir->utf8_name, beg+i+6, j);
+            	    filedir->utf8_name[j] = 0;
+            	}
+            }
         	b += sizeof(filedir->pdinfo);
         	break;
         case FILPBIT_UNIXPR:
