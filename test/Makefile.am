@@ -39,7 +39,7 @@ spectest_SOURCES = spectest.c FPAddAPPL.c FPAddComment.c FPAddIcon.c \
  
 spectest_LDADD = libafptest.la
 #
-fail_spectest_SOURCES = spectest.c failed_FPEnumerate.c failed_FPExchangeFiles.c \
+fail_spectest_SOURCES = fail_spectest.c failed_FPEnumerate.c failed_FPExchangeFiles.c \
 	failed_FPMoveAndRename.c failed_Error.c
 
 fail_spectest_CFLAGS = -DQUIRK

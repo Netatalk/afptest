@@ -78,7 +78,7 @@ struct sigaction action;
 DSI *dsi;
 int sock;
 
-	if (Conn2) {
+	if (Conn->afp_version < 30 || Conn2) {
 		return;
 	}
     fprintf(stderr,"===================\n");
