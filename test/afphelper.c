@@ -96,7 +96,7 @@ DSI *dsi;
 int get_fid(CONN *conn, u_int16_t vol, int dir, char *name)
 {
 int  ofs =  3 * sizeof( u_int16_t );
-u_int16_t bitmap = (1<<FILPBIT_FNUM );
+u_int16_t bitmap = (1<<FILPBIT_FNUM ) | (1 <<FILPBIT_ATTR);
 struct afp_filedir_parms filedir;
 DSI *dsi = &conn->dsi;
 
