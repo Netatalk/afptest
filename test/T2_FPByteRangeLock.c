@@ -92,12 +92,12 @@ u_int16_t vol2;
     fprintf(stderr,"FPByteRangeLock: test open excl mode\n");
 
 	if (!Path) {
-		nottested();
+		test_skipped(T_MAC_PATH);                                                             
 		return;
 	}
 
 	if (!Conn2) {
-		nottested();
+		test_skipped(T_CONN2);
 		return;
 	}
 

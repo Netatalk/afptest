@@ -23,6 +23,7 @@ DSI *dsi;
 		fprintf(stderr,"FileID calls Not supported\n");
 		return;
 	}
+
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
 		nottested();
 		return;
@@ -205,6 +206,59 @@ DSI *dsi;
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1)) 
 }
 
+/* -------------------------- */
+STATIC void test362()
+{
+int  dir;
+u_int16_t vol = VolID;
+char *name = "t362 Resolve ID file";
+char *name1 = "t362 Resolve ID dir";
+int  ofs =  3 * sizeof( u_int16_t );
+u_int16_t bitmap = (1<<FILPBIT_FNUM );
+struct afp_filedir_parms filedir;
+DSI *dsi = &Conn->dsi;
+u_int16_t vol2;
+DSI *dsi2;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPResolveID:test362: Resolve ID two users interactions\n");
+
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
+	dsi2 = &Conn2->dsi;
+	vol2  = FPOpenVol(Conn2, Vol);
+	if (vol2 == 0xffff) {
+		nottested();
+		return;
+	}
+
+	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
+		failed();
+		return;
+	}
+
+	FAIL (FPCreateFile(Conn, vol,  0, dir , name))
+
+	if (FPGetFileDirParams(Conn, vol,  dir , name, bitmap,0)) {
+		failed();
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+		FAIL ((FPResolveID(Conn, vol, filedir.did, bitmap)))
+	}
+	FAIL (FPDelete(Conn2, vol2,  dir , name))
+	FAIL (FPDelete(Conn2, vol2,  dir , ""))
+
+	FAIL (ntohl(AFPERR_NOID ) != FPResolveID(Conn, vol, filedir.did, bitmap))
+	FPCloseVol(Conn,vol);
+	vol  = FPOpenVol(Conn, Vol);
+	FAIL (ntohl(AFPERR_NOID ) != FPResolveID(Conn, vol, filedir.did, bitmap)) 
+}
+
+
 /* ----------- */
 void FPResolveID_test()
 {
@@ -214,5 +268,6 @@ void FPResolveID_test()
 	test91();
 	test310();
 	test311();
+	test362();
 }
 

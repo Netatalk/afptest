@@ -25,10 +25,6 @@ DSI *dsi = &Conn->dsi;
 		test_skipped(T_MAC_PATH);
 		return;
 	}
-	if (Locking) {
-		test_skipped(T_LOCKING);
-		return;
-	}		
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
 		failed();
@@ -330,6 +326,11 @@ DSI *dsi = &Conn->dsi;
 		test_skipped(T_MAC_PATH);
 		return;
 	}
+
+	if (Locking) {
+		test_skipped(T_LOCKING);
+		return;
+	}		
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
 		failed();

@@ -13,11 +13,6 @@ char *name = "t38 read only access dir";
 char *nfile = "t38 read write file";
 DSI *dsi;
 
-	if (!Conn2) {
-		test_skipped(T_CONN2);
-		return;
-	}		
-
 	dsi = &Conn->dsi;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPEnumerate:test38: enumerate folder with no write access\n");
