@@ -29,9 +29,17 @@ DSI *dsi = &Conn->dsi;
 	FAIL (FPMapID(Conn, 1, 0))  /* user to Mac roman */
 
 	FAIL (FPMapID(Conn, 1, filedir.uid))  /* user to Mac roman */
-	FAIL (htonl(AFPERR_NOITEM) != FPMapID(Conn, 1, -filedir.uid))  /* user to Mac roman */
 
-	FAIL (htonl(AFPERR_NOITEM) != FPMapID(Conn, 2, -filedir.gid))  /* group to Mac roman */
+	ret = FPMapID(Conn, 1, -filedir.uid);  /* user to Mac roman */
+	if (not_valid_bitmap(ret, BITERR_NOOBJ | BITERR_NOITEM, AFPERR_NOITEM)) {
+		failed();
+	}
+
+	ret = FPMapID(Conn, 2, -filedir.gid);  /* group to Mac roman */
+	/* sometime -filedir.gid is there */
+	if (ret && not_valid_bitmap(ret, BITERR_NOOBJ | BITERR_NOITEM, AFPERR_NOITEM)) {
+		failed();
+	}
 
 	FAIL (FPMapID(Conn, 2, filedir.gid))  /* group to Mac roman */
 	ret = FPMapID(Conn, 3, filedir.uid); /* user to UTF8 */

@@ -38,9 +38,16 @@ char *usr = NULL;
 		usr = strp2cdup(dsi->commands);
 	}
 	
-	FAIL (htonl(AFPERR_NOITEM) != FPMapID(Conn, 1, -filedir.uid))  /* user to Mac roman */
+	ret = FPMapID(Conn, 1, -filedir.uid);  /* user to Mac roman */
+	if (not_valid_bitmap(ret, BITERR_NOOBJ | BITERR_NOITEM, AFPERR_NOITEM)) {
+		failed();
+	}
 
-	FAIL (htonl(AFPERR_NOITEM) != FPMapID(Conn, 2, -filedir.gid))  /* group to Mac roman */
+	ret = FPMapID(Conn, 2, -filedir.gid);  /* group to Mac roman */
+	/* sometime -filedir.gid is there */
+	if (ret && not_valid_bitmap(ret, BITERR_NOOBJ | BITERR_NOITEM, AFPERR_NOITEM)) {
+		failed();
+	}
 
 	ret = FPMapID(Conn, 2, filedir.gid);  /* group to Mac roman */
 	if (ret) {
@@ -71,8 +78,15 @@ char *usr = NULL;
 	FAIL (htonl(AFPERR_PARAM) != FPMapName(Conn, 5, "toto")) 
 
 	FAIL (FPMapName(Conn, 3, "")) 
-	FAIL (htonl(AFPERR_NOITEM) != FPMapName(Conn, 3, "toto"))
-	FAIL (htonl(AFPERR_NOITEM) != FPMapName(Conn, 4, "toto"))
+
+	ret = FPMapName(Conn, 3, "toto");
+	if (not_valid_bitmap(ret, BITERR_NOOBJ | BITERR_NOITEM, AFPERR_NOITEM)) {
+		failed();
+	}
+	ret = FPMapName(Conn, 4, "toto");
+	if (not_valid_bitmap(ret, BITERR_NOOBJ | BITERR_NOITEM, AFPERR_NOITEM)) {
+		failed();
+	}
 
 	ret =  FPMapName(Conn, 1, "toto");
 	if (Conn->afp_version >= 30 && ret != htonl(AFPERR_NOITEM)) {

@@ -115,6 +115,9 @@ typedef u_int16_t AFPUserBytes;
 #define BITERR_PARAM     (1 << 2)
 #define BITERR_BUSY      (1 << 2)
 #define BITERR_BADTYPE   (1 << 3)
+#define BITERR_NOITEM    (1 << 4)
+#define BITERR_DENYCONF  (1 << 5)
+#define BITERR_NFILE     (1 << 6)
 
 /* AFP Attention Codes -- 4 bits */
 #define AFPATTN_SHUTDOWN     (1 << 15)            /* shutdown/disconnect */

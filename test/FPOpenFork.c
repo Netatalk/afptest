@@ -643,7 +643,7 @@ DSI *dsi;
 		if (!forkt[i]) {
 			maxf = i;
 			ok = 1;
-			if (dsi->header.dsi_code != ntohl(AFPERR_NFILE)) {
+			if (not_valid_bitmap(dsi->header.dsi_code, BITERR_NFILE | BITERR_DENYCONF, AFPERR_NFILE)) {
 				failed();
 			}
 			break;

@@ -578,6 +578,12 @@ static int error_in_list(unsigned int bitmap, unsigned int error)
 		return 1;
 	if ((BITERR_BADTYPE & bitmap) && htonl(error) == AFPERR_BADTYPE)
 		return 1;
+	if ((BITERR_NOITEM & bitmap) && htonl(error) == AFPERR_NOITEM)
+		return 1;
+	if ((BITERR_DENYCONF & bitmap) && htonl(error) == AFPERR_DENYCONF)
+		return 1;
+	if ((BITERR_NFILE & bitmap) && htonl(error) == AFPERR_NFILE)
+		return 1;
 
 	return 0;
 }
@@ -607,7 +613,19 @@ static char temp1[4096];
 		strcat(temp, temp1);
 	}
 	if ((BITERR_BADTYPE & bitmap)) {
-	    sprintf(temp1, "%d %s ", AFPERR_BUSY, afp_error(htonl(AFPERR_BADTYPE)));
+	    sprintf(temp1, "%d %s ", AFPERR_BADTYPE, afp_error(htonl(AFPERR_BADTYPE)));
+		strcat(temp, temp1);
+	}
+	if ((BITERR_NOITEM & bitmap)) {
+	    sprintf(temp1, "%d %s ", AFPERR_NOITEM, afp_error(htonl(AFPERR_NOITEM)));
+		strcat(temp, temp1);
+	}
+	if ((BITERR_DENYCONF & bitmap)) {
+	    sprintf(temp1, "%d %s ", AFPERR_DENYCONF, afp_error(htonl(AFPERR_DENYCONF)));
+		strcat(temp, temp1);
+	}
+	if ((BITERR_NFILE & bitmap)) {
+	    sprintf(temp1, "%d %s ", AFPERR_NFILE, afp_error(htonl(AFPERR_NFILE)));
 		strcat(temp, temp1);
 	}
 	return temp;
