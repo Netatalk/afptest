@@ -131,6 +131,7 @@ int fork;
 
 	if (FPSetForkParam(Conn, fork, (1<<FILPBIT_DFLEN), 64*1024*1024)) {
 		nottested();
+		FPCloseFork(Conn,fork);
 		goto fin;
 	}
 
@@ -147,6 +148,7 @@ int fork;
 
 	if (FPSetForkParam(Conn, fork, (1<<FILPBIT_DFLEN), 129*1024*1024)) {
 		nottested();
+		FPCloseFork(Conn,fork);
 		goto fin;
 	}
 
@@ -228,6 +230,73 @@ fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1))
 }
 
+/* ------------------------- */
+STATIC void test332()
+{
+char *name  = "t332 old file name";
+char *name1 = "t332 new file name";
+u_int16_t vol = VolID;
+int tp,tp1;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+DSI *dsi = &Conn->dsi; 
+u_int16_t bitmap;
+u_int32_t mdate = 0;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPCopyFile:test332: copyFile check meta data\n");
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		goto fin;
+	}
+	fprintf(stderr,"sleep(2)\n");  
+	sleep(2);
+	tp = get_fid(Conn, vol, DIRDID_ROOT, name);
+	if (!tp) {
+		nottested();
+		goto fin;
+	}
+	bitmap = (1<<DIRPBIT_MDATE);
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, bitmap,0)) {
+		failed();
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+		mdate = filedir.mdate;
+	}
+	
+	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1))
+
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name1, bitmap,0)) {
+		failed();
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+		if (mdate != filedir.mdate)  {
+	        fprintf(stderr,"\tFAILED modification date differ\n");  
+	        failed_nomsg();
+	        goto fin;
+		}
+	}
+
+	tp1 = get_fid(Conn, vol, DIRDID_ROOT, name1);
+	if (!tp1) {
+		nottested();
+		goto fin;
+	}
+	if (tp == tp1) {
+	    fprintf(stderr,"\tFAILED both files have same ID\n");  
+	    failed_nomsg();
+	}
+
+fin:
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1))
+}
+
 /* ----------- */
 void FPCopyFile_test()
 {
@@ -237,5 +306,6 @@ void FPCopyFile_test()
 	test158();
 	test315();
 	test317();
+	test332();
 }
 
