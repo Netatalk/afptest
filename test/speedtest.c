@@ -1,12 +1,13 @@
 /*
- * $Id: speedtest.c,v 1.3 2004-04-28 13:46:08 didg Exp $
+ * $Id: speedtest.c,v 1.4 2004-04-29 23:23:59 didg Exp $
  * MANIFEST
  */
 #include "specs.h"
 #include <dlfcn.h>
 #include <sys/time.h>
 #include <unistd.h>
-          
+#include <sys/mman.h>
+
 int Verbose = 0;
 int Interactive = 0;
 int Quirk = 0;
@@ -36,6 +37,7 @@ static char    *Vol2 = "";
 static char    *User;
 static int     Version = 21;
 static char    *Test = "Write";
+static char    *Filename;
 
 static int Count = 1;
 static off_t Size = 64* MEGABYTE;
@@ -44,6 +46,8 @@ static int Request = 1;
 static int Delete = 0;
 static int Sparse = 0;
 static int Local = 0;
+static int Flush = 1;
+static int Direct = 0;
 
 /* not used */
 CONN *Conn2;
@@ -182,6 +186,17 @@ unsigned int i;
 /* -------------- */
 unsigned int local_getfiledirparams(CONN *conn, u_int16_t vol, int did , char *name, u_int16_t f_bitmap, u_int16_t d_bitmap)
 {
+struct stat st;
+
+	did = ntohl(did);
+	if (local_chdir(vol, did) < 0) {
+		return ntohl(AFPERR_NOOBJ);
+	}
+	if (*name != 0) {
+		if (!stat(name, &st)) {
+			return ntohl(AFP_OK);
+		}
+	}
 	return ntohl(AFPERR_NOOBJ);
 }
 
@@ -229,20 +244,29 @@ int fd;
 }
 
 /* ------------------------- */
+#ifndef O_DIRECT
+/* XXX hack */
+#define O_DIRECT 040000 
+#endif
+
 u_int16_t local_openfork(CONN *conn, u_int16_t vol, char type, u_int16_t bitmap, int did , char *name, int access)
 {
 int fd;
+int flags = O_RDWR;
 
 	if (!Quiet) {
 		fprintf(stderr,"---------------------\n");
 		fprintf(stderr,"Open Fork %s Vol %d did : 0x%x <%s> access %x\n\n", (type == OPENFORK_DATA)?"data":"resource", 
 						vol, ntohl(did), name, access);
 	}
+	if (Direct) {
+		flags |= O_DIRECT;
+	}
 	did = ntohl(did);
 	if (local_chdir(vol, did) < 0) {
 		return ntohl(AFPERR_PARAM);
 	}
-	fd = open(name, O_RDWR, 0666);
+	fd = open(name, flags, 0666);
 	if (fd == -1) {
 		return ntohl(AFPERR_NOOBJ);
 	}
@@ -256,6 +280,12 @@ unsigned int local_writeheader(DSI *dsi, u_int16_t fork, int offset, int size, c
 		fprintf(stderr,"---------------------\n");
 		fprintf(stderr,"send write header fork %d  offset %d size %d from 0x%x\n\n", fork , offset, size, (unsigned)whence);
 	}
+	if (lseek(fork, offset, SEEK_SET) == (off_t)-1) {
+		return ntohl(AFPERR_EOF);
+	}
+	if (write(fork, data, size) != size) {
+		return ntohl(AFPERR_EOF);
+	}
 	return ntohl(AFP_OK);
 }
 
@@ -265,12 +295,6 @@ unsigned int local_writefooter(DSI *dsi, u_int16_t fork, int offset, int size, c
 	if (!Quiet) {
 		fprintf(stderr,"---------------------\n");
 		fprintf(stderr,"get write footer fork %d  offset %d size %d from 0x%x\n\n", fork , offset, size, (unsigned)whence);
-	}
-	if (lseek(fork, offset, SEEK_SET) == (off_t)-1) {
-		return ntohl(AFPERR_EOF);
-	}
-	if (write(fork, data, size) != size) {
-		return ntohl(AFPERR_EOF);
 	}
 	return ntohl(AFP_OK);
 }
@@ -465,7 +489,7 @@ unsigned long long s, e;
 /* ------------------ */
 static void header(void)
 {
-	fprintf(stderr, "run\t microsec\t  MB/s\n");
+	fprintf(stderr, "run\t microsec\t  KB/s\n");
 }
 
 /* ------------------ */
@@ -475,7 +499,7 @@ unsigned long long d;
 
 	gettimeofday(&Timer_end, NULL);
 	d = delta();
-	fprintf(stderr, "%9lld\t%.2f\n", d, ((float)Size*MEGABYTE/(float)d)/1000);
+	fprintf(stderr, "%9lld\t%.2f\n", d, ((float)Size*MEGABYTE/(float)d)/KILOBYTE);
 }
 
 /* ------------------ */
@@ -563,8 +587,7 @@ DSI *dsi;
 			written_r -= nbe_r;
 			offset_r += nbe_r;
 		}
-		
-		if (VFS.flushfork(Conn, fork)) {
+		if (Flush && VFS.flushfork(Conn, fork)) {
 			failed();
 			goto fin1;
 		}
@@ -618,11 +641,45 @@ size_t nbe;
 		written -= nbe;
 		offset += nbe;
 	}
-	if (VFS.flushfork(Conn, fork)) {
+	if (Flush && VFS.flushfork(Conn, fork)) {
 		return -1;
 	}
 	return 0;
 }
+
+/* ------------------ */
+static int getfd(CONN *conn, int fork)
+{
+DSI *dsi;
+
+	if (Local) {
+		return fork;
+	}
+	dsi = &Conn->dsi;
+	return dsi->socket;
+}
+
+#if 0
+/* ------------------ */
+static int blocking_mode(CONN *conn, int fork, const int mode)
+{
+DSI *dsi;
+int adr = mode;
+int ret;
+    
+    if (Local) {
+    	if (mode) {
+    		 adr = O_NONBLOCK;
+    	}
+    	ret = fcntl(fork, F_SETFL , adr);
+    }
+    else {
+		dsi = &Conn->dsi;
+		ret = ioctl(dsi->socket, FIONBIO, &adr);
+	}
+	return ret;
+}
+#endif
 
 /* ------------------ */
 void Copy(void)
@@ -631,29 +688,51 @@ int dir = 0;
 int dir2 = 0;
 int fork = 0;
 int fork2 = 0;
+int fork_fd;
+int fork2_fd;
 int id = getpid();
 static char temp[MAXPATHLEN];   
 int vol = VolID;
 int vol2 = VolID2;
 off_t  written;
+off_t  written_r;
+off_t  written_w;
 off_t  offset = 0;
+off_t  offset_r = 0;
+off_t  offset_w = 0;
 size_t nbe;
+size_t nbe_r;
+size_t nbe_w;
 int i;
+int push;
+DSI *dsi;
+int max = Request;
+int cnt = 0;
 
+	dsi = &Conn->dsi;
 	fprintf(stderr, "Copy qantum %d, size %lld %s\n", Quantum, Size, Sparse?"sparse file":"");
 	header();
 
 	sprintf(temp,"CopyTest-%d", id);
-	if (ntohl(AFPERR_NOOBJ) != is_there(Conn, VolID, DIRDID_ROOT, temp)) {
-		nottested();
-		return;
+	if (!Filename) {
+		if (ntohl(AFPERR_NOOBJ) != is_there(Conn, VolID, DIRDID_ROOT, temp)) {
+			nottested();
+			return;
+		}
+	}
+	else {
+		dir = DIRDID_ROOT;
+		if (ntohl(AFP_OK) != is_there(Conn, VolID, dir, Filename)) {
+			nottested();
+			return;
+		}
 	}
 	if (VolID != VolID2 && ntohl(AFPERR_NOOBJ) != is_there(Conn, VolID2, DIRDID_ROOT, temp)) {
 		nottested();
 		return;
 	}
 	
-	if (!(dir = VFS.createdir(Conn,vol, DIRDID_ROOT , temp))) {
+	if (!Filename && !(dir = VFS.createdir(Conn,vol, DIRDID_ROOT , temp))) {
 		nottested();
 		goto fin;
 	}
@@ -664,10 +743,15 @@ int i;
 		nottested();
 		goto fin;
 	}
-
-	if (VFS.createfile(Conn, vol,  0, dir , "Source")){
-		failed();
-		goto fin;
+	if (!Filename) {
+		strcpy(temp, "Source");
+		if (VFS.createfile(Conn, vol,  0, dir , temp)){
+			failed();
+			goto fin;
+		}
+	}
+	else {
+		strcpy(temp, Filename);
 	}
 	if (VFS.createfile(Conn, vol2,  0, dir2 , "Destination")){
 		failed();
@@ -675,7 +759,7 @@ int i;
 	}
 	
 	for (i = 1; i <= Count; i++) {
-		fork = VFS.openfork(Conn, vol, OPENFORK_DATA , (1<<FILPBIT_FNUM), dir, "Source", OPENACC_WR |OPENACC_RD| OPENACC_DWR| OPENACC_DRD);
+		fork = VFS.openfork(Conn, vol, OPENFORK_DATA , (1<<FILPBIT_FNUM), dir, temp, OPENACC_WR |OPENACC_RD| OPENACC_DWR| OPENACC_DRD);
 		if (!fork) {
 			failed();
 			goto fin1;
@@ -685,31 +769,92 @@ int i;
 			failed();
 			goto fin1;
 		}
-		if (i == 1 || Delete) {
+		if (!Filename && (i == 1 || Delete)) {
 			if (init_fork(fork)) {
 				failed();
 				goto fin1;
 			}
 		}
+		fork_fd = getfd(Conn, fork);
+		fork2_fd = getfd(Conn, fork2);
+		
 		fprintf(stderr,"%d\t", i);
+		
 		gettimeofday(&Timer_start, NULL);
-		nbe = Quantum;
-		written = Size;
-		offset = 0;
+		nbe = nbe_r = nbe_w = Quantum;
+		written = written_r = written_w = Size;
+		offset = offset_r = offset_w = 0;
+		push = 0;
+		cnt = 0;
 		while (written ) {
 		    if (written < Quantum) {
 	    	    nbe = written;
 		    }
-		    if (VFS.read(Conn, fork, offset, nbe, Buffer)) {
+		    cnt++;
+		    if (push < max && VFS.readheader(dsi, fork, offset, nbe, Buffer)) {
 		    	failed();
 		    	goto fin1;
 		    }
-			if (VFS.write(Conn, fork2, offset, nbe, Buffer, 0 )) {
+			written -= nbe;
+			offset += nbe;
+		    push++;
+		    if (push >= max) {
+		    	if (written_r < Quantum) {
+	    	    	nbe_r = written_r;
+		    	}
+				if (VFS.readfooter(dsi, fork, offset_r, nbe_r, Buffer)) {
+		    		failed();
+		    		goto fin1;
+				}
+		    	if (VFS.writeheader(dsi, fork2, offset_r, nbe_r, Buffer, 0)) {
+					failed();
+					goto fin1;
+				}
+				if (cnt >= max*2 -1 ) {
+					if (VFS.writefooter(dsi, fork2, offset_w, nbe_w, Buffer, 0)) {
+		    			failed();
+		    			goto fin1;
+		    		}
+					written_w -= nbe_w;
+					offset_w += nbe_w;
+				}
+				push--;
+				written_r -= nbe_r;
+				offset_r += nbe_r;
+		    }
+		}
+		while (push) {
+		    if (written_r < Quantum) {
+	    		nbe_r = written_r;
+		    }
+			if (VFS.readfooter(dsi, fork, offset_r, nbe_r, Buffer)) {
+		    	failed();
+		    	goto fin1;
+			}
+			if (VFS.writeheader(dsi, fork2, offset_r, nbe_r, Buffer, 0)) {
 				failed();
 				goto fin1;
 			}
-			written -= nbe;
-			offset += nbe;
+			if (VFS.writefooter(dsi, fork2, offset_w, nbe_w, Buffer, 0)) {
+		    	failed();
+		    	goto fin1;
+			}
+			push--;
+			written_r -= nbe_r;
+			offset_r += nbe_r;
+			written_w -= nbe_w;
+			offset_w += nbe_w;
+		}
+		for (push = 1; push < max; push++) {
+		    if (written_w < Quantum) {
+	    		nbe_w = written_w;
+		    }
+			if (VFS.writefooter(dsi, fork2, offset_w, nbe_w, Buffer, 0)) {
+		    	failed();
+		    	goto fin1;
+			}
+			written_w -= nbe_w;
+			offset_w += nbe_w;
 		}
 		timer_footer();
 		if (VFS.closefork(Conn,fork)) {
@@ -724,14 +869,14 @@ int i;
 		fork2 = 0;
 
 		if (Delete) {
-			if (VFS.delete(Conn, vol,  dir, "Source")) {
+			if (!Filename && VFS.delete(Conn, vol,  dir, temp)) {
 				goto fin;
 			}
 			if (VFS.delete(Conn, vol2,  dir2, "Destination")) {
 				goto fin;
 			}
 			
-			if (VFS.createfile(Conn, vol,  0, dir , "Source")){
+			if (!Filename && VFS.createfile(Conn, vol,  0, dir , temp)){
 				failed();
 				goto fin;
 			}
@@ -745,10 +890,10 @@ int i;
 fin1:
 	if (fork && VFS.closefork(Conn,fork)) {failed();}
 	if (fork2 && VFS.closefork(Conn,fork2)) {failed();}
-	if (VFS.delete(Conn, vol,  dir, "Source")) {failed();}
+	if (!Filename && VFS.delete(Conn, vol,  dir, temp)) {failed();}
 	if (VFS.delete(Conn, vol2,  dir2, "Destination")) {failed();}
 fin:
-	if (dir && VFS.delete(Conn, vol,  dir, "")) {failed();}
+	if (!Filename && dir && VFS.delete(Conn, vol,  dir, "")) {failed();}
 	if (dir2 && dir2 != dir && VFS.delete(Conn, vol2,  dir2, "")) {failed();}
     
 	return;
@@ -867,29 +1012,40 @@ int push;
 	fprintf(stderr, "Read qantum %d, size %lld %s\n", Quantum, Size, Sparse?"sparse file":"");
 	header();
 
-	sprintf(temp,"ReadTest-%d", id);
-	if (ntohl(AFPERR_NOOBJ) != is_there(Conn, VolID, DIRDID_ROOT, temp)) {
-		nottested();
-		return;
-	}
+	if (!Filename) {
+		sprintf(temp,"ReadTest-%d", id);
 	
-	if (!(dir = VFS.createdir(Conn,vol, DIRDID_ROOT , temp))) {
-		nottested();
-		goto fin;
+		if (ntohl(AFPERR_NOOBJ) != is_there(Conn, VolID, DIRDID_ROOT, temp)) {
+			nottested();
+			return;
+		}
+	
+		if (!(dir = VFS.createdir(Conn,vol, DIRDID_ROOT , temp))) {
+			nottested();
+			goto fin;
+		}
+		if (VFS.createfile(Conn, vol,  0, dir , "File")){
+			failed();
+			goto fin;
+		}
+		strcpy(temp, "File");
 	}
-
-	if (VFS.createfile(Conn, vol,  0, dir , "File")){
-		failed();
-		goto fin;
+	else {
+		dir = DIRDID_ROOT;
+		strcpy(temp, Filename);
+		if (ntohl(AFP_OK) != is_there(Conn, VolID, dir, temp)) {
+			nottested();
+			return;
+		}
 	}
 	dsi = &Conn->dsi;
 	for (i = 1; i <= Count; i++) {
-		fork = VFS.openfork(Conn, vol, OPENFORK_DATA , (1<<FILPBIT_FNUM), dir, "File", OPENACC_WR |OPENACC_RD| OPENACC_DWR| OPENACC_DRD);
+		fork = VFS.openfork(Conn, vol, OPENFORK_DATA , (1<<FILPBIT_FNUM), dir, temp, OPENACC_WR |OPENACC_RD| OPENACC_DWR| OPENACC_DRD);
 		if (!fork) {
 			failed();
 			goto fin1;
 		}
-		if (i == 1 || Delete) {
+		if (!Filename && (i == 1 || Delete)) {
 			if (init_fork(fork)) {
 				failed();
 				goto fin1;
@@ -944,12 +1100,12 @@ int push;
 		if (VFS.closefork(Conn,fork)) {failed();}
 		fork = 0;
 
-		if (Delete) {
-			if (VFS.delete(Conn, vol,  dir, "File")) {
+		if (!Filename && Delete) {
+			if (VFS.delete(Conn, vol,  dir, temp)) {
 				goto fin;
 			}
 			
-			if (VFS.createfile(Conn, vol,  0, dir , "File")){
+			if (VFS.createfile(Conn, vol,  0, dir , temp)){
 				failed();
 				goto fin;
 			}
@@ -958,9 +1114,9 @@ int push;
 
 fin1:
 	if (fork && VFS.closefork(Conn,fork)) {failed();}
-	if (VFS.delete(Conn, vol,  dir, "File")) {failed();}
+	if (!Filename && VFS.delete(Conn, vol,  dir, temp)) {failed();}
 fin:
-	if (VFS.delete(Conn, vol,  dir, "")) {failed();}
+	if (!Filename && VFS.delete(Conn, vol,  dir, "")) {failed();}
     
 	return;
 }
@@ -1047,7 +1203,13 @@ void (*fn)(void) = NULL;
 		fprintf(stderr,"\t server quantum (%d) too small\n", dsi->server_quantum);
 		return;
 	}
-	Buffer = malloc(Quantum);
+	if (Direct) {
+		/* assume correctly aligned for O_DIRECT */
+		Buffer = mmap(NULL, Quantum, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+	}
+	else {
+		Buffer = malloc(Quantum);
+	}
 	if (!Buffer) {
 		fprintf(stderr,"\t can't allocate (%d) bytes\n", Quantum);
 		return;
@@ -1105,7 +1267,8 @@ void (*fn)(void) = NULL;
 /* =============================== */
 void usage( char * av0 )
 {
-    fprintf( stderr, "usage:\t%s [-h host] [-p port] [-s vol] [-S Vol2] [-u user] [-w password] [-f test] [-c count] - \n", av0 );
+    fprintf( stderr, "usage:\t%s [-h host] [-p port] [-s vol] [-S Vol2] [-u user] [-w password] [-f test] [-c count] "
+    "[-d size] [-q quantum] [-F file] [-234LvViyea] \n", av0 );
     fprintf( stderr,"\t-h\tserver host name (default localhost)\n");
     fprintf( stderr,"\t-p\tserver port (default 548)\n");
     fprintf( stderr,"\t-s\tvolume to mount (default home)\n");
@@ -1113,6 +1276,8 @@ void usage( char * av0 )
     fprintf( stderr,"\t-u\tuser name (default uid)\n");
     
     fprintf( stderr,"\t-L\tuse posix calls (default AFP calls)\n");
+    fprintf( stderr,"\t-D\twith -L use O_DIRECT in open flags (default no)\n");
+    
     fprintf( stderr,"\t-w\tpassword (default none)\n");
     fprintf( stderr,"\t-2\tAFP 2.2 version (default 2.1)\n");
     fprintf( stderr,"\t-3\tAFP 3.0 version\n");
@@ -1124,6 +1289,8 @@ void usage( char * av0 )
     fprintf( stderr,"\t-r\tnumber of outstanding requests (default 1)\n");
     fprintf( stderr,"\t-y\tuse a new file for each run (default same file)\n");
     fprintf( stderr,"\t-e\tsparse file (default no)\n");
+    fprintf( stderr,"\t-a\tdon't flush to disk after write (default yes)\n");
+    fprintf( stderr,"\t-F\tread from file in volume root folder (default create a temporary file)\n");
     
     fprintf( stderr,"\t-v\tverbose (default no)\n");
     fprintf( stderr,"\t-V\tvery verbose (default no)\n");
@@ -1143,7 +1310,7 @@ char	**av;
 int cc;
 
 	Quiet = 1;
-    while (( cc = getopt( ac, av, "Vv234h:p:s:S:u:d:w:f:ic:""o:q:r:yeL" )) != EOF ) {
+    while (( cc = getopt( ac, av, "Vv234h:p:s:S:u:d:w:f:ic:""o:q:r:yeLDaF:" )) != EOF ) {
         switch ( cc ) {
 		case 'd':
 			Size = atoi(optarg) * MEGABYTE;
@@ -1163,10 +1330,19 @@ int cc;
 		case 'L':
 			Local = 1;
 			break;
-			
+		case 'D':
+			Direct = 1;
+			break;
+		case 'a':
+			Flush = 0;
+			break;
 		case 'c':
 			Count = atoi(optarg);
 			break;
+		case 'F':
+            Filename = strdup(optarg);
+            break;
+		
         case '2':
 			vers = "AFP2.2";
 			Version = 22;
