@@ -1535,6 +1535,9 @@ u_int32_t temp;
 	my_dsi_stream_write(dsi, data, size);
 	my_dsi_cmd_receive(dsi);
 	if (!dsi->header.dsi_code) {
+	        if (dsi->cmdlen != 4) {
+	            return -1;
+	        }
 		memcpy(&last, dsi->commands, sizeof(last));
 		last = ntohl(last);
 		if (whence) {
@@ -1579,6 +1582,9 @@ char *ptr;
 	my_dsi_stream_write(dsi, data, size);
 	my_dsi_cmd_receive(dsi);
 	if (!dsi->header.dsi_code) {
+	        if (dsi->cmdlen != 8) {
+	            return -1;
+	        }
 		ptr = dsi->commands;
 		last = get_off_t(&ptr, 1);
 		if (whence) {

@@ -135,6 +135,41 @@ fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
 }
 
+/* ------------------------- */
+STATIC void test303()
+{
+u_int16_t bitmap = 0;
+int fork;
+char *name = "t303 file.txt";
+u_int16_t vol = VolID;
+DSI *dsi;
+
+	dsi = &Conn->dsi;
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPWrite:test303: Write 0 byte to data fork \n");
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		return;
+	}
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
+
+	if (!fork) {
+		failed();
+		goto fin;
+	}		
+	FAIL (FPSetForkParam(Conn, fork, (1<<FILPBIT_DFLEN), 1024)) 
+	
+	FAIL (FPWrite(Conn, fork, 1024, 0, Data, 0 ))
+
+fin:
+
+	FAIL (fork && FPCloseFork(Conn,fork))
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+}
+
+
 /* ----------- */
 void FPWrite_test()
 {
@@ -142,5 +177,6 @@ void FPWrite_test()
     fprintf(stderr,"FPWrite page 270\n");
 	test216();
 	test226();
+	test303();
 }
 

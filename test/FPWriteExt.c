@@ -255,6 +255,47 @@ fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, "very big"))
 }
 
+/* ------------------------- */
+STATIC void test304()
+{
+u_int16_t bitmap = 0;
+int fork;
+char *name = "t304 file.txt";
+u_int16_t vol = VolID;
+int size;
+DSI *dsi;
+
+	dsi = &Conn->dsi;
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPWriteExt:test304: Write 0 byte to data fork\n");
+ 	if (Conn->afp_version < 30) { 
+		test_skipped(T_AFP3);
+ 		return;
+ 	}
+
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		return;
+	}
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
+
+	if (!fork) {
+		failed();
+		goto fin;
+	}		
+	FAIL (FPSetForkParam(Conn, fork, (1<<FILPBIT_DFLEN), 1024)) 
+	
+	FAIL (FPWrite_ext(Conn, fork, 1024, 0, Data, 0 ))
+	
+
+fin:
+
+	FAIL (fork && FPCloseFork(Conn,fork))
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+}
+
 
 /* ----------- */
 void FPWriteExt_test()
@@ -263,5 +304,6 @@ void FPWriteExt_test()
     fprintf(stderr,"FPWriteExt page 273\n");
     test148();
 	test207();
+	test304();
 }
 

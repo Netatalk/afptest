@@ -174,6 +174,53 @@ fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name)) 
 }
 
+/* ------------------------- */
+STATIC void test306()
+{
+u_int16_t bitmap = 0;
+int fork;
+char *name = "t306 file.txt";
+u_int16_t vol = VolID;
+u_int32_t data = (unsigned)-1;
+DSI *dsi;
+
+	dsi = &Conn->dsi;
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPSetForkParms:test306: set fork size, new size > old size\n");
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		return;
+	}
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
+
+	if (!fork) {
+		failed();
+		goto fin;
+	}		
+	FAIL (FPSetForkParam(Conn, fork, (1<<FILPBIT_DFLEN), 1024)) 
+	if (FPRead(Conn, fork, 1020, 4, (char *)&data)) {
+		failed();
+		goto fin;
+	}
+	if (data != 0) {
+		if (Mac) {
+			fprintf(stderr,"\tMac result 0x%x but 0 expected\n", data);
+		}
+		else {
+			fprintf(stderr,"\tFAILED got 0x%x but 0 expected\n", data);
+			failed_nomsg();
+			goto fin;
+		}
+	}
+
+fin:
+
+	FAIL (fork && FPCloseFork(Conn,fork))
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+}
+
 /* ----------- */
 void FPSetForkParms_test()
 {
@@ -182,5 +229,6 @@ void FPSetForkParms_test()
     test62();
     test141();
     test217();
+    test306();
 }
 

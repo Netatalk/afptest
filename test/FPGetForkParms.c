@@ -235,6 +235,48 @@ fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
 }
 
+/* ------------------------- */
+STATIC void test305()
+{
+u_int16_t bitmap = 0;
+int fork;
+char *name = "t305 file.txt";
+u_int16_t vol = VolID;
+int len = (1<<FILPBIT_DFLEN);
+DSI *dsi;
+
+	dsi = &Conn->dsi;
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPGetForkParms:test305: fork len after a 0 byte write\n");
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		return;
+	}
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
+
+	if (!fork) {
+		failed();
+		goto fin;
+	}		
+	FAIL (FPSetForkParam(Conn, fork, (1<<FILPBIT_DFLEN), 1024)) 
+	
+	FAIL (FPWrite(Conn, fork, 2048, 0, Data, 0 ))
+	bitmap = len;
+	if (FPGetForkParam(Conn, fork, bitmap)) {
+		failed();
+		goto fin;
+	}
+	check_forklen(dsi, OPENFORK_DATA, 1024);
+	
+
+fin:
+
+	FAIL (fork && FPCloseFork(Conn,fork))
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+}
+
 /* ----------- */
 void FPGetForkParms_test()
 {
@@ -244,5 +286,6 @@ void FPGetForkParms_test()
     test50();
 	test188();
 	test192();
+	test305();
 }
 
