@@ -131,6 +131,12 @@ DSI *dsi;
 		bitmap = (1<< DIRPBIT_UNIXPR);
 		filedir.unix_priv &= ~S_IWUSR;
  		FAIL (FPSetFilDirParam(Conn, vol, dir , "", bitmap, &filedir)) 
+ 		FAIL (FPGetFileDirParams(Conn, vol, dir, "", 0, bitmap))
+
+		filedir.unix_priv &= ~(S_IWUSR |S_IWGRP| S_IWOTH);
+ 		FAIL (FPSetFilDirParam(Conn, vol, dir , "", bitmap, &filedir)) 
+ 		FAIL (FPGetFileDirParams(Conn, vol, dir, "", 0, bitmap))
+		
  		FAIL (!FPDelete(Conn, vol,  dir , name))
 
  		/* open fork read write in a read only folder */
