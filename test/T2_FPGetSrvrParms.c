@@ -16,7 +16,7 @@ u_int16_t vol2;
 char *b;
 
     fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetSrvrParms:test316: GetSrvrParms after volume config file has been modified\n");
+    fprintf(stderr,"FPGetSrvrParms:test320: GetSrvrParms after volume config file has been modified\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);

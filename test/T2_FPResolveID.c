@@ -179,6 +179,93 @@ DSI *dsi = &Conn->dsi;
 }
 
 
+/* -------------------------- */
+STATIC void test331()
+{
+u_int16_t vol = VolID;
+int  dir;
+char *name  = "t331 file";
+char *name2 = "t331 file new name";
+char *name1 = "t331 dir";
+int  ofs =  3 * sizeof( u_int16_t );
+u_int16_t bitmap = (1<<FILPBIT_FNUM ) | (1<<DIRPBIT_FINFO);
+struct afp_filedir_parms filedir;
+int fid = 0;
+DSI *dsi = &Conn->dsi;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPResolveID:test331: Resolve ID file modified with local fs\n");
+
+	if (!Mac && !Path) {
+		test_skipped(T_MAC_PATH);
+		return;
+	}
+
+	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
+		failed();
+		return;
+	}
+
+	FAIL (FPCreateFile(Conn, vol,  0, dir , name)) 
+
+	if (FPGetFileDirParams(Conn, vol,  dir , name, bitmap,0)) {
+		failed();
+		goto fin;
+	}
+
+	if (FPGetFileDirParams(Conn, vol,  dir , name, bitmap,0)) {
+		failed();
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+		fid = filedir.did;
+		FAIL (FPResolveID(Conn, vol, filedir.did, bitmap)) 
+	}
+	if (!Mac) {
+		sprintf(temp, "%s/%s/%s", Path, name1, name);
+		sprintf(temp1,"%s/%s/%s", Path, name1, name2);
+		fprintf(stderr,"rename %s %s\n", temp, temp1);
+		if (rename(temp, temp1) < 0) {
+			fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+			failed_nomsg();
+		}
+		
+		sprintf(temp, "%s/%s/.AppleDouble/%s", Path, name1, name);
+		sprintf(temp1,"%s/%s/.AppleDouble/%s", Path, name1, name2);
+		fprintf(stderr,"rename %s %s\n", temp, temp1);
+		if (rename(temp, temp1) < 0) {
+			fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+			failed_nomsg();
+		}
+
+	}
+	else {
+		FAIL (FPMoveAndRename(Conn, vol, DIRDID_ROOT, dir, name, name2))
+	}
+	if (FPGetFileDirParams(Conn, vol,  dir , name2, bitmap,0)) {
+		failed();
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+		if (fid != filedir.did) {
+			fprintf(stderr,"\tFAILED FPGetFileDirParams id differ %x %x\n", fid, filedir.did);
+			failed_nomsg();
+		
+		}
+		else {
+			FAIL (FPResolveID(Conn, vol, filedir.did, bitmap)) 
+		}
+	}
+
+fin:
+	FAIL (FPDelete(Conn, vol,  dir, name2))
+	FPDelete(Conn, vol,  dir, name);
+	FAIL (FPDelete(Conn, vol,  dir, ""))
+
+}
+
 /* ----------- */
 void FPResolveID_test()
 {
@@ -187,5 +274,6 @@ void FPResolveID_test()
 	test129();
 	test130();
 	test131();
+	test331();
 }
 

@@ -238,7 +238,6 @@ int fd;
 			goto fin;
 		}
 	}
-	
 	bitmap = 0xe93f;
 	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, file, bitmap, 0 )) {
 		failed();
@@ -249,7 +248,6 @@ int fd;
 		failed();
 		goto fin;
 	}
-	
 	fork = FPOpenFork(Conn, vol, OPENFORK_RSCS , 0 ,DIRDID_ROOT, file, OPENACC_RD|OPENACC_DWR);
 	if (!fork) {
 		failed();
