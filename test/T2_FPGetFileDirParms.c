@@ -693,6 +693,108 @@ fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
 }
 
+/* ------------------------- */
+STATIC void test336()
+{
+char *name = "t336 very long dirname (more than 31 bytes)";
+char *ndir = "t336 dir";
+u_int16_t vol = VolID;
+DSI *dsi;
+unsigned int  dir;
+u_int16_t bitmap = 0;
+int ret;
+int id;
+u_int16_t vol2;
+DSI *dsi2;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+
+	dsi = &Conn->dsi;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPGetFileDirParms::test336: long dirname >31 bytes\n");
+
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}
+	if (!Mac && !Path) {
+		test_skipped(T_MAC_PATH);
+		return;
+	}
+
+	dsi2 = &Conn2->dsi;
+	vol2  = FPOpenVol(Conn2, Vol);
+	if (vol2 == 0xffff) {
+		nottested();
+		return;
+	}
+
+	id = FPCreateDir(Conn2, vol2, DIRDID_ROOT, name);
+	if (!id) {
+		nottested();
+		return;
+	}
+	FPCloseVol(Conn2,vol2);
+
+	dir  = FPCreateDir(Conn, vol, DIRDID_ROOT , ndir);
+	if (!dir) {
+		nottested();
+		goto fin;
+	}
+	if (Conn->afp_version >= 30) {
+		bitmap = (1<<FILPBIT_PDINFO);
+	}
+	else {
+		bitmap = (1<<DIRPBIT_LNAME);
+	}
+
+	sprintf(temp1,"#%X",ntohl(id));
+	memset(temp, 0, sizeof(temp));
+	strncpy(temp, name, 31 - strlen(temp1));
+	strcat(temp, temp1);
+	/* for afp3 it's not valid mangled filename */
+	ret = FPGetFileDirParams(Conn, vol, DIRDID_ROOT, temp, 0, bitmap);
+	if ((Conn->afp_version >= 30 && ret != ntohl(AFPERR_NOOBJ)) 
+	    || ( Conn->afp_version < 30 && ret)) {
+		failed();
+	}
+	ret = FPCreateDir(Conn, vol, dir, temp);
+	if (!ret || ret != get_did(Conn, vol, dir, temp)) {
+		failed();
+	}
+	if (Path) {
+	    struct stat st;
+
+		sprintf(temp1, "%s/%s/%s", Path, ndir, temp);
+		if (stat(temp, &st)) {
+			fprintf(stderr,"\tFAILED stat( %s ) %s\n", temp1, strerror(errno));
+			failed_nomsg();
+		}
+	}
+
+	bitmap |= (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID);
+	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, "", 0, bitmap)) {
+		nottested();
+	}
+	if (FPGetFileDirParams(Conn, vol, dir, temp, 0, bitmap)) {
+		nottested();
+	}
+	else {
+		filedir.isdir = 1;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
+		if (filedir.pdid != ntohl(dir)) {
+		    fprintf(stderr,"\tFAILED %x should be %x\n", filedir.pdid, ntohl(dir) );
+			failed_nomsg();
+		}
+	}
+	
+	FAIL (FPDelete(Conn, vol,  dir, temp))
+	FAIL (FPDelete(Conn, vol,  dir, ""))
+fin:
+	FAIL (FPDelete(Conn, vol,  id, ""))
+}
+
 /* ----------- */
 void FPGetFileDirParms_test()
 {
@@ -706,5 +808,6 @@ void FPGetFileDirParms_test()
 	test128();	
 	test182();
 	test235();
+	test336();
 }
 
