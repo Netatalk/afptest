@@ -204,7 +204,7 @@ int temp;
 u_int16_t vol = VolID;
 
     fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPExchangeFiles:test108: exchange files\n");
+    fprintf(stderr,"FPExchangeFiles:test342: exchange files\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -243,7 +243,6 @@ u_int16_t vol = VolID;
 		failed_nomsg();
 	}
 	FAIL (FPDelete(Conn, vol,  dir , name1))
-
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
 }
 

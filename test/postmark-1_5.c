@@ -134,6 +134,7 @@ void (*reports[])()={verbose_report,terse_report};
 u_int16_t Vol;
 DSI *Dsi; 
 CONN *Conn;
+int Verbose;
 
 /* Counters */
 int files_created;  /* number of files created */

@@ -590,6 +590,55 @@ fin:
 	free(data);
 }
 
+/* ------------------------- */
+STATIC void test343()
+{
+u_int16_t bitmap = 0;
+int fork;
+char *name = "t343 file.txt";
+u_int16_t vol = VolID;
+int size;
+DSI *dsi;
+
+	dsi = &Conn->dsi;
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPRead:test343: read/write data fork (small size)\n");
+	size = min(4096, dsi->server_quantum);
+	if (size < 2000) {
+		fprintf(stderr,"\t server quantum (%d) too small\n", size);
+		return;
+	}
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+	}
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
+
+	if (!fork) {
+		failed();
+		goto fin;
+	}		
+
+	if (FPWrite(Conn, fork, 0, size, Data, 0 )) {
+		failed();
+		goto fin1;
+	}
+
+	if (FPRead(Conn, fork, 0, size, Data)) {
+		failed();
+		goto fin1;
+	}
+	FAIL (FPFlush(Conn, vol))
+
+fin1:
+	FAIL (FPCloseFork(Conn,fork)) 
+
+fin:
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+}
+
+
 /* ----------- */
 void FPRead_test()
 {
@@ -601,5 +650,6 @@ void FPRead_test()
 	test61();
 	test309();
 	test328();
+	test343();
 }
 

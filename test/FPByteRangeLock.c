@@ -722,12 +722,16 @@ int dir, dir2;
 		failed_nomsg();
 	}
 
-	if (fork2) FPCloseFork(Conn2, fork2);
+	if (fork2) { 
+	    FAIL (FPCloseFork(Conn2, fork2))
+	    FAIL (FPDelete(Conn2, vol2, dir2, ""))
+	}
 	FAIL (FPCloseVol(Conn2,vol2))
 
 fin:
 	if (fork) {
-		FPCloseFork(Conn, fork);
+		FAIL (FPCloseFork(Conn, fork))
+	        FAIL (FPDelete(Conn, vol, dir, ""))
 	}
 }
 

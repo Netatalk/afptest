@@ -1,6 +1,7 @@
 SUBDIRS =
  
-bin_PROGRAMS = afpclient afp_ls loadtest spectest postmark fail_spectest T2_spectest logintest rotest encoding_test
+bin_PROGRAMS = afpclient afp_ls loadtest spectest postmark fail_spectest T2_spectest logintest rotest \
+               encoding_test speedtest
  
 noinst_LTLIBRARIES = libafptest.la
  
@@ -29,6 +30,8 @@ logintest_LDADD = libafptest.la
 rotest_SOURCES = rotest.c
 rotest_LDADD = libafptest.la
  
+speedtest_SOURCES = speedtest.c
+speedtest_LDADD = libafptest.la
 #
 spectest_SOURCES = spectest.c FPAddAPPL.c FPAddComment.c FPAddIcon.c \
         FPByteRangeLock.c FPByteRangeLockExt.c FPCloseFork.c FPCopyFile.c FPCreateDir.c FPCreateFile.c\

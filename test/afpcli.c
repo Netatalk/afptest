@@ -2,6 +2,7 @@
 
 int     Throttle;
 int     Convert = 1;
+extern  int Quiet;
 
 #define UNICODE(a) (a->afp_version >= 30)
 
@@ -230,7 +231,7 @@ int ret;
 
 	while (1) {
 		ret = my_dsi_stream_receive(x, buf, length, &x->cmdlen);
-		if (ret == DSIFUNC_ATTN) {
+		if (ret == DSIFUNC_ATTN || ret == DSIFUNC_CLOSE) {
 			continue;
 		}
 		else if (ret == DSIFUNC_TICKLE) {
@@ -242,6 +243,24 @@ int ret;
 	return ret;
 }
 
+/* ------------------------------------- */
+static int my_dsi_full_receive(DSI *x, char *buf, int length)
+{
+int ret;
+
+	while (1) {
+		ret = my_dsi_stream_receive(x, buf, length, &x->cmdlen);
+		if (ret == DSIFUNC_ATTN) {
+			continue;
+		}
+		else if (ret == DSIFUNC_TICKLE) {
+			my_dsi_tickle(x);
+		}
+		else
+			break;
+	}
+	return ret;
+}
 
 /* ------------------------------------- */
 int my_dsi_cmd_receive(DSI *x)
@@ -592,11 +611,11 @@ DSI *dsi;
 int AFPLogOut(CONN *conn)
 {
 DSI *dsi;
-
+int ret;
 	dsi = &conn->dsi;
 	SendCmd(dsi,AFP_LOGOUT);
-	my_dsi_cmd_receive(dsi);
-	return(dsi->header.dsi_code);
+	ret = my_dsi_full_receive(dsi, dsi->commands, DSI_CMDSIZ);
+	return(ret != DSIFUNC_CLOSE?-1: dsi->header.dsi_code);
 }
 
 /* ------------------------------- */
@@ -2045,7 +2064,9 @@ DSI *dsi;
 		ofs = 0;
 		memcpy(&dir, dsi->commands, sizeof(dir));			/* did */
 		ofs += sizeof(dir);
-		fprintf(stderr,"directory ID 0x%x\n", ntohl(dir));
+		if (!Quiet) {
+			fprintf(stderr,"directory ID 0x%x\n", ntohl(dir));
+		}
 	}
 	return(dir);
 }
