@@ -193,6 +193,74 @@ u_int16_t vol = VolID;
 fin:
 	delete_ro_adouble(vol, dir, file);
 }
+/* ------------------------- */
+STATIC void test321()
+{
+u_int16_t bitmap = 0;
+int fork;
+char *file  = "t321 test.txt";
+u_int16_t vol = VolID;
+int fd;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPOpenFork:test321: Bogus (empty) resource fork\n");
+
+	if (!Mac && !Path) {
+		test_skipped(T_MAC_PATH);
+		return;
+	}
+	
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , file)){ 
+		nottested();
+		return;
+	}
+	
+	if (!Mac) {
+		sprintf(temp,"%s/%s", Path, file);
+		if (chmod(temp, 0444) < 0) {
+			fprintf(stderr,"\tFAILED unable to chmod %s :%s\n", temp, strerror(errno));
+			failed_nomsg();
+			goto fin;
+		}
+		sprintf(temp,"%s/.AppleDouble/%s", Path, file);
+		fprintf(stderr,"unlink %s \n", temp);
+		unlink(temp);
+		fd = open(temp, O_RDWR | O_CREAT, 0666);
+		if (fd < 0) {
+			fprintf(stderr,"\tFAILED unable to create %s :%s\n", temp, strerror(errno));
+			failed_nomsg();
+			goto fin;
+		}
+		close(fd);
+		if (chmod(temp, 0444) < 0) {
+			fprintf(stderr,"\tFAILED unable to chmod %s :%s\n", temp, strerror(errno));
+			failed_nomsg();
+			goto fin;
+		}
+	}
+	
+	bitmap = 0xe93f;
+	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, file, bitmap, 0 )) {
+		failed();
+		goto fin;
+	}
+	
+	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, file, bitmap, 0 )) {
+		failed();
+		goto fin;
+	}
+	
+	fork = FPOpenFork(Conn, vol, OPENFORK_RSCS , 0 ,DIRDID_ROOT, file, OPENACC_RD|OPENACC_DWR);
+	if (!fork) {
+		failed();
+	}
+	if (fork && FPCloseFork(Conn, fork)) {
+		failed();
+	}
+
+fin:
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, file)) 
+}
 
 /* ----------- */
 void FPOpenFork_test()
@@ -203,5 +271,6 @@ void FPOpenFork_test()
 	test152();    
 	test153();
 	test156();
+	test321();
 }
 
