@@ -1,5 +1,5 @@
 /*
- * $Id: speedtest.c,v 1.2 2004-04-25 23:20:12 didg Exp $
+ * $Id: speedtest.c,v 1.3 2004-04-28 13:46:08 didg Exp $
  * MANIFEST
  */
 #include "specs.h"
@@ -965,16 +965,48 @@ fin:
 	return;
 }
 
+#define BROKEN_DL
+#ifdef BROKEN_DL
+int test_to_run(char *s)
+{
+	if (!strcmp("Write",s)) {
+		return 0;
+	}
+	if (!strcmp("Read",s)) {
+		return 1;
+	}
+	if (!strcmp("Copy",s)) {
+		return 2;
+	}
+	if (!strcmp("ServerCopy",s)) {
+		return 3;
+	}
+	return -1;
+}
+#endif
+
 /* ----------- */
 static void run_one(char *name)
 {
-void *handle = NULL;
-void (*fn)(void) = NULL;
-char *error;
 char *token;
 char *tp = strdup(name);
+#ifdef BROKEN_DL
+int  fn;
+#else
+char *error;
+void *handle = NULL;
+void (*fn)(void) = NULL;
+#endif
+
     token = strtok(tp, ",");
     
+#ifdef BROKEN_DL
+	fn = test_to_run(token);
+	if (fn == -1) {
+	    nottested();
+	    return;
+	}
+#else
 	handle = dlopen (NULL, RTLD_LAZY);
     if (handle) {
 		fn = dlsym(handle, token);
@@ -989,7 +1021,7 @@ char *tp = strdup(name);
 	    nottested();
 	    return;
 	}
-
+#endif
 	dsi = &Conn->dsi;
 	press_enter("Opening volume.");
 	VolID = VFS.openvol(Conn, Vol);
@@ -1024,19 +1056,46 @@ char *tp = strdup(name);
 	/* loop */
 	while (token ) {
 		press_enter(token);
+#ifdef BROKEN_DL
+		switch(fn) {
+		case 0:
+			Write();
+			break;
+		case 1:
+			Read();
+			break;
+		case 2:
+			Copy();
+			break;
+		case 3:
+			ServerCopy();
+			break;
+		}
+#else
 	    (*fn)();
+#endif	    
 	    token = strtok(NULL, ",");
+#ifdef BROKEN_DL
+		if (token) {
+			fn = test_to_run(token);
+			if (fn == -1) {
+				fprintf (stderr, "%s undefined test\n", token);
+			}
+		}
+#else
 	    if (token && handle) {
 			fn = dlsym(handle, token);
 			if ((error = dlerror()) != NULL)  {
 				fprintf (stderr, "%s\n", error);
 			}
 	    }
+#endif	    
 	}
 
+#ifndef BROKEN_DL
 	if (handle)
 		dlclose(handle);
-
+#endif
 	VFS.closevol(Conn,VolID);
 	if (*Vol2) {
 		VFS.closevol(Conn,VolID2);
