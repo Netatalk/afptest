@@ -1,6 +1,7 @@
 #include "afpclient.h"
 
 int     Throttle;
+int     Convert = 1;
 
 #define UNICODE(a) (a->afp_version >= 30)
 
@@ -1418,10 +1419,10 @@ u_int16_t tp;
 void u2mac(char *dst, char *name, int len)
 {
 	while (len) {
-		if (*name == '/') {
+		if (Convert && *name == '/') {
 			*dst = 0;
 		}
-		else if (*name == '!') {
+		else if (Convert && *name == '!') {
 			*dst = '/';
 		}
 		else {

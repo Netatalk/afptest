@@ -1,6 +1,6 @@
 SUBDIRS =
  
-bin_PROGRAMS = afpclient afp_ls loadtest spectest postmark fail_spectest T2_spectest logintest rotest
+bin_PROGRAMS = afpclient afp_ls loadtest spectest postmark fail_spectest T2_spectest logintest rotest encoding_test
  
 noinst_LTLIBRARIES = libafptest.la
  
@@ -19,7 +19,10 @@ loadtest_LDADD = libafptest.la
  
 afp_ls_SOURCES = afp_ls.c
 afp_ls_LDADD = libafptest.la
- 
+
+encoding_test_SOURCES = encoding_test.c
+encoding_test_LDADD = libafptest.la
+
 logintest_SOURCES = logintest.c
 logintest_LDADD = libafptest.la
  
