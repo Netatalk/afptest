@@ -2,6 +2,23 @@
 */
 #include "specs.h"
 
+/* --------------------------------- */
+static int is_there(CONN *conn, int did, char *name)
+{
+u_int16_t vol = VolID;
+
+	return FPGetFileDirParams(conn, vol,  did, name, 
+	         (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) 
+	         ,
+	         (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) 
+		);
+}
+
+/* ------------------------- */
+static void fatal_failed(void)
+{
+	failed();
+}
 
 /* ------------------------- */
 STATIC void test5()
@@ -415,6 +432,164 @@ STATIC void test327()
     write_test(	128*1024);
 }
 
+/* ------------------------- */
+void test328()
+{
+char *ndir;
+int dir;
+int i;
+int fork;
+char *data;
+int nowrite;
+int numread = /*2*/ 469;
+u_int16_t vol = VolID;
+static char temp[MAXPATHLEN];   
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"test328: read speed\n");
+	sprintf(temp,"test328 dir");
+	
+	if (get_vol_free(vol) < 17*1024*1024) {
+		test_skipped(T_VOL_SMALL);
+		return;
+	}		
+
+	ndir = strdup(temp);
+	data = calloc(1, 65536);
+	if (ntohl(AFPERR_NOOBJ) != is_there(Conn, DIRDID_ROOT, ndir)) {
+		nottested();
+		goto fin;
+	}
+
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, "", 0
+	         , (1<< DIRPBIT_DID) )) {
+		nottested();
+		goto fin;
+	}
+	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
+		nottested();
+		goto fin;
+	}
+
+	if (ntohl(AFPERR_NOOBJ) != is_there(Conn, dir, "File.big")) {
+		failed();
+		goto fin1;
+	}
+	if (FPGetFileDirParams(Conn, vol,  dir, "", 0
+	         , (1<< DIRPBIT_DID) )) {
+		failed();
+		goto fin1;
+	}
+	if (FPCreateFile(Conn, vol,  0, dir , "File.big")){
+		failed();
+		goto fin1;
+	}
+	/* --------------- */
+	strcpy(temp, "File.big");
+	if (is_there(Conn, dir, temp)) {
+		failed();
+		goto fin1;
+	}
+	if (FPGetFileDirParams(Conn, vol,  dir, temp, 0x72d,0)) {
+		failed();
+		goto fin1;
+	}
+	if (FPGetFileDirParams(Conn, vol,  dir, temp, 0x73f, 0x133f )) {
+		failed();
+		goto fin1;
+	}
+	nowrite = 0;
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 
+			            (1<<FILPBIT_PDID)|(1<< DIRPBIT_LNAME)|(1<<FILPBIT_FNUM)|(1<<FILPBIT_DFLEN)
+			            , dir, temp, OPENACC_WR |OPENACC_RD| OPENACC_DWR| OPENACC_DRD);
+	if (!fork) {
+		failed();
+		goto fin1;
+	}
+	else {
+		if (FPGetForkParam(Conn, fork, (1<<FILPBIT_PDID)|(1<< DIRPBIT_LNAME)|(1<<FILPBIT_DFLEN))) {
+			failed();
+			goto fin1;
+		}
+		for (i=0; i <= numread ; i++) {
+			if (FPWrite(Conn, fork, i*65536, 65536, data, 0 )) {
+				nottested();
+				nowrite = 1;
+				break;
+			}
+		}
+		if (FPCloseFork(Conn,fork)) {
+			failed();
+			goto fin1;
+		}
+	}
+
+	if (is_there(Conn, dir, temp)) {fatal_failed();}
+	if (FPGetFileDirParams(Conn, vol,  dir, temp, 0x72d, 0)) {fatal_failed();}
+	if (FPGetFileDirParams(Conn, vol,  dir, temp, 0x73f, 0x133f )) {
+		failed();
+		goto fin1;
+	}
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0x342 , dir, temp,OPENACC_RD);
+
+	if (!fork) {
+		failed();
+		goto fin1;
+	}
+	else {
+		if (FPGetForkParam(Conn, fork, (1<<FILPBIT_DFLEN))) {
+			failed();
+			goto fin1;
+		}
+		if (FPRead(Conn, fork, 0, 512, data)) {
+			failed();
+			goto fin1;
+		}
+		if (FPCloseFork(Conn,fork)) {
+			failed();
+			goto fin1;
+		}
+	}
+	if (!nowrite) {	
+		fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0x342 , dir, temp,OPENACC_RD| OPENACC_DWR);
+		if (!fork) {
+			failed();
+			goto fin1;
+		}
+		else {
+			if (FPGetForkParam(Conn, fork, 0x242)) {
+				failed();
+				goto fin1;
+			}
+			if (FPGetFileDirParams(Conn, vol,  dir, temp, 0x72d,0)) {
+				failed();
+				goto fin1;
+			}
+			for (i=0; i <= numread ; i++) {
+				if (FPRead(Conn, fork, i*65536, 65536, data)) {
+					failed();
+					goto fin1;
+				}
+			}
+			if (FPCloseFork(Conn,fork)) {
+				failed();
+				goto fin1;
+			}
+		}
+	}
+fin1:
+	if (FPDelete(Conn, vol,  dir, "File.big")) {
+		failed();
+	}
+	if (FPDelete(Conn, vol,  dir, "")) {
+		failed();
+	}
+fin:
+	free(ndir);
+	free(data);
+}
+
 /* ----------- */
 void FPRead_test()
 {
@@ -425,5 +600,6 @@ void FPRead_test()
 	test59();
 	test61();
 	test309();
+	test328();
 }
 

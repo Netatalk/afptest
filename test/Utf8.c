@@ -433,6 +433,61 @@ u_int16_t bitmap = 0;
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
 }
 
+/* ------------------------- */
+STATIC void test337()
+{
+char *name = "\xd7\xa4\xd7\xaa\xd7\x99\xd7\x97\xd7\x94 test 337.mp3";
+u_int16_t vol = VolID;
+DSI *dsi;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+u_int16_t bitmap = 0;
+
+	dsi = &Conn->dsi;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"Utf8:test337: mangled UTF8 filename\n");
+
+	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
+		test_skipped(T_UTF8);
+	    return;
+	}
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		return;
+	}
+	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) | (1<<FILPBIT_LNAME);
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, name, bitmap,0 )) {
+		failed();
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap,0);
+
+        sprintf(temp,"???#%X", ntohl(filedir.did));
+		if (ntohl(AFPERR_NOOBJ) != 	FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, temp, bitmap,0 )) {
+			failed();
+		}
+
+        sprintf(temp,"???#%X.mp3", ntohl(filedir.did));
+		if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, temp, bitmap,0 )) {
+			failed();
+		}
+		else {
+		    filedir.isdir = 0;
+		    afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap,0);
+		    if (strcmp(filedir.utf8_name, name)) {
+				fprintf(stderr,"\tFAILED %s should be %s\n",filedir.utf8_name, name); 		    
+		    }
+		}
+        sprintf(temp,"t#%X.mp3", ntohl(filedir.did));
+		if (ntohl(AFPERR_NOOBJ) != 	FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, temp, bitmap,0 )) {
+			failed();
+		}
+	}
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+}
+
 /* ----------- */
 void Utf8_test()
 {
@@ -448,5 +503,6 @@ void Utf8_test()
 	test312();
 	test313();
 	test314();
+	test337();
 }
 

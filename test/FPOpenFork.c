@@ -737,6 +737,133 @@ fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1)) 
 }
 
+
+/* ---------------------------- */
+static void test_openmode(char *name, int type)
+{
+int fork;
+int fork1;
+u_int16_t bitmap = (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO);
+u_int16_t vol = VolID;
+DSI *dsi;
+DSI *dsi2;
+u_int16_t vol2;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+int what   = (type == OPENFORK_DATA)?ATTRBIT_DOPEN:ATTRBIT_ROPEN;
+int nowhat = (type == OPENFORK_DATA)?ATTRBIT_ROPEN:ATTRBIT_DOPEN;
+
+	dsi = &Conn->dsi;
+
+	dsi2 = &Conn2->dsi;
+	vol2  = FPOpenVol(Conn2, Vol);
+	if (vol2 == 0xffff) {
+		nottested();
+		return;
+	}
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		return;
+	}
+
+	
+	fork = FPOpenFork(Conn, vol, type , bitmap , DIRDID_ROOT, name, OPENACC_RD);
+	if (!fork) {
+		failed();
+	}
+
+	if (FPGetFileDirParams(Conn2,  vol2, DIRDID_ROOT, name, bitmap, 0)) {
+		failed();
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi2->data +ofs, bitmap, 0);
+		if (!(filedir.attr & what)) {
+			failed();
+		}
+		if ((filedir.attr & nowhat)) {
+			failed();
+		}
+	}
+
+	fork1 = FPOpenFork(Conn, vol, type , bitmap ,DIRDID_ROOT, name,OPENACC_WR);
+	if (!fork1) {
+		failed();
+	}
+	if (FPGetFileDirParams(Conn2,  vol2, DIRDID_ROOT, name, bitmap, 0)) {
+		failed();
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi2->data +ofs, bitmap, 0);
+		if (!(filedir.attr & what)) {
+			failed();
+		}
+		if ((filedir.attr & nowhat)) {
+			failed();
+		}
+	}
+	
+	FAIL (FPCloseFork(Conn,fork))
+	if (FPGetFileDirParams(Conn2,  vol2, DIRDID_ROOT, name, bitmap, 0)) {
+		failed();
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi2->data +ofs, bitmap, 0);
+		if (!(filedir.attr & what)) {
+			failed();
+		}
+		if ((filedir.attr & nowhat)) {
+			failed();
+		}
+	}
+
+	FAIL (FPCloseFork(Conn,fork1))
+	if (FPGetFileDirParams(Conn2,  vol2, DIRDID_ROOT, name, bitmap, 0)) {
+		failed();
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi2->data +ofs, bitmap, 0);
+		if ((filedir.attr & what)) {
+			failed();
+		}
+		if ((filedir.attr & nowhat)) {
+			failed();
+		}
+	}
+	
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+}
+
+/* -------------------------- */
+STATIC void test341()
+{
+char *name = "t341 Attrib open mode RF";
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPOpenFork:test341: Attrib open mode 2 users RF\n");
+
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		return;
+	}		
+
+	if (Locking) {
+		test_skipped(T_LOCKING);
+		return;
+	}		
+
+	test_openmode(name, OPENFORK_RSCS);
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPOpenFork:test341: Attrib open mode 2 users DF\n");
+    name = "t341 Attrib open mode RF";
+	test_openmode(name, OPENFORK_DATA);
+}
+
 /* ----------- */
 void FPOpenFork_test()
 {
@@ -757,5 +884,6 @@ void FPOpenFork_test()
     test145();
     test151();
     test190();
+    test341();
 }
 

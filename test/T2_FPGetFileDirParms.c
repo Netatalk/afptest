@@ -795,6 +795,125 @@ fin:
 	FAIL (FPDelete(Conn, vol,  id, ""))
 }
 
+/* ----------------------- */
+STATIC void test340()
+{
+char *name = "t340 dir";
+char *name1 = "t340 file";
+int  dir,dir1;
+int  ret;
+u_int16_t vol = VolID;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPGetFileDirParms:test340: dir deleted by someone else, access with ID\n");
+
+	if (!Mac && !Path) {
+		test_skipped(T_MAC_PATH);
+		return;
+	}
+
+	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
+	if (!dir) {
+		nottested();
+		return;
+	}
+	/* so FPEnumerate doesn't return NOOBJ */
+	FAIL (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name1))
+	FAIL (FPCreateFile(Conn, vol,  0, dir , name1))
+
+	if (FPEnumerate(Conn, vol,  dir, "", 
+	         (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO)|
+	         (1<<FILPBIT_CDATE) | (1<<FILPBIT_BDATE) | (1<<FILPBIT_MDATE)
+	         ,
+		     (1<< DIRPBIT_ATTR) |  (1<<DIRPBIT_ATTR) | (1<<DIRPBIT_FINFO) |
+	         (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE) |
+		    (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
+		)
+	) {
+		failed();
+		goto fin;
+	}
+
+	FAIL (FPDelete(Conn, vol,  dir , name1))
+	if (Mac) {
+		if (FPDelete(Conn, vol,  dir , "")) {
+			failed();
+		}
+	}
+	else if (delete_unix_dir(Path, name)) {
+		failed();
+		goto fin;
+	}
+	/* our curdir is in the deleted folder so no error! 
+	   or it's a nfs exported volume
+	*/
+	ret = FPGetFileDirParams(Conn, vol,  dir, "", 
+	         0
+	         ,
+		     (1<<DIRPBIT_ATTR) | (1<<DIRPBIT_FINFO) |
+	         (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE) |
+		    (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS));
+
+	if (ret != ntohl(AFPERR_NOOBJ)) {
+		failed();
+	}
+
+	ret = FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name,
+	         0
+	         ,
+		     (1<<DIRPBIT_ATTR) | (1<<DIRPBIT_FINFO) |
+	         (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE) |
+		    (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS));
+
+	if (ret != ntohl(AFPERR_NOOBJ)) {
+		failed();
+	}
+
+	if (FPEnumerate(Conn, vol,  DIRDID_ROOT, "", 
+	         (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO)|
+	         (1<<FILPBIT_CDATE) | (1<<FILPBIT_BDATE) | (1<<FILPBIT_MDATE)
+	         ,
+		     (1<< DIRPBIT_ATTR) |  (1<<DIRPBIT_ATTR) | (1<<DIRPBIT_FINFO) |
+	         (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE) |
+		    (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
+		)
+	) {
+		failed();
+	}
+
+	if (ntohl(AFPERR_NOOBJ) != FPGetFileDirParams(Conn, vol,  dir, "", 
+	         0
+	         ,
+		     (1<<DIRPBIT_ATTR) | (1<<DIRPBIT_FINFO) |
+	         (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE) |
+		    (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
+		)
+	) {
+		failed();
+	}
+	
+	dir1  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
+	if (!dir1) {
+		failed();
+		goto fin;
+	}
+	if (FPGetFileDirParams(Conn, vol,  dir1, "", 
+	         0
+	         ,
+		     (1<<DIRPBIT_ATTR) | (1<<DIRPBIT_FINFO) |
+	         (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE) |
+		    (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
+		)
+	) {
+		failed();
+	}
+
+    /* dir and dir1 should be != but if inode reused they are the same */
+fin:
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name)) 
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name1)) 
+}
+
 /* ----------- */
 void FPGetFileDirParms_test()
 {
@@ -809,5 +928,6 @@ void FPGetFileDirParms_test()
 	test182();
 	test235();
 	test336();
+	test340();
 }
 

@@ -2,8 +2,8 @@
 */
 #include "specs.h"
 
-static char temp[MAXPATHLEN];
-static char temp1[MAXPATHLEN];
+static char temp[MAXPATHLEN+1];
+static char temp1[MAXPATHLEN+1];
 
 /* ------------------------- */
 STATIC void test44()
@@ -614,6 +614,7 @@ int id;
 	}
 #endif	
 	sprintf(temp1,"#%X.txt",ntohl(id));
+	memset(temp, 0, sizeof(temp));
 	strncpy(temp, name, 31 - strlen(temp1));
 	strcat(temp, temp1);
 	/* for afp3 it's not valid mangled filename */
@@ -625,6 +626,239 @@ int id;
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
 }
 
+
+/* ------------------------- */
+STATIC void test326()
+{
+#if 0
+char *name = "t326 long filename and extension .longtxt";
+u_int16_t vol = VolID;
+DSI *dsi;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+u_int16_t bitmap = 0;
+unsigned int dir;
+char *result;
+int ret;
+int id;
+
+	dsi = &Conn->dsi;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPGetFileDirParms::test326: long file name >31 bytes\n");
+
+	ret = FPCreateFile(Conn, vol,  0, DIRDID_ROOT, name);
+	if (ret) {
+		nottested();
+		return;
+	}
+	if (Conn->afp_version >= 30) {
+		bitmap = (1<<FILPBIT_PDINFO);
+	}
+	else {
+		bitmap = (1<<DIRPBIT_LNAME);
+	}
+	/* hack if filename < 255 it works with afp 2.x too */
+	id = get_fid(Conn, vol, DIRDID_ROOT , name);
+	
+	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, name, bitmap, 0)) {
+		nottested();
+	}
+#if 0
+	else {
+		filedir.isdir = 1;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
+		result = (Conn->afp_version >= 30)?filedir.utf8_name:filedir.lname;
+		if (strcmp(result, name)) {
+			failed();
+		}
+	}
+#endif	
+	sprintf(temp1,"#%X.txt",ntohl(id));
+	memset(temp, 0, sizeof(temp));
+	strncpy(temp, name, 31 - strlen(temp1));
+	strcat(temp, temp1);
+	/* for afp3 it's not valid mangled filename */
+	ret = FPGetFileDirParams(Conn, vol, DIRDID_ROOT, temp, bitmap, 0);
+	if ((Conn->afp_version >= 30 && ret != ntohl(AFPERR_NOOBJ)) 
+	    || ( Conn->afp_version < 30 && ret)) {
+		failed();
+	}
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+#endif
+}
+
+/* ------------------------- */
+STATIC void test333()
+{
+char *name = "t333 very long filename (more than 31 bytes).txt";
+u_int16_t vol = VolID;
+DSI *dsi;
+u_int16_t bitmap = 0;
+int ret;
+int id;
+
+	dsi = &Conn->dsi;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPGetFileDirParms::test333: long file name >31 bytes\n");
+
+	ret = FPCreateFile(Conn, vol,  0, DIRDID_ROOT, name);
+	if (ret) {
+		nottested();
+		return;
+	}
+	if (Conn->afp_version >= 30) {
+		bitmap = (1<<FILPBIT_PDINFO);
+	}
+	else {
+		bitmap = (1<<DIRPBIT_LNAME);
+	}
+	/* hack if filename < 255 it works with afp 2.x too */
+	id = get_fid(Conn, vol, DIRDID_ROOT , name);
+	
+	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, name, bitmap, 0)) {
+		nottested();
+	}
+	sprintf(temp1,"#%X.txt",ntohl(id));
+	memset(temp, 0, sizeof(temp));
+	strncpy(temp, name, 31 - strlen(temp1));
+	strcat(temp, temp1);
+	/* for afp3 it's not valid mangled filename */
+	ret = FPGetFileDirParams(Conn, vol, DIRDID_ROOT, temp, bitmap, 0);
+	if ((Conn->afp_version >= 30 && ret != ntohl(AFPERR_NOOBJ)) 
+	    || ( Conn->afp_version < 30 && ret)) {
+		failed();
+	}
+
+	sprintf(temp1,"#0%X.txt",ntohl(id));
+	memset(temp, 0, sizeof(temp));
+	strncpy(temp, name, 31 - strlen(temp1));
+	strcat(temp, temp1);
+	ret = FPGetFileDirParams(Conn, vol, DIRDID_ROOT, temp, bitmap, 0);
+	if (!ret) {
+		failed();
+	}
+	
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+}
+
+/* ------------------------- */
+STATIC void test334()
+{
+char *name = "t334 very long filename (more than 31 bytes)";
+u_int16_t vol = VolID;
+DSI *dsi;
+u_int16_t bitmap = 0;
+int ret;
+int id;
+
+	dsi = &Conn->dsi;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPGetFileDirParms::test334: long file name >31 bytes (no ext)\n");
+
+	ret = FPCreateFile(Conn, vol,  0, DIRDID_ROOT, name);
+	if (ret) {
+		nottested();
+		return;
+	}
+	if (Conn->afp_version >= 30) {
+		bitmap = (1<<FILPBIT_PDINFO);
+	}
+	else {
+		bitmap = (1<<DIRPBIT_LNAME);
+	}
+	/* hack if filename < 255 it works with afp 2.x too */
+	id = get_fid(Conn, vol, DIRDID_ROOT , name);
+	
+	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, name, bitmap, 0)) {
+		nottested();
+	}
+	sprintf(temp1,"#%X",ntohl(id));
+	memset(temp, 0, sizeof(temp));
+	strncpy(temp, name, 31 - strlen(temp1));
+	strcat(temp, temp1);
+	/* for afp3 it's not valid mangled filename */
+	ret = FPGetFileDirParams(Conn, vol, DIRDID_ROOT, temp, bitmap, 0);
+	if ((Conn->afp_version >= 30 && ret != ntohl(AFPERR_NOOBJ)) 
+	    || ( Conn->afp_version < 30 && ret)) {
+		failed();
+	}
+
+	sprintf(temp1,"#%X.",ntohl(id));
+	memset(temp, 0, sizeof(temp));
+	strncpy(temp, name, 31 - strlen(temp1));
+	strcat(temp, temp1);
+	ret = FPGetFileDirParams(Conn, vol, DIRDID_ROOT, temp, bitmap, 0);
+	if (!ret) {
+		failed();
+	}
+	
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+}
+
+/* ------------------------- */
+STATIC void test335()
+{
+char *name = "t335 very long filename (more than 31 bytes).txt";
+char *ndir = "t335 dir";
+u_int16_t vol = VolID;
+DSI *dsi;
+unsigned int  dir;
+u_int16_t bitmap = 0;
+int ret;
+int id;
+
+	dsi = &Conn->dsi;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPGetFileDirParms::test335: long file name >31 bytes\n");
+
+	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir);
+	if (!dir) {
+		nottested();
+		return;
+	}
+	ret = FPCreateFile(Conn, vol,  0, DIRDID_ROOT, name);
+	if (ret) {
+		nottested();
+		goto fin;
+	}
+	if (Conn->afp_version >= 30) {
+		bitmap = (1<<FILPBIT_PDINFO);
+	}
+	else {
+		bitmap = (1<<DIRPBIT_LNAME);
+	}
+	/* hack if filename < 255 it works with afp 2.x too */
+	id = get_fid(Conn, vol, DIRDID_ROOT , name);
+	
+	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, name, bitmap, 0)) {
+		nottested();
+	}
+	sprintf(temp1,"#%X.txt",ntohl(id));
+	memset(temp, 0, sizeof(temp));
+	strncpy(temp, name, 31 - strlen(temp1));
+	strcat(temp, temp1);
+	/* for afp3 it's not valid mangled filename */
+	ret = FPGetFileDirParams(Conn, vol, DIRDID_ROOT, temp, bitmap, 0);
+	if ((Conn->afp_version >= 30 && ret != ntohl(AFPERR_NOOBJ)) 
+	    || ( Conn->afp_version < 30 && ret)) {
+		failed();
+	}
+
+	ret = FPCreateFile(Conn, vol,  0, dir, temp);
+	if (ret) {
+		failed();
+	}
+	FAIL (FPGetFileDirParams(Conn, vol, dir, temp, bitmap, 0))
+	
+	FAIL (FPDelete(Conn, vol,  dir, temp))
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+fin:
+	FAIL (FPDelete(Conn, vol,  dir, ""))
+}
 
 /* ----------- */
 void FPGetFileDirParms_test()
@@ -643,5 +877,8 @@ void FPGetFileDirParms_test()
 	test308();
 	test319();
 	test324();
+	test333();
+	test334();
+	test335();
 }
 
