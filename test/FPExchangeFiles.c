@@ -258,6 +258,210 @@ test_exit:
 	exit_test("test342");
 }
 
+/* ------------------------- */
+STATIC void test389()
+{
+int dir;
+char *name  = "t389 exchange file";
+char *name1 = "t389 new file name";
+u_int16_t bitmap = 0;
+int fid_name;
+int fid_name1;
+int temp;
+int fork;
+u_int16_t vol = VolID;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPExchangeFiles:test389: exchange files, source with resource fork open\n");
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		goto test_exit;
+	}
+	dir = DIRDID_ROOT;
+	FAIL (FPCreateFile(Conn, vol,  0, dir, name1))
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap ,DIRDID_ROOT, name, OPENACC_WR | OPENACC_RD);
+	if (!fork) {
+		failed();
+		goto fin;
+	}	
+
+	fid_name  = get_fid(Conn, vol, DIRDID_ROOT , name);
+
+	fid_name1 = get_fid(Conn, vol, dir , name1);
+
+	write_fork( Conn, vol, DIRDID_ROOT , name, "blue");
+	write_fork( Conn, vol, dir , name1, "red");
+	/* ok */
+	FAIL (FPExchangeFile(Conn, vol, DIRDID_ROOT, dir, name, name1)) 
+	FAIL (FPCloseFork(Conn,fork))
+
+	/* test remove of no cnid db */
+	if ((temp = get_fid(Conn, vol, DIRDID_ROOT , name)) != fid_name) {
+		fprintf(stderr,"\tFAILED %x should be %x\n", temp, fid_name);
+		failed_nomsg();
+	}
+	if ((temp = get_fid(Conn, vol, dir , name1)) != fid_name1) {
+		fprintf(stderr,"\tFAILED %x should be %x\n", temp, fid_name1);
+		failed_nomsg();
+	}
+
+	read_fork(Conn, vol,  DIRDID_ROOT , name, 3);
+	if (strcmp(Data,"red")) {
+		fprintf(stderr,"\tFAILED should be red\n");
+		failed_nomsg();
+	}
+	read_fork(Conn,  vol, dir , name1, 4);
+	if (strcmp(Data,"blue")) {
+		fprintf(stderr,"\tFAILED should be blue\n");
+		failed_nomsg();
+	}
+	
+fin:
+	FAIL (FPDelete(Conn, vol,  dir , name1))
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test389");
+}
+
+/* ------------------------- */
+STATIC void test390()
+{
+int dir;
+char *name  = "t390 exchange file";
+char *name1 = "t390 new file name";
+u_int16_t bitmap = 0;
+int fid_name;
+int fid_name1;
+int temp;
+int fork;
+u_int16_t vol = VolID;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPExchangeFiles:test390: exchange files, source with resource fork open\n");
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		goto test_exit;
+	}
+	dir = DIRDID_ROOT;
+	FAIL (FPCreateFile(Conn, vol,  0, dir, name1))
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap ,DIRDID_ROOT, name, OPENACC_WR | OPENACC_RD);
+	if (!fork) {
+		failed();
+		goto fin;
+	}	
+
+	fid_name  = get_fid(Conn, vol, DIRDID_ROOT , name);
+
+	fid_name1 = get_fid(Conn, vol, dir , name1);
+
+	write_fork( Conn, vol, DIRDID_ROOT , name, "blue");
+	write_fork( Conn, vol, dir , name1, "red");
+	/* ok */
+	FAIL (FPExchangeFile(Conn, vol, DIRDID_ROOT, dir, name, name1)) 
+	FAIL (FPFlushFork(Conn, fork))
+	FAIL (FPCloseFork(Conn,fork))
+
+	/* test remove of no cnid db */
+	if ((temp = get_fid(Conn, vol, DIRDID_ROOT , name)) != fid_name) {
+		fprintf(stderr,"\tFAILED %x should be %x\n", temp, fid_name);
+		failed_nomsg();
+	}
+	if ((temp = get_fid(Conn, vol, dir , name1)) != fid_name1) {
+		fprintf(stderr,"\tFAILED %x should be %x\n", temp, fid_name1);
+		failed_nomsg();
+	}
+
+	read_fork(Conn, vol,  DIRDID_ROOT , name, 3);
+	if (strcmp(Data,"red")) {
+		fprintf(stderr,"\tFAILED should be red\n");
+		failed_nomsg();
+	}
+	read_fork(Conn,  vol, dir , name1, 4);
+	if (strcmp(Data,"blue")) {
+		fprintf(stderr,"\tFAILED should be blue\n");
+		failed_nomsg();
+	}
+	
+fin:
+	FAIL (FPDelete(Conn, vol,  dir , name1))
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test390");
+}
+
+/* ------------------------- */
+STATIC void test391()
+{
+int dir;
+char *name  = "t391 exchange file";
+char *name1 = "t391 new file name";
+u_int16_t bitmap = 0;
+int fid_name;
+int fid_name1;
+int temp;
+int fork;
+u_int16_t vol = VolID;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPExchangeFiles:test391: exchange files, dest with resource fork open\n");
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		goto test_exit;
+	}
+	dir = DIRDID_ROOT;
+	FAIL (FPCreateFile(Conn, vol,  0, dir, name1))
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap ,DIRDID_ROOT, name1, OPENACC_WR | OPENACC_RD);
+	if (!fork) {
+		failed();
+		goto fin;
+	}	
+
+	fid_name  = get_fid(Conn, vol, DIRDID_ROOT , name);
+
+	fid_name1 = get_fid(Conn, vol, dir , name1);
+
+	write_fork( Conn, vol, DIRDID_ROOT , name, "blue");
+	write_fork( Conn, vol, dir , name1, "red");
+	/* ok */
+	FAIL (FPExchangeFile(Conn, vol, DIRDID_ROOT, dir, name, name1)) 
+	FAIL (FPCloseFork(Conn,fork))
+
+	/* test remove of no cnid db */
+	if ((temp = get_fid(Conn, vol, DIRDID_ROOT , name)) != fid_name) {
+		fprintf(stderr,"\tFAILED %x should be %x\n", temp, fid_name);
+		failed_nomsg();
+	}
+	if ((temp = get_fid(Conn, vol, dir , name1)) != fid_name1) {
+		fprintf(stderr,"\tFAILED %x should be %x\n", temp, fid_name1);
+		failed_nomsg();
+	}
+
+	read_fork(Conn, vol,  DIRDID_ROOT , name, 3);
+	if (strcmp(Data,"red")) {
+		fprintf(stderr,"\tFAILED should be red\n");
+		failed_nomsg();
+	}
+	read_fork(Conn,  vol, dir , name1, 4);
+	if (strcmp(Data,"blue")) {
+		fprintf(stderr,"\tFAILED should be blue\n");
+		failed_nomsg();
+	}
+	
+fin:
+	FAIL (FPDelete(Conn, vol,  dir , name1))
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test391");
+}
 
 /* ----------- */
 void FPExchangeFiles_test()
@@ -268,5 +472,8 @@ void FPExchangeFiles_test()
 	test111();
 	test197();
 	test342();
+	test389();
+	test390();
+	test391();
 }
 
