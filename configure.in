@@ -1,0 +1,21 @@
+AC_INIT(test/spectest.c)
+
+AFPTEST_VERSION=`cat VERSION`
+AC_SUBST(NETATALK_VERSION)
+
+AC_CANONICAL_SYSTEM
+AM_INIT_AUTOMAKE(afptest, ${AFPTEST_VERSION})
+AM_CONFIG_HEADER(config.h)
+
+AC_PROG_CC
+
+AC_CHECK_HEADERS(fcntl.h strings.h sys/fcntl.h unistd.h)
+
+AM_PROG_LIBTOOL
+AM_ICONV
+AC_SYS_LARGEFILE
+
+AC_OUTPUT([Makefile
+	macros/Makefile
+	test/Makefile])
+

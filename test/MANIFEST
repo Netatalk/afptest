@@ -1,0 +1,12 @@
+loadtest.c: a Lan Test like access pattern.
+postmark-1_5.c: the postmark benchmark, for reference only.
+
+spectest.c: AFP specification tests.
+FPxxx.c: AFP specification tests by call.
+Error.c: exercise AFP errors
+
+afpcli.c: low level AFP call 
+
+main.c: old test suite, for reference only.
+afpcli_asp.c ref. only.
+testsrc.c: 
