@@ -159,6 +159,75 @@ fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
 }
 
+/* ------------------------- */
+STATIC void test317()
+{
+char *name  = "t317 old file name";
+char *name1 = "t317 new file name";
+u_int16_t vol = VolID;
+int tp,tp1;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+DSI *dsi = &Conn->dsi; 
+u_int16_t bitmap;
+char finder_info[32];
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPCopyFile:test317: copyFile check meta data\n");
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		goto fin;
+	}
+	tp = get_fid(Conn, vol, DIRDID_ROOT, name);
+	if (!tp) {
+		nottested();
+		goto fin;
+	}
+	bitmap = (1 << FILPBIT_FINFO);
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, bitmap,0)) {
+		failed();
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+		memcpy(filedir.finder_info, "PDF CARO", 8);
+		
+		memcpy(finder_info, filedir.finder_info, 32);
+ 		FAIL (FPSetFileParams(Conn, vol, DIRDID_ROOT , name, bitmap, &filedir)) 
+	    FAIL (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, bitmap,0))
+	}
+	
+	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1))
+
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name1, bitmap,0)) {
+		failed();
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+		if (memcmp(finder_info, filedir.finder_info, 32)) {
+	        fprintf(stderr,"\tFAILED finder info differ\n");  
+	        failed_nomsg();
+	        goto fin;
+		}
+	}
+
+	tp1 = get_fid(Conn, vol, DIRDID_ROOT, name1);
+	if (!tp1) {
+		nottested();
+		goto fin;
+	}
+	if (tp == tp1) {
+	    fprintf(stderr,"\tFAILED both files have same ID\n");  
+	    failed_nomsg();
+	}
+
+fin:
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1))
+}
+
 /* ----------- */
 void FPCopyFile_test()
 {
@@ -167,5 +236,6 @@ void FPCopyFile_test()
     test71();
 	test158();
 	test315();
+	test317();
 }
 

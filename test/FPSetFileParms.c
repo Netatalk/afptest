@@ -201,14 +201,52 @@ fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
 }
 
+/* ------------------------- */
+STATIC void test318()
+{
+char *name = "t318 PDinfo error";
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+u_int16_t bitmap = (1<<FILPBIT_PDINFO );
+u_int16_t vol = VolID;
+DSI *dsi;
+
+	dsi = &Conn->dsi;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPSetFileParms:t318: set UTF8 name(error)\n");
+
+ 	if (Conn->afp_version < 30) { 
+		test_skipped(T_AFP3);
+ 		return;
+ 	}
+ 	
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		return;
+	}
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, bitmap,0 )) {
+		nottested();
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+		FAIL (htonl(AFPERR_BITMAP) != FPSetFileParams(Conn, vol, DIRDID_ROOT , name, bitmap, &filedir)) 
+	}
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+}
+
 /* ----------- */
 void FPSetFileParms_test()
 {
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetFileParms page 262\n");
+#if 0
     test83();
     test96();
     test118();
     test122();
+#endif    
+    test318();
 }
 

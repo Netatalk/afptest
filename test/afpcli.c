@@ -642,7 +642,7 @@ DSI *dsi;
 
 	dsi = &conn->dsi;
 	SendCmd(dsi,AFP_GETSRVPARAM);
-	my_dsi_cmd_receive(dsi);
+	my_dsi_data_receive(dsi);
 	return(dsi->header.dsi_code);
 }
 

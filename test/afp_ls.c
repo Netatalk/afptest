@@ -1,5 +1,5 @@
 /*
- * $Id: afp_ls.c,v 1.2 2003-10-16 18:11:38 didg Exp $
+ * $Id: afp_ls.c,v 1.3 2003-10-29 08:42:16 didg Exp $
  * MANIFEST
  */
 
@@ -84,21 +84,23 @@ int size = 1000;
 			memcpy(&tp, dsi->data +4, sizeof(tp));
 			tp = ntohs(tp);
 		    i += tp;
-		    if (Recurse) {
+		    if (Recurse || Quiet) {
 		    	b = dsi->data +6;
 			    for (j = 1; j <= tp; j++, b += b[0]) {
 			        if (b[1]) {
 	    		    	filedir.isdir = 1;
 	        		    afp_filedir_unpack(&filedir, b + 2, 0, d_bitmap);
-	        	    	if (cnt > size) {
-	        	    		size += 1000;
-		        	    	if (!(stack = realloc(stack, size* sizeof(int)))) {
-		        	    		nottested();
-	    	    	    		return;
+	        		    if (Recurse) {
+	        	    		if (cnt > size) {
+	        	    			size += 1000;
+		        	    		if (!(stack = realloc(stack, size* sizeof(int)))) {
+		        	    			nottested();
+	    	    	    			return;
+	        		    		}
 	        		    	}
-	        		    }
-	        	    	stack[cnt] = filedir.did;
-		        	    cnt++;
+	        	    		stack[cnt] = filedir.did;
+		        	    	cnt++;
+		        	    }
 			        }
 			        else {
 	    		    	filedir.isdir = 0;

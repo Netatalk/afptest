@@ -5,10 +5,10 @@
 STATIC void test55()
 {
 int fork;
-char *name  = "t54 dir no access";
-char *name1 = "t54 file.txt";
-char *name2 = "t54 ro dir";
-char *name3  = "t54 --rwx-- dir";
+char *name  = "t55 dir no access";
+char *name1 = "t55 file.txt";
+char *name2 = "t55 ro dir";
+char *name3  = "t55 --rwx-- dir";
 int pdir = 0;
 int rdir = 0;
 int dir;
