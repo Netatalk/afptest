@@ -210,7 +210,7 @@ DSI *dsi;
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
 test_exit:
-	exit_test("test12218");
+	exit_test("test122");
 }
 
 /* ------------------------- */
