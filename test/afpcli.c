@@ -1053,7 +1053,7 @@ int afp_volume_pack(char *b, struct afp_volume_parms *parms, u_int16_t bitmap)
     	    parms->attr = ntohs(i);
         	break;
     	case VOLPBIT_SIG:
-	        // FIXME
+	        /* FIXME */
     	    break;
     	case VOLPBIT_CDATE:
         	l = htonl(parms->cdate);
@@ -1736,7 +1736,7 @@ DSI *dsi;
 		temp = htonl(len);
 		memcpy(dsi->commands +ofs, &temp, sizeof(temp));
 		ofs += sizeof(temp);
-		if ((type & 0x02)) {
+		if ((type == 3) || (type == 4)) {
 			time = htonl(time);
 			memcpy(dsi->commands +ofs, &time, sizeof(time));
 			ofs += sizeof(time);

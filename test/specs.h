@@ -30,6 +30,7 @@ extern int read_only_folder_with_file(u_int16_t vol, int did, char *name, char *
 extern int delete_folder_with_file(u_int16_t vol, int did, char *name, char *file);
 extern int get_vol_attrib(u_int16_t vol) ;
 extern int group_folder(u_int16_t vol, int did, char *name);
+extern unsigned int get_vol_free(u_int16_t vol) ;
 
 extern void failed_nomsg(void);
 extern void failed(void);
@@ -47,6 +48,8 @@ extern void test_skipped(int why);
 #define T_UTF8       7
 #define T_VOL2       8
 #define T_LOCKING    9
+#define T_VOL_SMALL  10
+
 
 /* ---------------------------------
 */

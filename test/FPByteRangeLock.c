@@ -615,6 +615,7 @@ DSI *dsi;
 int indice = 1;
 
 	dsi = &conn->dsi;
+	*result = 0;
 
 	/* ---------- check/create 'Network Trash Folder' -------- */
 	ret = FPGetFileDirParams(conn, vol,  DIRDID_ROOT , trash, 0x73f, 0x133f);
@@ -672,6 +673,9 @@ int indice = 1;
 		}
 		else {
 		    dir2 = get_did(conn, vol, dir , temp);
+		    if (!dir2) {
+		        return 0;
+		    }
 		    if (dir2 && write_access(conn, vol, dir2)) {
 		        break;
 		    }

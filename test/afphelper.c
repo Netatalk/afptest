@@ -585,6 +585,22 @@ DSI *dsi;
 }
 
 /* ---------------------- */
+unsigned int get_vol_free(u_int16_t vol) 
+{
+struct afp_volume_parms parms;
+DSI *dsi;
+
+	dsi = &Conn->dsi;
+
+ 	if (FPGetVolParam(Conn, vol, (1 << VOLPBIT_BFREE))) {
+		nottested();
+		return 0;
+ 	}
+	afp_volume_unpack(&parms, dsi->commands +sizeof( u_int16_t ), (1 << VOLPBIT_BFREE));
+	return parms.bfree;
+}
+
+/* ---------------------- */
 int not_valid(unsigned int ret, int mac_error, int netatalk_error)
 {
 	if (htonl(mac_error) != ret) {
@@ -733,6 +749,9 @@ char *s;
 		break;
 	case T_LOCKING:
 		s = "a working fcntl locking";
+		break;
+	case T_VOL_SMALL:
+		s = "a bigger volume";
 		break;
 	}
 	fprintf(stderr,"\tSKIPPED (need %s)\n",s);

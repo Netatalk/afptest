@@ -118,6 +118,12 @@ int fork;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPCopyFile:test315: copyFile\n");
 
+	if (get_vol_free(vol) < 130*1024*1024) {
+	    /* assume sparse file for setforkparam, not for copyfile */
+		test_skipped(T_VOL_SMALL);
+		return;
+	}		
+
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){
 		nottested();
 		return;
