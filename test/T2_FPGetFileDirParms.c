@@ -767,7 +767,7 @@ struct afp_filedir_parms filedir;
 	    struct stat st;
 
 		sprintf(temp1, "%s/%s/%s", Path, ndir, temp);
-		if (stat(temp, &st)) {
+		if (stat(temp1, &st)) {
 			fprintf(stderr,"\tFAILED stat( %s ) %s\n", temp1, strerror(errno));
 			failed_nomsg();
 		}
