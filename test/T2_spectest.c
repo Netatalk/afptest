@@ -1,5 +1,5 @@
 /*
- * $Id: T2_spectest.c,v 1.1 2003-04-28 10:19:15 didg Exp $
+ * $Id: T2_spectest.c,v 1.2 2003-04-28 11:28:59 didg Exp $
  * MANIFEST
  */
 #include "afpclient.h"
@@ -187,6 +187,7 @@ void usage( char * av0 )
     fprintf( stderr,"\t-4\tAFP 3.1 version\n");
     fprintf( stderr,"\t-v\tverbose\n");
 
+    fprintf( stderr,"\t-f\ttest to run\n");
     fprintf( stderr,"\t-l\tlist tests\n");
     exit (1);
 }
