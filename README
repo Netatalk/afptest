@@ -1,0 +1,74 @@
+Requirements
+------------
+- glibc2.2 or >
+- a kernel with large files support.
+
+Compilation 
+-----------
+./autogen.sh 
+make
+
+Configuration
+-------------
+- 2 users: <user1> <usr2> with the same password
+- 3 group: <gp1> <gp2> <common>
+with
+gp1:user1
+gp2:usr2
+common:user1, usr2
+
+- clear text UAM
+
+- an empty volume:
+drwxrwsr-x    5 user1   common         176 avr 27 23:56 test/ 
+
+example for 
+afpd.conf:
+#<<<<<<
+- -uamlist uams_clrtxt.so,uams_guest.so 
+#<<<<<<<
+
+AppleVolume.default
+#<<<<<<<<
+# volume mount read only 
+# not empty at least 2 files and one folder (empty).
+/mnt/cdrom cdrom dbpath:/opt/var/afpd/cdrom 
+
+/u/test test
+#<<<<<<<<
+
+For testing with a Mac, same config (user1 or user2 are not owner)
+
+Return Code
+-----------
+0 PASSED 
+1 FAILED
+2 NOT TESTED the test failed too early
+
+Tests prg
+---------
+in test directory
+spectest
+Assume exported volumes are only modified with netatalk.
+
+failed_spectest
+Tests which fail with current netatalk but pass on a Mac.
+
+T2_spectest
+Tests when .AppleDouble is missing, bogus.
+Need local access to volume (-c option).
+
+logintest
+Tests for DSI and login.
+
+rotest
+Tests on a read only volume.
+
+Ex:
+Run all test on server 192.168.2.123
+spectest  -h 192.168.2.123 -u user1 -d usr2 -s test -w  toto
+Same but on a Mac
+spectest -m -h 192.168.2.64 -u user1 -d usr2 -s test -w  toto
+
+Run FPByteRangeLock tests with AFP 3.0, two different servers are exporting the same volume.
+T2_spectest -f FPByteRangeLock -3  -h 192.168.2.123 -H 192.168.2.124 -u user1 -d usr2 -s test -c /u/test -w toto 
