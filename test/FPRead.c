@@ -311,7 +311,7 @@ fin:
 }
 
 /* -------------------------- */
-STATIC void test309(int size)
+static void write_test(int size)
 {
 int fork, fork1;
 u_int16_t bitmap = 0;
@@ -403,19 +403,27 @@ fin:
 	sleep(1);
 }
 
+/* -------------------------- */
+STATIC void test309()
+{
+    write_test(1024);
+}
+
+/* -------------------------- */
+STATIC void test327()
+{
+    write_test(	128*1024);
+}
+
 /* ----------- */
 void FPRead_test()
 {
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPRead page 238\n");
-#if 1
 	test5();
 	test46();
 	test59();
 	test61();
-	test309(1024);
-#else
-//	test309(128*1024);
-#endif	
+	test309();
 }
 
