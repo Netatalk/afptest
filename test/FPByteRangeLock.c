@@ -433,6 +433,13 @@ int len = (type == OPENFORK_RSCS)?(1<<FILPBIT_RFLEN):(1<<FILPBIT_DFLEN);
 		return;
 	}
 
+	fork2 = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap ,DIRDID_ROOT, name,0x33);
+	if (!fork2) {
+		failed();
+	}
+	
+	FAIL (FPCloseFork(Conn,fork2))
+
 #if 0
 	FAIL (FPSetForkParam(Conn, fork, len , 50))
 	FAIL (FPByteLock(Conn, fork, 0, 0 , 0 , 100))
@@ -444,13 +451,24 @@ int len = (type == OPENFORK_RSCS)?(1<<FILPBIT_RFLEN):(1<<FILPBIT_DFLEN);
 		nottested();
 		goto fin;
 	}
+	if (FPGetFileDirParams(Conn2, vol2,  DIRDID_ROOT , name, (1<<FILPBIT_ATTR), 0 )) {
+		nottested();
+		goto fin;
+	}
 
 	fork2 = FPOpenFork(Conn2, vol2, type , bitmap ,DIRDID_ROOT, name,OPENACC_DWR |OPENACC_RD);
 	if (fork2) {
 		FPCloseFork(Conn2,fork2);
 		failed();
 	}
-	fork2 = FPOpenFork(Conn2, vol2, type , bitmap ,DIRDID_ROOT, name,OPENACC_WR |OPENACC_RD);
+	
+	fork2 = FPOpenFork(Conn2, vol2, type , bitmap ,DIRDID_ROOT, name,OPENACC_DWR |OPENACC_RD);
+	if (fork2) {
+		FPCloseFork(Conn2,fork2);
+		failed();
+	}
+	
+	fork2 = FPOpenFork(Conn2, vol2, type , bitmap ,DIRDID_ROOT, name,/* OPENACC_WR | */OPENACC_RD);
 	if (!fork2) {
 		failed();
 	}
