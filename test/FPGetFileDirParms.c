@@ -934,7 +934,7 @@ test_exit:
 
 /* ------------------------- 
  * for this test you need
-.         "TEXT"  "LMAN"      ASCII Text                     SimpleText  
+.         "????"  "????"
 in AppleVolume.system
 */
 STATIC void test371()
@@ -965,8 +965,8 @@ u_int16_t bitmap;
 	else {
 		filedir.isdir = 0;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
-		if (memcmp(filedir.finder_info, "TEXTLMAN", 8)) {
-			fprintf(stderr,"FAILED not text\n");
+		if (memcmp(filedir.finder_info, "????????", 8)) {
+			fprintf(stderr,"FAILED not default type\n");
 			failed_nomsg();
 		}
 	}
@@ -978,7 +978,7 @@ u_int16_t bitmap;
 		filedir.isdir = 0;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 		if (memcmp(filedir.finder_info, "PDF CARO", 8)) {
-			fprintf(stderr,"FAILED not PDFt\n");
+			fprintf(stderr,"FAILED not PDF\n");
 			failed_nomsg();
 		}
 	}
@@ -987,6 +987,63 @@ fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1)) 
 
 	exit_test("test371");
+}
+
+/* ------------------------- 
+ * for this test you need
+.doc      "WDBN"  "MSWD"      Word Document
+in AppleVolume.system
+*/
+STATIC void test380()
+{
+char *name  = "t380 file name.doc";
+u_int16_t vol = VolID;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+DSI *dsi = &Conn->dsi; 
+u_int16_t bitmap;
+u_int16_t bitmap1 =  (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO)| (1<<FILPBIT_CDATE) | 
+					(1<<FILPBIT_BDATE) | (1<<FILPBIT_MDATE);
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPGetFileDirParms:test380: check type mapping\n");
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		goto fin;
+	}
+	bitmap = (1<< DIRPBIT_ATTR) |  (1<<DIRPBIT_ATTR) | (1<<FILPBIT_FINFO) |
+	         (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE) |
+		     (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID);
+
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, bitmap,0)) {
+		failed();
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+		if (memcmp(filedir.finder_info, "WDBNMSWD", 8)) {
+			fprintf(stderr,"FAILED not default type\n");
+			failed_nomsg();
+		}
+	}
+ 	FAIL (FPSetFileParams(Conn, vol, DIRDID_ROOT , name, bitmap1, &filedir)) 
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, bitmap,0)) {
+		failed();
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+		if (memcmp(filedir.finder_info, "WDBNMSWD", 8)) {
+			fprintf(stderr,"FAILED not PDF\n");
+			failed_nomsg();
+		}
+	}
+fin:
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+
+	exit_test("test380");
 }
 
 /* ----------- */
@@ -1009,8 +1066,7 @@ void FPGetFileDirParms_test()
 	test333();
 	test334();
 	test335();
-#if 0
 	test371();
-#endif	
+	test380();
 }
 
