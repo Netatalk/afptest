@@ -27,6 +27,7 @@ unsigned int ret;
 	memset(pos, 0, sizeof(pos));
 	memset(&filedir, 0, sizeof(filedir));
 
+	filedir.attr = 0x01a0;			/* various lock attributes */
 	ret = FPCatSearchExt(Conn, vol, 10, pos, 0,  /* d_bitmap*/ 0, bitmap, &filedir, &filedir);
 
 	if (Conn->afp_version < 31) {
@@ -36,7 +37,7 @@ unsigned int ret;
 		test_skipped(T_AFP3);
 		return;
 	}
-	if (htonl(AFPERR_BITMAP) == ret) { 
+	if (htonl(AFPERR_BITMAP) != ret) { 
 		failed();
 	}
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
@@ -44,11 +45,6 @@ unsigned int ret;
 		return;
 	}
 
-	filedir.attr = 0x01a0;			/* various lock attributes */
-	
-	FAIL( htonl(AFPERR_BITMAP) != FPCatSearchExt(Conn, vol, 10, pos, 0,  /* d_bitmap*/ 0, bitmap, &filedir, &filedir))
-
-	filedir.attr = 0x01a0;			/* various lock attributes */
 	ret = FPCatSearchExt(Conn, vol, 10, pos, 0x42,  /* d_bitmap*/ 0, bitmap, &filedir, &filedir);
 	if (ret != htonl(AFPERR_EOF)) {
 		failed();
