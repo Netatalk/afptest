@@ -51,6 +51,7 @@ Tests prg
 ---------
 in test directory
 spectest
+exercise AFP calls
 Assume exported volumes are only modified with netatalk.
 
 failed_spectest
@@ -68,10 +69,28 @@ Tests on a read only volume.
 
 Ex:
 ---
-Run all test on server 192.168.2.123
+Run all tests on server 192.168.2.123
 spectest  -h 192.168.2.123 -u user1 -d usr2 -s test -w  toto
 Same but on a Mac
 spectest -m -h 192.168.2.64 -u user1 -d usr2 -s test -w  toto
 
 Run FPByteRangeLock tests with AFP 3.0, two different servers are exporting the same volume.
 T2_spectest -f FPByteRangeLock -3  -h 192.168.2.123 -H 192.168.2.124 -u user1 -d usr2 -s test -c /u/test -w toto 
+
+Tests output
+------------
+Test name
+if the test is not executed, reason.
+ex:  SKIPPED (need AFP 3.x)      
+
+list of AFP calls executed with error code if any
+
+if Mac result and Netatalk differ or if Mac result differ between versions, Mac result
+Ex:
+header.dsi_code       -5000     AFPERR_ACCESS
+MAC RESULT: -5019 AFPERR_PARAM    -5010 AFPERR_BUSY
+Netatalk returns AFPERR_ACCESS when a Mac return AFPERR_PARAM or AFPERR_BUSY
+
+if Mac and Netatalk now return the same result:
+Warning MAC and Netatalk now same RESULT!   
+
