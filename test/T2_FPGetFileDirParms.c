@@ -997,7 +997,6 @@ u_int32_t mdate = 0;
 	}
 	
 	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1))
-	getchar();
 
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name1, bitmap,0)) {
 		failed();
