@@ -730,6 +730,9 @@ char *s;
 	case T_PATH:
 		s = "volume path";
 		break;
+	case T_AFP2:
+		s = "< AFP 3.0";
+		break;
 	case T_AFP3:
 		s = "AFP 3.x";
 		break;

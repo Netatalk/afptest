@@ -32,8 +32,10 @@ unsigned int ret;
 	if (Conn->afp_version < 30) {
 		if (htonl(AFPERR_NOOP) != ret) { 
 			failed();
-		}	
-		test_skipped(T_AFP3);
+		}
+		else {
+			test_skipped(T_AFP3);
+		}
 		goto test_exit;
 	}
 	if (htonl(AFPERR_BITMAP) != ret) { 

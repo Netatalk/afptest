@@ -18,6 +18,7 @@ u_int16_t vol2;
 DSI *dsi2;
 DSI *dsi = &Conn->dsi;
 char *cmt;
+int  dt;
 
 	enter_test();
     fprintf(stderr,"===================\n");
@@ -45,6 +46,7 @@ char *cmt;
 	}
 
 	FAIL (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name1))
+	dt = FPOpenDT(Conn,vol);
 
 	cmt = "essai";
 	ret = FPAddComment(Conn, vol,  DIRDID_ROOT , name, cmt);
@@ -97,6 +99,7 @@ fin:
 	if (rdir) {
 		delete_folder(vol, DIRDID_ROOT, name2);
 	}
+	FAIL (FPCloseDT(Conn, dt))
 test_exit:
 	exit_test("test55");
 }

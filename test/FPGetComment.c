@@ -12,6 +12,7 @@ char *name3  = "t53 --rwx-- dir";
 int pdir;
 int dir;
 int ret;
+int dt;
 u_int16_t vol = VolID;
 u_int16_t vol2;
 DSI *dsi2;
@@ -38,6 +39,7 @@ DSI *dsi2;
 		goto fin;
 	}
 
+	dt = FPOpenDT(Conn,vol);
 	if (ntohl(AFPERR_NOITEM) != FPGetComment(Conn, vol,  DIRDID_ROOT , name)) {
 		failed();
 	}
@@ -69,8 +71,41 @@ DSI *dsi2;
 	FAIL (FPCloseVol(Conn2,vol2))
 fin:
 	delete_folder(vol, DIRDID_ROOT, name);
+	FAIL (FPCloseDT(Conn, dt))
 test_exit:
 	exit_test("test53");
+}
+
+
+/* -------------------------- */
+STATIC void test394()
+{
+int fork;
+char *name = "t394 file.txt";
+int dt;
+int dir;
+int ret;
+u_int16_t vol = VolID;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+	fprintf(stderr, "FPGetComment:test394: no comment\n");
+
+	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
+		nottested();
+		goto test_exit;
+	}
+	dt = FPOpenDT(Conn,vol);
+
+	ret = FPGetComment(Conn, vol,  DIRDID_ROOT , name);
+	if (not_valid(ret, /* MAC */AFPERR_NOITEM, 0)) {
+		failed();
+	}
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+	FAIL (FPCloseDT(Conn, dt))
+
+test_exit:
+	exit_test("test394");
 }
 
 /* ----------- */
@@ -79,5 +114,6 @@ void FPGetComment_test()
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetComment page 176\n");
 	test53();
+	test394();
 }
 

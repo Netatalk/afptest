@@ -163,6 +163,7 @@ int dir;
 unsigned int ret;
 u_int16_t vol = VolID;
 DSI *dsi;
+int dt;
 
 	dsi = &Conn->dsi;
 
@@ -181,6 +182,7 @@ DSI *dsi;
 		goto test_exit;
 	}
 
+	dt = FPOpenDT(Conn,vol);
     /* ---- fork.c ---- */
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap , tdir, tname,OPENACC_WR | OPENACC_RD);
 	if (fork || htonl(AFPERR_NOOBJ) != dsi->header.dsi_code) {
@@ -298,6 +300,7 @@ DSI *dsi;
 	FAIL (ntohl(AFPERR_NOOBJ) != FPAddComment(Conn, vol, tdir, tname, "Comment")) 
 	FAIL (ntohl(AFPERR_NOOBJ) != FPGetComment(Conn, vol, tdir, tname)) 
 	FAIL (ntohl(AFPERR_NOOBJ) != FPRemoveComment(Conn, vol, tdir, tname)) 
+	FAIL (FPCloseDT(Conn, dt))
 	
 test_exit:
 	exit_test("test172");

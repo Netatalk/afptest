@@ -292,6 +292,7 @@ u_int16_t bitmap = (1<<DIRPBIT_ATTR);
 unsigned int ret;
 u_int16_t vol = VolID;
 DSI *dsi;
+int dt;
 
 	dsi = &Conn->dsi;
 
@@ -299,9 +300,11 @@ DSI *dsi;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Error:t100: no obj cname error (AFPERR_NOOBJ)\n");
 
+	dt = FPOpenDT(Conn,vol);
 	FAIL (ntohl(AFPERR_NOOBJ) != FPAddComment(Conn, vol,  DIRDID_ROOT , name1,"essai")) 
 	FAIL (ntohl(AFPERR_NOOBJ) != FPGetComment(Conn, vol,  DIRDID_ROOT , name1)) 
 	FAIL (ntohl(AFPERR_NOOBJ) != FPRemoveComment(Conn, vol,  DIRDID_ROOT , name1)) 
+	FAIL (FPCloseDT(Conn, dt))
 
 	filedir.isdir = 1;
 	filedir.attr = ATTRBIT_NODELETE | ATTRBIT_SETCLR ;
@@ -369,6 +372,7 @@ u_int16_t bitmap = (1<<DIRPBIT_ATTR);
 u_int16_t vol = VolID;
 unsigned int ret;
 DSI *dsi;
+int  dt;
 
 	dsi = &Conn->dsi;
 
@@ -383,6 +387,7 @@ DSI *dsi;
 	if (!(dir = no_access_folder(vol, DIRDID_ROOT, ndir))) {
 		goto test_exit;
 	}
+	dt = FPOpenDT(Conn,vol);
 	FAIL (ntohl(AFPERR_ACCESS) != FPAddComment(Conn, vol,  DIRDID_ROOT , name1,"essai")) 
 
 	ret = FPGetComment(Conn, vol,  DIRDID_ROOT , name1);
@@ -391,6 +396,8 @@ DSI *dsi;
 	}
 
 	FAIL (ntohl(AFPERR_ACCESS) != FPRemoveComment(Conn, vol,  DIRDID_ROOT , name1)) 
+	FAIL (FPCloseDT(Conn, dt))
+
 	filedir.isdir = 1;
 	filedir.attr = ATTRBIT_NODELETE | ATTRBIT_SETCLR ;
  	FAIL (ntohl(AFPERR_ACCESS) != FPSetDirParms(Conn, vol, DIRDID_ROOT , name1, bitmap, &filedir)) 
@@ -474,6 +481,7 @@ struct afp_filedir_parms filedir;
 u_int16_t bitmap = (1<<DIRPBIT_ATTR);
 u_int16_t vol = VolID;
 DSI *dsi;
+int  dt;
 
 	dsi = &Conn->dsi;
 
@@ -489,11 +497,13 @@ DSI *dsi;
 		goto test_exit;
 	}
 
+	dt = FPOpenDT(Conn,vol);
 	test_comment(vol, DIRDID_ROOT, name1);
 	ret = FPGetComment(Conn, vol,DIRDID_ROOT, name1);
 	if (not_valid(ret, /* MAC */0, AFPERR_NOITEM)) {
 		failed();
 	}
+	FAIL (FPCloseDT(Conn, dt))
 	
 	filedir.isdir = 1;
 	filedir.attr = ATTRBIT_NODELETE | ATTRBIT_SETCLR ;
@@ -575,6 +585,7 @@ struct afp_filedir_parms filedir;
 u_int16_t bitmap = (1<< DIRPBIT_DID);
 u_int16_t vol = VolID;
 DSI *dsi;
+int  dt;
 
 	dsi = &Conn->dsi;
 
@@ -596,11 +607,13 @@ DSI *dsi;
 	afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
 	dir = filedir.did;
 
+	dt = FPOpenDT(Conn,vol);
 	test_comment(vol, dir, "");
 	ret = FPGetComment(Conn, vol,  dir , "");
 	if (not_valid(ret, /* MAC */AFPERR_ACCESS, AFPERR_NOITEM)) {
 		failed();
 	}
+	FAIL (FPCloseDT(Conn, dt))
 
 	filedir.isdir = 1;
 	filedir.attr = ATTRBIT_NODELETE | ATTRBIT_SETCLR ;
@@ -678,6 +691,7 @@ u_int16_t bitmap = (1<<DIRPBIT_ATTR);
 u_int16_t vol = VolID;
 DSI *dsi;
 int ret;
+int  dt;
 
 	dsi = &Conn->dsi;
 
@@ -687,9 +701,11 @@ int ret;
 
     dir = 0;
     err = ntohl(AFPERR_PARAM);
+	dt = FPOpenDT(Conn,vol);
 	FAIL (err != FPAddComment(Conn, vol, dir, name1,"essai")) 
 	FAIL (err != FPGetComment(Conn, vol, dir , name1)) 
 	FAIL (err != FPRemoveComment(Conn, vol, dir  , name1)) 
+	FAIL (FPCloseDT(Conn, dt))
 
 	filedir.isdir = 1;
 	filedir.attr = ATTRBIT_NODELETE | ATTRBIT_SETCLR ;
@@ -751,6 +767,7 @@ int dir;
 unsigned int ret;
 u_int16_t vol = VolID;
 DSI *dsi;
+int  dt;
 
 	dsi = &Conn->dsi;
 
@@ -869,9 +886,11 @@ DSI *dsi;
 		failed();
 	}
 	/* ---- desktop.c ---- */
+	dt = FPOpenDT(Conn,vol);
 	FAIL (ntohl(AFPERR_NOOBJ) != FPAddComment(Conn, vol,  DIRDID_ROOT_PARENT , "", "Comment"))
 	FAIL (ntohl(AFPERR_NOOBJ) != FPGetComment(Conn, vol,  DIRDID_ROOT_PARENT , "")) 
 	FAIL (ntohl(AFPERR_NOOBJ) != FPRemoveComment(Conn, vol,  DIRDID_ROOT_PARENT , "")) 
+	FAIL (FPCloseDT(Conn, dt))
 	exit_test("test170");
 }
 
@@ -890,6 +909,7 @@ int dir;
 unsigned int ret;
 u_int16_t vol = VolID;
 DSI *dsi;
+int  dt;
 
 	dsi = &Conn->dsi;
 
@@ -996,9 +1016,11 @@ DSI *dsi;
 		failed();
 	}
 	/* ---- desktop.c ---- */
+	dt = FPOpenDT(Conn,vol);
 	FAIL (ntohl(AFPERR_NOOBJ) != FPAddComment(Conn, vol, tdir, tname, "Comment")) 
 	FAIL (ntohl(AFPERR_NOOBJ) != FPGetComment(Conn, vol, tdir, tname)) 
 	FAIL (ntohl(AFPERR_NOOBJ) != FPRemoveComment(Conn, vol, tdir, tname)) 
+	FAIL (FPCloseDT(Conn, dt))
 	exit_test("test171");
 }
 
@@ -1017,6 +1039,7 @@ int dir;
 unsigned int ret;
 u_int16_t vol = VolID;
 DSI *dsi;
+int  dt;
 
 	dsi = &Conn->dsi;
 
@@ -1125,9 +1148,11 @@ DSI *dsi;
 		failed();
 	}
 	/* ---- desktop.c ---- */
+	dt = FPOpenDT(Conn,vol);
 	FAIL (ntohl(AFPERR_PARAM) != FPAddComment(Conn, vol, tdir, tname, "Comment"))
 	FAIL (ntohl(AFPERR_PARAM) != FPGetComment(Conn, vol, tdir, tname))
 	FAIL (ntohl(AFPERR_PARAM) != FPRemoveComment(Conn, vol, tdir, tname))
+	FAIL (FPCloseDT(Conn, dt))
 
 	/* ---- appl.c ---- */
 	exit_test("test173");
@@ -1150,6 +1175,7 @@ unsigned int ret;
 u_int16_t vol = VolID;
 DSI *dsi = &Conn->dsi;
 DSI *dsi2;
+int  dt;
 
 	enter_test();
     fprintf(stderr,"===================\n");
@@ -1293,9 +1319,11 @@ DSI *dsi2;
 		failed();
 	}
 	/* ---- desktop.c ---- */
+	dt = FPOpenDT(Conn,vol);
 	FAIL (ntohl(AFPERR_NOOBJ) != FPAddComment(Conn, vol, tdir, tname, "Comment")) 
 	FAIL (ntohl(AFPERR_NOOBJ) != FPGetComment(Conn, vol, tdir, tname))
 	FAIL (ntohl(AFPERR_NOOBJ) != FPRemoveComment(Conn, vol, tdir, tname))
+	FAIL (FPCloseDT(Conn, dt))
 test_exit:
 	exit_test("test174");
 }

@@ -16,7 +16,7 @@ int ret;
 u_int16_t vol = VolID;
 u_int16_t vol2;
 DSI *dsi2;
-
+int dt;
 		
 	enter_test();
     fprintf(stderr,"===================\n");
@@ -30,6 +30,8 @@ DSI *dsi2;
 	if (!(pdir = no_access_folder(vol, DIRDID_ROOT, name))) {
 		goto test_exit;
 	}
+
+	dt = FPOpenDT(Conn,vol);
 	if (!(rdir = read_only_folder(vol, DIRDID_ROOT, name2) ) ) {
 		goto fin;
 	}
@@ -90,6 +92,7 @@ fin:
 	if (rdir) {
 		delete_folder(vol, DIRDID_ROOT, name2);
 	}
+	FAIL (FPCloseDT(Conn, dt))
 test_exit:
 	exit_test("test54");
 }

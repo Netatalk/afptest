@@ -17,6 +17,11 @@ DSI *dsi = &Conn->dsi;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test162: illegal UTF8 name\n");
 
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		goto test_exit;
+	}
+
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
 		goto test_exit;
@@ -49,6 +54,11 @@ DSI *dsi = &Conn->dsi;
 	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test166: utf8 precompose decompose\n");
+
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		goto test_exit;
+	}
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
@@ -99,14 +109,14 @@ int  ofs =  3 * sizeof( u_int16_t );
 struct afp_filedir_parms filedir;
 DSI *dsi = &Conn->dsi;
 
-#if 0
-	if (Conn->afp_version < 30) {
-		goto test_exit;
-	}
-#endif
 	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test167: utf8 precompose decompose\n");
+
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		goto test_exit;
+	}
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
@@ -160,6 +170,11 @@ int  dir1;
 	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test181: test search by ID UTF8\n");
+
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		goto test_exit;
+	}
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
@@ -217,6 +232,7 @@ int  dir1;
 test_exit:
 	exit_test("test181");
 }
+
 /* ------------------------- 
  */
 STATIC void test185()
@@ -228,6 +244,11 @@ u_int16_t vol = VolID;
 	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test185: rename utf8 name\n");
+
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		goto test_exit;
+	}
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
@@ -264,6 +285,11 @@ u_int16_t bitmap = 0;
 	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test233: false mangled UTF8 dirname\n");
+
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		goto test_exit;
+	}
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
@@ -311,6 +337,11 @@ u_int16_t bitmap = 0;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test234: false mangled UTF8 filename\n");
 
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		goto test_exit;
+	}
+
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
 		goto test_exit;
@@ -355,6 +386,11 @@ u_int16_t bitmap = 0;
 	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test312: mangled UTF8 filename\n");
+
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		goto test_exit;
+	}
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
@@ -413,6 +449,11 @@ u_int16_t bitmap = 0;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test313: mangled UTF8 dirname\n");
 
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		goto test_exit;
+	}
+
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
 		goto test_exit;
@@ -450,6 +491,11 @@ u_int16_t bitmap = 0;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test314: invalid mangled UTF8 name\n");
 
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		goto test_exit;
+	}
+
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
 		goto test_exit;
@@ -484,6 +530,11 @@ u_int16_t bitmap = 0;
 	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test337: mangled UTF8 filename\n");
+
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		goto test_exit;
+	}
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
@@ -545,6 +596,11 @@ DSI *dsi = &Conn->dsi;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test381: utf8 use type 2 name with AFP3 connection\n");
 
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		goto test_exit;
+	}
+
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
 		goto test_exit;
@@ -594,6 +650,11 @@ DSI *dsi = &Conn->dsi;
 	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test382: utf8 use type 2 name with AFP3 connection\n");
+
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		goto test_exit;
+	}
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
@@ -645,6 +706,11 @@ u_int16_t vol = VolID;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test383: utf8 rename type 2 name, AFP3 connection\n");
 
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		goto test_exit;
+	}
+
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
 		goto test_exit;
@@ -679,6 +745,11 @@ u_int16_t vol = VolID;
 	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test384: utf8 rename type 2 name, AFP3 connection wrong parameter\n");
+
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		goto test_exit;
+	}
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
@@ -715,6 +786,11 @@ u_int16_t vol = VolID;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test385: utf8 copyfile type 2 name, AFP3 connection\n");
 
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		goto test_exit;
+	}
+
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
 		goto test_exit;
@@ -750,6 +826,11 @@ u_int16_t vol = VolID;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test386: utf8 moveandrename type 2 name, AFP3 connection\n");
 
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		goto test_exit;
+	}
+
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
 		goto test_exit;
@@ -769,6 +850,28 @@ u_int16_t vol = VolID;
 	FPDelete(Conn, vol,  DIRDID_ROOT , file);
 test_exit:
 	exit_test("test386");
+}
+
+/* ------------------------- */
+STATIC void test395()
+{
+u_int16_t vol = VolID;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"Utf8:test395: utf8 bit set if AFP < 3.0\n");
+
+	if (Conn->afp_version >= 30) {
+		test_skipped(T_AFP2);
+		goto test_exit;
+	}
+
+	if ( (get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
+		failed();
+	}
+
+test_exit:
+	exit_test("test395");
 }
 
 
@@ -794,5 +897,6 @@ void Utf8_test()
 	test384();
 	test385();
 	test386();
+	test395();
 }
 

@@ -54,6 +54,7 @@ extern void test_skipped(int why);
 #define T_LOCKING    9
 #define T_VOL_SMALL  10
 #define T_ID         11
+#define T_AFP2       12
 
 /* ---------------------------------
 */
