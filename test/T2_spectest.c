@@ -1,9 +1,10 @@
 /*
- * $Id: T2_spectest.c,v 1.3 2003-08-11 17:37:13 didg Exp $
+ * $Id: T2_spectest.c,v 1.4 2003-11-29 00:25:42 didg Exp $
  * MANIFEST
  */
 #include "afpclient.h"
 #include "test.h"
+#include <dlfcn.h>
 
 int Verbose = 0;
 int Quirk = 0;
@@ -12,6 +13,7 @@ u_int16_t VolID;
 static DSI *dsi;
 CONN *Conn;
 CONN *Conn2;
+extern void nottested(void);
 
 int ExitCode = 0;
 
@@ -108,6 +110,7 @@ int i = 0;
 	}
 }
 
+#if 0
 /* ----------- */
 static void run_one(char *name)
 {
@@ -132,6 +135,68 @@ int i = 0;
 
 	FPCloseVol(Conn,VolID);
 }
+#endif
+
+/* ----------- */
+static void run_one(char *name)
+{
+int i = 0;
+void *handle = NULL;
+void (*fn)(void) = NULL;
+char *error;
+char *token;
+
+    token = strtok(name, ",");
+    
+	while (Test_list[i].name != NULL) {
+		if (!strcmp(Test_list[i].name, name))
+			break;
+		i++;
+	}
+	if (Test_list[i].name == NULL) {
+		handle = dlopen (NULL, RTLD_LAZY);
+        if (handle) {
+			fn = dlsym(handle, token);
+			if ((error = dlerror()) != NULL)  {
+			    fprintf (stderr, "%s\n", error);
+			}
+        }
+        else {
+        	fprintf (stderr, "%s\n", dlerror());
+        }
+        if (!handle || !fn) {
+			nottested();
+			return;
+		}
+	}
+	else {
+		fn = Test_list[i].fn;
+	}
+
+	dsi = &Conn->dsi;
+	VolID = FPOpenVol(Conn, Vol);
+	if (VolID == 0xffff) {
+		nottested();
+		return;
+	}
+	
+	while (token ) {
+	    (*fn)();
+	    token = strtok(NULL, ",");
+	    if (token && handle) {
+			fn = dlsym(handle, token);
+			if ((error = dlerror()) != NULL)  {
+			    fprintf (stderr, "%s\n", error);
+			}
+	    }
+	}
+
+	if (handle)
+		dlclose(handle);
+
+	FPCloseVol(Conn,VolID);
+}
+                                                                            
 /* ----------- */
 static void run_all()
 {
@@ -161,6 +226,7 @@ int     Proto = 0;
 int     Port = 548;
 char    *Password = "";
 char    *Vol = "";
+char    *Vol2 = "";
 char    *User;
 char    *User2;
 char    *Path;
@@ -168,6 +234,7 @@ int     Version = 21;
 int     List = 0;
 int     Mac = 0;
 char    *Test;
+int     Manuel = 0;
 
 /* =============================== */
 void usage( char * av0 )
@@ -181,6 +248,7 @@ void usage( char * av0 )
     fprintf( stderr,"\t-u\tuser name (default uid)\n");
     fprintf( stderr,"\t-d\tsecond user for two connections (same password!)\n");
     fprintf( stderr,"\t-H\tsecond server for two connections (default use only one server)\n");
+    fprintf( stderr,"\t-S\tsecond volume (default none)\n");
 
     fprintf( stderr,"\t-w\tpassword (default none)\n");
     fprintf( stderr,"\t-2\tAFP 2.2 version (default 2.1)\n");
@@ -202,7 +270,7 @@ int cc;
 static char *vers = "AFPVersion 2.1";
 static char *uam = "Cleartxt Passwrd";
 
-    while (( cc = getopt( ac, av, "v234h:H:p:s:u:d:w:c:f:lm" )) != EOF ) {
+    while (( cc = getopt( ac, av, "v234h:H:p:s:u:d:w:c:f:lmMS:" )) != EOF ) {
         switch ( cc ) {
         case '2':
 			vers = "AFP2.2";
@@ -231,6 +299,9 @@ static char *uam = "Cleartxt Passwrd";
         case 's':
             Vol = strdup(optarg);
             break;
+        case 'S':
+            Vol2 = strdup(optarg);
+            break;
         case 'u':
             User = strdup(optarg);
             break;
@@ -255,6 +326,9 @@ static char *uam = "Cleartxt Passwrd";
             break;
 		case 'v':
 			Verbose = 1;
+			break;
+		case 'M':
+			Manuel = 1;
 			break;
         default :
             usage( av[ 0 ] );

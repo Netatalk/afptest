@@ -95,8 +95,8 @@ int sock;
 
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPzzz:test224: disconnected after 2 mn\n");
-	if (Conn->afp_version < 30 || Conn2) {
-		test_skipped(T_AFP3_CONN2);
+	if (Conn2) {
+		test_skipped(T_CONN2);
 		return;
 	}
 
@@ -125,7 +125,12 @@ int sock;
     	}
     	dsi->protocol = DSI_TCPIP; 
 		dsi->socket = sock;
-		ret = FPopenLoginExt(Conn, vers, uam, User, Password);
+		if (Conn->afp_version < 30) {
+			ret = FPopenLogin(Conn, vers, uam, User, Password);
+		}
+		else {
+			ret = FPopenLoginExt(Conn, vers, uam, User, Password);
+		}
 		if (ret) {
     		nottested();
     		goto fin;

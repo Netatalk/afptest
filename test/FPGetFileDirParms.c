@@ -552,6 +552,21 @@ char *result;
 	}
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
 }
+
+/* ------------------------- */
+STATIC void test319()
+{
+u_int16_t vol = VolID;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPGetFileDirParms:test319: get volume access right\n");
+
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, "", 0,(1 << DIRPBIT_ACCESS) )) {
+		failed();
+	}
+}
+
+
 /* ----------- */
 void FPGetFileDirParms_test()
 {
@@ -567,5 +582,6 @@ void FPGetFileDirParms_test()
 	test229();
 	test307();
 	test308();
+	test319();
 }
 

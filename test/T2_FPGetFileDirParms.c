@@ -661,6 +661,7 @@ int fd;
 	id = get_fid(Conn, vol, dir , name1);     
 
 	if (!Mac) {
+	    /* so it doesn't reuse the same inode */
 		sprintf(temp,"%s/%s/%s", Path, name, name2);
 		fd = open(temp, O_RDWR | O_CREAT, 0666);
 		if (fd < 0) {

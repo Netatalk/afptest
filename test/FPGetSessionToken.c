@@ -89,7 +89,7 @@ u_int16_t vol = VolID;
 /* ------------------------- */
 STATIC void test228()
 {
-char *name = "t222 file";
+char *name = "t228 file";
 u_int16_t vol = VolID,vol2;
 unsigned int ret;
 char *token;
@@ -101,7 +101,7 @@ int fork = 0, fork1;
 struct sigaction action;    
 #if 0
     fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPDisconnectOldSession :test222: AFP 3.x disconnect old session\n");
+    fprintf(stderr,"FPDisconnectOldSession :test228: AFP 3.x disconnect old session\n");
 	if (Conn->afp_version < 30 || Conn2) {
 		test_skipped(T_AFP3_CONN2);
 		return;

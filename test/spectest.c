@@ -1,8 +1,9 @@
 /*
- * $Id: spectest.c,v 1.8 2003-06-10 14:05:47 didg Exp $
+ * $Id: spectest.c,v 1.9 2003-11-29 00:25:42 didg Exp $
  * MANIFEST
  */
 #include "specs.h"
+#include <dlfcn.h>
 
 int Verbose = 0;
 int Interactive = 0;
@@ -183,14 +184,36 @@ int i = 0;
 static void run_one(char *name)
 {
 int i = 0;
+void *handle = NULL;
+void (*fn)(void) = NULL;
+char *error;
+char *token;
+
+    token = strtok(name, ",");
+    
 	while (Test_list[i].name != NULL) {
 		if (!strcmp(Test_list[i].name, name))
 			break;
 		i++;
 	}
 	if (Test_list[i].name == NULL) {
-		nottested();
-		return;
+		handle = dlopen (NULL, RTLD_LAZY);
+        if (handle) {
+			fn = dlsym(handle, token);
+			if ((error = dlerror()) != NULL)  {
+			    fprintf (stderr, "%s\n", error);
+			}
+        }
+        else {
+        	fprintf (stderr, "%s\n", dlerror());
+        }
+        if (!handle || !fn) {
+			nottested();
+			return;
+		}
+	}
+	else {
+		fn = Test_list[i].fn;
 	}
 
 	dsi = &Conn->dsi;
@@ -200,11 +223,25 @@ int i = 0;
 		nottested();
 		return;
 	}
-	press_enter(Test_list[i].name);
-	Test_list[i].fn();
+	
+	while (token ) {
+	    press_enter(token);
+	    (*fn)();
+	    token = strtok(NULL, ",");
+	    if (token && handle) {
+			fn = dlsym(handle, token);
+			if ((error = dlerror()) != NULL)  {
+			    fprintf (stderr, "%s\n", error);
+			}
+	    }
+	}
+
+	if (handle)
+		dlclose(handle);
 
 	FPCloseVol(Conn,VolID);
 }
+                                                                            
 /* ----------- */
 static void run_all()
 {

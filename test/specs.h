@@ -45,6 +45,7 @@ extern void test_skipped(int why);
 #define T_MAC_PATH   5
 #define T_UNIX_PREV  6
 #define T_UTF8       7
+#define T_VOL2       8
 
 /* ---------------------------------
 */
