@@ -1,7 +1,8 @@
 /*
- * $Id: fail_spectest.c,v 1.1 2003-05-05 22:59:33 didg Exp $
+ * $Id: fail_spectest.c,v 1.2 2003-06-10 15:13:40 didg Exp $
  * MANIFEST
  */
+#define QUIRK
 #include "specs.h"
 
 int Verbose = 0;
