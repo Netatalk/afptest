@@ -37,8 +37,6 @@ struct sigaction action;
     	nottested();
     	return;
     }
-	FAIL (FPzzz(Conn)) 
-	sleep(60 *3);
     conn->type = 0;
     dsi3 = &conn->dsi;
 	sock = OpenClientSocket(Server, Port);

@@ -1,5 +1,5 @@
 /*
- * $Id: spectest.c,v 1.3 2003-05-03 21:14:53 didg Exp $
+ * $Id: spectest.c,v 1.4 2003-05-05 14:46:37 didg Exp $
  * MANIFEST
  */
 #include "specs.h"
@@ -70,6 +70,7 @@ EXT_FN(FPSetForkParms);
 EXT_FN(FPSetVolParms);
 EXT_FN(FPWrite);
 EXT_FN(FPWriteExt);
+EXT_FN(FPzzz);
 EXT_FN(Error);
 
 
@@ -140,6 +141,7 @@ FN_N(FPSetForkParms)
 FN_N(FPSetVolParms)
 FN_N(FPWrite)
 FN_N(FPWriteExt)
+FN_N(FPzzz)
 FN_N(Error)
 #endif
 

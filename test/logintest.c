@@ -1,5 +1,5 @@
 /*
- * $Id: logintest.c,v 1.1 2003-04-28 10:19:23 didg Exp $
+ * $Id: logintest.c,v 1.2 2003-05-05 14:46:37 didg Exp $
  * MANIFEST
  */
 #include "specs.h"
@@ -106,6 +106,7 @@ char	**av;
 {
 int cc;
 static char *uam = "Cleartxt Passwrd";
+unsigned int ret;
 
     while (( cc = getopt( ac, av, "v234h:p:u:w:m" )) != EOF ) {
         switch ( cc ) {
@@ -201,14 +202,20 @@ static char *uam = "Cleartxt Passwrd";
 	/* ------------------------ */	
     connect_server();
     if (Version >= 30) {
-		FPopenLoginExt(Conn, vers, uam, User, Password);
+		ret = FPopenLoginExt(Conn, vers, uam, User, Password);
 	}
 	else {
-		FPopenLogin(Conn, vers, uam, User, Password);
+		ret = FPopenLogin(Conn, vers, uam, User, Password);
+	}
+	if (ret) {
+		failed();
+		return ExitCode;
 	}
 	Conn->afp_version = Version;
 	
-   	FPLogOut(Conn);
+   	if (FPLogOut(Conn)) {
+   		failed();
+   	}
 
 	return ExitCode;
 }
