@@ -1,5 +1,5 @@
 /*
- * $Id: T2_spectest.c,v 1.5 2003-12-07 10:06:58 didg Exp $
+ * $Id: T2_spectest.c,v 1.6 2003-12-22 13:17:37 didg Exp $
  * MANIFEST
  */
 #include "afpclient.h"
@@ -43,6 +43,7 @@ EXT_FN(FPRename);
 EXT_FN(Error);
 #endif
 
+EXT_FN(FPCreateFile);
 EXT_FN(FPDelete);
 EXT_FN(FPGetFileDirParms);
 EXT_FN(FPMoveAndRename);
@@ -89,6 +90,7 @@ FN_N(FPResolveID)
 FN_N(Error)
 #endif
 #endif
+FN_N(FPCreateFile)
 FN_N(FPDelete)
 FN_N(FPGetFileDirParms)
 FN_N(FPMoveAndRename)
