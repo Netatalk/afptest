@@ -1,5 +1,5 @@
 /*
- * $Id: afp_ls.c,v 1.3 2003-10-29 08:42:16 didg Exp $
+ * $Id: afp_ls.c,v 1.4 2004-05-10 18:39:26 didg Exp $
  * MANIFEST
  */
 
@@ -41,7 +41,9 @@ int size = 1000;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPEnumerate:test300: enumerate recursively a folder\n");
     f_bitmap = (1<<FILPBIT_FNUM ) | (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO)|
-	         (1<<FILPBIT_CDATE) | (1<<FILPBIT_BDATE) | (1<<FILPBIT_MDATE);
+	         (1<<FILPBIT_CDATE) | (1<<FILPBIT_BDATE) | (1<<FILPBIT_MDATE)|
+	         (1 << FILPBIT_DFLEN) |(1 << FILPBIT_RFLEN);
+	         
 
 	d_bitmap = (1<< DIRPBIT_ATTR) | (1<<DIRPBIT_FINFO) |  (1 << DIRPBIT_OFFCNT) |
 	         (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE) |

@@ -1,5 +1,5 @@
 /*
- * $Id: T2_spectest.c,v 1.6 2003-12-22 13:17:37 didg Exp $
+ * $Id: T2_spectest.c,v 1.7 2004-05-10 18:39:26 didg Exp $
  * MANIFEST
  */
 #include "afpclient.h"
@@ -16,6 +16,7 @@ CONN *Conn2;
 extern void nottested(void);
 
 int ExitCode = 0;
+int Locking;
 
 #define FN(a) a ## _test
 #define EXT_FN(a) extern void FN(a) (void)
@@ -43,6 +44,7 @@ EXT_FN(FPRename);
 EXT_FN(Error);
 #endif
 
+EXT_FN(FPByteRangeLock);
 EXT_FN(FPCreateFile);
 EXT_FN(FPDelete);
 EXT_FN(FPGetFileDirParms);
@@ -90,6 +92,7 @@ FN_N(FPResolveID)
 FN_N(Error)
 #endif
 #endif
+FN_N(FPByteRangeLock)
 FN_N(FPCreateFile)
 FN_N(FPDelete)
 FN_N(FPGetFileDirParms)
@@ -242,6 +245,7 @@ int     Manuel = 0;
 void usage( char * av0 )
 {
     fprintf( stderr, "usage:\t%s [-m] [-n] [-t] [-h host] [-p port] [-s vol] [-u user] [-w password] -f [call]\n", av0 );
+    fprintf( stderr,"\t-L\tserver without working fcntl locking, skip tests using it\n");
     fprintf( stderr,"\t-m\tserver is a Mac\n");
     fprintf( stderr,"\t-h\tserver host name (default localhost)\n");
     fprintf( stderr,"\t-p\tserver port (default 548)\n");
@@ -272,7 +276,7 @@ int cc;
 static char *vers = "AFPVersion 2.1";
 static char *uam = "Cleartxt Passwrd";
 
-    while (( cc = getopt( ac, av, "v234h:H:p:s:u:d:w:c:f:lmMS:" )) != EOF ) {
+    while (( cc = getopt( ac, av, "v234h:H:p:s:u:d:w:c:f:lmMS:L" )) != EOF ) {
         switch ( cc ) {
         case '2':
 			vers = "AFP2.2";
@@ -291,6 +295,9 @@ static char *uam = "Cleartxt Passwrd";
 			break;
 		case 'm':
 			Mac = 1;
+			break;
+		case 'L':
+			Locking = 1;
 			break;
         case 'n':
             Proto = 1;

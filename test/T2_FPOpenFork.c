@@ -6,6 +6,189 @@
 static char temp[MAXPATHLEN];   
 
 /* ------------------------- */
+STATIC void test47()
+{
+char *name = "t47 folder";
+char *file = "t47 file.txt";
+u_int16_t vol = VolID;
+u_int16_t bitmap = 0;
+int fork = 0, fork1 = 0;
+int dir;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPOpenFork:test47: open read only file read only then read write\n");
+    fprintf(stderr,"FPOpenFork:test47: in a read only folder\n");
+
+	if (!Mac && !Path) {
+		test_skipped(T_MAC_PATH);
+		return;
+	}
+
+ 	if (!folder_with_ro_adouble(vol, DIRDID_ROOT, name, file)) {
+		nottested();
+		return;
+ 	}
+
+	dir = get_did(Conn, vol, DIRDID_ROOT, name);
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap , dir, file, OPENACC_RD);
+
+	if (!fork) {
+		failed();
+		goto fin1;
+	}		
+
+	fork1 = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap , dir, file, OPENACC_WR | OPENACC_RD);
+
+	if (fork1) {
+		failed();
+		goto fin1;
+	}		
+
+	FAIL (FPCloseFork(Conn,fork))
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap , dir, file , OPENACC_RD);
+
+	if (!fork) {
+		failed();
+		goto fin1;
+	}		
+
+	if (ntohl(AFPERR_EOF) != FPRead(Conn, fork, 0, 100, Data)) {
+		failed();
+		goto fin1;
+	}
+
+	fork1 = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap , dir, file,OPENACC_WR | OPENACC_RD);
+
+	if (fork1) {
+		failed();
+		goto fin1;
+	}
+
+	if (ntohl(AFPERR_EOF) != FPRead(Conn, fork, 0, 100, Data)) {
+		failed();
+		goto fin1;
+	}
+
+	fork1 = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap , dir, file, OPENACC_RD);
+
+	if (!fork1) {
+		failed();
+		goto fin1;
+	}
+	FAIL (FPCloseFork(Conn,fork1))
+	fork1 = 0;
+
+	if (ntohl(AFPERR_EOF) != FPRead(Conn, fork, 0, 100, Data)) {
+		failed();
+		goto fin1;
+	}
+
+	FAIL (FPCloseFork(Conn,fork))
+	fork = 0;
+#if 0	
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"test47: in a read/write folder\n");
+
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, "test folder/toto.txt", OPENACC_RD);
+
+	if (!fork) {
+		failed();
+		goto fin1;
+	}		
+
+	fork1 = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, "test folder/toto.txt",OPENACC_WR | OPENACC_RD);
+
+	if (fork1) {
+		failed();
+		goto fin1;
+	}		
+
+	FAIL (FPCloseFork(Conn,fork))
+	fork = 0;
+
+	strcpy(temp, Path);
+	strcat(temp,"/test folder/.AppleDouble/toto.txt");
+	if (unlink(temp)) {
+		fprintf(stderr,"\tFAILED Ressource fork not there\n");
+		failed_nomsg();
+	}
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, "test folder/toto.txt", OPENACC_RD);
+
+	if (!fork) {
+		failed();
+		goto fin1;
+	}		
+
+	fork1 = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, "test folder/toto.txt",OPENACC_WR | OPENACC_RD);
+
+	if (fork1) {
+		failed();
+		goto fin1;
+	}		
+
+	FAIL (FPCloseFork(Conn,fork))
+	fork = 0;
+
+	strcpy(temp, Path);strcat(temp,"/test folder/.AppleDouble/toto.txt");
+	if (unlink(temp)) {
+		fprintf(stderr,"\tFAILED Ressource fork not there\n");
+		failed_nomsg();
+		goto fin1;
+	}
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap ,DIRDID_ROOT, "test folder/toto.txt", OPENACC_RD);
+	if (!fork) {
+		failed();
+		goto fin1;
+	}		
+
+	if (ntohl(AFPERR_EOF) != FPRead(Conn, fork, 0, 100, Data)) {
+		failed();
+		goto fin1;
+	}
+
+	fork1 = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap ,DIRDID_ROOT, "test folder/toto.txt",OPENACC_WR | OPENACC_RD);
+    /* bad, but we are able to open read-write the ressource for of a read-only file (data fork)
+     * difficult to fix.
+     */
+	if (!fork1) {
+		failed();
+		goto fin1;
+	}
+	
+	if (FPWrite(Conn, fork1, 0, 10, Data, 0 )) {
+		failed();
+		goto fin1;
+	}
+
+	if (FPRead(Conn, fork, 0, 10, Data)) {
+		failed();
+		goto fin1;
+	}
+
+	FAIL (FPCloseFork(Conn,fork))
+	fork = 0;
+	if (FPWrite(Conn, fork1, 0, 20, Data, 0x80 )) {
+		failed();
+		goto fin1;
+	}
+	
+	if (ntohl(AFPERR_PARAM) != FPRead(Conn, fork, 0, 30, Data)) {
+		failed();
+	}
+#endif
+fin1:
+	if (fork1) FPCloseFork(Conn,fork1);
+	if (fork) FPCloseFork(Conn,fork);
+fin:
+	delete_ro_adouble(vol, dir, file);
+}
+
+/* ------------------------- */
 STATIC void test49()
 {
 char *name = "t49 folder";
@@ -265,6 +448,9 @@ void FPOpenFork_test()
 {
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPOpenFork page 230\n");
+#if 0
+    test47();
+#endif    
     test49();
 	test152();    
 	test153();

@@ -1,5 +1,5 @@
 /*
- * $Id: rotest.c,v 1.1 2003-04-28 10:19:17 didg Exp $
+ * $Id: rotest.c,v 1.2 2004-05-10 18:39:26 didg Exp $
  * MANIFEST
  */
 #include "specs.h"
@@ -173,10 +173,19 @@ unsigned int ret;
 		fprintf(stderr,"FileID calls Not supported\n");
 	}
 	else {
-		FAIL (ntohl(AFPERR_VLOCK) != FPCreateID(Conn,VolID, DIRDID_ROOT, file))
+		/* with cnid db, if the volume isn't define as readonly in AppleVolumes.default
+		 * CreateID, DeleteID don't return VLOCK
+		*/
+		ret = FPCreateID(Conn,VolID, DIRDID_ROOT, file);
+		if (not_valid(ret, /* MAC */AFPERR_VLOCK, AFPERR_EXISTID )) { 
+			failed();	
+		}
 		fid = get_fid(Conn, VolID, DIRDID_ROOT, file);
 		if (fid) {
-			FAIL (ntohl(AFPERR_VLOCK) != FPDeleteID(Conn, VolID, filedir.did)) 
+			ret = FPDeleteID(Conn, VolID, filedir.did);
+			if (not_valid(ret, /* MAC */AFPERR_VLOCK, AFPERR_NOID )) { 
+				failed();	
+			}
 		}
 	}
 	FAIL (ntohl(AFPERR_VLOCK) != FPExchangeFile(Conn, VolID, DIRDID_ROOT, DIRDID_ROOT, file, file1)) 
