@@ -1,9 +1,10 @@
 /*
- * $Id: fail_spectest.c,v 1.2 2003-06-10 15:13:40 didg Exp $
+ * $Id: fail_spectest.c,v 1.3 2004-01-08 03:56:12 didg Exp $
  * MANIFEST
  */
 #define QUIRK
 #include "specs.h"
+#include <dlfcn.h>
 
 int Verbose = 0;
 int Quirk = 0;
@@ -163,14 +164,36 @@ int i = 0;
 static void run_one(char *name)
 {
 int i = 0;
+void *handle = NULL;
+void (*fn)(void) = NULL;
+char *error;
+char *token;
+
+    token = strtok(name, ",");
+    
 	while (Test_list[i].name != NULL) {
 		if (!strcmp(Test_list[i].name, name))
 			break;
 		i++;
 	}
 	if (Test_list[i].name == NULL) {
-		nottested();
-		return;
+		handle = dlopen (NULL, RTLD_LAZY);
+        if (handle) {
+			fn = dlsym(handle, token);
+			if ((error = dlerror()) != NULL)  {
+			    fprintf (stderr, "%s\n", error);
+			}
+        }
+        else {
+        	fprintf (stderr, "%s\n", dlerror());
+        }
+        if (!handle || !fn) {
+			nottested();
+			return;
+		}
+	}
+	else {
+		fn = Test_list[i].fn;
 	}
 
 	dsi = &Conn->dsi;
@@ -179,10 +202,24 @@ int i = 0;
 		nottested();
 		return;
 	}
-	Test_list[i].fn();
+	
+	while (token ) {
+	    (*fn)();
+	    token = strtok(NULL, ",");
+	    if (token && handle) {
+			fn = dlsym(handle, token);
+			if ((error = dlerror()) != NULL)  {
+			    fprintf (stderr, "%s\n", error);
+			}
+	    }
+	}
+
+	if (handle)
+		dlclose(handle);
 
 	FPCloseVol(Conn,VolID);
 }
+
 /* ----------- */
 static void run_all()
 {

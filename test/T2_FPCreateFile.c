@@ -58,7 +58,7 @@ int ret;
 	}
 
 fin:
-	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
+	FPDelete(Conn, vol,  DIRDID_ROOT , name);
 	if (!Mac) {
 		unlink(temp);
 	}

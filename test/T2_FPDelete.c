@@ -25,7 +25,7 @@ int ret;
 	fprintf(stderr, "FPDelete:test146: delete read only open file\n");
 
 	if (!Conn2 &&(!Path || !Mac)) {
-		nottested();
+                test_skipped(T_MAC_PATH);                                                             
 		return;
 	}
 

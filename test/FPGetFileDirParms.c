@@ -616,7 +616,10 @@ int id;
 	sprintf(temp1,"#%X.txt",ntohl(id));
 	strncpy(temp, name, 31 - strlen(temp1));
 	strcat(temp, temp1);
-	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, temp, bitmap, 0)) {
+	/* for afp3 it's not valid mangled filename */
+	ret = FPGetFileDirParams(Conn, vol, DIRDID_ROOT, temp, bitmap, 0);
+	if ((Conn->afp_version >= 30 && ret != ntohl(AFPERR_NOOBJ)) 
+	    || ( Conn->afp_version < 30 && ret)) {
 		failed();
 	}
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
