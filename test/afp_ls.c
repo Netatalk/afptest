@@ -1,5 +1,5 @@
 /*
- * $Id: afp_ls.c,v 1.5 2004-09-02 12:23:12 didg Exp $
+ * $Id: afp_ls.c,v 1.6 2005-02-04 10:39:19 didg Exp $
  * MANIFEST
  */
 
@@ -19,6 +19,8 @@ CONN *Conn2;
 
 int ExitCode = 0;
 int Recurse = 0;
+
+static u_int8_t buffer[DSI_DATASIZ];
 
 /* ------------------------- */
 void test300()
@@ -83,11 +85,13 @@ int size = 1000;
 			return;
 		}
 		while (!(ret = FPEnumerateFull(Conn, vol, i, 150, 8000,  dir , "", f_bitmap, d_bitmap))) {
-			memcpy(&tp, dsi->data +4, sizeof(tp));
+			/* FPResolveID will trash dsi->data */
+			memcpy(buffer, dsi->data, sizeof(buffer));
+			memcpy(&tp, buffer +4, sizeof(tp));
 			tp = ntohs(tp);
 		    i += tp;
 		    if (Recurse || Quiet) {
-		    	b = dsi->data +6;
+		    	b = buffer +6;
 			    for (j = 1; j <= tp; j++, b += b[0]) {
 			        if (b[1]) {
 	    		    	filedir.isdir = 1;
@@ -112,6 +116,12 @@ int size = 1000;
 			        	fprintf(stderr, "0x%08x %s%s\n", ntohl(filedir.did), 
 			        	      (Conn->afp_version >= 30)?filedir.utf8_name:filedir.lname,
 			        	      filedir.isdir?"/":"");
+			        	if (!filedir.isdir) {
+			        		if (FPResolveID(Conn, vol, filedir.did, f_bitmap)) {
+			        			fprintf(stderr, " Can't resolve ID!");
+			        		}
+			        	}
+			        	
 			        }
 		    	}
 		    }
