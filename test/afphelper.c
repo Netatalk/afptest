@@ -177,13 +177,14 @@ u_int16_t vol2;
 int  ofs =  3 * sizeof( u_int16_t );
 u_int16_t bitmap =  (1 << DIRPBIT_ACCESS);
 struct afp_filedir_parms filedir;
-DSI *dsi2;
+DSI *dsi, *dsi2;
 
     if (!Conn2) {
     	return 0;
     }
 	fprintf(stderr,"\t>>>>>>>> Create folder <<<<<<<<<< \n");
 	dsi2 = &Conn2->dsi;
+	dsi = &Conn->dsi;
 	vol2  = FPOpenVol(Conn2, Vol);
 	if (vol2 == 0xffff) {
 		nottested();
@@ -210,6 +211,13 @@ DSI *dsi2;
 	}
 	/* double check the first user can't create a dir in it */
 	ret = get_did(Conn, vol, did, name);
+	if (!ret) {
+		if (ntohl(AFPERR_ACCESS) != dsi->header.dsi_code) {   
+			goto fin;
+		}
+		/* 1.6.x fails here, so cheat a little, it doesn't work with did=last though */
+		ret = dir;
+	}
 	if (FPCreateDir(Conn, vol, ret , name)) {
 		nottested();
 		FPDelete(Conn, vol,  ret, name);
