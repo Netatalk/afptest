@@ -9,22 +9,25 @@ int  dir;
 char *name = "test6 dir";
 u_int16_t vol = VolID;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPCreateDir:test6: create dir\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
 		failed();
-		return;
+		goto test_exit;
 	}
 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
 		failed();
-		return;
+		goto test_exit;
 	}
 
 	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test6");
 }
 
 /* ------------------------- */
@@ -34,16 +37,17 @@ char *name = "test26 dir";
 int pdir;
 u_int16_t vol = VolID;
 		
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPCreateDir:test26: folder without right access\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 		
 
 	if (!(pdir = no_access_folder(vol, DIRDID_ROOT, name))) {
-		return;
+		goto test_exit;
 	}
 
 	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, name, 0, 
@@ -66,6 +70,8 @@ u_int16_t vol = VolID;
 	}
 fin:	
 	delete_folder(vol, DIRDID_ROOT, name);
+test_exit:
+	exit_test("test26");
 }
 
 /* ------------------------- */
@@ -82,14 +88,15 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPCreateDir:test45: Folder Creation\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 	if (!(pdir = no_access_folder(vol, DIRDID_ROOT, ndir))) {
-		return;
+		goto test_exit;
 	}
 	if (!(rdir = read_only_folder(vol, DIRDID_ROOT, rodir) ) ) {
 		goto fin;
@@ -125,6 +132,8 @@ fin:
 	if (rdir) {
 		delete_folder(vol, DIRDID_ROOT, rodir);
 	}
+test_exit:
+	exit_test("test45");
 }
 
 /* -------------------------- */
@@ -168,17 +177,18 @@ DSI *dsi;
 unsigned int ret;
 
 	
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPCreateDir:test175: did error two users in  folder did=<deleted> name=test175\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	dsi = &Conn->dsi;
     /* ---- file.c ---- */
 	if (!(tdir = create_deleted_folder(vol, tname))) {
-		return;
+		goto test_exit;
 	}
 
 	ret = FPCreateFile(Conn, vol,  0, tdir, tname);
@@ -188,7 +198,7 @@ unsigned int ret;
 	}
 	/* ---- directory.c ---- */
 	if (!(tdir = create_deleted_folder(vol, tname))) {
-		return;
+		goto test_exit;
 	}
 
 	dir  = FPCreateDir(Conn,vol, tdir, tname);
@@ -200,7 +210,7 @@ unsigned int ret;
 	/* ----------- */
 	tname = ".test175";
 	if (!(tdir = create_deleted_folder(vol, tname))) {
-		return;
+		goto test_exit;
 	}
 
 	dir  = FPCreateDir(Conn,vol, tdir, tname);
@@ -213,7 +223,7 @@ unsigned int ret;
 	/* ----------- */
 	tname = ".test175b";
 	if (!(tdir = create_deleted_folder(vol, tname))) {
-		return;
+		goto test_exit;
 	}
 
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT, tname);
@@ -223,6 +233,8 @@ unsigned int ret;
 	else {
 	    FPDelete(Conn, vol, dir , "");
 	} 
+test_exit:
+	exit_test("test175");
 }
 
 /* ----------- */
@@ -239,17 +251,18 @@ u_int16_t vol2;
 DSI *dsi2;
 unsigned int ret;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPCreateDir:test198: second user delete folder\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 	
 	tdir  = FPCreateDir(Conn,vol, DIRDID_ROOT, name);
 	if (!tdir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	tdir1  = FPCreateDir(Conn,vol,tdir, name1);
@@ -283,6 +296,8 @@ unsigned int ret;
 fin:
 	FAIL (tdir && FPDelete(Conn, vol, tdir , ""))
 	FAIL (tdir1 && FPDelete(Conn, vol, tdir1 , ""))
+test_exit:
+	exit_test("test198");
 }
 
 /* ----------- */
@@ -302,18 +317,19 @@ DSI *dsi;
 DSI *dsi2;
 unsigned int ret;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPCreateDir:test357: admin user \n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 	
 	dsi = &Conn->dsi;
 	tdir  = FPCreateDir(Conn,vol, DIRDID_ROOT, name);
 	if (!tdir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	FAIL (FPGetFileDirParams(Conn, vol,  tdir , "", 0, bitmap))
@@ -331,7 +347,7 @@ unsigned int ret;
 	if (vol2 == 0xffff) {
 		nottested();
 		FAIL (FPDelete(Conn, vol, tdir , ""))
-		return;
+		goto test_exit;
 	}
 
 	filedir.isdir = 1;
@@ -340,7 +356,7 @@ unsigned int ret;
  	FAIL (FPSetDirParms(Conn2, vol2, DIRDID_ROOT , name, bitmap, &filedir)) 
 	if (ntohl(AFPERR_OLOCK) != FPDelete(Conn, vol,  DIRDID_ROOT , name)) { 
 		failed();
-		return;
+		goto test_exit;
 	}
 	filedir.attr = ATTRBIT_NODELETE;
  	FAIL (FPSetDirParms(Conn2, vol2, DIRDID_ROOT , name, bitmap, &filedir)) 
@@ -349,6 +365,8 @@ unsigned int ret;
 		failed();
 		FAIL (FPDelete(Conn, vol, tdir , ""))
 	}
+test_exit:
+	exit_test("test357");
 }
 
 /* ----------- */

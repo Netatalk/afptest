@@ -12,10 +12,12 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPByteRangeLock:test60: illegal fork\n");
 
 	illegal_fork(dsi, AFP_BYTELOCK, name);
+	exit_test("test60");
 }
 
 /* ------------------------- */
@@ -107,10 +109,11 @@ STATIC void test63()
 {
 char *name = "test63 FPByteLock DF";
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPByteRangeLock:test63: FPByteLock Data Fork\n");
 	test_bytelock(VolID, name, OPENFORK_DATA);
-	return;
+	exit_test("test63");
 }
 
 /* ----------- */
@@ -118,10 +121,11 @@ STATIC void test64()
 {
 char *name = "test64 FPByteLock RF";
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPByteRangeLock:test64: FPByteLock Resource Fork\n");
 	test_bytelock(VolID, name, OPENFORK_RSCS);
-	return;
+	exit_test("test64");
 }
 
 /* -------------------------- */
@@ -186,16 +190,17 @@ STATIC void test65()
 {
 char *name = "t65 DF FPByteLock 2 users";
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPByteRangeLock:test65: FPByteLock 2users DATA FORK\n");
     
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}
 	if (Locking) {
 		test_skipped(T_LOCKING);
-		return;
+		goto test_exit;
 	}		
     test_bytelock3(name, OPENFORK_DATA);
 
@@ -203,6 +208,8 @@ char *name = "t65 DF FPByteLock 2 users";
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPByteRangeLock:test65: FPByteLock 2users Resource FORK\n");
     test_bytelock3(name, OPENFORK_RSCS);
+test_exit:
+	exit_test("test65");
 }
 
 /* ---------------------------- */
@@ -282,11 +289,12 @@ void test78()
 {
 char *name = "t78 FPByteLock RF size -1";
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPByteRangeLock:test78: test Byte Lock size -1 with no large file support\n");
 	if (Locking) {
 		test_skipped(T_LOCKING);
-		return;
+		goto test_exit;
 	}		
 	test_bytelock2(name, OPENFORK_RSCS);
 
@@ -294,6 +302,8 @@ char *name = "t78 FPByteLock RF size -1";
     fprintf(stderr,"FPByteRangeLock:test78: test Byte Lock size -1 with no large file support, DATA fork\n");
 	name = "t78 FPByteLock DF size -1";
 	test_bytelock2(name, OPENFORK_DATA);
+test_exit:
+	exit_test("test78");
 }
 
 /* ----------- */
@@ -307,18 +317,19 @@ int type = OPENFORK_DATA;
 char *name = "t79 FPByteLock Read";
 int len = (type == OPENFORK_RSCS)?(1<<FILPBIT_RFLEN):(1<<FILPBIT_DFLEN);
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPByteRangeLock:test79: test Byte Lock and read conflict\n");
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	fork = FPOpenFork(Conn, vol, type , bitmap ,DIRDID_ROOT, name,OPENACC_WR |OPENACC_RD);
 	if (!fork) {
 		nottested();
 		FPDelete(Conn, vol,  DIRDID_ROOT, name);
-		return;
+		goto test_exit;
 	}
 	if (FPSetForkParam(Conn, fork, len , 60)) {
 		nottested();
@@ -339,6 +350,8 @@ int len = (type == OPENFORK_RSCS)?(1<<FILPBIT_RFLEN):(1<<FILPBIT_DFLEN);
 	if (FPDelete(Conn, vol,  DIRDID_ROOT, name)) {
 		nottested();
 	}
+test_exit:
+	exit_test("test79");
 }
 
 /* -------------------------- */
@@ -377,6 +390,7 @@ STATIC void test80()
 {
 char *name = "t80 RF FPByteLock Read write";
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPByteRangeLock:test80: Resource Fork test Byte Lock and read write same user(file)\n");
 	test_bytelock5(VolID, name, OPENFORK_RSCS);
@@ -385,6 +399,8 @@ char *name = "t80 RF FPByteLock Read write";
     fprintf(stderr,"FPByteRangeLock:test80: Data Fork test Byte Lock and read write same user(file)\n");
 	name = "t80 DF FPByteLock Read write";
 	test_bytelock5(VolID, name, OPENFORK_DATA);
+
+	exit_test("test80");
 }
 
 /* --------------- */
@@ -400,28 +416,29 @@ u_int16_t vol2;
 DSI *dsi2;
 int type = OPENFORK_DATA;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPByteRangeLock:test329: FPByteLock 2users DATA FORK\n");
     
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}
 	if (Locking) {
 		test_skipped(T_LOCKING);
-		return;
+		goto test_exit;
 	}
 	
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	fork = FPOpenFork(Conn, vol, type , bitmap ,DIRDID_ROOT, name,OPENACC_WR |OPENACC_RD);
 	if (!fork) {
 		nottested();
 		FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
-		return;
+		goto test_exit;
 	}
 
 	fork1 = FPOpenFork(Conn, vol, type , bitmap ,DIRDID_ROOT, name,OPENACC_WR |OPENACC_RD);
@@ -429,7 +446,7 @@ int type = OPENFORK_DATA;
 		nottested();
 		FAIL (FPCloseFork(Conn,fork))
 		FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
-		return;
+		goto test_exit;
 	}
 
 	fork2 = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap ,DIRDID_ROOT, name,0x33);
@@ -474,6 +491,8 @@ int type = OPENFORK_DATA;
 	FAIL (FPCloseVol(Conn2,vol2))
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test329");
 }
 
 /* ------------------- */
@@ -700,9 +719,13 @@ int fork2 = 0;
 DSI *dsi2;
 int dir, dir2;
 
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPByteRangeLock:test330: pre OSX trash folder\n");
+
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}
 	fork = init_trash(Conn, vol, &dir);
 	if (!fork)
@@ -733,6 +756,107 @@ fin:
 		FAIL (FPCloseFork(Conn, fork))
 	        FAIL (FPDelete(Conn, vol, dir, ""))
 	}
+test_exit:
+	exit_test("test330");
+}
+
+/* --------------- */
+extern char *Test;
+STATIC void test366()
+{
+char *name = "t366 FPByteLock 2 users";
+int fork;
+int fork1 = 0;
+int fork2 = 0;
+u_int16_t vol = VolID;
+u_int16_t bitmap = 0;
+u_int16_t vol2;
+DSI *dsi2;
+int type = OPENFORK_DATA;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPByteRangeLock:test366: Locks released on exit\n");
+    
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		goto test_exit;
+	}
+	if (Locking) {
+		test_skipped(T_LOCKING);
+		goto test_exit;
+	}
+	/* hack, it closes a connection */
+	if (!Test) {
+		fprintf(stderr,"\tSKIPPED (only with -f option)\n");
+		goto test_exit;
+	}
+	
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		goto test_exit;
+	}
+
+	fork = FPOpenFork(Conn, vol, type , bitmap ,DIRDID_ROOT, name,OPENACC_WR |OPENACC_RD);
+	if (!fork) {
+		nottested();
+		FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+		goto test_exit;
+	}
+
+	fork1 = FPOpenFork(Conn, vol, type , bitmap ,DIRDID_ROOT, name,OPENACC_WR |OPENACC_RD);
+	if (!fork1) {
+		nottested();
+		FAIL (FPCloseFork(Conn,fork))
+		FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+		goto test_exit;
+	}
+
+	fork2 = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap ,DIRDID_ROOT, name,0x33);
+	if (!fork2) {
+		failed();
+	}
+	
+	FAIL (FPCloseFork(Conn,fork2))
+
+	dsi2 = &Conn2->dsi;
+	vol2  = FPOpenVol(Conn2, Vol);
+	if (vol2 == 0xffff) {
+		nottested();
+		goto fin;
+	}
+	if (FPGetFileDirParams(Conn2, vol2,  DIRDID_ROOT , name, (1<<FILPBIT_ATTR), 0 )) {
+		nottested();
+		goto fin;
+	}
+
+	fork2 = FPOpenFork(Conn2, vol2, type , bitmap ,DIRDID_ROOT, name,OPENACC_DWR |OPENACC_RD);
+	if (fork2) {
+		FPCloseFork(Conn2,fork2);
+		failed();
+	}
+	
+	fork2 = FPOpenFork(Conn2, vol2, type , bitmap ,DIRDID_ROOT, name,OPENACC_DWR |OPENACC_RD);
+	if (fork2) {
+		FPCloseFork(Conn2,fork2);
+		failed();
+	}
+	
+	fork2 = FPOpenFork(Conn2, vol2, type , bitmap ,DIRDID_ROOT, name,/* OPENACC_WR | */OPENACC_RD);
+	if (!fork2) {
+		failed();
+	}
+	
+   	FPLogOut(Conn);
+	if (fork2) FPCloseFork(Conn2,fork2);
+
+	FAIL (FPDelete(Conn2, vol2,  DIRDID_ROOT, name))
+	FAIL (FPCloseVol(Conn2,vol2))
+	return;
+fin:
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test366");
 }
 
 /* ----------- */
@@ -749,5 +873,7 @@ void FPByteRangeLock_test()
 	test80();
 	test329();
 	test330();
+	/* must be the last one */
+	test366();
 }
 

@@ -11,6 +11,7 @@ u_int16_t vol = VolID;
 u_int16_t dt;
 unsigned int ret;
 
+	enter_test();
     fprintf(stderr,"===================\n");
 	fprintf(stderr, "FPGetIconInfo:test213: get Icon Info call\n");
 
@@ -31,6 +32,7 @@ unsigned int ret;
 	}
 	
 	FPCloseDT(Conn,dt);
+	exit_test("test213");
 }
 
 /* ----------- */

@@ -16,17 +16,18 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPResolveID:test76: Resolve ID\n");
 
 	if (!(get_vol_attrib(vol) & VOLPBIT_ATTR_FILEID) ) {
-		fprintf(stderr,"FileID calls Not supported\n");
-		return;
+		test_skipped(T_ID);
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	FAIL (FPCreateFile(Conn, vol,  0, dir , name))
@@ -45,6 +46,8 @@ DSI *dsi;
 		
 	FAIL (FPDelete(Conn, vol,  dir , name))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1))
+test_exit:
+	exit_test("test76");
 }
 
 /* ------------------------- 
@@ -64,18 +67,18 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
-
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPResolveID:test91: Resolve ID errors\n");
 
 	if (!(get_vol_attrib(vol) & VOLPBIT_ATTR_FILEID) ) {
-		fprintf(stderr,"FileID calls Not supported\n");
-		return;
+		test_skipped(T_ID);
+		goto test_exit;
 	}
 
 	if (!(dir1 = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1))
@@ -87,7 +90,7 @@ DSI *dsi;
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
 		failed();
-		return;
+		goto test_exit;
 	}
 
 	FAIL (FPCreateFile(Conn, vol,  0, dir , name))
@@ -116,6 +119,8 @@ DSI *dsi;
 	FAIL (htonl(AFPERR_EXISTID) != FPCreateID(Conn,vol, dir, name)) 
 	FAIL (FPDelete(Conn, vol,  dir , name)) 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1)) 
+test_exit:
+	exit_test("test91");
 }
 
 /* ------------------------- 
@@ -133,13 +138,13 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
-
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPResolveID:test310: Resolve ID after rename\n");
 
 	if (!(get_vol_attrib(vol) & VOLPBIT_ATTR_FILEID) ) {
-		fprintf(stderr,"FileID calls Not supported\n");
-		return;
+		test_skipped(T_ID);
+		goto test_exit;
 	}
 	dir = DIRDID_ROOT;
 
@@ -158,6 +163,8 @@ DSI *dsi;
 	FAIL (FPResolveID(Conn, vol, filedir.did, bitmap))
 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1)) 
+test_exit:
+	exit_test("test310");
 }
 
 /* ------------------------- 
@@ -175,17 +182,18 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
-	if (Conn->afp_version < 30) {
-		test_skipped(T_AFP3);
-		return;
-	}
-
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPResolveID:test311: Resolve ID after rename\n");
 
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
+		goto test_exit;
+	}
+
 	if (!(get_vol_attrib(vol) & VOLPBIT_ATTR_FILEID) ) {
-		fprintf(stderr,"FileID calls Not supported\n");
-		return;
+		test_skipped(T_ID);
+		goto test_exit;
 	}
 	dir = DIRDID_ROOT;
 
@@ -204,6 +212,8 @@ DSI *dsi;
 	FAIL (FPResolveID(Conn, vol, filedir.did, bitmap))
 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1)) 
+test_exit:
+	exit_test("test311");
 }
 
 /* -------------------------- */
@@ -220,23 +230,30 @@ DSI *dsi = &Conn->dsi;
 u_int16_t vol2;
 DSI *dsi2;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPResolveID:test362: Resolve ID two users interactions\n");
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
+
+	if (!(get_vol_attrib(vol) & VOLPBIT_ATTR_FILEID) ) {
+		test_skipped(T_ID);
+		goto test_exit;
+	}
+
 	dsi2 = &Conn2->dsi;
 	vol2  = FPOpenVol(Conn2, Vol);
 	if (vol2 == 0xffff) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
 		failed();
-		return;
+		goto test_exit;
 	}
 
 	FAIL (FPCreateFile(Conn, vol,  0, dir , name))
@@ -256,6 +273,8 @@ DSI *dsi2;
 	FPCloseVol(Conn,vol);
 	vol  = FPOpenVol(Conn, Vol);
 	FAIL (ntohl(AFPERR_NOID ) != FPResolveID(Conn, vol, filedir.did, bitmap)) 
+test_exit:
+	exit_test("test362");
 }
 
 

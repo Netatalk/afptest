@@ -20,20 +20,21 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPCopyFile:test71: Copy file\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	if (!(pdir = no_access_folder(vol, DIRDID_ROOT, ndir))) {
-		return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name2))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name2)) 
@@ -81,6 +82,8 @@ DSI *dsi;
 fin:	
 	delete_folder(vol, DIRDID_ROOT, ndir);
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name2))
+test_exit:
+	exit_test("test71");
 }
 
 /* ------------------------- */
@@ -90,6 +93,7 @@ char *name  = "t158 old file name";
 char *name1 = "t158 new file name";
 u_int16_t vol = VolID;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPCopyFile:test158: copyFile dest exist\n");
 
@@ -104,6 +108,8 @@ u_int16_t vol = VolID;
 	FAIL (ntohl(AFPERR_EXIST) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1))
+
+	exit_test("test158");
 }
 
 /* ------------------------- */
@@ -115,18 +121,19 @@ char *name1 = "t315 new file name";
 u_int16_t vol = VolID;
 int fork;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPCopyFile:test315: copyFile\n");
 
 	if (get_vol_free(vol) < 130*1024*1024) {
 	    /* assume sparse file for setforkparam, not for copyfile */
 		test_skipped(T_VOL_SMALL);
-		return;
+		goto test_exit;
 	}		
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name, OPENACC_WR | OPENACC_RD);
@@ -165,6 +172,8 @@ int fork;
 
 fin:	
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test315");
 }
 
 /* ------------------------- */
@@ -180,6 +189,7 @@ DSI *dsi = &Conn->dsi;
 u_int16_t bitmap;
 char finder_info[32];
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPCopyFile:test317: copyFile check meta data\n");
 
@@ -234,6 +244,8 @@ char finder_info[32];
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1))
+
+	exit_test("test317");
 }
 
 /* ------------------------- */
@@ -249,6 +261,7 @@ DSI *dsi = &Conn->dsi;
 u_int16_t bitmap;
 u_int32_t mdate = 0;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPCopyFile:test332: copyFile check meta data\n");
 
@@ -301,6 +314,8 @@ u_int32_t mdate = 0;
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1))
+
+	exit_test("test332");
 }
 
 /* ----------- */

@@ -18,16 +18,17 @@ u_int16_t vol2;
 DSI *dsi2;
 
 		
+	enter_test();
     fprintf(stderr,"===================\n");
 	fprintf(stderr, "FPRemoveComment:test54: remove comment\n");
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	if (!(pdir = no_access_folder(vol, DIRDID_ROOT, name))) {
-		return;
+		goto test_exit;
 	}
 	if (!(rdir = read_only_folder(vol, DIRDID_ROOT, name2) ) ) {
 		goto fin;
@@ -89,6 +90,8 @@ fin:
 	if (rdir) {
 		delete_folder(vol, DIRDID_ROOT, name2);
 	}
+test_exit:
+	exit_test("test54");
 }
 
 

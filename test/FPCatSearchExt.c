@@ -8,11 +8,9 @@ STATIC void test227()
 {
 u_int16_t bitmap = (1<<FILPBIT_ATTR);
 u_int16_t bitmap2;
-int fork;
 char *name = "t227 file.txt";
 u_int16_t vol = VolID;
 u_int32_t temp;
-int size;
 DSI *dsi;
 char pos[16];
 int  ofs =  3 * sizeof( u_int16_t );
@@ -20,6 +18,7 @@ struct afp_filedir_parms filedir;
 struct afp_filedir_parms filedir2;
 unsigned int ret;
 
+	enter_test();
 	dsi = &Conn->dsi;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPCatSearchExt:test227: Catalog search\n");
@@ -30,19 +29,19 @@ unsigned int ret;
 	filedir.attr = 0x01a0;			/* various lock attributes */
 	ret = FPCatSearchExt(Conn, vol, 10, pos, 0,  /* d_bitmap*/ 0, bitmap, &filedir, &filedir);
 
-	if (Conn->afp_version < 31) {
+	if (Conn->afp_version < 30) {
 		if (htonl(AFPERR_NOOP) != ret) { 
 			failed();
 		}	
 		test_skipped(T_AFP3);
-		return;
+		goto test_exit;
 	}
 	if (htonl(AFPERR_BITMAP) != ret) { 
 		failed();
 	}
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	ret = FPCatSearchExt(Conn, vol, 10, pos, 0x42,  /* d_bitmap*/ 0, bitmap, &filedir, &filedir);
@@ -87,7 +86,7 @@ unsigned int ret;
 		fprintf(stderr,"\tFAILED want 1 get %d\n", temp);
 		failed_nomsg();
 	}
-#if 0
+#if 1
 	/* -------------------- */
 	memset(&filedir, 0, sizeof(filedir));
 	memset(&filedir2, 0, sizeof(filedir2));
@@ -129,6 +128,8 @@ unsigned int ret;
 	filedir.attr = 0x01a0;
  	FAIL (FPSetFileParams(Conn, vol, DIRDID_ROOT , name, bitmap, &filedir)) 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+test_exit:
+	exit_test("test227");
 }
 
 /* ----------- */

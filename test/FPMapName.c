@@ -16,12 +16,13 @@ DSI *dsi = &Conn->dsi;
 char *grp = NULL;
 char *usr = NULL;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPMapName:test180: test Map Name\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	FAIL (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, 0,bitmap )) 
 
@@ -126,6 +127,8 @@ char *usr = NULL;
 	}
 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+test_exit:
+	exit_test("test180");
 }
 
 /* ----------- */

@@ -13,6 +13,7 @@ char *name2 = "t28 file";
 int  dir;
 int  dir1;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPEnumerate:test28: test search by ID\n");
 
@@ -22,13 +23,13 @@ int  dir1;
 	vol = VolID = FPOpenVol(Conn, Vol);
 	if (vol == 0xffff) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	dir   = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!dir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	dir1  = FPCreateDir(Conn,vol, dir , name1);
@@ -44,7 +45,7 @@ int  dir1;
 	vol = VolID = FPOpenVol(Conn, Vol);
 	if (vol == 0xffff) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (FPEnumerate(Conn, vol,  dir1 , "", 
@@ -82,9 +83,9 @@ int  dir1;
 fin:	
 	FAIL (dir1 && FPDelete(Conn, vol,  dir1 , ""))
 	FAIL (dir && FPDelete(Conn, vol,  dir, ""))
+test_exit:
+	exit_test("test28");
 }
-
-
 
 /* ----------- */
 void FPEnumerate_test()

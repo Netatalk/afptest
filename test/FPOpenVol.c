@@ -10,6 +10,7 @@ DSI *dsi = &Conn->dsi;
 u_int16_t ret;
 char *tp;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPOpenVol:t205: Open Volume call\n");
 
@@ -62,6 +63,7 @@ fin:
 	if (ret == 0xffff) {
 		failed();
 	}
+	exit_test("test205");
 }
 
 /* ----------- */

@@ -1,5 +1,5 @@
 /*
- * $Id: speedtest.c,v 1.4 2004-04-29 23:23:59 didg Exp $
+ * $Id: speedtest.c,v 1.5 2004-06-14 00:45:27 didg Exp $
  * MANIFEST
  */
 #include "specs.h"
@@ -43,6 +43,7 @@ static int Count = 1;
 static off_t Size = 64* MEGABYTE;
 static size_t Quantum = 0;
 static int Request = 1;
+static int Req = 1;
 static int Delete = 0;
 static int Sparse = 0;
 static int Local = 0;
@@ -1287,6 +1288,7 @@ void usage( char * av0 )
     fprintf( stderr,"\t-d\tfile size (Mbytes, default 64)\n");
     fprintf( stderr,"\t-q\tpacket size (Kbytes, default server quantum)\n");
     fprintf( stderr,"\t-r\tnumber of outstanding requests (default 1)\n");
+    fprintf( stderr,"\t-R\tnumber of not interleaved outstanding requests (default 1)\n");
     fprintf( stderr,"\t-y\tuse a new file for each run (default same file)\n");
     fprintf( stderr,"\t-e\tsparse file (default no)\n");
     fprintf( stderr,"\t-a\tdon't flush to disk after write (default yes)\n");
@@ -1310,7 +1312,7 @@ char	**av;
 int cc;
 
 	Quiet = 1;
-    while (( cc = getopt( ac, av, "Vv234h:p:s:S:u:d:w:f:ic:""o:q:r:yeLDaF:" )) != EOF ) {
+    while (( cc = getopt( ac, av, "Vv234h:p:s:S:u:d:w:f:ic:""o:q:r:yeLDaF:R:" )) != EOF ) {
         switch ( cc ) {
 		case 'd':
 			Size = atoi(optarg) * MEGABYTE;
@@ -1320,6 +1322,9 @@ int cc;
 			break;
 		case 'r':
 			Request = atoi(optarg);
+			break;
+		case 'R':
+			Req = atoi(optarg);
 			break;
 		case 'y':
 			Delete = 1;

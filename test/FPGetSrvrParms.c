@@ -6,6 +6,7 @@
 STATIC void test209(void)
 {
 int ret;
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetSrvrParms:test209: GetSrvrParms call\n");
 
@@ -13,6 +14,7 @@ int ret;
 	if (ret) {
 		failed();
 	}
+	exit_test("test209");
 	
 }
 
@@ -26,6 +28,7 @@ int found = 0;
 unsigned char len;
 char *b;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetSrvrParms:test316: GetSrvrParms for a volume with option nostat set\n");
 
@@ -52,8 +55,8 @@ char *b;
 	VolID = FPOpenVol(Conn, Vol);
 	if (VolID == 0xffff) {
 		nottested();
-		return;
 	}
+	exit_test("test316");
 }
 
 /* ----------- */

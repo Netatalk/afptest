@@ -21,12 +21,12 @@ int dir;
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 
  	if (!folder_with_ro_adouble(vol, DIRDID_ROOT, name, file)) {
 		nottested();
-		return;
+		goto test_exit;
  	}
 
 	dir = get_did(Conn, vol, DIRDID_ROOT, name);
@@ -186,6 +186,8 @@ fin1:
 	if (fork) FPCloseFork(Conn,fork);
 fin:
 	delete_ro_adouble(vol, dir, file);
+test_exit:
+	exit_test("test47");
 }
 
 /* ------------------------- */
@@ -204,12 +206,12 @@ int dir;
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (FPCreateFile(Conn, vol,  0, dir , file)){ 
 		nottested();
@@ -251,6 +253,8 @@ int dir;
 fin:
 	FAIL (FPDelete(Conn, vol,  dir , file))
 	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test49");
 
 }
 
@@ -271,12 +275,12 @@ unsigned int ret;
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 
  	if (!folder_with_ro_adouble(vol, DIRDID_ROOT, name, file)) {
 		nottested();
-		return;
+		goto test_exit;
  	}
 	
 	dir = get_did(Conn, vol, DIRDID_ROOT, name);
@@ -293,6 +297,8 @@ unsigned int ret;
 		FPCloseFork(Conn, fork);
 	}
 	delete_ro_adouble(vol, dir, file);
+test_exit:
+	exit_test("test152");
 }
 
 /* ------------------------- */
@@ -308,12 +314,12 @@ u_int16_t vol = VolID;
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){ 
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (!Mac && delete_unix_rf(Path, "", name)) {
 		nottested();
@@ -332,6 +338,8 @@ u_int16_t vol = VolID;
 	FAIL (FPCloseFork(Conn, fork)) 
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name)) 
+test_exit:
+	exit_test("test153");
 }
 
 /* ------------------------- */
@@ -349,12 +357,12 @@ u_int16_t vol = VolID;
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 
  	if (!(dir = folder_with_ro_adouble(vol, DIRDID_ROOT, name, file))) {
 		nottested();
-		return;
+		goto test_exit;
  	}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,dir, file ,OPENACC_RD|OPENACC_WR);
@@ -375,7 +383,10 @@ u_int16_t vol = VolID;
 	}
 fin:
 	delete_ro_adouble(vol, dir, file);
+test_exit:
+	exit_test("test156");
 }
+
 /* ------------------------- */
 STATIC void test321()
 {
@@ -390,12 +401,12 @@ int fd;
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 	
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , file)){ 
 		nottested();
-		return;
+		goto test_exit;
 	}
 	
 	if (!Mac) {
@@ -441,6 +452,8 @@ int fd;
 
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, file)) 
+test_exit:
+	exit_test("test321");
 }
 
 /* ----------- */

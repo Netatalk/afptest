@@ -14,17 +14,18 @@ int ret;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
 	fprintf(stderr, "FPCreateFile:test325:  recreate a file with dangling symlink and no right\n");
 
 	if (!Path && !Mac) {
         test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (!Mac) {
 		sprintf(temp,"%s/%s", Path, name);
@@ -62,6 +63,8 @@ fin:
 	if (!Mac) {
 		unlink(temp);
 	}
+test_exit:
+	exit_test("test325");
 }
 
 /* ----------- */

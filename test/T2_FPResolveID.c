@@ -18,17 +18,18 @@ u_int16_t bitmap = (1<<FILPBIT_FNUM );
 struct afp_filedir_parms filedir;
 DSI *dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPResolveID:test129: Resolve ID \n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
 		failed();
-		return;
+		goto test_exit;
 	}
 
 	FAIL (FPCreateFile(Conn, vol,  0, dir , name))
@@ -61,6 +62,8 @@ DSI *dsi = &Conn->dsi;
 	FPCloseVol(Conn,vol);
 	vol  = FPOpenVol(Conn, Vol);
 	FAIL (ntohl(AFPERR_NOID ) != FPResolveID(Conn, vol, filedir.did, bitmap)) 
+test_exit:
+	exit_test("test129");
 }
 
 /* -------------------------- */
@@ -75,17 +78,18 @@ u_int16_t bitmap = (1<<FILPBIT_FNUM );
 struct afp_filedir_parms filedir;
 DSI *dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPResolveID:test130: Delete ID \n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
 		failed();
-		return;
+		goto test_exit;
 	}
 
 	FAIL (ntohl(AFPERR_BADTYPE ) != FPDeleteID(Conn, vol, dir))
@@ -119,6 +123,8 @@ DSI *dsi = &Conn->dsi;
 	FPCloseVol(Conn,vol);
 	vol  = FPOpenVol(Conn, Vol);
 	FAIL (ntohl(AFPERR_PARAM ) != FPDeleteID(Conn, vol, filedir.did))
+test_exit:
+	exit_test("test130");
 }
 
 /* -------------------------- */
@@ -133,17 +139,18 @@ u_int16_t bitmap = (1<<FILPBIT_FNUM );
 struct afp_filedir_parms filedir;
 DSI *dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPResolveID:test131: Resolve ID \n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
 		failed();
-		return;
+		goto test_exit;
 	}
 
 	FAIL (FPCreateFile(Conn, vol,  0, dir , name)) 
@@ -176,6 +183,8 @@ DSI *dsi = &Conn->dsi;
 	FPCloseVol(Conn,vol);
 	vol  = FPOpenVol(Conn, Vol);
 	FAIL (ntohl(AFPERR_NOID ) != FPDeleteID(Conn, vol, filedir.did)) 
+test_exit:
+	exit_test("test131");
 }
 
 
@@ -193,17 +202,18 @@ struct afp_filedir_parms filedir;
 int fid = 0;
 DSI *dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPResolveID:test331: Resolve ID file modified with local fs\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
 		failed();
-		return;
+		goto test_exit;
 	}
 
 	FAIL (FPCreateFile(Conn, vol,  0, dir , name)) 
@@ -263,6 +273,8 @@ fin:
 	FAIL (FPDelete(Conn, vol,  dir, name2))
 	FPDelete(Conn, vol,  dir, name);
 	FAIL (FPDelete(Conn, vol,  dir, ""))
+test_exit:
+	exit_test("test331");
 
 }
 
@@ -319,22 +331,23 @@ int fid = 0;
 int fork = 0;
 DSI *dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPResolveID:test360: Resolve ID file modified with local fs and a file is opened\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 
 	if (Locking) {
 		test_skipped(T_LOCKING);
-		return;
+		goto test_exit;
 	}		
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
 		failed();
-		return;
+		goto test_exit;
 	}
 
 	FAIL (FPCreateFile(Conn, vol,  0, dir , name)) 
@@ -415,6 +428,8 @@ fin:
 	FAIL (FPDelete(Conn, vol,  dir, name2))
 	FPDelete(Conn, vol,  dir, name);
 	FAIL (FPDelete(Conn, vol,  dir, ""))
+test_exit:
+	exit_test("test360");
 
 }
 

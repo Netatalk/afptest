@@ -17,12 +17,13 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"t83: test set file setfilparam\n");
 
 	if (!(dir =FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	
@@ -44,6 +45,8 @@ DSI *dsi;
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
 fin:
 	FAIL (FPDelete(Conn, vol,  dir , "")) 
+test_exit:
+	exit_test("test83");
 }
 
 /* ------------------------- */
@@ -58,12 +61,13 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetFileParms:t96: test file's invisible bit\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , "", 0,bitmap )) {
@@ -106,6 +110,8 @@ DSI *dsi;
 	fprintf(stderr,"Modif date parent %x\n", filedir.mdate);
 end:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
+test_exit:
+	exit_test("test96");
 }
 
 /* ------------------------- */
@@ -120,12 +126,13 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetFileParms:t118: test file no delete attribute\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, bitmap,0 )) {
 		nottested();
@@ -140,6 +147,8 @@ DSI *dsi;
  		FAIL (FPSetFileParams(Conn, vol, DIRDID_ROOT , name, bitmap, &filedir)) 
 	}
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+test_exit:
+	exit_test("test118");
 }
 
 /* ------------------------- */
@@ -160,13 +169,14 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"t122: test setfilparam open fork\n");
 
 	memset(&filedir, 0, sizeof(filedir));
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	fork = FPOpenFork(Conn, vol, type , 0 ,DIRDID_ROOT, name, OPENACC_WR |OPENACC_RD| OPENACC_DWR| OPENACC_DRD);
 	if (!fork) {
@@ -199,6 +209,8 @@ DSI *dsi;
 	FPCloseFork(Conn,fork);
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
+test_exit:
+	exit_test("test12218");
 }
 
 /* ------------------------- */
@@ -213,17 +225,18 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetFileParms:t318: set UTF8 name(error)\n");
 
  	if (Conn->afp_version < 30) { 
 		test_skipped(T_AFP3);
- 		return;
+		goto test_exit;
  	}
  	
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, bitmap,0 )) {
 		nottested();
@@ -234,6 +247,8 @@ DSI *dsi;
 		FAIL (htonl(AFPERR_BITMAP) != FPSetFileParams(Conn, vol, DIRDID_ROOT , name, bitmap, &filedir)) 
 	}
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+test_exit:
+	exit_test("test318");
 }
 
 /* ----------- */
@@ -241,12 +256,10 @@ void FPSetFileParms_test()
 {
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetFileParms page 262\n");
-#if 0
     test83();
     test96();
     test118();
     test122();
-#endif    
     test318();
 }
 

@@ -11,19 +11,20 @@ u_int16_t vol = VolID;
 int type = OPENFORK_DATA;
 char *name = "t186 FPCloseFork";
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPCloseFork:test186: FPCloseFork\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	fork = FPOpenFork(Conn, vol, type , bitmap ,DIRDID_ROOT, name,OPENACC_WR |OPENACC_RD);
 	if (!fork) {
 		nottested();
 		FPDelete(Conn, vol,  DIRDID_ROOT, name);
-		return;
+		goto test_exit;
 	}
 	FAIL (FPCloseFork(Conn,fork))
 	/* double close */
@@ -34,7 +35,10 @@ char *name = "t186 FPCloseFork";
 	if (FPDelete(Conn, vol,  DIRDID_ROOT, name)) {
 		nottested();
 	}
+test_exit:
+	exit_test("test186");
 }
+
 /* -------------------------- */
 STATIC void test187()
 {
@@ -43,10 +47,12 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPCloseFork:test187: illegal fork\n");
 
 	illegal_fork(dsi, AFP_CLOSEFORK, name);
+	exit_test("test187");
 }
 
 /* ----------- */

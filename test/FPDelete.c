@@ -11,12 +11,13 @@ char *name = "t13 file";
 int ret = 0;
 int fork;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"test13: delete open file same connection\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
 	if (!fork) {
@@ -35,6 +36,8 @@ int fork;
 
 fin:
 	FAIL (ret && FPDelete(Conn, vol,  DIRDID_ROOT , name))
+test_exit:
+	exit_test("test13");
 }
 
 /* ------------------------- */
@@ -45,13 +48,14 @@ char *name2 = "t27 dir";
 u_int16_t vol = VolID;
 int  dir;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPDelete:test27: delete not empty dir\n");
 
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name2);
 	if (!dir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, dir , name)) {
@@ -62,6 +66,8 @@ int  dir;
 
 	FAIL (FPDelete(Conn, vol,  dir , name));
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name2))
+test_exit:
+	exit_test("test27");
 }
 
 /* -------------------------- */
@@ -76,22 +82,23 @@ int len = (type == OPENFORK_RSCS)?(1<<FILPBIT_RFLEN):(1<<FILPBIT_DFLEN);
 u_int16_t vol = VolID;
 DSI *dsi2;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPDelete:test74: Delete File 2 users\n");
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	if (Locking) {
 		test_skipped(T_LOCKING);
-		return;
+		goto test_exit;
 	}		
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	dsi2 = &Conn2->dsi;
@@ -110,6 +117,8 @@ DSI *dsi2;
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
 	FAIL (FPCloseVol(Conn2,vol2))
+test_exit:
+	exit_test("test74");
 }
 
 /* ------------------------- */
@@ -122,18 +131,21 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPDelete:test90: delete a dir without access\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	if (!(dir = no_access_folder(vol, DIRDID_ROOT, name))) {
-		return;
+		goto test_exit;
 	}
 	FAIL (ntohl(AFPERR_ACCESS) != FPDelete(Conn, vol,  DIRDID_ROOT , name))
 	delete_folder(vol, DIRDID_ROOT, name);
+test_exit:
+	exit_test("test90");
 }
 
 /* -------------------------- */
@@ -154,6 +166,7 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPDelete:test172: did error did=<deleted> name=test172 name\n");
 
@@ -161,11 +174,11 @@ DSI *dsi;
 	tdir  = FPCreateDir(Conn,vol, DIRDID_ROOT, tname);
 	if (!tdir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (FPDelete(Conn, vol,  tdir , "")) { 
 		nottested();
-		return;
+		goto test_exit;
 	}
 
     /* ---- fork.c ---- */
@@ -286,6 +299,8 @@ DSI *dsi;
 	FAIL (ntohl(AFPERR_NOOBJ) != FPGetComment(Conn, vol, tdir, tname)) 
 	FAIL (ntohl(AFPERR_NOOBJ) != FPRemoveComment(Conn, vol, tdir, tname)) 
 	
+test_exit:
+	exit_test("test172");
 }
 
 /* -------------------------- */
@@ -303,23 +318,24 @@ DSI *dsi = &Conn->dsi;
 u_int16_t bitmap = (1 <<  DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID) | (1<<DIRPBIT_UID) |
 	    	(1 << DIRPBIT_GID) |(1 << DIRPBIT_ACCESS);
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPDelete:test196: delete a folder in a deleted folder\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	if (Exclude) {
 		fprintf(stderr, "\tFAILED (not run kill 1.6.x servers)\n");
 		failed_nomsg(); 
-		return;
+		goto test_exit;
 	}
 	
 	tdir  = FPCreateDir(Conn,vol, DIRDID_ROOT, name);
 	if (!tdir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	tdir1  = FPCreateDir(Conn,vol,tdir, name);
@@ -365,6 +381,130 @@ u_int16_t bitmap = (1 <<  DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID
 fin:
 	FAIL (tdir && FPDelete(Conn, vol, tdir , ""))
 	FAIL (tdir1 && FPDelete(Conn, vol, tdir1 , ""))
+test_exit:
+	exit_test("test196");
+}
+
+/* -------------------------- */
+STATIC void test368()
+{
+int fork;
+u_int16_t bitmap = 0;
+u_int16_t vol2;
+char *name = "t368 Delete File 2 users";
+char *name3 = "t368 new name";
+char *name2 = "t368 dir";
+int type = OPENFORK_DATA;
+int len = (type == OPENFORK_RSCS)?(1<<FILPBIT_RFLEN):(1<<FILPBIT_DFLEN);
+u_int16_t vol = VolID;
+DSI *dsi2;
+int  dir;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPDelete:test368: Delete File 2 users after it has been moved\n");
+
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		goto test_exit;
+	}		
+
+	if (Locking) {
+		test_skipped(T_LOCKING);
+		goto test_exit;
+	}		
+
+	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name2);
+	if (!dir) {
+		nottested();
+		goto test_exit;
+	}
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		goto fin;
+	}
+
+	dsi2 = &Conn2->dsi;
+	vol2  = FPOpenVol(Conn2, Vol);
+
+	fork = FPOpenFork(Conn, vol, type , bitmap ,DIRDID_ROOT, name,OPENACC_WR |OPENACC_RD| OPENACC_DRD| OPENACC_DWR);
+	if (!fork) {
+		failed();
+		goto fin;
+	}
+	FAIL (FPMoveAndRename(Conn, vol, DIRDID_ROOT, dir, name, name3))
+
+	FAIL (FPSetForkParam(Conn, fork, len , 50))
+
+	FAIL (htonl(AFPERR_BUSY)!= FPDelete(Conn2, vol2,  dir, name3))
+	FAIL (FPCloseFork(Conn,fork))
+fin:
+	FPDelete(Conn, vol,  DIRDID_ROOT, name);
+	FPDelete(Conn, vol,  dir, name3);
+	FAIL (FPDelete(Conn, vol,  dir, ""))
+	FAIL (FPCloseVol(Conn2,vol2))
+test_exit:
+	exit_test("test368");
+}
+
+/* -------------------------- */
+STATIC void test369()
+{
+int fork;
+u_int16_t bitmap = 0;
+u_int16_t vol2;
+char *name = "t369 Delete File 2 users";
+char *name2 = "t369 dir";
+int type = OPENFORK_DATA;
+int len = (type == OPENFORK_RSCS)?(1<<FILPBIT_RFLEN):(1<<FILPBIT_DFLEN);
+u_int16_t vol = VolID;
+DSI *dsi2;
+int  dir;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPDelete:test369: Delete File 2 users after it has been moved\n");
+
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		goto test_exit;
+	}		
+
+	if (Locking) {
+		test_skipped(T_LOCKING);
+		goto test_exit;
+	}		
+
+	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name2);
+	if (!dir) {
+		nottested();
+		goto test_exit;
+	}
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		goto fin;
+	}
+	dsi2 = &Conn2->dsi;
+	vol2  = FPOpenVol(Conn2, Vol);
+
+	fork = FPOpenFork(Conn, vol, type , bitmap ,DIRDID_ROOT, name,OPENACC_WR |OPENACC_RD| OPENACC_DRD| OPENACC_DWR);
+	if (!fork) {
+		failed();
+		goto fin;
+	}
+	FAIL (FPMoveAndRename(Conn, vol, DIRDID_ROOT, dir, name, ""))
+
+	FAIL (FPSetForkParam(Conn, fork, len , 50))
+
+	FAIL (htonl(AFPERR_BUSY)!= FPDelete(Conn2, vol2,  dir, name))
+	FAIL (FPCloseFork(Conn,fork))
+fin:
+	FPDelete(Conn, vol,  DIRDID_ROOT, name);
+	FPDelete(Conn, vol,  dir, name);
+	FAIL (FPDelete(Conn, vol,  dir, ""))
+	FAIL (FPCloseVol(Conn2,vol2))
+test_exit:
+	exit_test("test369");
 }
 
 /* ----------- */
@@ -377,5 +517,7 @@ void FPDelete_test()
 	test74();
 	test172();
 	test196();
+	test368();
+	test369();
 }
 

@@ -16,12 +16,13 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetDirParms:test82: test set dir parameters\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, 0,bitmap )) {
 		failed();
@@ -49,6 +50,8 @@ DSI *dsi;
 
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
+test_exit:
+	exit_test("test82");
 }
 
 /* ------------------------- */
@@ -66,12 +69,13 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetDirParms:test84: test dir set no delete attribute\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, 0,bitmap )) {
 		failed();
@@ -83,12 +87,14 @@ DSI *dsi;
  		FAIL (FPSetDirParms(Conn, vol, DIRDID_ROOT , name, bitmap, &filedir)) 
 		if (ntohl(AFPERR_OLOCK) != FPDelete(Conn, vol,  DIRDID_ROOT , name)) { 
 			failed();
-			return;
+			goto test_exit;
 		}
 		filedir.attr = ATTRBIT_NODELETE;
  		FAIL (FPSetDirParms(Conn, vol, DIRDID_ROOT , name, bitmap, &filedir)) 
 	}
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
+test_exit:
+	exit_test("test84");
 }
 
 /* ------------------------- */
@@ -113,16 +119,17 @@ unsigned int ret;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetDirParms:test88: test error setdirparam\n");
     
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	if (!(pdir = no_access_folder(vol, DIRDID_ROOT, ndir))) {
-		return;
+		goto test_exit;
 	}
 	if (!(rdir = read_only_folder(vol, DIRDID_ROOT, rodir) ) ) {
 		goto fin;
@@ -173,6 +180,8 @@ fin:
 	FAIL (dir && FPDelete(Conn, vol,  dir , name1))
 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+test_exit:
+	exit_test("test88");
 }
 
 /* ------------------------- */
@@ -197,22 +206,23 @@ DSI *dsi2;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetDirParms:t107: test dir\n");
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	if (!(pdir = no_access_folder(vol, DIRDID_ROOT, ndir))) {
-		return;
+		goto test_exit;
 	}
 	dsi2 = &Conn2->dsi;
 	vol2  = FPOpenVol(Conn2, Vol);
 	if (vol2 == 0xffff) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (!(dir = FPCreateDir(Conn2,vol2, DIRDID_ROOT , name))) {
 		nottested();
@@ -276,6 +286,8 @@ DSI *dsi2;
 	FAIL (FPCloseVol(Conn2,vol2))
 fin:
 	delete_folder(vol, DIRDID_ROOT, ndir);
+test_exit:
+	exit_test("test107");
 }
 
 
@@ -295,12 +307,13 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetDirParms:test189: test error setdirparam\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, 0,bitmap )) {
 		nottested();
@@ -320,6 +333,8 @@ DSI *dsi;
 
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
+test_exit:
+	exit_test("test189");
 }
 
 /* ------------------------- */
@@ -336,12 +351,13 @@ int ret;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetDirParms:test193: user permission set\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, 0,bitmap )) {
 		failed();
@@ -358,6 +374,8 @@ int ret;
  		FAIL (FPSetDirParms(Conn, vol, DIRDID_ROOT , name, bitmap, &filedir)) 
 	}
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
+test_exit:
+	exit_test("test193");
 }
 
 /* ------------------------- */
@@ -376,12 +394,13 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetDirParms:t351: change root folder unix perm\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	bitmap = (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID) | (1<< DIRPBIT_ACCESS);
@@ -423,6 +442,8 @@ DSI *dsi;
 	}
 fin:	
 	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test351");
 }
 
 /* ------------------------- */
@@ -441,11 +462,12 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetDirParms:t352: Change Mac perm to no perm in root folder\n");
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	bitmap = (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID) | (1<< DIRPBIT_ACCESS);
@@ -486,6 +508,8 @@ DSI *dsi;
 	}
 fin:	
 	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test352");
 }
 
 /* ------------------------- */
@@ -502,17 +526,18 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetDirParms:t353: no unix access privilege \n");
 
 	if ((get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		fprintf(stderr,"\tSKIPPED (need %s)\n","a no unix priv vol");
-	    return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, dir , name)) {
@@ -566,6 +591,8 @@ fin1:
 	FAIL (FPDelete(Conn, vol,  dir , name))
 fin:	
 	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test353");
 }
 
 /* ------------------------- */
@@ -583,17 +610,18 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetDirParms:t354: change a folder perm in root folder\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
-	    return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	bitmap = (1<< DIRPBIT_PDINFO) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID) |
@@ -633,6 +661,8 @@ DSI *dsi;
 	}
 fin:	
 	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test354");
 }
 
 /* ------------------------- */
@@ -652,17 +682,18 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetDirParms:t355: change a folder perm in a folder\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
-	    return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (!(dir1 = FPCreateDir(Conn,vol, dir , ndir1))) {
@@ -708,6 +739,8 @@ DSI *dsi;
 fin:
 	FAIL (dir1 && FPDelete(Conn, vol,  dir1 , ""))
 	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test355");
 }
 
 /* ------------------------- */
@@ -726,17 +759,18 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetDirParms:t356: change root folder unix perm\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
-	    return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	bitmap = (1<< DIRPBIT_PDINFO) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID) |
@@ -779,6 +813,8 @@ DSI *dsi;
 	}
 fin:	
 	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test356");
 }
 
 /* ----------- */

@@ -8,6 +8,7 @@ STATIC void test204()
 u_int16_t vol = VolID;
 int ret;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPCloseVol:test204: Close Volume call\n");
 
@@ -22,8 +23,8 @@ int ret;
 	vol = VolID = FPOpenVol(Conn, Vol);
 	if (vol == 0xffff) {
 		failed();
-		return;
 	}
+	exit_test("test204");
 
 }
 

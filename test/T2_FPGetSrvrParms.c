@@ -15,22 +15,23 @@ unsigned char len;
 u_int16_t vol2;
 char *b;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetSrvrParms:test320: GetSrvrParms after volume config file has been modified\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 	if (!Manuel || *Vol2 == 0) {
 		test_skipped(T_VOL2);
-		return;
+		goto test_exit;
 	}
 
 	vol2 = FPOpenVol(Conn, Vol2);
 	if (vol2 == 0xffff) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	printf("Modify AppleVolumes.default and press enter\n");
 	getchar();
@@ -59,9 +60,11 @@ char *b;
 	vol2 = FPOpenVol(Conn, Vol2);
 	if (vol2 == 0xffff) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	FAIL (FPCloseVol(Conn,vol2))
+test_exit:
+	exit_test("test320");
 }
 
 /* ----------- */

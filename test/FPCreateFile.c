@@ -20,15 +20,16 @@ int ret;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
 	fprintf(stderr, "FPCreateFile:test51:  Create file with errors\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	if (!(rdir = read_only_folder(vol, DIRDID_ROOT, rodir) ) ) {
-		return;
+		goto test_exit;
 	}
 
 	bitmap = (1<< DIRPBIT_DID);
@@ -89,6 +90,8 @@ fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name2))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name3))
 	
+test_exit:
+	exit_test("test51");
 }
 
 /* ----------- */

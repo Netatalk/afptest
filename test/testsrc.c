@@ -156,6 +156,9 @@ void test6()
 int  dir;
 char *name = "Newé dir";
 
+	if (Conn->afp_version >= 30)
+		return;
+
     fprintf(stderr,"===================\n");
     fprintf(stderr,"test6: create dir\n");
 
@@ -2694,6 +2697,7 @@ void test52()
 void test53()
 {
 int fork;
+int ret;
 
     fprintf(stderr,"===================\n");
 	fprintf(stderr, "test53: get comment\n");
@@ -2701,10 +2705,12 @@ int fork;
 	if (ntohl(AFPERR_NOITEM) != FPGetComment(Conn, vol,  DIRDID_ROOT , "bar")) {
 		fprintf(stderr,"\tFAILED\n");
 	}
-	if (FPGetComment(Conn, vol,  DIRDID_ROOT , "toto.txt")) {
+	ret = FPGetComment(Conn, vol,  DIRDID_ROOT , "toto.txt");
+	if (ret && ntohl(AFPERR_NOITEM) !=  ret) {
 		fprintf(stderr,"\tFAILED\n");
 	}
-	if (FPGetComment(Conn, vol,  DIRDID_ROOT , "test folder")) {
+	ret = FPGetComment(Conn, vol,  DIRDID_ROOT , "test folder");
+	if (ret && ntohl(AFPERR_NOITEM) !=  ret) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA  , 0 ,DIRDID_ROOT, "toto.txt",OPENACC_RD );
@@ -2712,7 +2718,9 @@ int fork;
 		fprintf(stderr,"\tFAILED\n");
 		return;
 	}
-	if (FPGetComment(Conn, vol,  DIRDID_ROOT , "toto.txt")) {
+	ret = FPGetComment(Conn, vol,  DIRDID_ROOT , "toto.txt");
+	
+	if (ret && ntohl(AFPERR_NOITEM) !=  ret) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 	FPCloseFork(Conn,fork);
@@ -3531,6 +3539,9 @@ void test69()
 int  dir;
 char *name = "t69 rename weird name Newé dir";
 char *name2 = "test1";
+
+	if (Conn->afp_version >= 30)
+		return;
 
     fprintf(stderr,"===================\n");
     fprintf(stderr,"test69: rename a folder with Unix name != Mac name\n");
@@ -5207,6 +5218,9 @@ char *newv = strdup(Vol);
 int  l = strlen(newv);
 int  vol1;
 
+	if (Conn->afp_version >= 30)
+		return;
+
 	newv[1] = newv[1] +1;
 	
     fprintf(stderr,"===================\n");
@@ -6397,6 +6411,8 @@ struct stat st;
 	/* ok */
 	if (FPExchangeFile(Conn, vol, DIRDID_ROOT, dir, name, name1)) {
 		fprintf(stderr,"\tFAILED\n");
+		goto fin;
+		
 	}
 	read_fork( DIRDID_ROOT , name, 3);
 	if (strcmp(Data,"red")) {
@@ -6414,7 +6430,7 @@ struct stat st;
 	if ((ret = get_fid(dir , name1)) != fid_name1) {
 		fprintf(stderr,"\tFAILED %x should be %x\n", ret, fid_name1);
 	}
-		
+fin:		
 	if (FPDelete(Conn, vol,  dir , name1)) { fprintf(stderr,"\tFAILED\n");}
 
 	if (FPDelete(Conn, vol,  DIRDID_ROOT, name)) { fprintf(stderr,"\tFAILED\n");}
@@ -6858,7 +6874,7 @@ int ret;
 	  	lock.l_start = 60;
     	lock.l_type = F_WRLCK;
 	    lock.l_whence = SEEK_SET;
-    	lock.l_len = 300;
+    	lock.l_len = 10024;
          
     	if ((ret = fcntl(fd, F_SETLK, &lock)) >= 0 || (errno != EACCES && errno != EAGAIN)) {
     	    if (!ret >= 0) 
@@ -9693,6 +9709,9 @@ struct afp_filedir_parms filedir;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"test164: mangled names\n");
 
+	fprintf(stderr,"\tDELETED format has changed\n");
+	return;
+	
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		fprintf(stderr,"\tFAILED\n");
 		return;
@@ -11572,8 +11591,9 @@ void run_one()
 	if (Conn->afp_version < 10)
 		return;
 	vol  = FPOpenVol(Conn, Vol);
-test998();
+test178();
 /*
+test998();
 test164();
     test997();	
     */
@@ -11793,7 +11813,6 @@ void run_utf8()
 	test160();test161();test162();
 	test166();test167();
 	test181();
-
 	test185();
 	FPCloseVol(Conn,vol);
 }

@@ -16,15 +16,16 @@ u_int16_t vol = VolID;
 u_int16_t vol2;
 DSI *dsi2;
 
+	enter_test();
     fprintf(stderr,"===================\n");
 	fprintf(stderr, "FPGetComment:test53: get comment\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	if (!(pdir = no_access_folder(vol, DIRDID_ROOT, name))) {
-		return;
+		goto test_exit;
 	}
 	dsi2 = &Conn2->dsi;
 	vol2  = FPOpenVol(Conn2, Vol);
@@ -68,6 +69,8 @@ DSI *dsi2;
 	FAIL (FPCloseVol(Conn2,vol2))
 fin:
 	delete_folder(vol, DIRDID_ROOT, name);
+test_exit:
+	exit_test("test53");
 }
 
 /* ----------- */

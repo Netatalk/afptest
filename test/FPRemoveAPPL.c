@@ -11,12 +11,13 @@ char *file = "t215 file";
 char *file1 = "t215 file1";
 unsigned int ret;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPRemoveAPPL:t215: remove appl\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , file)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	dt = FPOpenDT(Conn,vol);
 	FAIL (htonl(AFPERR_NOITEM) != FPGetAppl(Conn,  dt, "ttxt", 1, 0x42 ))
@@ -43,6 +44,8 @@ unsigned int ret;
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , file))
 	FAIL ( FPRemoveAPPL(Conn , dt, DIRDID_ROOT, "ttxt", file))
 	FAIL (FPCloseDT(Conn,dt))
+test_exit:
+	exit_test("test215");
 }
 
 /* ----------- */

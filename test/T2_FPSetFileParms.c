@@ -17,16 +17,17 @@ u_int16_t vol = VolID;
 DSI *dsi = &Conn->dsi;
 unsigned ret;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetFileParms:test89: test set file setfilparam\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
  	if (!(dir = folder_with_ro_adouble(vol, DIRDID_ROOT, name, file))) {
 		nottested();
-		return;
+		goto test_exit;
  	}
 
 	if (FPGetFileDirParams(Conn, vol,  dir , file, bitmap,0)) {
@@ -53,6 +54,8 @@ unsigned ret;
  		FAIL (FPSetFileParams(Conn, vol, dir , file, bitmap, &filedir))
 	}
 	delete_ro_adouble(vol, dir, file);
+test_exit:
+	exit_test("test89");
 }
 
 /* ------------------------- */
@@ -66,18 +69,18 @@ u_int16_t bitmap = (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO)| (1<<FILPBIT_CDATE) |
 u_int16_t vol = VolID;
 DSI *dsi = &Conn->dsi;
 
-
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetFileParms:t120: test set file setfilparam (create .AppleDouble)\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, bitmap,0)) {
@@ -93,6 +96,8 @@ DSI *dsi = &Conn->dsi;
 	}
 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
+test_exit:
+	exit_test("test120");
 }
 
 /* ----------- */

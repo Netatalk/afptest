@@ -5,7 +5,6 @@
 /* ------------------------- */
 #define BUF_S 3000
 static char w_buf[BUF_S];
-static char r_buf[BUF_S];
 
 STATIC void test148()
 {
@@ -19,16 +18,17 @@ u_int16_t vol = VolID;
 int tdir;
 DSI *dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPWriteExt:test148: AFP 3.0 FPWriteExt\n");
  	if (Conn->afp_version < 30) { 
 		test_skipped(T_AFP3);
- 		return;
+		goto test_exit;
  	}
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	tdir  = FPCreateDir(Conn,vol, DIRDID_ROOT, dir);
@@ -107,6 +107,8 @@ fin:
 	FAIL (FPCloseFork(Conn,fork1))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, dir))
+test_exit:
+	exit_test("test148");
 }
 
 /* --------------------- */
@@ -119,16 +121,17 @@ char *name = "t207 file";
 u_int16_t vol = VolID;
 int i;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPWriteExt:test207: AFP 3.0 read/Write\n");
  	if (Conn->afp_version < 30) { 
 		test_skipped(T_AFP3);
- 		return;
+		goto test_exit;
  	}
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (FPEnumerate_ext(Conn, vol,  DIRDID_ROOT , "", 
@@ -197,7 +200,7 @@ int i;
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , "very big")) {
 		failed();
-		return;
+		goto test_exit;
 	}
     
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, "very big",OPENACC_WR | OPENACC_RD);
@@ -253,6 +256,8 @@ int i;
 fin:
 	FAIL (FPCloseFork(Conn,fork))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, "very big"))
+test_exit:
+	exit_test("test207");
 }
 
 /* ------------------------- */
@@ -262,21 +267,20 @@ u_int16_t bitmap = 0;
 int fork;
 char *name = "t304 file.txt";
 u_int16_t vol = VolID;
-int size;
 DSI *dsi;
 
 	dsi = &Conn->dsi;
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPWriteExt:test304: Write 0 byte to data fork\n");
  	if (Conn->afp_version < 30) { 
 		test_skipped(T_AFP3);
- 		return;
+		goto test_exit;
  	}
-
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
@@ -294,6 +298,8 @@ fin:
 
 	FAIL (fork && FPCloseFork(Conn,fork))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+test_exit:
+	exit_test("test304");
 }
 
 

@@ -88,29 +88,32 @@ void test117()
 char *name = "t117 exclusive open DF";
 u_int16_t vol2;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPByteRangeLock: test open excl mode\n");
 
 	if (!Path) {
 		test_skipped(T_MAC_PATH);                                                             
-		return;
+		goto test_exit;
 	}
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}
 
 	vol2  = FPOpenVol(Conn2, Vol);
 	if (vol2 == 0xffff) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	test_bytelock(vol2, name, OPENFORK_DATA);
 	name = "t117 exclusive open RF";	
 	test_bytelock(vol2, name, OPENFORK_RSCS);
 
 	FPCloseVol(Conn2,vol2);
+test_exit:
+	exit_test("test117");
 }
 
 /* ----------- */

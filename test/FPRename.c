@@ -10,12 +10,13 @@ char *name = "t69 rename file!name";
 char *name2 = "t69 new name";
 u_int16_t vol = VolID;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPRename:test69: rename a folder with Unix name != Mac name\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	FAIL (FPRename(Conn, vol, DIRDID_ROOT, name, name2)) 
 
@@ -35,6 +36,8 @@ u_int16_t vol = VolID;
 	FAIL (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name2))) 
 	FAIL (FPRename(Conn, vol, DIRDID_ROOT, name2, name)) 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+test_exit:
+	exit_test("test69");
 }
 
 /* ------------------------- */
@@ -55,12 +58,13 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPRename:test72: check input parameter\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name2))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (!(dir1 = FPCreateDir(Conn,vol, DIRDID_ROOT , ndel))) {
@@ -105,6 +109,8 @@ fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, ndel)) 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name1)) 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name2))
+test_exit:
+	exit_test("test72");
 }
 
 /* -------------------------- */
@@ -207,25 +213,28 @@ int tdir;
 u_int16_t vol = VolID;
 
 	
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPRename:test183: did error two users in  folder did=<deleted> name=test183\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	/* ---- directory.c ---- */
 	if (!(tdir = create_double_deleted_folder(vol, tname))) {
-		return;
+		goto test_exit;
 	}
 
 	FAIL (ntohl(AFPERR_NOOBJ) != FPDelete(Conn, vol, tdir , ""))
 
  	/* ---- filedir.c ------------ */
 	if (!(tdir = create_double_deleted_folder(vol, tname))) {
-		return;
+		goto test_exit;
 	}
 	FAIL (ntohl(AFPERR_NOOBJ) != FPRename(Conn, vol, tdir, "", name1))
+test_exit:
+	exit_test("test183");
 }
 
 /* ------------------------- */
@@ -235,18 +244,21 @@ char *name  = "t184.txt";
 char *name1 = "t184new.txt";
 u_int16_t vol = VolID;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPRename:test184: rename\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	
 	FAIL (FPRename(Conn, vol, DIRDID_ROOT, name, name1))
 	FAIL (FPDelete(Conn, vol, DIRDID_ROOT , name1)) 
 	FAIL (!FPDelete(Conn, vol, DIRDID_ROOT , name)) 
 	FPFlush(Conn, vol);
+test_exit:
+	exit_test("test184");
 }
 
 /* ------------------------- */
@@ -258,13 +270,14 @@ char *dest = "t191 newname";
 u_int16_t vol = VolID;
 int  dir = 0,dir1 = 0,dir2 = 0;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPRename:test191: rename folders\n");
 
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!dir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	dir1  = FPCreateDir(Conn,vol, DIRDID_ROOT , name1);
 	if (!dir1) {
@@ -286,6 +299,8 @@ fin:
 	FAIL (dir2 && FPDelete(Conn, vol,  dir2, "")) 
 	FAIL (dir1 && FPDelete(Conn, vol,  dir1, "")) 
 	FAIL (dir && FPDelete(Conn, vol,  dir, "")) 
+test_exit:
+	exit_test("test191");
 }
 
 /* ------------------------- */
@@ -298,17 +313,18 @@ u_int16_t vol2, bitmap;
 int  dir = 0;
 DSI	*dsi2 = &Conn2->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPRename:test219: rename folders two users\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!dir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	dsi2 = &Conn2->dsi;
 	vol2  = FPOpenVol(Conn2, Vol);
@@ -328,6 +344,8 @@ DSI	*dsi2 = &Conn2->dsi;
 	FAIL (FPCloseVol(Conn2,vol2))
 fin:
 	FAIL (dir && FPDelete(Conn, vol,  dir, "")) 
+test_exit:
+	exit_test("test219");
 }
 
 

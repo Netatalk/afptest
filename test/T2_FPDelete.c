@@ -22,22 +22,23 @@ DSI *dsi = &Conn->dsi;
 DSI *dsi2;
 int ret;
 
+	enter_test();
     fprintf(stderr,"===================\n");
 	fprintf(stderr, "FPDelete:test146: delete read only open file\n");
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}
 	
 	if (!Path || !Mac) {
 		test_skipped(T_MAC_PATH);                                                             
-		return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	FAIL (FPCreateFile(Conn, vol,  0, dir , name))
@@ -107,6 +108,8 @@ int ret;
 	FAIL (FPDelete(Conn, vol,  dir , name))
 	FAIL (FPDelete(Conn, vol,  dir , ""))
 	FAIL (FPCloseVol(Conn2,vol2))
+test_exit:
+	exit_test("test146");
 }
 
 /* -------------------------- */
@@ -121,17 +124,18 @@ u_int16_t bitmap = (1<<FILPBIT_FNUM );
 struct afp_filedir_parms filedir;
 DSI *dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPDelete:test362: Resolve ID in a deleted folder\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
 		failed();
-		return;
+		goto test_exit;
 	}
 
 	FAIL (FPCreateFile(Conn, vol,  0, dir , name))
@@ -164,6 +168,8 @@ DSI *dsi = &Conn->dsi;
 	FPCloseVol(Conn,vol);
 	vol  = FPOpenVol(Conn, Vol);
 	FAIL (ntohl(AFPERR_NOID ) != FPResolveID(Conn, vol, filedir.did, bitmap)) 
+test_exit:
+	exit_test("test362");
 }
 
 /* -------------------------- */
@@ -179,17 +185,18 @@ struct afp_filedir_parms filedir;
 DSI *dsi = &Conn->dsi;
 int fork;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPDelete:test363: Get fork param in a deleted folder\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
 		failed();
-		return;
+		goto test_exit;
 	}
 
 	FAIL (FPCreateFile(Conn, vol,  0, dir , name))
@@ -230,6 +237,8 @@ int fork;
 fin:	
 	FPDelete(Conn, vol,  dir , name);
 	FPDelete(Conn, vol,  dir , "");
+test_exit:
+	exit_test("test363");
 	
 }
 
@@ -245,17 +254,18 @@ u_int16_t bitmap = (1<<FILPBIT_FNUM );
 struct afp_filedir_parms filedir;
 DSI *dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPDelete:test364: Delete ID in a deleted folder\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
 		failed();
-		return;
+		goto test_exit;
 	}
 
 	FAIL (FPCreateFile(Conn, vol,  0, dir , name))
@@ -289,6 +299,8 @@ DSI *dsi = &Conn->dsi;
 fin:
 	FPDelete(Conn, vol,  dir , name);
 	FPDelete(Conn, vol,  dir , "");
+test_exit:
+	exit_test("test364");
 	
 }
 

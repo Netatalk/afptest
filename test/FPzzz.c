@@ -25,11 +25,12 @@ struct sigaction action;
 DSI *dsi;
 int sock;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPzzz:test223: AFP 3.x enter sleep mode\n");
 	if (Conn->afp_version < 30 || Conn2) {
 		test_skipped(T_AFP3_CONN2);
-		return;
+		goto test_exit;
 	}
 
     action.sa_handler = pipe_handler;
@@ -37,7 +38,7 @@ int sock;
     action.sa_flags = SA_RESTART;
     if ((sigaction(SIGPIPE, &action, NULL) < 0)) {
 		nottested();
-		return;
+		goto test_exit;
     }
 	FAIL (FPzzz(Conn)) 
 	fprintf(stderr,"sleep more than 2 mn\n");
@@ -81,6 +82,8 @@ fin:
     if ((sigaction(SIGPIPE, &action, NULL) < 0)) {
 		nottested();
     }
+test_exit:
+	exit_test("test223");
 }
 
 /* ------------------------- */
@@ -93,11 +96,12 @@ struct sigaction action;
 DSI *dsi;
 int sock;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPzzz:test224: disconnected after 2 mn\n");
 	if (Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}
 
 	sigp = 0;
@@ -106,7 +110,7 @@ int sock;
     action.sa_flags = SA_RESTART;
     if ((sigaction(SIGPIPE, &action, NULL) < 0)) {
 		nottested();
-		return;
+		goto test_exit;
     }
 	fprintf(stderr,"sleep more than 2 mn\n");
 	sleep(60 *3);
@@ -152,6 +156,8 @@ fin:
     if ((sigaction(SIGPIPE, &action, NULL) < 0)) {
 		nottested();
     }
+test_exit:
+	exit_test("test224");
 	
 }
 

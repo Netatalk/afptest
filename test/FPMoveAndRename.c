@@ -10,13 +10,14 @@ char *name1= "t43 subdir";
 u_int16_t vol = VolID;
 int  dir = 0,dir1 = 0,dir2 = 0;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPMoveAndRename:test43: move and rename folders\n");
 
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!dir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	dir1  = FPCreateDir(Conn,vol, DIRDID_ROOT , name1);
 	if (!dir1) {
@@ -61,6 +62,8 @@ fin:
 	FAIL (dir2 && FPDelete(Conn, vol,  dir2, "")) 
 	FAIL (dir1 && FPDelete(Conn, vol,  dir1, "")) 
 	FAIL (dir && FPDelete(Conn, vol,  dir, "")) 
+test_exit:
+	exit_test("test43");
 }
 
 /* -------------------------- */
@@ -72,12 +75,13 @@ char *name = "t77 Move open fork other dir";
 char *name1 = "t77 dir";
 u_int16_t vol = VolID;
 
+	enter_test();
     fprintf(stderr,"===================\n");
 	fprintf(stderr, "FPMoveAndRename:t77: Move an open fork in a different folder\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
@@ -99,6 +103,8 @@ u_int16_t vol = VolID;
 	FAIL (ntohl(AFPERR_NOOBJ) != FPDelete(Conn, vol, DIRDID_ROOT , name)) 
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1))
+test_exit:
+	exit_test("test77");
 }
 
 /* ------------------------------ */
@@ -114,6 +120,7 @@ char *dest  = "t123 dest";
 char *dest1  = "t123 dest_1";
 u_int16_t vol = VolID;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPMoveAndRename:test123: Move And Rename dir with sibling\n");
 
@@ -153,6 +160,7 @@ fin:
 	FAIL (dir1 && FPDelete(Conn, vol,  dir1 , ""))
 	FAIL (dir4 && FPDelete(Conn, vol,  dir4 , ""))
 	FAIL (dir && FPDelete(Conn, vol,  dir , "")) 
+	exit_test("test123");
 
 }
 
@@ -170,12 +178,13 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPMoveAndRename:test138: Move And Rename \n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
@@ -207,6 +216,8 @@ DSI *dsi;
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
 fin:
 	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test138");
 }
 
 /* ----------- */

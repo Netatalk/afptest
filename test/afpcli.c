@@ -84,17 +84,13 @@ size_t my_dsi_stream_read(DSI *dsi, void *data, const size_t length)
 }
 
 /* -------------------------------------------------------*/
-/* read data. function on success. 0 on failure. data length gets
- * stored in length variable. this should really use size_t's, but
- * that would require changes elsewhere. */
-int my_dsi_stream_receive(DSI *dsi, void *buf, const int ilength,
-                       int *rlength)
+int dsi_read_header(DSI *dsi)
 {
   char block[DSI_BLOCKSIZ];
  
   /* read in the header */
   if (my_dsi_stream_read(dsi, block, sizeof(block)) != sizeof(block))
-    return 0;
+    return -1;
  
   dsi->header.dsi_flags = block[0];
   dsi->header.dsi_command = block[1];
@@ -103,13 +99,28 @@ int my_dsi_stream_receive(DSI *dsi, void *buf, const int ilength,
   memcpy(&dsi->header.dsi_len, block + 8, sizeof(dsi->header.dsi_len));
   memcpy(&dsi->header.dsi_reserved, block + 12,sizeof(dsi->header.dsi_reserved));
   dsi->serverID = ntohs(dsi->header.dsi_requestID);
- 
+
+  return block[1];
+}
+
+/* -------------------------------------------------------*/
+/* read data. function on success. 0 on failure. data length gets
+ * stored in length variable. this should really use size_t's, but
+ * that would require changes elsewhere. */
+int my_dsi_stream_receive(DSI *dsi, void *buf, const int ilength,
+                       int *rlength)
+{
+int ret;
+
+  if ((ret = dsi_read_header(dsi)) < 0) 
+      return 0;
+       
   /* make sure we don't over-write our buffers. */
   *rlength = min(ntohl(dsi->header.dsi_len), ilength);
   if (my_dsi_stream_read(dsi, buf, *rlength) != *rlength)
     return 0;
  
-  return block[1];
+  return ret;
 }
 
 /* ======================================================= */
@@ -1559,9 +1570,9 @@ u_int32_t last;
 
 	my_dsi_cmd_receive(dsi);  
 	if (!dsi->header.dsi_code) {
-	        if (dsi->cmdlen != 4) {
-	            return -1;
-	        }
+		if (dsi->cmdlen != 4) {
+			return -1;
+		}
 		memcpy(&last, dsi->commands, sizeof(last));
 		last = ntohl(last);
 		if (whence) {

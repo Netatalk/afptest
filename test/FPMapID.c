@@ -14,12 +14,13 @@ unsigned int ret;
 u_int16_t vol = VolID;
 DSI *dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPMapID:test208: test Map ID call\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	FAIL (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, 0,bitmap )) 
 
@@ -60,6 +61,8 @@ DSI *dsi = &Conn->dsi;
 	FAIL ((htonl(AFPERR_PARAM) != FPMapID(Conn, 5, filedir.gid))) 
 	/* --------------------- */
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+test_exit:
+	exit_test("test208");
 }
 
 /* ----------- */

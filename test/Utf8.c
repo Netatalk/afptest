@@ -13,12 +13,13 @@ int dir;
 u_int16_t vol = VolID;
 DSI *dsi = &Conn->dsi;
 	
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test162: illegal UTF8 name\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
-	    return;
+		goto test_exit;
 	}
 
     ndir[0] = 'e';
@@ -31,6 +32,8 @@ DSI *dsi = &Conn->dsi;
 	else if (ntohl(AFPERR_PARAM) != dsi->header.dsi_code) {	
 		failed();
 	}
+test_exit:
+	exit_test("test162");
 }
 
 /* ------------------------- */
@@ -43,12 +46,13 @@ int  ofs =  3 * sizeof( u_int16_t );
 struct afp_filedir_parms filedir;
 DSI *dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test166: utf8 precompose decompose\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
-	    return;
+		goto test_exit;
 	}
 
     bitmap = (1<< FILPBIT_PDID) | (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_RFLEN);
@@ -58,7 +62,7 @@ DSI *dsi = &Conn->dsi;
 	
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , nfile)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
     bitmap = (1<< FILPBIT_PDID)|(1<< FILPBIT_LNAME)|(1 << FILPBIT_PDINFO );
 
@@ -81,6 +85,8 @@ DSI *dsi = &Conn->dsi;
 	nfile[1] = 0xcc;         /* é.rtf decompose */
 	nfile[2] = 0x81;
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , nfile))
+test_exit:
+	exit_test("test166");
 }
 
 /* ------------------------- */
@@ -93,15 +99,18 @@ int  ofs =  3 * sizeof( u_int16_t );
 struct afp_filedir_parms filedir;
 DSI *dsi = &Conn->dsi;
 
+#if 0
 	if (Conn->afp_version < 30) {
-	    return;
+		goto test_exit;
 	}
+#endif
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test167: utf8 precompose decompose\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
-	    return;
+		goto test_exit;
 	}
 
     bitmap = (1<< FILPBIT_PDID) | (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_RFLEN);
@@ -111,7 +120,7 @@ DSI *dsi = &Conn->dsi;
 	
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , nfile)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
     bitmap = (1<< FILPBIT_PDID)|(1<< FILPBIT_LNAME)|(1 << FILPBIT_PDINFO );
 
@@ -134,6 +143,8 @@ DSI *dsi = &Conn->dsi;
 	nfile[2] = 0xcc;         /* là */
 	nfile[3] = 0x80;
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , nfile))
+test_exit:
+	exit_test("test167");
 }
 
 /* ------------------------- */
@@ -146,12 +157,13 @@ u_int16_t vol = VolID;
 int  dir;
 int  dir1;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test181: test search by ID UTF8\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
-	    return;
+		goto test_exit;
 	}
 	dir   = FPCreateDir(Conn, vol, DIRDID_ROOT , name);
 	if (!dir) {
@@ -162,7 +174,7 @@ int  dir1;
 	if (!dir1) {
 		failed();
 		FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
-		return;
+		goto test_exit;
 	}
 
 	FAIL (FPCreateFile(Conn, vol,  0, dir1 , name2))
@@ -202,6 +214,8 @@ int  dir1;
 	FAIL (FPDelete(Conn, vol,  dir1 , name2)) 
 	FAIL (FPDelete(Conn, vol,  dir , name1))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test181");
 }
 /* ------------------------- 
  */
@@ -211,17 +225,18 @@ char *name = "t185.txt";
 char *name1 = "t185 donne\314"; /* decomposed données */
 u_int16_t vol = VolID;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test185: rename utf8 name\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
-	    return;
+		goto test_exit;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	
 	FAIL (ntohl(AFPERR_PARAM) != FPRename(Conn, vol, DIRDID_ROOT, name, name1))
@@ -231,6 +246,8 @@ u_int16_t vol = VolID;
 	FAIL (FPDelete(Conn, vol, DIRDID_ROOT , name))
 
 	FPFlush(Conn, vol);
+test_exit:
+	exit_test("test185");
 }
 
 /* ------------------------- */
@@ -244,17 +261,18 @@ u_int16_t bitmap = 0;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test233: false mangled UTF8 dirname\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
-	    return;
+		goto test_exit;
 	}
 	dir   = FPCreateDir(Conn, vol, DIRDID_ROOT , name);
 	if (!dir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	bitmap =(1<< DIRPBIT_DID) | (1<< DIRPBIT_PDID)  | (1<< DIRPBIT_PDINFO) |(1<<DIRPBIT_LNAME);
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, name, 0,bitmap )) {
@@ -271,6 +289,8 @@ u_int16_t bitmap = 0;
 		failed();
 	}
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test233");
 }
 
 /* ------------------------- */
@@ -285,16 +305,17 @@ u_int16_t bitmap = 0;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test234: false mangled UTF8 filename\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
-	    return;
+		goto test_exit;
 	}
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM)|(1<<FILPBIT_LNAME);
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, name, bitmap,0 )) {
@@ -313,6 +334,8 @@ u_int16_t bitmap = 0;
 		}
 	}
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test234");
 }
 
 /* ------------------------- */
@@ -327,16 +350,17 @@ u_int16_t bitmap = 0;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test312: mangled UTF8 filename\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
-	    return;
+		goto test_exit;
 	}
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) | (1<<FILPBIT_LNAME);
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, name, bitmap,0 )) {
@@ -368,6 +392,8 @@ u_int16_t bitmap = 0;
 		}
 	}
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test312");
 }
 
 /* ------------------------- */
@@ -381,17 +407,18 @@ u_int16_t bitmap = 0;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test313: mangled UTF8 dirname\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
-	    return;
+		goto test_exit;
 	}
 	dir   = FPCreateDir(Conn, vol, DIRDID_ROOT , name);
 	if (!dir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	bitmap = (1<< DIRPBIT_DID) | (1<< DIRPBIT_PDID)  | (1<< DIRPBIT_PDINFO) | (1<<DIRPBIT_LNAME);
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, name, 0, bitmap )) {
@@ -403,6 +430,8 @@ u_int16_t bitmap = 0;
 		failed();
 	}
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test313");
 }
 
 /* ------------------------- */
@@ -415,22 +444,25 @@ u_int16_t bitmap = 0;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test314: invalid mangled UTF8 name\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
-	    return;
+		goto test_exit;
 	}
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	bitmap = (1<< FILPBIT_PDINFO) | (1<<FILPBIT_LNAME);
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, name, bitmap, 0 )) {
 		failed();
 	}
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test314");
 }
 
 /* ------------------------- */
@@ -445,16 +477,17 @@ u_int16_t bitmap = 0;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Utf8:test337: mangled UTF8 filename\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UTF8)) {
 		test_skipped(T_UTF8);
-	    return;
+		goto test_exit;
 	}
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) | (1<<FILPBIT_LNAME);
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, name, bitmap,0 )) {
@@ -486,6 +519,8 @@ u_int16_t bitmap = 0;
 		}
 	}
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test337");
 }
 
 /* ----------- */

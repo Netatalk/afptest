@@ -31,12 +31,14 @@ int size;
 DSI *dsi;
 
 	dsi = &Conn->dsi;
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPRead:test5: read/write data fork\n");
 	size = min(10000, dsi->server_quantum);
 	if (size < 2000) {
 		fprintf(stderr,"\t server quantum (%d) too small\n", size);
-		return;
+		nottested();
+		goto test_exit;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
@@ -126,6 +128,8 @@ fin1:
 
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+test_exit:
+	exit_test("test5");
 }
 
 /* ------------------------- */
@@ -140,17 +144,19 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPread:test46: read/write resource fork\n");
 	size = min(10000, dsi->server_quantum);
 	if (size < 2000) {
 		fprintf(stderr,"\t server quantum (%d) too small\n", size);
-		return;
+		nottested();
+		goto test_exit;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
@@ -229,6 +235,8 @@ fin:
 	if (fork) FPCloseFork(Conn,fork);
 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
+test_exit:
+	exit_test("test46");
 }
 
 /* -------------------------- */
@@ -240,12 +248,13 @@ char *name = "test59 FPRead,FPWrite 2GB lim";
 u_int16_t vol = VolID;
 int ret;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPRead:test59: 2 GBytes for offset limit FPRead, FPWrite\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
     /* > 2 Gb */
@@ -265,6 +274,8 @@ int ret;
 	FAIL (FPCloseFork(Conn,fork))
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test59");
 }
 
 /* -------------------------- */
@@ -279,24 +290,24 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPRread:test61: FPRead, FPWrite errors\n");
 	size = min(10000, dsi->server_quantum);
 	if (size < 2000) {
 		nottested();
 		fprintf(stderr,"\t server quantum (%d) too small\n", size);
-		return;
+		goto test_exit;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR );
 	if (!fork) {
 		failed();
 		goto fin;
-		return;
 	}
 	FAIL (ntohl(AFPERR_ACCESS) != FPRead(Conn, fork, 0, 30, Data)) 
 	FAIL (FPWrite(Conn, fork, 0, 0, Data, 0))
@@ -325,6 +336,8 @@ DSI *dsi;
 	FPCloseFork(Conn,fork);
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test61");
 }
 
 /* -------------------------- */
@@ -356,7 +369,6 @@ int quantum;
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
 	}
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name1)) {
 		nottested();
@@ -423,13 +435,17 @@ fin:
 /* -------------------------- */
 STATIC void test309()
 {
+	enter_test();
     write_test(1024);
+	exit_test("test309");
 }
 
 /* -------------------------- */
 STATIC void test327()
 {
+	enter_test();
     write_test(	128*1024);
+	exit_test("test327");
 }
 
 /* ------------------------- */
@@ -445,13 +461,14 @@ int numread = /*2*/ 469;
 u_int16_t vol = VolID;
 static char temp[MAXPATHLEN];   
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"test328: read speed\n");
 	sprintf(temp,"test328 dir");
 	
 	if (get_vol_free(vol) < 17*1024*1024) {
 		test_skipped(T_VOL_SMALL);
-		return;
+		goto test_exit;
 	}		
 
 	ndir = strdup(temp);
@@ -588,6 +605,8 @@ fin1:
 fin:
 	free(ndir);
 	free(data);
+test_exit:
+	exit_test("test328");
 }
 
 /* ------------------------- */
@@ -601,12 +620,14 @@ int size;
 DSI *dsi;
 
 	dsi = &Conn->dsi;
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPRead:test343: read/write data fork (small size)\n");
 	size = min(4096, dsi->server_quantum);
 	if (size < 2000) {
+		nottested();
 		fprintf(stderr,"\t server quantum (%d) too small\n", size);
-		return;
+		goto test_exit;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
@@ -636,6 +657,8 @@ fin1:
 
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+test_exit:
+	exit_test("test343");
 }
 
 /* ------------------------- */
@@ -653,6 +676,7 @@ int ret;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPread:test344: read after EOF\n");
 	size = 100;
@@ -660,12 +684,12 @@ int ret;
 
 	if (Locking) {
 		test_skipped(T_LOCKING);
-		return;
+		goto test_exit;
 	}		
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
@@ -704,6 +728,8 @@ fin:
 	if (fork) FPCloseFork(Conn,fork);
 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
+test_exit:
+	exit_test("test344");
 }
 
 

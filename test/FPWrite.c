@@ -14,17 +14,19 @@ int size;
 DSI *dsi;
 
 	dsi = &Conn->dsi;
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPWrite:test216: read/write data fork\n");
 	size = min(0x20000, dsi->server_quantum);
 	if (size < 0x20000) {
 		fprintf(stderr,"\t server quantum (%d) too small\n", size);
-		return;
+		nottested();
+		goto test_exit;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
@@ -51,9 +53,10 @@ DSI *dsi;
 	}
 
 fin:
-
 	FAIL (fork && FPCloseFork(Conn,fork))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+test_exit:
+	exit_test("test216");
 }
 
 /* ------------------------- */
@@ -69,28 +72,31 @@ DSI *dsi;
 int i,j;
 
 	dsi = &Conn->dsi;
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPWrite:test226: disk full error\n");
 	size = min(0x20000, dsi->server_quantum); /* 128 k */
 	if (size < 0x20000) {
 		fprintf(stderr,"\t server quantum (%d) too small\n", size);
-		return;
+		nottested();
+		goto test_exit;
 	}
 
  	if (FPGetVolParam(Conn, vol, (1 << VOLPBIT_BFREE ))) {
 		nottested();
-		return;
+		goto test_exit;
  	}
 	afp_volume_unpack(&parms, dsi->commands +sizeof( u_int16_t ), (1 << VOLPBIT_BFREE));
 
 	if (parms.bfree > 2*1024*1024) {
 		fprintf(stderr,"\t Volume too big, skipped\n");
-		return;
+		/* FIXME */
+		goto test_exit;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
@@ -133,6 +139,8 @@ fin:
 
 	FAIL (fork && FPCloseFork(Conn,fork))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+test_exit:
+	exit_test("test226");
 }
 
 /* ------------------------- */
@@ -145,12 +153,13 @@ u_int16_t vol = VolID;
 DSI *dsi;
 
 	dsi = &Conn->dsi;
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPWrite:test303: Write 0 byte to data fork \n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
@@ -167,8 +176,9 @@ fin:
 
 	FAIL (fork && FPCloseFork(Conn,fork))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+test_exit:
+	exit_test("test303");
 }
-
 
 /* ----------- */
 void FPWrite_test()

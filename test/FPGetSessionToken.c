@@ -11,18 +11,19 @@ char *name2 = "t23 file";
 int  dir,dir1;
 u_int16_t vol = VolID;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetSessionToken:test220: AFP 3.0 get session token\n");
 	if (Conn->afp_version != 30) {
 		test_skipped(T_AFP3);
-		return;
+		goto test_exit;
 	}
 
 	FAIL (FPGetSessionToken(Conn,0 ,0 ,0 ,NULL))
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!dir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (Conn->afp_version < 30) {
@@ -32,7 +33,7 @@ u_int16_t vol = VolID;
 			failed();
 		}
 		FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
-		return;
+		goto test_exit;
 	}	
 	FAIL (FPGetSrvrInfo(Conn))
 	dir1 = FPCreateDir(Conn,vol, dir , name1);
@@ -63,32 +64,31 @@ u_int16_t vol = VolID;
 		FAIL (FPDelete(Conn, vol,  dir, name1))
 		FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
 	}
+test_exit:
+	exit_test("test220");
 }
 
 /* ------------------------- */
 STATIC void test221()
 {
-char *name = "t23 dir";
-char *name1 = "t23 subdir";
-char *name2 = "t23 file";
-int  dir,dir1;
-u_int16_t vol = VolID;
-
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetSessionToken:test221: AFP 3.1 get session token\n");
 	if (Conn->afp_version != 31) {
 		test_skipped(T_AFP3);
-		return;
+		goto test_exit;
 	}
 
 	FAIL (FPGetSessionToken(Conn, 3, 0, 5, "token"))
 	FAIL (FPzzz(Conn))
-	    
+test_exit:
+	exit_test("test221");
 }
 
 /* ------------------------- */
 STATIC void test228()
 {
+#if 0
 char *name = "t228 file";
 u_int16_t vol = VolID,vol2;
 unsigned int ret;
@@ -99,36 +99,37 @@ DSI *dsi3;
 int sock;
 int fork = 0, fork1;
 struct sigaction action;    
-#if 0
+
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPDisconnectOldSession :test228: AFP 3.x disconnect old session\n");
 	if (Conn->afp_version < 30 || Conn2) {
 		test_skipped(T_AFP3_CONN2);
-		return;
+		goto test_exit;
 	}
 
 	ret = FPGetSessionToken(Conn, 0, 0, 0, NULL);
 	if (ret) {
 		failed();
-		return;
+		goto test_exit;
 	}
     if ((conn = (CONN *)calloc(1, sizeof(CONN))) == NULL) {
     	nottested();
-    	return;
+		goto test_exit;
     }
     conn->type = 0;
     dsi3 = &conn->dsi;
 	sock = OpenClientSocket(Server, Port);
     if ( sock < 0) {
     	nottested();
-    	return;
+		goto test_exit;
     }
     dsi3->protocol = DSI_TCPIP; 
 	dsi3->socket = sock;
 	ret = FPopenLoginExt(conn, vers, uam, User, Password);
 	if (ret) {
     	nottested();
-    	return;
+		goto test_exit;
 	}
 	conn->afp_version = Conn->afp_version;
 
@@ -156,7 +157,7 @@ struct sigaction action;
 	if (ret) {
 		failed();
 		goto fin;
-		return;
+		goto test_exit;
 	}
 	memcpy(&len, dsi3->data, sizeof(u_int32_t)); 
 	len = ntohl(len);
@@ -209,6 +210,8 @@ fin:
     	failed();
     }
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test228");
 #endif
 }
 

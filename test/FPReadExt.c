@@ -18,16 +18,17 @@ u_int16_t vol = VolID;
 char utf8name[20];
 int i;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPReadExt:test22: AFP 3.0 read/Write\n");
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
-		return;
+		goto test_exit;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (FPEnumerate_ext(Conn, vol,  DIRDID_ROOT , "", 
@@ -166,6 +167,8 @@ fin2g:
 
 	FAIL (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , utf8name)) 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, utf8name)) 
+test_exit:
+	exit_test("test22");
 }
 
 /* ----------- */

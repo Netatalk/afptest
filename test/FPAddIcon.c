@@ -56,6 +56,7 @@ u_int16_t dt;
 int ret;
 DSI *dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
 	fprintf(stderr, "FPAddIcon:test212: Add Icon call\n");
 
@@ -98,6 +99,7 @@ DSI *dsi = &Conn->dsi;
 	FAIL (htonl(AFPERR_ITYPE) != FPAddIcon(Conn,  dt, "ttxt", "3DMF", 4, 0, 256, icon0_256))
 	
 	FPCloseDT(Conn,dt);
+	exit_test("test212");
 }
 
 /* ----------- */

@@ -79,14 +79,16 @@ STATIC void test66()
 {
 char *name = "t66 FPByteLock_ext DF";
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPByteRangeLockExt:test66: FPByteLock Data Fork\n");
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
-		return;
+		goto test_exit;
 	}
 	test_bytelock_ext(VolID, name, OPENFORK_DATA);
-	return;
+test_exit:
+	exit_test("test66");
 }
 
 /* ----------- */
@@ -94,14 +96,16 @@ STATIC void test67()
 {
 char *name = "t67 FPByteLock_ext RF";
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPByteRangeLockExt:test67: FPByteLock Ressource Fork\n");
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
-		return;
+		goto test_exit;
 	}
 	test_bytelock_ext(VolID, name, OPENFORK_RSCS);
-	return;
+test_exit:
+	exit_test("test67");
 }
 
 
@@ -113,14 +117,17 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPByteRangeLockExt:test195: illegal fork\n");
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
-		return;
+		goto test_exit;
 	}
 
 	illegal_fork(dsi, AFP_BYTELOCK_EXT, name);
+test_exit:
+	exit_test("test195");
 }
 
 /* ----------- */

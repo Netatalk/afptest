@@ -12,13 +12,14 @@ int  dir,dir1;
 u_int16_t vol = VolID;
 
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPEnumerateExt:test23: AFP 3.0 FPEnumerate ext\n");
 
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!dir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (Conn->afp_version < 30) {
@@ -28,7 +29,7 @@ u_int16_t vol = VolID;
 			failed();
 		}
 		FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
-		return;
+		goto test_exit;
 	}	
 	FAIL (FPGetSrvrInfo(Conn))
 	FPEnumerate_ext(Conn, vol, DIRDID_ROOT  , "", 
@@ -64,6 +65,8 @@ u_int16_t vol = VolID;
 		FAIL (FPDelete(Conn, vol,  dir, name1))
 		FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
 	}
+test_exit:
+	exit_test("test23");
 }
 
 /* ----------- */

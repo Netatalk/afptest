@@ -15,12 +15,13 @@ int fid_name1;
 int temp;
 u_int16_t vol = VolID;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPExchangeFiles:test108: exchange files\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
 		failed();
@@ -67,6 +68,8 @@ u_int16_t vol = VolID;
 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, ndir))
+test_exit:
+	exit_test("test108");
 }
 
 /* ------------------------- */
@@ -84,12 +87,13 @@ int fid_name1;
 u_int16_t vol = VolID;
 int ret;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPExchangeFiles:test111: exchange open files\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
@@ -165,6 +169,8 @@ fin:
 	FAIL (FPDelete(Conn, vol,  dir , name1))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, ndir))
+test_exit:
+	exit_test("test111");
 }
 
 

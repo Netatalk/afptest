@@ -14,18 +14,19 @@ int  dir,dir1;
 int  ret;
 u_int16_t vol = VolID;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms:test32: dir deleted by someone else, access with ID\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!dir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	/* so FPEnumerate doesn't return NOOBJ */
 	FAIL (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name1))
@@ -111,6 +112,8 @@ u_int16_t vol = VolID;
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name)) 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name1)) 
+test_exit:
+	exit_test("test32");
 }
 
 /* ------------------------- */
@@ -122,18 +125,19 @@ int  dir,dir1;
 u_int16_t vol = VolID;
 int ret;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms:test33: dir deleted by someone else, access with name\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!dir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	/* so FPEnumerate doesn't return NOOBJ */
@@ -215,6 +219,8 @@ fin:
     /* dir and dir1 should be != but if inode reused they are the same */
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name1)) 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name)) 
+test_exit:
+	exit_test("test33");
 }
 
 /* ------------------------- */
@@ -225,18 +231,19 @@ char *name1 = "t42 dir1";
 int  dir,dir1;
 u_int16_t vol = VolID;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms:test42: dir deleted by someone else, access with ID from another dir\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!dir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	dir1  = FPCreateDir(Conn,vol, DIRDID_ROOT , name1);
 	if (!dir) {
@@ -254,7 +261,7 @@ u_int16_t vol = VolID;
 		)
 	) {
 		failed();
-		return;
+		goto fin;
 	}
 
 	if (FPGetFileDirParams(Conn, vol,  dir1, "", 0, 
@@ -291,6 +298,8 @@ u_int16_t vol = VolID;
 fin:
 	FAIL (dir && FPDelete(Conn, vol,  dir, "")) 
 	FAIL (dir1 && FPDelete(Conn, vol,  dir1, "")) 
+test_exit:
+	exit_test("test42");
 }
 
 /* -------------------------- */
@@ -300,12 +309,13 @@ STATIC void test52()
 {
 char name ".t52 invisible";
 
+	enter_test();
     fprintf(stderr,"===================\n");
 	fprintf(stderr, "FPGetFileDirParms:test52: test .file without AppleDouble\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 	if (!FPGetFileDirParams(Conn, vol, DIRDID_ROOT, "new/.invisible", 
 	         (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO)|
@@ -315,8 +325,9 @@ char name ".t52 invisible";
 		)) 
 	{
 		failed();
-		return;
 	}
+test_exit:
+	exit_test("test52");
 }
 #endif
 
@@ -336,17 +347,18 @@ int  ofs =  3 * sizeof( u_int16_t );
 struct afp_filedir_parms filedir;
 u_int16_t bitmap = (1<< DIRPBIT_DID)|(1<< DIRPBIT_LNAME);
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms:t106: cname with trailing 0 and chdir\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 
 	if (!(dir1 = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (!(dir2 = FPCreateDir(Conn,vol, dir1 , name2))) {
 		nottested();
@@ -440,6 +452,8 @@ fin:
 
 	FAIL (FPDelete(Conn, vol,  dir1 , name2))
 	FAIL (FPDelete(Conn, vol,  dir1 , ""))   
+test_exit:
+	exit_test("test106");
 }
 
 /* ------------------------- */
@@ -452,17 +466,18 @@ int  dir1,dir;
 u_int16_t bitmap = (1<<FILPBIT_FNUM );
 u_int16_t vol = VolID;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms:test127: dir removed with cnid not updated\n");
 
 	if (!Path && !Mac) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn, vol, DIRDID_ROOT , name))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (!(dir1 = FPCreateDir(Conn, vol, dir , name1))) {
 		failed();
@@ -490,6 +505,8 @@ u_int16_t vol = VolID;
     bitmap = (1<< DIRPBIT_DID)|(1<< DIRPBIT_LNAME)|(1<< DIRPBIT_OFFCNT);
 
 	FAIL (htonl(AFPERR_NOOBJ) != FPGetFileDirParams(Conn, vol, dir1, "", 0, bitmap))
+test_exit:
+	exit_test("test127");
 }
 
 /* ------------------------- */
@@ -502,17 +519,18 @@ int  dir1,dir;
 u_int16_t bitmap = (1<<FILPBIT_FNUM );
 u_int16_t vol = VolID;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms:test128: dir removed with cnid not updated\n");
 
 	if (!Path && !Mac) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn, vol, DIRDID_ROOT , name))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (!(dir1 = FPCreateDir(Conn, vol, dir , name1))) {
 		failed();
@@ -537,6 +555,8 @@ u_int16_t vol = VolID;
 
 	FAIL (htonl(AFPERR_NOOBJ) != FPGetFileDirParams(Conn, vol, dir1, "", 0, bitmap)) 
 	FAIL (!FPDelete(Conn,vol, dir,""))
+test_exit:
+	exit_test("test128");
 }
 
 /* ------------------------- */
@@ -548,18 +568,19 @@ int  dir,dir1;
 int  dir2;
 u_int16_t vol = VolID;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms:test182: dir deleted by someone else, access with ID (dirlookup)\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!dir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	dir1  = FPCreateDir(Conn,vol, dir , name);
@@ -601,7 +622,7 @@ u_int16_t vol = VolID;
 	vol = VolID = FPOpenVol(Conn, Vol);
 	if (vol == 0xffff) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (ntohl(AFPERR_NOOBJ) != FPGetFileDirParams(Conn, vol,  dir, "", 
 	         0
@@ -629,6 +650,8 @@ u_int16_t vol = VolID;
 
     /* dir and dir1 should be != but if inode reused they are the same */
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test182");
 }
 
 /* ------------------------- */
@@ -642,18 +665,19 @@ u_int16_t vol = VolID;
 int id,id1;
 int fd;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms:test235: file deleted and recreated by someone else, cnid not updated\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!dir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	FAIL (FPCreateFile(Conn, vol,  0, dir , name1))
@@ -691,6 +715,8 @@ int fd;
 fin:
 	FAIL (FPDelete(Conn, vol,  dir , name1))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test235");
 }
 
 /* ------------------------- */
@@ -711,29 +737,30 @@ struct afp_filedir_parms filedir;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms::test336: long dirname >31 bytes\n");
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 
 	dsi2 = &Conn2->dsi;
 	vol2  = FPOpenVol(Conn2, Vol);
 	if (vol2 == 0xffff) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	id = FPCreateDir(Conn2, vol2, DIRDID_ROOT, name);
 	if (!id) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	FPCloseVol(Conn2,vol2);
 
@@ -793,6 +820,8 @@ struct afp_filedir_parms filedir;
 	FAIL (FPDelete(Conn, vol,  dir, ""))
 fin:
 	FAIL (FPDelete(Conn, vol,  id, ""))
+test_exit:
+	exit_test("test336");
 }
 
 /* ----------------------- */
@@ -804,18 +833,19 @@ int  dir,dir1;
 int  ret;
 u_int16_t vol = VolID;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms:test340: dir deleted by someone else, access with ID\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!dir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	/* so FPEnumerate doesn't return NOOBJ */
 	FAIL (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name1))
@@ -912,6 +942,8 @@ u_int16_t vol = VolID;
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name)) 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name1)) 
+test_exit:
+	exit_test("test340");
 }
 
 /* ----------- */

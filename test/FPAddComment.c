@@ -19,15 +19,16 @@ DSI *dsi2;
 DSI *dsi = &Conn->dsi;
 char *cmt;
 
+	enter_test();
     fprintf(stderr,"===================\n");
 	fprintf(stderr, "FPAddComment:test55: add comment\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	if (!(rdir = read_only_folder(vol, DIRDID_ROOT, name2) ) ) {
-		return;
+		goto test_exit;
 	}
 	if (!(pdir = no_access_folder(vol, DIRDID_ROOT, name))) {
 		fprintf(stderr,"\tWARNING folder without access failed\n");
@@ -96,6 +97,8 @@ fin:
 	if (rdir) {
 		delete_folder(vol, DIRDID_ROOT, name2);
 	}
+test_exit:
+	exit_test("test55");
 }
 
 /* ----------- */

@@ -13,12 +13,13 @@ char *name = "t203 file";
 u_int32_t mdate;
 DSI *dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
 	fprintf(stderr, "FPFlushFork:test203: flush fork call\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA  , bitmap ,DIRDID_ROOT, name,
 		OPENACC_RD | OPENACC_WR);
@@ -68,6 +69,8 @@ DSI *dsi = &Conn->dsi;
 fin:
 	FAIL (fork && FPCloseFork(Conn,fork))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
+test_exit:
+	exit_test("test203");
 }
 
 /* ----------- */

@@ -1,5 +1,5 @@
 /*
- * $Id: rotest.c,v 1.2 2004-05-10 18:39:26 didg Exp $
+ * $Id: rotest.c,v 1.3 2004-06-14 00:45:27 didg Exp $
  * MANIFEST
  */
 #include "specs.h"
@@ -95,13 +95,17 @@ DSI *dsi = &Conn->dsi;
 u_int32_t flen;
 unsigned int ret;
 
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"Read only volume\n");
 	VolID = FPOpenVol(Conn, Vol);
 	if (VolID == 0xffff) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (!really_ro())
-		return;
+		goto test_exit;
+
 	/* get a directory */
 	bitmap = (1 << DIRPBIT_LNAME);
 	ret = FPEnumerateFull(Conn, VolID, 1, 1, 800,  DIRDID_ROOT, "", 0 , bitmap);
@@ -188,7 +192,10 @@ unsigned int ret;
 			}
 		}
 	}
-	FAIL (ntohl(AFPERR_VLOCK) != FPExchangeFile(Conn, VolID, DIRDID_ROOT, DIRDID_ROOT, file, file1)) 
+	ret = FPExchangeFile(Conn, VolID, DIRDID_ROOT, DIRDID_ROOT, file, file1);
+	if (not_valid(ret, /* MAC */AFPERR_VLOCK, AFPERR_ACCESS )) { 
+		failed();	
+	}
 
 	/* -- volume.c -- */
 
@@ -261,7 +268,7 @@ unsigned int ret;
 	if ((did = FPCreateDir(Conn,VolID, DIRDID_ROOT , ndir))) {
 		nottested();
 		FAIL (FPDelete(Conn, VolID,  did , ""))
-		return;
+		goto test_exit;
 	}
  	
  	/* -- fork.c -- */
@@ -332,6 +339,8 @@ unsigned int ret;
  	check_test(ret);
 fin:
 	FAIL (FPCloseVol(Conn,VolID))
+test_exit:
+	exit_test("rotest");
 }
 
 /* =============================== */

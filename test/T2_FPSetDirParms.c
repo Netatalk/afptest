@@ -14,17 +14,18 @@ u_int16_t bitmap = (1<<DIRPBIT_FINFO)| (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) |
 u_int16_t vol = VolID;
 DSI *dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetDirParms:t121: test set dir setfilparam (create .AppleDouble)\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
-		return;
+		goto test_exit;
 	}
 	dsi = &Conn->dsi;
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	memset(&filedir, 0, sizeof(filedir));
@@ -44,6 +45,8 @@ DSI *dsi;
 	}
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+test_exit:
+	exit_test("test121");
 }
 
 /* ----------- */

@@ -15,12 +15,13 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetForkParms:test62: SetForkParams errors\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR |OPENACC_RD);
 	if (!fork) {
@@ -76,6 +77,8 @@ fin:
 	FAIL (fork && FPCloseFork(Conn,fork))
 	FAIL (fork1 && FPCloseFork(Conn,fork1))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test62");
 }
 
 /* ------------------------- */
@@ -89,12 +92,13 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetForkParms:test141: Setforkmode error\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name ,OPENACC_WR | OPENACC_RD);
@@ -126,6 +130,8 @@ DSI *dsi;
 
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name)) 
+test_exit:
+	exit_test("test141");
 }
 
 
@@ -141,16 +147,17 @@ unsigned int ret;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetForkParms:test217: Setfork size 64 bits\n");
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
-		return;
+		goto test_exit;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){
 		nottested();
-		return;
+		goto test_exit;
 	}
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR |OPENACC_RD);
 	if (!fork) {
@@ -172,6 +179,8 @@ unsigned int ret;
 fin:
 	FAIL (fork && FPCloseFork(Conn,fork))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name)) 
+test_exit:
+	exit_test("test217");
 }
 
 /* ------------------------- */
@@ -185,12 +194,13 @@ u_int32_t data = (unsigned)-1;
 DSI *dsi;
 
 	dsi = &Conn->dsi;
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetForkParms:test306: set fork size, new size > old size\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
@@ -219,6 +229,8 @@ fin:
 
 	FAIL (fork && FPCloseFork(Conn,fork))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+test_exit:
+	exit_test("test306");
 }
 
 /* ----------- */

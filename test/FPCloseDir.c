@@ -12,17 +12,18 @@ int ret;
 DSI *dsi;
 
 		
+	enter_test();
     fprintf(stderr,"===================\n");
 	fprintf(stderr, "FPCloseDir:test199: FPCloseDir call\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	dsi = &Conn->dsi;
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	dir = FPOpenDir(Conn,vol, DIRDID_ROOT , name);
@@ -41,6 +42,8 @@ DSI *dsi;
 
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+test_exit:
+	exit_test("test199");
 }
 
 /* ----------- */

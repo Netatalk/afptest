@@ -19,13 +19,14 @@ struct afp_filedir_parms filedir;
 struct afp_filedir_parms filedir2;
 unsigned int ret;
 
+	enter_test();
 	dsi = &Conn->dsi;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPCatSearch:test225: Catalog search\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	memset(pos, 0, sizeof(pos));
@@ -78,18 +79,25 @@ unsigned int ret;
 		failed_nomsg();
 	}
 	/* -------------------- */
-#if 0
+#if 1
 	memset(&filedir, 0, sizeof(filedir));
 	memset(&filedir2, 0, sizeof(filedir2));
 	filedir.lname = "Data";
 
-	ret  = FPCatSearch(Conn, vol, 20, pos, 0x42,  0x42, 0x80000000UL| (1<< FILPBIT_LNAME), &filedir, &filedir2);
+	ret = FPCatSearch(Conn, vol, 20, pos, 0x42, 0x42, 0x80000000UL| (1<< FILPBIT_LNAME), &filedir, &filedir2);
+	while (!ret) {
+		memcpy(pos, dsi->data ,16);
+		ret = FPCatSearch(Conn, vol, 20, pos, 0x42, 0x42, 0x80000000UL| (1<< FILPBIT_LNAME), &filedir, &filedir2);
+	}
+	
 	/* -------------------- */
 #endif
 	memset(&filedir, 0, sizeof(filedir));
 	filedir.attr = 0x01a0;
  	FAIL (FPSetFileParams(Conn, vol, DIRDID_ROOT , name, bitmap, &filedir)) 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+test_exit:
+	exit_test("test225");
 }
 
 /* ----------- */

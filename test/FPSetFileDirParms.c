@@ -23,15 +23,16 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetFileDirParms:t98: test error setfildirparam\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	if (!(pdir = no_access_folder(vol, DIRDID_ROOT, ndir))) {
-		return;
+		goto test_exit;
 	}
 	if (!(rdir = read_only_folder(vol, DIRDID_ROOT, rodir) ) ) {
 		goto fin;
@@ -76,6 +77,8 @@ fin:
 	}
 	FAIL (FPDelete(Conn, vol,  dir , name1))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+test_exit:
+	exit_test("test98");
 }
 
 /* ------------------------- */
@@ -94,21 +97,22 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetFileDirParms:t230: set unix access privilege\n");
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
-		return;
+		goto test_exit;
 	}
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
-	    return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, dir , name)) {
@@ -209,6 +213,8 @@ DSI *dsi;
 	FAIL (FPDelete(Conn, vol,  dir , name))
 fin:	
 	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test230");
 }
 
 /* ------------------------- */
@@ -229,33 +235,34 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetFileDirParms:t231: set unix access privilege two users\n");
 
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
-		return;
+		goto test_exit;
 	}
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
-	    return;
+		goto test_exit;
 	}
 	dsi2 = &Conn2->dsi;
 	vol2  = FPOpenVol(Conn2, Vol);
 	if (vol2 == 0xffff) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, dir , name)) {
@@ -335,6 +342,8 @@ DSI *dsi;
 	
 fin:	
 	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test231");
 }
 
 /* ------------------------- */
@@ -352,21 +361,22 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetFileDirParms:t232: unix access privilege delete ro file in a rw folder\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
-	    return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, dir , name)) {
@@ -405,6 +415,8 @@ DSI *dsi;
 	
 fin:	
 	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test232");
 }
 
 /* ------------------------- */
@@ -423,17 +435,18 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetFileDirParms:t345: no unix access privilege \n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
-	    return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, dir , name)) {
@@ -495,6 +508,8 @@ DSI *dsi;
 	FAIL (FPDelete(Conn, vol,  dir , name))
 fin:	
 	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test345");
 }
 
 /* ------------------------- */
@@ -512,17 +527,18 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetFileDirParms:t346: delete a file with no unix access privilege \n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
-	    return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, dir , name)) {
@@ -558,6 +574,8 @@ DSI *dsi;
 	}
 fin:	
 	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test346");
 }
 
 /* ------------------------- */
@@ -574,17 +592,19 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetFileDirParms:t347: no unix access privilege \n");
 
 	if ((get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		fprintf(stderr,"\tSKIPPED (need %s)\n","a no unix priv vol");
-	    return;
+		/* FIXME */
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, dir , name)) {
@@ -638,6 +658,8 @@ fin1:
 	FAIL (FPDelete(Conn, vol,  dir , name))
 fin:	
 	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test347");
 }
 
 /* ------------------------- */
@@ -655,17 +677,18 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetFileDirParms:t348: change a folder perm in root folder\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
-	    return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	bitmap = (1<< DIRPBIT_PDINFO) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID) |
@@ -705,6 +728,8 @@ DSI *dsi;
 	}
 fin:	
 	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test348");
 }
 
 /* ------------------------- */
@@ -724,17 +749,18 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetFileDirParms:t349: change a folder perm in a folder\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
-	    return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (!(dir1 = FPCreateDir(Conn,vol, dir , ndir1))) {
@@ -780,6 +806,8 @@ DSI *dsi;
 fin:
 	FAIL (dir1 && FPDelete(Conn, vol,  dir1 , ""))
 	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test349");
 }
 
 /* ------------------------- */
@@ -798,17 +826,18 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetFileDirParms:t350: change root folder perm\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
-	    return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	bitmap = (1<< DIRPBIT_PDINFO) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID) |
@@ -851,6 +880,8 @@ DSI *dsi;
 	}
 fin:	
 	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test350");
 }
 
 /* ------------------------- */
@@ -872,24 +903,25 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetFileDirParms:t358: set unix access privilege two users\n");
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	dsi2 = &Conn2->dsi;
 	vol2  = FPOpenVol(Conn2, Vol);
 	if (vol2 == 0xffff) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	FAIL (FPCreateFile(Conn, vol,  0, dir , name))
 	FAIL (FPCreateFile(Conn2, vol2,  0, dir , name1))
@@ -926,6 +958,8 @@ fin:
 	FPDelete(Conn, vol,  dir , name);
 	FPDelete(Conn, vol,  dir , name1);
 	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test358");
 }
 
 /* ------------------------- */
@@ -943,17 +977,18 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetFileDirParms:t359: no unix access privilege with finder info \n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
-	    return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, dir , name)) {
@@ -1012,6 +1047,8 @@ fin1:
 	FAIL (FPDelete(Conn, vol,  dir , name))
 fin:	
 	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test359");
 }
 
 /* ------------------------- */
@@ -1031,29 +1068,30 @@ u_int16_t vol2;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPSetFileDirParms:t361: no unix access privilege two users with finder info \n");
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
-	    return;
+		goto test_exit;
 	}
 
 	dsi2 = &Conn2->dsi;
 	vol2  = FPOpenVol(Conn2, Vol);
 	if (vol2 == 0xffff) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, dir , name)) {
@@ -1111,6 +1149,8 @@ fin1:
 	FAIL (FPDelete(Conn, vol,  dir , name))
 fin:	
 	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test361");
 }
 
 /* ----------- */

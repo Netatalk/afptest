@@ -15,13 +15,14 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms:test44: access .. folder\n");
 
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!dir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (FPGetFileDirParams(Conn, vol,  dir, "/", 0,(1<< DIRPBIT_DID))) {
 		failed();
@@ -49,6 +50,8 @@ DSI *dsi;
 
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
+test_exit:
+	exit_test("test44");
 }
 
 /* -------------------------- */
@@ -56,6 +59,7 @@ STATIC void test58()
 {
 u_int16_t vol = VolID;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms:test58: folder 1 (DIRDID_ROOT_PARENT)\n");
 
@@ -79,6 +83,7 @@ u_int16_t vol = VolID;
 	) {
 		failed();
 	}
+	exit_test("test58");
 }
 
 /* ----------- */
@@ -94,11 +99,12 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms:test70: bogus cname (unknow type)\n");
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
-		return;
+		goto test_exit;
 	}
 
 	fprintf(stderr,"---------------------\n");
@@ -143,6 +149,8 @@ DSI *dsi;
 	if (dsi->header.dsi_code != htonl(AFPERR_PARAM)) {
 		failed();
 	}
+test_exit:
+	exit_test("test70");
 }
 
 /* ------------------------- */
@@ -159,12 +167,13 @@ int offcnt;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms:test94: test invisible bit attribute\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , "", 0,bitmap )) {
 		nottested();
@@ -216,6 +225,8 @@ int offcnt;
 	fprintf(stderr,"Modif date parent %x\n", filedir.mdate);
 end:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
+test_exit:
+	exit_test("test94");
 }
 
 /* --------------------- */
@@ -238,6 +249,7 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms:t104: cname with trailing 0 \n");
 
@@ -325,6 +337,7 @@ fin:
 	FAIL (dir2 && FPDelete(Conn, vol,  dir2 , name5)) 
 	FAIL (dir1 && FPDelete(Conn, vol,  dir1 , name2)) 
 	FAIL (dir1 && FPDelete(Conn, vol,  dir1 , ""))    
+	exit_test("test104");
 }
 
 /* -------------------------- */
@@ -339,12 +352,13 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms:test132: GetFilDirParams errors\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, dir , name)) {
@@ -376,6 +390,8 @@ DSI *dsi;
 	FAIL (FPDelete(Conn, vol,  dir , name))
 fin:
 	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test132");
 }
 
 /* ------------------------- */
@@ -388,15 +404,16 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms:test194: dir without access\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	if (!(dir = no_access_folder(vol, DIRDID_ROOT, name))) {
-		return;
+		goto test_exit;
 	}
 
 	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, name, 0, 
@@ -405,6 +422,8 @@ DSI *dsi;
 	    failed();
 	}
 	delete_folder(vol, DIRDID_ROOT, name);
+test_exit:
+	exit_test("test194");
 }
 
 /* ------------------------- */
@@ -418,21 +437,22 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms:test229: unix access privilege\n");
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
-		return;
+		goto test_exit;
 	}
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
-	    return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, dir , name)) {
@@ -456,6 +476,8 @@ DSI *dsi;
 	FAIL (FPDelete(Conn, vol,  dir , name))
 fin:	
 	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test229");
 }
 
 /* ------------------------- */
@@ -472,12 +494,13 @@ char *result;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms::test307: mangled dirname\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
 		failed();
-		return;
+		goto test_exit;
 	}
 	if (Conn->afp_version >= 30) {
 		bitmap = (1<<FILPBIT_PDINFO);
@@ -503,6 +526,8 @@ char *result;
 		failed();
 	}
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test307");
 }
 
 /* ------------------------- */
@@ -519,12 +544,13 @@ char *result;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms::test308: mangled dirname\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
 		failed();
-		return;
+		goto test_exit;
 	}
 	if (Conn->afp_version >= 30) {
 		bitmap = (1<<FILPBIT_PDINFO);
@@ -552,6 +578,8 @@ char *result;
 		failed();
 	}
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test308");
 }
 
 /* ------------------------- */
@@ -559,12 +587,14 @@ STATIC void test319()
 {
 u_int16_t vol = VolID;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms:test319: get volume access right\n");
 
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, "", 0,(1 << DIRPBIT_ACCESS) )) {
 		failed();
 	}
+	exit_test("test319");
 }
 
 /* ------------------------- */
@@ -583,13 +613,14 @@ int id;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms::test324: long file name >31 bytes\n");
 
 	ret = FPCreateFile(Conn, vol,  0, DIRDID_ROOT, name);
 	if (ret) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (Conn->afp_version >= 30) {
 		bitmap = (1<<FILPBIT_PDINFO);
@@ -624,6 +655,8 @@ int id;
 		failed();
 	}
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test324");
 }
 
 
@@ -644,13 +677,14 @@ int id;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms::test326: long file name >31 bytes\n");
 
 	ret = FPCreateFile(Conn, vol,  0, DIRDID_ROOT, name);
 	if (ret) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (Conn->afp_version >= 30) {
 		bitmap = (1<<FILPBIT_PDINFO);
@@ -686,6 +720,7 @@ int id;
 	}
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
 #endif
+	exit_test("test326");
 }
 
 /* ------------------------- */
@@ -700,13 +735,14 @@ int id;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms::test333: long file name >31 bytes\n");
 
 	ret = FPCreateFile(Conn, vol,  0, DIRDID_ROOT, name);
 	if (ret) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (Conn->afp_version >= 30) {
 		bitmap = (1<<FILPBIT_PDINFO);
@@ -741,6 +777,8 @@ int id;
 	}
 	
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test333");
 }
 
 /* ------------------------- */
@@ -755,13 +793,14 @@ int id;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms::test334: long file name >31 bytes (no ext)\n");
 
 	ret = FPCreateFile(Conn, vol,  0, DIRDID_ROOT, name);
 	if (ret) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (Conn->afp_version >= 30) {
 		bitmap = (1<<FILPBIT_PDINFO);
@@ -796,6 +835,8 @@ int id;
 	}
 	
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test334");
 }
 
 /* ------------------------- */
@@ -812,13 +853,14 @@ int id;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetFileDirParms::test335: long file name >31 bytes\n");
 
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir);
 	if (!dir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	ret = FPCreateFile(Conn, vol,  0, DIRDID_ROOT, name);
 	if (ret) {
@@ -858,6 +900,8 @@ int id;
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
 fin:
 	FAIL (FPDelete(Conn, vol,  dir, ""))
+test_exit:
+	exit_test("test335");
 }
 
 /* ----------- */

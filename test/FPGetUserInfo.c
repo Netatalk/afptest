@@ -15,12 +15,13 @@ u_int16_t bitmap =  (1<<DIRPBIT_UID) | (1 << DIRPBIT_GID);
 u_int16_t vol = VolID;
 DSI *dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPGetUserInfo:test75: Get User Info\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	FAIL (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, 0,bitmap )) 
 
@@ -72,6 +73,8 @@ DSI *dsi = &Conn->dsi;
 	}
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+test_exit:
+	exit_test("test75");
 }
 
 /* ----------- */

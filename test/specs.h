@@ -6,6 +6,7 @@
 extern u_int16_t VolID;
 extern DSI *dsi, *dsi2; 
 extern int Mac;
+
 extern int ExitCode;
 extern int Exclude;
 
@@ -34,6 +35,9 @@ extern unsigned int get_vol_free(u_int16_t vol) ;
 
 extern void failed_nomsg(void);
 extern void failed(void);
+extern void enter_test(void);
+extern void exit_test(char *name);
+
 extern void nottested(void);
 extern int not_valid(unsigned int ret, int mac_error, int afpd_error);
 extern int not_valid_bitmap(unsigned int ret, unsigned int bitmap, int afpd_error);
@@ -49,7 +53,7 @@ extern void test_skipped(int why);
 #define T_VOL2       8
 #define T_LOCKING    9
 #define T_VOL_SMALL  10
-
+#define T_ID         11
 
 /* ---------------------------------
 */

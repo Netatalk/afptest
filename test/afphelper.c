@@ -718,6 +718,7 @@ int not_valid_bitmap(unsigned int ret, unsigned int bitmap, int netatalk_error)
 	return 0;
 }
 
+static int CurTestResult;
 /* ------------------------- */
 void test_skipped(int why) 
 {
@@ -753,8 +754,12 @@ char *s;
 	case T_VOL_SMALL:
 		s = "a bigger volume";
 		break;
+	case T_ID:
+		s = "AFP FileID calls";
+		break;
 	}
 	fprintf(stderr,"\tSKIPPED (need %s)\n",s);
+	CurTestResult = 3;
 }
 
 /* ------------------------- */
@@ -762,7 +767,9 @@ void failed_nomsg(void)
 {
 	if (!ExitCode)
 		ExitCode = 1;
+	CurTestResult = 1;
 }
+
 /* ------------------------- */
 void failed(void)
 {
@@ -776,5 +783,34 @@ void nottested(void)
 	fprintf(stderr,"\tNOT TESTED\n");
 	if (!ExitCode)
 		ExitCode = 2;
+	CurTestResult = 2;
 }
 
+/* ------------------------- */
+void enter_test(void)
+{
+	CurTestResult = 0;
+}
+
+/* ------------------------- */
+void exit_test(char *name)
+{
+char *s;
+
+	fprintf(stderr, "%s - summary - ", name);
+	switch (CurTestResult) {
+	case 0:
+		s = "PASSED";
+		break;
+	case 1:
+		s = "FAILED";
+		break;
+	case 2:
+		s = "NOT TESTED";
+		break;
+	case 3:
+		s = "SKIPPED";
+		break;
+	}
+	fprintf(stderr, "%s\n", s);
+}

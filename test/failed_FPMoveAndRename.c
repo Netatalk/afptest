@@ -15,21 +15,22 @@ char *name2 = "t73 dir";
 u_int16_t vol = VolID;
 int ret;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPMoveAndRename:test73: Move and rename\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name2))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (FPDelete(Conn, vol,  DIRDID_ROOT , name2)) { 
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	/* cname unchdirable */
@@ -38,7 +39,8 @@ int ret;
 		
 		if (!(pdir = no_access_folder(vol, DIRDID_ROOT, "t73 700"))) {
 			FPDelete(Conn, vol,  dir1, name);
-			return;
+			failed_nomsg();
+			goto test_exit;
 		}
 		ret = FPMoveAndRename(Conn, vol, DIRDID_ROOT, dir, "t73 700/essay", name1);
 		if (not_valid(ret, /* MAC */AFPERR_NOOBJ, AFPERR_ACCESS)) {
@@ -80,6 +82,8 @@ int ret;
 	FAIL (FPDelete(Conn, vol,  dir2, name1))
 	FAIL (FPDelete(Conn, vol,  dir1, name))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name2))
+test_exit:
+	exit_test("test73");
 }
 
 /* ----------- */

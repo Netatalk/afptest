@@ -36,17 +36,18 @@ unsigned int ret;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Error:test36: no folder error (ERR_NOOBJ)\n");
 	memset(dsi->commands, 0, sizeof(dsi->commands));
 	did  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!did) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (FPDelete(Conn, vol,  DIRDID_ROOT, name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	for (i = 0 ;i < sizeof(afp_cmd_with_vol_did);i++) {
@@ -78,6 +79,8 @@ unsigned int ret;
 			failed_nomsg();
     	}
     }
+test_exit:
+	exit_test("test36");
 }
 
 /* ---------------------- 
@@ -170,20 +173,21 @@ int pdir;
 int ret;
 u_int16_t vol = VolID;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"test95: exchange files\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	if (!(pdir = no_access_folder(vol, DIRDID_ROOT, pname))) {
-		return;
+		goto test_exit;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name2))) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name2))
@@ -245,6 +249,8 @@ u_int16_t vol = VolID;
 	delete_folder(vol, DIRDID_ROOT, pname);
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name1))
+test_exit:
+	exit_test("test95");
 }
 
 /* ----------------- */
@@ -254,15 +260,16 @@ int  dir = 0;
 char *name = "t99 dir no access";
 u_int16_t vol = VolID;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Error:t99: test folder without access right\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	if (!(dir = no_access_folder(vol, DIRDID_ROOT, name))) {
-		return;
+		goto test_exit;
 	}
     
     cname_test(name);
@@ -270,6 +277,8 @@ u_int16_t vol = VolID;
     cname_test("essai permission");
 #endif    
 	delete_folder(vol, DIRDID_ROOT, name);
+test_exit:
+	exit_test("test99");
 }
 
 /* --------------------- */
@@ -286,6 +295,7 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Error:t100: no obj cname error (AFPERR_NOOBJ)\n");
 
@@ -344,6 +354,7 @@ DSI *dsi;
 	FAIL (ntohl(AFPERR_NOOBJ) != FPDelete(Conn, vol,  DIRDID_ROOT , name1))
 
 	FAIL (ntohl(AFPERR_NOOBJ) != FPMoveAndRename(Conn, vol, DIRDID_ROOT, DIRDID_ROOT, name1, name)) 
+	exit_test("test100");
 }
 
 /* --------------------- */
@@ -361,15 +372,16 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Error:t101: access error cname \n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	if (!(dir = no_access_folder(vol, DIRDID_ROOT, ndir))) {
-		return;
+		goto test_exit;
 	}
 	FAIL (ntohl(AFPERR_ACCESS) != FPAddComment(Conn, vol,  DIRDID_ROOT , name1,"essai")) 
 
@@ -427,6 +439,8 @@ DSI *dsi;
 
 	FAIL (ntohl(AFPERR_ACCESS) != FPMoveAndRename(Conn, vol, DIRDID_ROOT, DIRDID_ROOT, name1, name)) 
 	delete_folder(vol, DIRDID_ROOT, ndir);
+test_exit:
+	exit_test("test101");
 }
 
 /* --------------------- */
@@ -463,15 +477,16 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Error:t102: access error but not cname \n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	if (!(dir = no_access_folder(vol, DIRDID_ROOT, name1))) {
-		return;
+		goto test_exit;
 	}
 
 	test_comment(vol, DIRDID_ROOT, name1);
@@ -544,6 +559,8 @@ DSI *dsi;
 	}
 	if (ret)
 		delete_folder(vol, DIRDID_ROOT, name1);
+test_exit:
+	exit_test("test102");
 }
 
 /* --------------------- */
@@ -561,15 +578,16 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"t103: did access error \n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	if (!(dir = no_access_folder(vol, DIRDID_ROOT, name1))) {
-		return;
+		goto test_exit;
 	}
 
 	FAIL (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, name1, 0, bitmap)) 
@@ -644,6 +662,8 @@ DSI *dsi;
 	}
 	if (ret)
 		delete_folder(vol, DIRDID_ROOT, name1);
+test_exit:
+	exit_test("test103");
 }
 
 /* --------------------- */
@@ -661,6 +681,7 @@ int ret;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Error:t105: bad DID in call \n");
 
@@ -714,6 +735,7 @@ int ret;
 	FAIL (err != FPRename(Conn, vol, dir, name1, name)) 
 	FAIL (err != FPDelete(Conn, vol,  dir , name1)) 
 	FAIL (err != FPMoveAndRename(Conn, vol, dir, DIRDID_ROOT, name1, name)) 
+	exit_test("test105");
 }
 
 /* -------------------------- */
@@ -732,6 +754,7 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Error:test170: cname error did=1 name=\"\"\n");
 
@@ -849,6 +872,7 @@ DSI *dsi;
 	FAIL (ntohl(AFPERR_NOOBJ) != FPAddComment(Conn, vol,  DIRDID_ROOT_PARENT , "", "Comment"))
 	FAIL (ntohl(AFPERR_NOOBJ) != FPGetComment(Conn, vol,  DIRDID_ROOT_PARENT , "")) 
 	FAIL (ntohl(AFPERR_NOOBJ) != FPRemoveComment(Conn, vol,  DIRDID_ROOT_PARENT , "")) 
+	exit_test("test170");
 }
 
 /* -------------------------- */
@@ -869,6 +893,7 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Error:test171: cname error did=1 name=bad name\n");
 
@@ -974,6 +999,7 @@ DSI *dsi;
 	FAIL (ntohl(AFPERR_NOOBJ) != FPAddComment(Conn, vol, tdir, tname, "Comment")) 
 	FAIL (ntohl(AFPERR_NOOBJ) != FPGetComment(Conn, vol, tdir, tname)) 
 	FAIL (ntohl(AFPERR_NOOBJ) != FPRemoveComment(Conn, vol, tdir, tname)) 
+	exit_test("test171");
 }
 
 /* -------------------------- */
@@ -994,6 +1020,7 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Error:test173: did error did=0 name=test173 name\n");
 
@@ -1103,6 +1130,7 @@ DSI *dsi;
 	FAIL (ntohl(AFPERR_PARAM) != FPRemoveComment(Conn, vol, tdir, tname))
 
 	/* ---- appl.c ---- */
+	exit_test("test173");
 }
 
 /* -------------------------- */
@@ -1123,17 +1151,18 @@ u_int16_t vol = VolID;
 DSI *dsi = &Conn->dsi;
 DSI *dsi2;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Error:test174: did error two users from parent folder did=<deleted> name=test174 name\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	tdir  = FPCreateDir(Conn,vol, DIRDID_ROOT, tname);
 	if (!tdir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	FAIL (FPGetFileDirParams(Conn, vol,  tdir , "", 0, (1 << DIRPBIT_PDINFO ) | (1 << DIRPBIT_OFFCNT)))
@@ -1150,7 +1179,7 @@ DSI *dsi2;
 		failed();
 		FPDelete(Conn, vol,  tdir , "");
 		FPCloseVol(Conn2,vol2);
-		return;
+		goto test_exit;
 	}
 	FPCloseVol(Conn2,vol2);
 
@@ -1267,6 +1296,8 @@ DSI *dsi2;
 	FAIL (ntohl(AFPERR_NOOBJ) != FPAddComment(Conn, vol, tdir, tname, "Comment")) 
 	FAIL (ntohl(AFPERR_NOOBJ) != FPGetComment(Conn, vol, tdir, tname))
 	FAIL (ntohl(AFPERR_NOOBJ) != FPRemoveComment(Conn, vol, tdir, tname))
+test_exit:
+	exit_test("test174");
 }
 
 /* ----------- */

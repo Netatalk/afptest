@@ -7,12 +7,14 @@ STATIC void test202()
 {
 u_int16_t vol = VolID;
 
+	enter_test();
     fprintf(stderr,"===================\n");
 	fprintf(stderr, "FPFlush:test202: flush volume call\n");
 
 	FAIL (FPFlush(Conn, vol))
 	
 	FAIL (htonl(AFPERR_PARAM) != FPFlush(Conn, vol +1))
+	exit_test("test202");
 }
 
 /* ----------- */

@@ -11,17 +11,18 @@ char *name2 = "t25 file";
 int  dir,dir1;
 u_int16_t vol = VolID;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPEnumerateExt2:test25: FPEnumerate ext2\n");
 	if (Conn->afp_version < 31) {
 		test_skipped(T_AFP3);
-		return;
+		goto test_exit;
 	}
 
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!dir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	FPEnumerate_ext2(Conn, vol,  DIRDID_ROOT , "", 
 			 	(1 << FILPBIT_PDINFO )| (1 << FILPBIT_EXTDFLEN) | (1 << FILPBIT_EXTRFLEN)
@@ -54,7 +55,10 @@ u_int16_t vol = VolID;
 	FAIL (FPDelete(Conn, vol,  dir, name1))
 fin:
 	FPDelete(Conn, vol,  DIRDID_ROOT, name);
+test_exit:
+	exit_test("test25");
 }
+
 /* ------------------------- */
 STATIC void test211()
 {
@@ -65,13 +69,14 @@ int  dir,dir1;
 u_int16_t vol = VolID;
 
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPEnumerateExt2:test211: AFP 3.1 FPEnumerate ext2\n");
 
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!dir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	if (Conn->afp_version < 31) {
@@ -81,7 +86,7 @@ u_int16_t vol = VolID;
 			failed();
 		}
 		FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
-		return;
+		goto test_exit;
 	}	
 	FAIL (FPGetSrvrInfo(Conn))
 	dir1 = FPCreateDir(Conn,vol, dir , name1);
@@ -112,6 +117,8 @@ u_int16_t vol = VolID;
 		FAIL (FPDelete(Conn, vol,  dir, name1))
 		FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
 	}
+test_exit:
+	exit_test("test211");
 }
 
 /* ----------- */

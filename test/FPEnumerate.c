@@ -14,15 +14,16 @@ char *nfile = "t38 read write file";
 DSI *dsi;
 
 	dsi = &Conn->dsi;
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPEnumerate:test38: enumerate folder with no write access\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
-		return;
+		goto test_exit;
 	}		
 
 	if (!(rdir = read_only_folder_with_file(vol, DIRDID_ROOT, name, nfile) ) ) {
-		return;
+		goto test_exit;
 	}
 	
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, name, 0, bitmap)) {
@@ -61,19 +62,21 @@ DSI *dsi;
 
 	if (fork) {
 		fprintf(stderr,"\tFAILED\n");
-		return;
+		goto test_exit;
 	}		
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap, did, "toto.txt", OPENACC_RD);
 
 	if (!fork) {
 		fprintf(stderr,"\tFAILED\n");
-		return;
+		goto test_exit;
 	}		
 	FPCloseFork(Conn,fork);
 #endif
 fin:
 	delete_folder_with_file(vol, DIRDID_ROOT, name, nfile);
+test_exit:
+	exit_test("test38");
 }
 
 /* ------------------------- */
@@ -82,6 +85,7 @@ STATIC void test34()
 {
 char *name = "essai permission";
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPEnumerate:test34: folder with --rwx-- perm\n");
 
@@ -90,7 +94,7 @@ char *name = "essai permission";
 	    (1 << DIRPBIT_ACCESS))) 
 	{
 		fprintf(stderr,"\tFAILED\n");
-		return;
+		goto test_exit;
 	}
 
 	FPEnumerate(Conn, vol,  DIRDID_ROOT , "", 
@@ -104,9 +108,11 @@ char *name = "essai permission";
 	   ) 
 	{
 		fprintf(stderr,"\tFAILED\n");
-		return;
+		goto test_exit;
 	}
 fin:
+test_exit:
+	exit_test("test34");
 }
 #endif
 /* ------------------------- */
@@ -118,6 +124,7 @@ u_int16_t vol = VolID;
 unsigned int ret;
 int  dir;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPEnumerate:test40: enumerate deleted folder\n");
 
@@ -125,7 +132,7 @@ int  dir;
 
 	if (!dir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	
 	FAIL (FPCreateFile(Conn, vol,  0, dir , name1)) 
@@ -162,6 +169,8 @@ int  dir;
 	if (not_valid_bitmap(ret, BITERR_NOOBJ | BITERR_NODIR, AFPERR_NODIR)) {
 		failed();
 	}
+test_exit:
+	exit_test("test40");
 	
 }
 
@@ -176,13 +185,14 @@ char *name2 = "t41 dir/sub dir/foo";
 char *name3 = "t41 dir/sub dir";
 unsigned int ret;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPEnumerate:test41: enumerate folder not there\n");
 
 	dir   = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!dir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name1)) {
 		nottested();
@@ -242,6 +252,8 @@ unsigned int ret;
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name1))
 	FAIL (FPDelete(Conn, vol,  dir, ""))
+test_exit:
+	exit_test("test41");
 
 }
 
@@ -255,12 +267,13 @@ int dir1 = 0;
 int ret;
 u_int16_t vol = VolID;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPEnumerate:test93: enumerate error\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
 		nottested();
@@ -296,6 +309,8 @@ fin:
 
 	FAIL (dir1 && FPDelete(Conn, vol,  dir , name1))
 	FAIL (dir && FPDelete(Conn, vol,  DIRDID_ROOT , name1))
+test_exit:
+	exit_test("test93");
 }
 
 /* ------------------------- */
@@ -318,17 +333,18 @@ int isdir;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPEnumerate:test218: enumerate arguments\n");
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
-		return;
+		goto test_exit;
 	}
 
 	bdir  = FPCreateDir(Conn,vol, DIRDID_ROOT , base);
 	if (!bdir) {
 		nottested();
-		return;
+		goto test_exit;
 	}
 	
 	bitmap = (1 << FILPBIT_LNAME);
@@ -338,7 +354,7 @@ int isdir;
 	}
 	if (FPCreateFile(Conn, vol,  0, bdir , name)){
 		nottested();
-		return;
+		goto test_exit;
 	}
 
 	dir  = FPCreateDir(Conn,vol, bdir , ndir);
@@ -389,6 +405,8 @@ fin:
 	FPDelete(Conn, vol,  bdir, ndir1);
 	FAIL (htonl(AFPERR_NOOBJ) != FPEnumerateFull(Conn, vol, 1, 1, 800,  bdir, "", bitmap, bitmap))
 	FPDelete(Conn, vol,  DIRDID_ROOT, base);
+test_exit:
+	exit_test("test218");
 }
 
 /* ----------- */

@@ -9,6 +9,7 @@ u_int16_t  dir;
 u_int16_t vol = VolID;
 DSI *dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
 	fprintf(stderr, "FPOpenDT:test200: OpenDT call\n");
 
@@ -23,6 +24,7 @@ DSI *dsi;
     if (dir != 0xffff || ntohl(AFPERR_PARAM) != dsi->header.dsi_code) {
 		failed();
 	}
+	exit_test("test200");
 }
 
 /* ----------- */

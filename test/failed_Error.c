@@ -53,6 +53,7 @@ unsigned char cmd;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Error:test35: illegal volume (-5019 AFP_ERRPARAM)\n");
 
@@ -83,6 +84,7 @@ unsigned char cmd;
 			failed_nomsg();
     	}
     }
+	exit_test("test35");
 }
 
 /* -------------------------------------------- */
@@ -107,13 +109,14 @@ unsigned char cmd;
 
 	dsi = &Conn->dsi;
 
+	enter_test();
     fprintf(stderr,"===================\n");
     fprintf(stderr,"Errror:test37: no folder error ==> ERR_NOOBJ\n");
 
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!dir) {
-		fprintf(stderr,"\tNOT TESTED\n");
-		return;
+		nottested();
+		goto fin;
 	}
 	did  = dir +1;
 
@@ -146,8 +149,9 @@ unsigned char cmd;
 			failed_nomsg();
     	}
     }
-
+fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name)) 
+	exit_test("test37");
 }
 
 
