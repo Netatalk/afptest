@@ -11,7 +11,7 @@ extern int Exclude;
 
 #include <signal.h>  
 
-#define FAIL(a) if (a) { failed();}
+#define FAIL(a) if ((a)) { failed();}
 #define STATIC 
 
 extern void illegal_fork(DSI * dsi, char cmd, char *name);

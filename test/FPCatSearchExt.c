@@ -23,9 +23,22 @@ unsigned int ret;
 	dsi = &Conn->dsi;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPCatSearchExt:test227: Catalog search\n");
+
 	memset(pos, 0, sizeof(pos));
 	memset(&filedir, 0, sizeof(filedir));
 
+	ret = FPCatSearchExt(Conn, vol, 10, pos, 0,  /* d_bitmap*/ 0, bitmap, &filedir, &filedir);
+
+	if (Conn->afp_version < 31) {
+		if (htonl(AFPERR_NOOP) != ret) { 
+			failed();
+		}	
+		test_skipped(T_AFP3);
+		return;
+	}
+	if (htonl(AFPERR_BITMAP) == ret) { 
+		failed();
+	}
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
 		return;
@@ -85,7 +98,7 @@ unsigned int ret;
 	filedir.lname = "Data";
 
 	ret  = FPCatSearchExt(Conn, vol, 10, pos, 0x42,  0x42, 0x80000000UL| (1<< FILPBIT_LNAME), &filedir, &filedir2);
-	if (!ret ) {
+	while (!ret ) {
 		memcpy(pos, dsi->data ,16);
 		ret  = FPCatSearchExt(Conn, vol, 10, pos, 0x42,  0x42, 0x80000000UL| (1<< FILPBIT_LNAME), &filedir, &filedir2);
 	}
@@ -110,7 +123,7 @@ unsigned int ret;
 	filedir.utf8_name = "test";
 	bitmap2 = (1<< FILPBIT_PDINFO)| (1 << FILPBIT_PDID);
 	ret  = FPCatSearchExt(Conn, vol, 10, pos, bitmap2,  bitmap2, 0x80000000UL| (1<< FILPBIT_PDINFO), &filedir, &filedir2);
-	if (!ret ) {
+	while (!ret ) {
 		memcpy(pos, dsi->data ,16);
 		ret  = FPCatSearchExt(Conn, vol, 10, pos, bitmap2,  bitmap2, 0x80000000UL| (1<< FILPBIT_PDINFO), &filedir, &filedir2);
 	}

@@ -163,6 +163,7 @@ DSI *dsi;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"t122: test setfilparam open fork\n");
 
+	memset(&filedir, 0, sizeof(filedir));
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
 		return;

@@ -152,6 +152,7 @@ DSI *dsi;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPDelete:test172: did error did=<deleted> name=test172 name\n");
 
+	memset(&filedir, 0, sizeof(filedir));
 	tdir  = FPCreateDir(Conn,vol, DIRDID_ROOT, tname);
 	if (!tdir) {
 		nottested();
