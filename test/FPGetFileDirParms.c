@@ -3,6 +3,7 @@
 #include "specs.h"
 
 static char temp[MAXPATHLEN];
+static char temp1[MAXPATHLEN];
 
 /* ------------------------- */
 STATIC void test44()
@@ -612,7 +613,9 @@ int id;
 		}
 	}
 #endif	
-	sprintf(temp,"t324 very long filename #%X.txt", ntohl(id));
+	sprintf(temp1,"#%X.txt",ntohl(id));
+	strncpy(temp, name, 31 - strlen(temp1));
+	strcat(temp, temp1);
 	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, temp, bitmap, 0)) {
 		failed();
 	}
