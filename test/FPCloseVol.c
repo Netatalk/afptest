@@ -14,7 +14,7 @@ int ret;
 	FAIL (FPCloseVol(Conn,vol))
 	/* double close */
 	ret = FPCloseVol(Conn, vol);
-	if (not_valid(ret, AFPERR_ACCESS, AFPERR_PARAM)) {
+	if (not_valid_bitmap(ret, BITERR_ACCESS | BITERR_PARAM, AFPERR_PARAM)) {
 		failed();
 	}
 	FAIL (htonl(AFPERR_PARAM) != FPCloseVol(Conn, vol +1))

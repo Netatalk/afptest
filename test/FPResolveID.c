@@ -92,7 +92,11 @@ DSI *dsi;
 	FAIL (FPCreateFile(Conn, vol,  0, dir , name))
 
 	FAIL (htonl(AFPERR_NOID) != FPResolveID(Conn, vol, dir1, bitmap))
-	FAIL (htonl(AFPERR_BADTYPE) != FPResolveID(Conn, vol, dir, bitmap))
+
+	ret = FPResolveID(Conn, vol, dir, bitmap);
+	if (not_valid_bitmap(ret, BITERR_BADTYPE | BITERR_NOID, AFPERR_BADTYPE)) {
+		failed();
+	}
 
 	FAIL (FPCreateID(Conn,vol, dir, name)) 
 	if (FPGetFileDirParams(Conn, vol,  dir , name, bitmap,0)) {

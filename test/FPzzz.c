@@ -8,7 +8,7 @@ extern char    *Password;
 extern char *vers;
 extern char *uam; 
 
-static int sigp = 0;
+static volatile int sigp = 0;
 
 static void pipe_handler()
 {
@@ -22,6 +22,8 @@ char *name = "t223 file";
 u_int16_t vol = VolID;
 unsigned int ret;
 struct sigaction action;    
+DSI *dsi;
+int sock;
 
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPzzz:test223: AFP 3.x enter sleep mode\n");
@@ -40,11 +42,20 @@ struct sigaction action;
 	FAIL (FPzzz(Conn)) 
 	fprintf(stderr,"sleep more than 2 mn\n");
 	sleep(60 *3);
-	FAIL (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) 
-	if (sigp) {
-		fprintf(stderr,"\tFAILED disconnected\n");
+	ret = FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name);
+	if (sigp || ret == (unsigned)-1) {
+		fprintf(stderr,"\tFAILED disconnected %d\n", sigp);
 		failed_nomsg();
 		/* try to reconnect */
+		/* try to reconnect */
+    	dsi = &Conn->dsi;
+		sock = OpenClientSocket(Server, Port);
+    	if ( sock < 0) {
+    		nottested();
+    		goto fin;
+    	}
+    	dsi->protocol = DSI_TCPIP; 
+		dsi->socket = sock;
 		ret = FPopenLoginExt(Conn, vers, uam, User, Password);
 		if (ret) {
     		nottested();
@@ -56,7 +67,10 @@ struct sigaction action;
 	    	goto fin;
 		}
 		FAIL (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) 
-	}    
+	}
+	else if (ret) {
+		failed();
+	}
 
 	/* always there ? */
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
@@ -96,9 +110,9 @@ int sock;
     }
 	fprintf(stderr,"sleep more than 2 mn\n");
 	sleep(60 *3);
-	FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name);
+	ret = FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name);
 	if (!sigp) {
-		fprintf(stderr,"\tFAILED not disconnected\n");
+		fprintf(stderr,"\tFAILED not disconnected \n");
 		failed_nomsg();
 	}
 	else {

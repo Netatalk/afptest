@@ -89,7 +89,7 @@ char *usr = NULL;
 	}
 
 	ret =  FPMapName(Conn, 1, "toto");
-	if (Conn->afp_version >= 30 && ret != htonl(AFPERR_NOITEM)) {
+	if (Conn->afp_version >= 30 && not_valid_bitmap(ret, BITERR_NOOBJ | BITERR_NOITEM, AFPERR_NOITEM)) {
 		failed();
 	}
 	else if (Conn->afp_version < 30 && ret != htonl(AFPERR_PARAM)) {
@@ -97,7 +97,7 @@ char *usr = NULL;
 	}
 	/* ------------------ */
 	ret = FPMapName(Conn, 2, "toto");
-	if (Conn->afp_version >= 30 && ret != htonl(AFPERR_NOITEM)) {
+	if (Conn->afp_version >= 30 && not_valid_bitmap(ret, BITERR_NOOBJ | BITERR_NOITEM, AFPERR_NOITEM)) {
 		failed();
 	}
 	else if (Conn->afp_version < 30 && ret != htonl(AFPERR_PARAM)) {

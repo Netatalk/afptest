@@ -101,14 +101,13 @@ struct sigaction action;
     }
 
 	memcpy(token, dsi3->data + sizeof(u_int32_t), len);
+	/* wrong token */
 	ret =  FPDisconnectOldSession(Conn, 0, len +4, token);
 	if (ret != htonl(AFPERR_MISC)) {
 		failed();
-		goto fin;
 	}
 
 	ret =  FPDisconnectOldSession(Conn, 0, len, token);
-
 
 	if (ret != htonl(AFPERR_SESSCLOS)) {
 		failed();
@@ -117,6 +116,7 @@ struct sigaction action;
 
 	fork1 = FPOpenFork(Conn, vol, OPENFORK_RSCS , 0 ,DIRDID_ROOT, name, OPENACC_WR |OPENACC_RD| OPENACC_DWR| OPENACC_DRD);
 	if (!fork1) {
+	    /* arg we are there */
 		failed();
 		goto fin;
 	}

@@ -209,6 +209,7 @@ DSI *dsi, *dsi2;
 		nottested();
 		goto fin;
 	}
+	sleep(1);
 	/* double check the first user can't create a dir in it */
 	ret = get_did(Conn, vol, did, name);
 	if (!ret) {
@@ -219,9 +220,21 @@ DSI *dsi, *dsi2;
 		ret = dir;
 	}
 	if (FPCreateDir(Conn, vol, ret , name)) {
+	    /* for when things go wrong */
 		nottested();
+
+	    FPEnumerate(Conn2, vol2,  DIRDID_ROOT , "", 
+	         (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_ATTR) ,
+		     (1<< DIRPBIT_ATTR) |  (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
+		     | (1<<DIRPBIT_UID) | (1 << DIRPBIT_GID));
+
+	    FPEnumerate(Conn, vol,  ret , "", 
+	         (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_ATTR) ,
+		     (1<< DIRPBIT_ATTR) |  (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
+		     | (1<<DIRPBIT_UID) | (1 << DIRPBIT_GID));
+		
 		FPDelete(Conn, vol,  ret, name);
-		FPDelete(Conn, vol,  did, name);
+		FPDelete(Conn2, vol2,  dir, name);
 		ret = 0;
 	}
 fin:
@@ -584,6 +597,12 @@ static int error_in_list(unsigned int bitmap, unsigned int error)
 		return 1;
 	if ((BITERR_NFILE & bitmap) && htonl(error) == AFPERR_NFILE)
 		return 1;
+	if ((BITERR_ACCESS & bitmap) && htonl(error) == AFPERR_ACCESS)
+		return 1;
+	if ((BITERR_NOID & bitmap) && htonl(error) == AFPERR_NOID)
+		return 1;
+	if ((BITERR_BITMAP & bitmap) && htonl(error) == AFPERR_BITMAP)
+		return 1;
 
 	return 0;
 }
@@ -626,6 +645,18 @@ static char temp1[4096];
 	}
 	if ((BITERR_NFILE & bitmap)) {
 	    sprintf(temp1, "%d %s ", AFPERR_NFILE, afp_error(htonl(AFPERR_NFILE)));
+		strcat(temp, temp1);
+	}
+	if ((BITERR_ACCESS & bitmap)) {
+	    sprintf(temp1, "%d %s ", AFPERR_ACCESS, afp_error(htonl(AFPERR_ACCESS)));
+		strcat(temp, temp1);
+	}
+	if ((BITERR_NOID & bitmap)) {
+	    sprintf(temp1, "%d %s ", AFPERR_NOID, afp_error(htonl(AFPERR_NOID)));
+		strcat(temp, temp1);
+	}
+	if ((BITERR_BITMAP & bitmap)) {
+	    sprintf(temp1, "%d %s ", AFPERR_BITMAP, afp_error(htonl(AFPERR_BITMAP)));
 		strcat(temp, temp1);
 	}
 	return temp;

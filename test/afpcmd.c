@@ -1,5 +1,5 @@
 /*
- * $Id: afpcmd.c,v 1.4 2003-05-12 09:40:59 didg Exp $
+ * $Id: afpcmd.c,v 1.5 2003-05-19 17:10:36 didg Exp $
  *
  */
 #include "afpclient.h"
@@ -74,6 +74,7 @@ char *s;
 	case AFPERR_PWDPOLCY:  s = "AFPERR_PWDPOLCY";break; /* -5046   password fails policy check */
 	case AFPERR_USRLOGIN:  s = "AFPERR_USRLOGIN";break; /* -5047   user already logged on */
 	case 0				:  s = "";break;
+	case -1             :  s = "EOF";break;
 	default				:  s = "unknow";break;
 	}
 	return s;
@@ -869,7 +870,7 @@ DSI *dsi;
 	dsi = &conn->dsi;
 
 	fprintf(stderr,"---------------------\n");
-	fprintf(stderr,"Enumerate Vol %d did : 0x%x <%s>\n\n", vol, ntohl(did), name);
+	fprintf(stderr,"Enumerate Vol %d did : 0x%x <%s> sindex: %u reqcnt: %u\n\n", vol, ntohl(did), name, sindex, reqcnt);
 	memset(dsi->commands, 0, DSI_CMDSIZ);
 	dsi->header.dsi_flags = DSIFL_REQUEST;     
 	dsi->header.dsi_command = DSIFUNC_CMD;
@@ -1246,7 +1247,7 @@ DSI *dsi;
 	dsi = &conn->dsi;
 
 	fprintf(stderr,"---------------------\n");
-	fprintf(stderr,"Delete Vol %d did : 0x%x <%s>\n\n", vol, ntohl(did), name);
+	fprintf(stderr,"FPDelete conn %x Vol %d did : 0x%x <%s>\n\n", conn, vol, ntohl(did), name);
 	ret = AFPDelete(conn,vol, did , name);
 
 	dump_header(dsi);
@@ -1263,7 +1264,7 @@ DSI *dsi;
 	dsi = &conn->dsi;
 
 	fprintf(stderr,"---------------------\n");
-	fprintf(stderr,"Get Comment Vol %d did : %d <%s>\n\n", vol, did, name);
+	fprintf(stderr,"Get Comment Vol %d did : 0x%x <%s>\n\n", vol, ntohl(did), name);
 	ret = AFPGetComment(conn,vol, did , name);
 
 	dump_header(dsi);
@@ -1280,7 +1281,7 @@ DSI *dsi;
 	dsi = &conn->dsi;
 
 	fprintf(stderr,"---------------------\n");
-	fprintf(stderr,"Remove Comment Vol %d did : %d <%s>\n\n", vol, did, name);
+	fprintf(stderr,"Remove Comment Vol %d did : 0x%x <%s>\n\n", vol, ntohl(did), name);
 	ret = AFPRemoveComment(conn,vol, did , name);
 
 	dump_header(dsi);
@@ -1297,7 +1298,7 @@ DSI *dsi;
 	dsi = &conn->dsi;
 
 	fprintf(stderr,"---------------------\n");
-	fprintf(stderr,"Add Comment Vol %d did : %d <%s> comment <%s>\n\n", vol, did, name, cmt);
+	fprintf(stderr,"Add Comment Vol %d did : 0x%x <%s> comment <%s>\n\n", vol, ntohl(did), name, cmt);
 	ret = AFPAddComment(conn,vol, did , name, cmt);
 
 	dump_header(dsi);

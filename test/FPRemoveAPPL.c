@@ -24,7 +24,7 @@ unsigned int ret;
 	FAIL (FPAddAPPL(Conn , dt, DIRDID_ROOT, "ttxt", 0xafb471c0, file))
 
 	ret = FPRemoveAPPL(Conn , dt, DIRDID_ROOT_PARENT, "ttxt", file1);
-	if (not_valid(ret, /* MAC */AFPERR_NOITEM, AFPERR_NOOBJ)) {
+	if (not_valid_bitmap(ret, BITERR_NOOBJ | BITERR_NOITEM, AFPERR_NOOBJ)) {
 		failed();
 	}
 

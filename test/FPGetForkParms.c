@@ -224,7 +224,7 @@ u_int16_t vol = VolID;
 	bitmap = (1 << FILPBIT_RFLEN)| (1<< FILPBIT_MDATE);
 	ret = FPGetForkParam(Conn, fork, bitmap);
 
-	if (not_valid(ret, /* MAC */AFPERR_ACCESS, AFPERR_BITMAP)) {
+	if (not_valid_bitmap(ret, BITERR_ACCESS | BITERR_BITMAP, AFPERR_BITMAP)) {
 		failed();
 	}
 	FAIL (FPCloseFork(Conn,fork))

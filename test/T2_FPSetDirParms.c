@@ -27,6 +27,7 @@ DSI *dsi;
 		return;
 	}
 
+	memset(&filedir, 0, sizeof(filedir));
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, 0, bitmap)) {
 		failed();
 	}
