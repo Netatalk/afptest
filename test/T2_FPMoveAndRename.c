@@ -157,7 +157,7 @@ u_int16_t vol = VolID;
 int id,id1;
 
     fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPMoveAndRename:test302: file renamed someone else, cnid not updated\n");
+    fprintf(stderr,"FPMoveAndRename:test302: file renamed by someone else, cnid not updated\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -187,7 +187,7 @@ int id,id1;
 	}
 	id1 = get_fid(Conn, vol, dir , name2);
 	if (id != id1) {
-		fprintf(stderr,"\tFAILED id are not the same %d %d\n", id, id1);
+		fprintf(stderr,"\tFAILED id are not the same %d %d\n", ntohl(id), ntohl(id1));
 		failed_nomsg();
 	}
 	FAIL (FPDelete(Conn, vol,  dir , name2))

@@ -1,5 +1,5 @@
 /*
- * $Id: afp_ls.c,v 1.1 2003-08-11 17:37:13 didg Exp $
+ * $Id: afp_ls.c,v 1.2 2003-10-16 18:11:38 didg Exp $
  * MANIFEST
  */
 
@@ -40,14 +40,26 @@ int size = 1000;
 
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPEnumerate:test300: enumerate recursively a folder\n");
-    f_bitmap = (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO)|
+    f_bitmap = (1<<FILPBIT_FNUM ) | (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO)|
 	         (1<<FILPBIT_CDATE) | (1<<FILPBIT_BDATE) | (1<<FILPBIT_MDATE);
 
 	d_bitmap = (1<< DIRPBIT_ATTR) | (1<<DIRPBIT_FINFO) |  (1 << DIRPBIT_OFFCNT) |
 	         (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE) |
-		    (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS);
+		    (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS);
 
-	fprintf(stderr,"%lx\n", time(NULL));
+	if (Conn->afp_version >= 30) {
+		f_bitmap |= (1<<FILPBIT_PDINFO);
+		d_bitmap |= (1<<FILPBIT_PDINFO);
+	}
+	else {
+		f_bitmap |= (1<<FILPBIT_LNAME);
+		d_bitmap |= (1<<FILPBIT_LNAME);
+	}
+
+	if (!Quiet) {
+		fprintf(stderr,"%lx\n", time(NULL));
+	}
+	
 	dir = get_did(Conn, vol, DIRDID_ROOT, Dir);
 	if (!dir) {
 		nottested();
@@ -77,7 +89,7 @@ int size = 1000;
 			    for (j = 1; j <= tp; j++, b += b[0]) {
 			        if (b[1]) {
 	    		    	filedir.isdir = 1;
-	        		    afp_filedir_unpack(&filedir, b + 2, f_bitmap, d_bitmap);
+	        		    afp_filedir_unpack(&filedir, b + 2, 0, d_bitmap);
 	        	    	if (cnt > size) {
 	        	    		size += 1000;
 		        	    	if (!(stack = realloc(stack, size* sizeof(int)))) {
@@ -88,6 +100,15 @@ int size = 1000;
 	        	    	stack[cnt] = filedir.did;
 		        	    cnt++;
 			        }
+			        else {
+	    		    	filedir.isdir = 0;
+	        		    afp_filedir_unpack(&filedir, b + 2, f_bitmap, 0);
+			        }
+			        if (Quiet) {
+			        	fprintf(stderr, "0x%08x %s%s\n", ntohl(filedir.did), 
+			        	      (Conn->afp_version >= 30)?filedir.utf8_name:filedir.lname,
+			        	      filedir.isdir?"/":"");
+			        }
 		    	}
 		    }
 	    }
@@ -97,7 +118,10 @@ int size = 1000;
 	    }
 	}
 	
-	fprintf(stderr,"%lx\n", time(NULL));
+
+	if (!Quiet) {
+		fprintf(stderr,"%lx\n", time(NULL));
+	}
 	/* do it a second time */
 #if 0
 	i = 1;
@@ -147,6 +171,7 @@ void usage( char * av0 )
     fprintf( stderr,"\t-d\tdiretory to enumerate\n");
     fprintf( stderr,"\t-u\tuser name (default uid)\n");
     fprintf( stderr,"\t-w\tpassword (default none)\n");
+    fprintf( stderr,"\t-i\tprint ID and name\n");
     fprintf( stderr,"\t-3\tAFP 3.0 version\n");
     fprintf( stderr,"\t-4\tAFP 3.1 version\n");
     fprintf( stderr,"\t-v\tverbose\n");
@@ -164,8 +189,11 @@ int cc;
 static char *vers = "AFPVersion 2.1";
 static char *uam = "Cleartxt Passwrd";
 
-    while (( cc = getopt( ac, av, "Rmlv34h:p:s:u:w:d:" )) != EOF ) {
+    while (( cc = getopt( ac, av, "Rimlv34h:p:s:u:w:d:" )) != EOF ) {
         switch ( cc ) {
+        case 'i':
+            Quiet = 1;
+            break;
         case '3':
 			vers = "AFPX03";
 			Version = 30;

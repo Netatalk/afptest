@@ -122,3 +122,4 @@ extern char *User;
 extern int Version;
 extern int Quirk;
 extern int Verbose;
+extern int Quiet;

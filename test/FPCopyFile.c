@@ -104,7 +104,59 @@ u_int16_t vol = VolID;
 	FAIL (ntohl(AFPERR_EXIST) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1))
+}
 
+/* ------------------------- */
+STATIC void test315()
+{
+u_int16_t bitmap = 0;
+char *name  = "t315 old file name";
+char *name1 = "t315 new file name";
+u_int16_t vol = VolID;
+int fork;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPCopyFile:test315: copyFile\n");
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){
+		nottested();
+		return;
+	}
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name, OPENACC_WR | OPENACC_RD);
+	if (!fork) {
+		nottested();
+		goto fin;
+	}		
+
+	if (FPSetForkParam(Conn, fork, (1<<FILPBIT_DFLEN), 64*1024*1024)) {
+		nottested();
+		goto fin;
+	}
+
+	FAIL (FPCloseFork(Conn,fork))
+
+	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1))
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name1))
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name, OPENACC_WR | OPENACC_RD);
+	if (!fork) {
+		nottested();
+		goto fin;
+	}		
+
+	if (FPSetForkParam(Conn, fork, (1<<FILPBIT_DFLEN), 129*1024*1024)) {
+		nottested();
+		goto fin;
+	}
+
+	FAIL (FPCloseFork(Conn,fork))
+
+	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1))
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name1))
+
+fin:	
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
 }
 
 /* ----------- */
@@ -114,5 +166,6 @@ void FPCopyFile_test()
     fprintf(stderr,"FPCopyFile page 131\n");
     test71();
 	test158();
+	test315();
 }
 

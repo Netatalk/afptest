@@ -266,6 +266,7 @@ DSI *dsi;
     fprintf(stderr,"FPRread:test61: FPRead, FPWrite errors\n");
 	size = min(10000, dsi->server_quantum);
 	if (size < 2000) {
+		nottested();
 		fprintf(stderr,"\t server quantum (%d) too small\n", size);
 		return;
 	}
@@ -309,15 +310,112 @@ fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
 }
 
+/* -------------------------- */
+STATIC void test309(int size)
+{
+int fork, fork1;
+u_int16_t bitmap = 0;
+char *name = "t309 FPRead,FPWrite deadlock";
+char *name1 = "t309 second file";
+u_int16_t vol = VolID;
+DSI *dsi;
+DSI dsi1, dsi2, dsi3;
+int offset;
+int quantum;
+
+	dsi = &Conn->dsi;
+	dsi1 = *dsi;
+	dsi2 = dsi1;
+	dsi3 = dsi1;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPRread:test309: FPRead, FPWrite deadlock\n");
+	quantum = min(size, dsi->server_quantum);
+	if (quantum < size) {
+		fprintf(stderr,"\t server quantum (%d) too small\n", quantum);
+		nottested();
+		return;
+	}
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		return;
+	}
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name1)) {
+		nottested();
+		goto fin;
+	}
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR|OPENACC_RD );
+	if (!fork) {
+		failed();
+		goto fin;
+	}
+	fork1 = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name1,OPENACC_WR|OPENACC_RD );
+	if (!fork1) {
+		failed();
+		goto fin;
+	}
+ 	FAIL (FPSetForkParam(Conn, fork, (1<<FILPBIT_DFLEN), 4*128*1024))
+
+	offset = 0;
+	FAIL (FPReadHeader(dsi, fork, offset, size, Data))
+	offset += size;	
+	FAIL (FPReadHeader(dsi, fork, offset, size, Data))
+	offset += size;	
+	FAIL (FPReadHeader(dsi, fork, offset, size, Data))
+
+	FAIL (FPReadFooter(dsi, fork, 0, size, Data))
+
+	offset += size;	
+	FAIL (FPReadHeader(dsi, fork, offset, size, Data))
+
+	offset = 0;
+	FAIL (FPWriteHeader(dsi, fork1, offset, size, Data, 0)) 
+	offset += size;	
+	FAIL (FPWriteHeader(dsi, fork1, offset, size, Data, 0)) 
+	offset += size;	
+	FAIL (FPWriteHeader(dsi, fork1, offset, size, Data, 0)) 
+	offset += size;	
+	FAIL (FPWriteHeader(dsi, fork1, offset, size, Data, 0)) 
+
+	offset = 0;
+	offset += size;
+	FAIL (FPReadFooter(dsi, fork, offset, size, Data))
+	offset += size;
+	FAIL (FPReadFooter(dsi, fork, offset, size, Data))
+	offset += size;
+	FAIL (FPReadFooter(dsi, fork, offset, size, Data))
+
+	offset = 0;
+	FAIL (FPWriteFooter(dsi, fork1, offset, size, Data, 0)) 
+	offset += size;	
+	FAIL (FPWriteFooter(dsi, fork1, offset, size, Data, 0)) 
+	offset += size;	
+	FAIL (FPWriteFooter(dsi, fork1, offset, size, Data, 0)) 
+	offset += size;	
+	FAIL (FPWriteFooter(dsi, fork1, offset, size, Data, 0)) 
+
+fin:
+	FPCloseFork(Conn,fork1);
+	FPCloseFork(Conn,fork);
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name1))
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+	sleep(1);
+}
 
 /* ----------- */
 void FPRead_test()
 {
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPRead page 238\n");
+#if 1
 	test5();
 	test46();
 	test59();
 	test61();
+	test309(1024);
+#else
+//	test309(128*1024);
+#endif	
 }
 
