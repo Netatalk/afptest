@@ -1,5 +1,5 @@
 /*
- * $Id: encoding_test.c,v 1.1 2003-09-12 18:30:50 didg Exp $
+ * $Id: encoding_test.c,v 1.2 2003-09-14 20:24:15 didg Exp $
  * MANIFEST
  */
 
@@ -11,6 +11,7 @@
 int Verbose = 0;
 int Quirk = 0;
 char    *Dir = "";
+char    *Path;
 
 u_int16_t VolID;
 static DSI *dsi;
@@ -148,9 +149,10 @@ DSI *dsi;
 			failed();
 			return;
 		}
-		
+
+		/* don't use ':' char */
     	for (i = 0; i < 8; i++) {
-    		name[i] = j*8 +i;
+    		name[i] = (j*8 +i != 0x3a)?j*8 +i:0x39;
 	    }
     	name[i] = 0;
 	}
@@ -238,7 +240,9 @@ static char *uam = "Cleartxt Passwrd";
 		case 'e':
 			Encoding = strdup(optarg);
 			break;
-		
+		case 'c':
+			Path = strdup(optarg);
+			break;
         case 'd':
             Dir = strdup(optarg);
             break;
