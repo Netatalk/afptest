@@ -186,8 +186,13 @@ char *name = "t65 DF FPByteLock 2 users";
 
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPByteRangeLock:test65: FPByteLock 2users DATA FORK\n");
+    
 	if (!Conn2) {
 		test_skipped(T_CONN2);
+		return;
+	}
+	if (Locking) {
+		test_skipped(T_LOCKING);
 		return;
 	}		
     test_bytelock3(name, OPENFORK_DATA);
@@ -237,24 +242,28 @@ DSI *dsi2;
 			}
     		if (Conn2) {
 				u_int16_t vol2;
-
-				dsi2 = &Conn2->dsi;
-				vol2  = FPOpenVol(Conn2, Vol);
-				if (vol2 == 0xffff) {
-					nottested();
-					goto fin;
-				}
-				fork1 = FPOpenFork(Conn2, vol2, type , bitmap ,DIRDID_ROOT, name,OPENACC_WR |OPENACC_RD);
-				if (!fork1) {
-					failed();
+				if (Locking) {
+					test_skipped(T_LOCKING);
 				}
 				else {
-					if (htonl(AFPERR_LOCK) != FPByteLock_ext(Conn2, fork1, 0, 0, ((off_t)1<<32)+2, 60)) {
-						failed();
-						FPByteLock_ext(Conn2, fork1, 0, 1, ((off_t)1<<32)+2, 60);
+					dsi2 = &Conn2->dsi;
+					vol2  = FPOpenVol(Conn2, Vol);
+					if (vol2 == 0xffff) {
+						nottested();
+						goto fin;
 					}
-					FAIL (htonl(AFPERR_LOCK)  != FPWrite_ext(Conn2, fork1, ((off_t)1<<32)+2, 40, Data, 0)) 
-					FAIL (FPCloseFork(Conn2,fork1))
+					fork1 = FPOpenFork(Conn2, vol2, type , bitmap ,DIRDID_ROOT, name,OPENACC_WR |OPENACC_RD);
+					if (!fork1) {
+						failed();
+					}
+					else {
+						if (htonl(AFPERR_LOCK) != FPByteLock_ext(Conn2, fork1, 0, 0, ((off_t)1<<32)+2, 60)) {
+							failed();
+							FPByteLock_ext(Conn2, fork1, 0, 1, ((off_t)1<<32)+2, 60);
+						}
+						FAIL (htonl(AFPERR_LOCK)  != FPWrite_ext(Conn2, fork1, ((off_t)1<<32)+2, 40, Data, 0)) 
+						FAIL (FPCloseFork(Conn2,fork1))
+					}
 				}
 				FAIL (FPCloseVol(Conn2,vol2))
 			}
@@ -273,6 +282,10 @@ char *name = "t78 FPByteLock RF size -1";
 
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPByteRangeLock:test78: test Byte Lock size -1 with no large file support\n");
+	if (Locking) {
+		test_skipped(T_LOCKING);
+		return;
+	}		
 	test_bytelock2(name, OPENFORK_RSCS);
 
     fprintf(stderr,"===================\n");

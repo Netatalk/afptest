@@ -78,11 +78,16 @@ DSI *dsi2;
 
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPDelete:test74: Delete File 2 users\n");
+
 	if (!Conn2) {
 		test_skipped(T_CONN2);
 		return;
 	}		
 
+	if (Locking) {
+		test_skipped(T_LOCKING);
+		return;
+	}		
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();

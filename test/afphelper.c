@@ -729,7 +729,10 @@ char *s;
 		s = "Volume with UTF8 encoding";
 		break;
 	case T_VOL2:
-		s = "Need a second volume";
+		s = "a second volume";
+		break;
+	case T_LOCKING:
+		s = "a working fcntl locking";
 		break;
 	}
 	fprintf(stderr,"\tSKIPPED (need %s)\n",s);

@@ -46,6 +46,7 @@ extern void test_skipped(int why);
 #define T_UNIX_PREV  6
 #define T_UTF8       7
 #define T_VOL2       8
+#define T_LOCKING    9
 
 /* ---------------------------------
 */

@@ -518,7 +518,13 @@ char *name = "t81 Denymode RF 2users";
 		test_skipped(T_CONN2);
 		return;
 	}		
-		test_denymode(name, OPENFORK_RSCS);
+
+	if (Locking) {
+		test_skipped(T_LOCKING);
+		return;
+	}		
+
+	test_denymode(name, OPENFORK_RSCS);
 
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPOpenFork:test81: Deny mode 2 users DF\n");

@@ -16,7 +16,7 @@ u_int16_t vol = VolID,vol2;
 unsigned int ret;
 char *token;
 u_int32_t len;
-CONN *conn;
+CONN *conn2;
 DSI *dsi3;
 int sock;
 int fork = 0, fork1;
@@ -24,8 +24,13 @@ struct sigaction action;
 
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPDisconnectOldSession :test222: AFP 3.x disconnect old session\n");
+
 	if (Conn->afp_version < 30 || Conn2) {
 		test_skipped(T_AFP3_CONN2);
+		return;
+	}
+	if (Locking) {
+		test_skipped(T_LOCKING);
 		return;
 	}
 
@@ -34,12 +39,12 @@ struct sigaction action;
 		failed();
 		return;
 	}
-    if ((conn = (CONN *)calloc(1, sizeof(CONN))) == NULL) {
+    if ((conn2 = (CONN *)calloc(1, sizeof(CONN))) == NULL) {
     	nottested();
     	return;
     }
-    conn->type = 0;
-    dsi3 = &conn->dsi;
+    conn2->type = 0;
+    dsi3 = &conn2->dsi;
 	sock = OpenClientSocket(Server, Port);
     if ( sock < 0) {
     	nottested();
@@ -47,34 +52,34 @@ struct sigaction action;
     }
     dsi3->protocol = DSI_TCPIP; 
 	dsi3->socket = sock;
-	ret = FPopenLoginExt(conn, vers, uam, User, Password);
+	ret = FPopenLoginExt(conn2, vers, uam, User, Password);
 	if (ret) {
     	nottested();
     	return;
 	}
-	conn->afp_version = Conn->afp_version;
+	conn2->afp_version = Conn->afp_version;
 
 	FAIL (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) 
 
-	vol2  = FPOpenVol(conn, Vol);
+	vol2  = FPOpenVol(conn2, Vol);
 	if (vol2 == 0xffff) {
-		failed();
+    	nottested();
 		goto fin;
 	}
-	fork = FPOpenFork(conn, vol2, OPENFORK_RSCS , 0 ,DIRDID_ROOT, name, OPENACC_WR |OPENACC_RD| OPENACC_DWR| OPENACC_DRD);
+	fork = FPOpenFork(conn2, vol2, OPENFORK_RSCS , 0 ,DIRDID_ROOT, name, OPENACC_WR |OPENACC_RD| OPENACC_DWR| OPENACC_DRD);
 	if (!fork) {
-		failed();
+    	nottested();
 		goto fin;
 	}
 
 	fork1 = FPOpenFork(Conn, vol, OPENFORK_RSCS , 0 ,DIRDID_ROOT, name, OPENACC_WR |OPENACC_RD| OPENACC_DWR| OPENACC_DRD);
 	if (fork1) {
 		FAIL (FPCloseFork(Conn,fork1))
-		failed();
+    	nottested();
 		goto fin;
 	}
 	
-	ret = FPGetSessionToken(conn, 0, 0, 0, NULL);
+	ret = FPGetSessionToken(conn2, 0, 0, 0, NULL);
 	if (ret) {
 		failed();
 		goto fin;
@@ -118,7 +123,7 @@ struct sigaction action;
 	if (!fork1) {
 	    /* arg we are there */
 		failed();
-		FAIL (FPCloseFork(conn,fork))
+		FAIL (FPCloseFork(conn2,fork))
 		goto fin;
 	}
 	FAIL (FPCloseFork(Conn,fork1))

@@ -116,10 +116,14 @@ extern CONN *Conn, *Conn2;
 // extern DSI *dsi; 
 // extern u_int16_t vol;
 extern char Data[];
+
 extern char *Vol;
+extern char *Vol2;
+
 extern char *Path;
 extern char *User;
 extern int Version;
 extern int Quirk;
 extern int Verbose;
 extern int Quiet;
+extern int Locking;

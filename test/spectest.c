@@ -1,5 +1,5 @@
 /*
- * $Id: spectest.c,v 1.9 2003-11-29 00:25:42 didg Exp $
+ * $Id: spectest.c,v 1.10 2003-12-16 15:13:48 didg Exp $
  * MANIFEST
  */
 #include "specs.h"
@@ -273,6 +273,7 @@ int     Proto = 0;
 int     Port = 548;
 char    *Password = "";
 char    *Vol = "";
+char    *Vol2 = "";
 char    *User;
 char    *User2;
 char    *Path;
@@ -281,15 +282,18 @@ int     List = 0;
 int     Mac = 0;
 char    *Test;
 int     Exclude = 0;
+int		Locking;
 
 /* =============================== */
 void usage( char * av0 )
 {
-    fprintf( stderr, "usage:\t%s [-m] [-n] [-t] [-h host] [-p port] [-s vol] [-u user] [-w password] -f [call]\n", av0 );
+    fprintf( stderr, "usage:\t%s [-L] [-m] [-n] [-t] [-h host] [-p port] [-s vol] [-u user] [-w password] -f [call]\n", av0 );
+    fprintf( stderr,"\t-L\tserver without working fcntl locking, skip tests using it\n");
     fprintf( stderr,"\t-m\tserver is a Mac\n");
     fprintf( stderr,"\t-h\tserver host name (default localhost)\n");
     fprintf( stderr,"\t-p\tserver port (default 548)\n");
     fprintf( stderr,"\t-s\tvolume to mount (default home)\n");
+    fprintf( stderr,"\t-S\tsecond volume to mount (default none)\n");
     fprintf( stderr,"\t-c\tvolume path on the server\n");
     fprintf( stderr,"\t-u\tuser name (default uid)\n");
     fprintf( stderr,"\t-d\tsecond user for two connections (same password!)\n");
@@ -317,7 +321,7 @@ char	**av;
 {
 int cc;
 
-    while (( cc = getopt( ac, av, "v234h:H:p:s:u:d:w:c:f:lmxi" )) != EOF ) {
+    while (( cc = getopt( ac, av, "v234h:H:p:s:u:d:w:c:f:Llmxi" )) != EOF ) {
         switch ( cc ) {
         case '2':
 			vers = "AFP2.2";
@@ -334,6 +338,9 @@ int cc;
 		case 'c':
 			Path = strdup(optarg);
 			break;
+		case 'L':
+			Locking = 1;
+			break;
 		case 'm':
 			Mac = 1;
 			break;
@@ -348,6 +355,9 @@ int cc;
             break;
         case 's':
             Vol = strdup(optarg);
+            break;
+        case 'S':
+            Vol2 = strdup(optarg);
             break;
         case 'u':
             User = strdup(optarg);

@@ -204,7 +204,7 @@ u_int16_t vol = VolID, vol2;
 int id,id1;
 
     fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPMoveAndRename:test302: file across multiple device\n");
+    fprintf(stderr,"FPMoveAndRename:test322: file across multiple device\n");
     fprintf(stderr,"Names and devices differ but inodes are the same\n");
 
 	if (!Mac && (!Path || !Vol2 || !Conn2)) {
@@ -221,10 +221,12 @@ int id,id1;
 	FAIL (FPCreateFile(Conn, vol,  0, dir , name1))
 
 	id = get_fid(Conn, vol, dir , name1);     
+	fprintf (stderr, "ID for %s --> %x\n", name1, ntohl(id));
 
 	if (!Mac) {
 		sprintf(temp, "%s/%s", Path, name1);
 		sprintf(temp1,"%s/%s", Path, name2);
+		fprintf (stderr, "rename %s --> %s\n", temp, temp1);
 		if (rename(temp, temp1) < 0) {
 			fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
 			failed_nomsg();
@@ -235,7 +237,7 @@ int id,id1;
 	}
 	id1 = get_fid(Conn2, vol2, dir , name2);
 	if (id != id1) {
-		fprintf(stderr,"\tFAILED id are not the same %d %d\n", ntohl(id), ntohl(id1));
+		fprintf(stderr,"\tFAILED id are not the same %x %x\n", ntohl(id), ntohl(id1));
 		failed_nomsg();
 	}
 	id1 = get_fid(Conn, vol, dir , name2);
@@ -245,6 +247,65 @@ int id,id1;
 	/* play safe ? */
 	FPDelete(Conn, vol,  dir, name1);
 }
+
+/* ------------------------- */
+STATIC void test323()
+{
+char *name  = "t323 dir";
+char *name1 = "t323 dir1";
+char *file = "t323 file";
+int  dir1,dir;
+
+u_int16_t bitmap = (1<<FILPBIT_FNUM );
+u_int16_t vol = VolID;
+
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPGetFileDirParms:test323: file moved with cnid not updated\n");
+
+	if (!Path && !Mac) {
+		test_skipped(T_MAC_PATH);
+		return;
+	}
+
+	if (!(dir = FPCreateDir(Conn, vol, DIRDID_ROOT , name))) {
+		nottested();
+		return;
+	}
+	if (!(dir1 = FPCreateDir(Conn, vol, DIRDID_ROOT , name1))) {
+		failed();
+		goto fin;
+	}
+	FAIL (FPCreateFile(Conn, vol,  0, dir , file))
+	FAIL (FPCreateFile(Conn, vol,  0, dir1, file))
+    bitmap = (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM );
+	FAIL (FPGetFileDirParams(Conn, vol, dir, file, bitmap, 0)) 
+	FAIL (FPGetFileDirParams(Conn, vol, dir1, file, bitmap, 0)) 
+
+	if (!Mac) {
+		sprintf(temp,"%s/%s/%s", Path, name, file);
+		sprintf(temp1,"%s/%s/%s", Path, name1, file);
+		fprintf (stderr, "rename %s --> %s\n", temp, temp1);
+		if (rename(temp, temp1) < 0) {
+			fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+			failed_nomsg();
+		}
+		
+	}
+	else {
+		FAIL (FPMoveAndRename(Conn, vol, dir, dir1, file, file))
+	}
+	
+    bitmap = (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM );
+
+	FAIL (FPGetFileDirParams(Conn, vol, dir1, file, bitmap, 0)) 
+
+fin:
+	FAIL (FPDelete(Conn,vol, dir1,file))
+	FPDelete(Conn,vol, dir,file);
+	FAIL (FPDelete(Conn,vol, dir,""))
+	FAIL (FPDelete(Conn,vol, dir1,""))
+}
+
 
 /* ----------- */
 void FPMoveAndRename_test()
@@ -256,5 +317,6 @@ void FPMoveAndRename_test()
     test139();
     test302();
     test322();
+    test323();
 }
 
