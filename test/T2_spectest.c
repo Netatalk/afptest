@@ -1,5 +1,5 @@
 /*
- * $Id: T2_spectest.c,v 1.4 2003-11-29 00:25:42 didg Exp $
+ * $Id: T2_spectest.c,v 1.5 2003-12-07 10:06:58 didg Exp $
  * MANIFEST
  */
 #include "afpclient.h"
@@ -226,7 +226,7 @@ int     Proto = 0;
 int     Port = 548;
 char    *Password = "";
 char    *Vol = "";
-char    *Vol2 = "";
+char    *Vol2;
 char    *User;
 char    *User2;
 char    *Path;
