@@ -852,7 +852,8 @@ int type = OPENFORK_DATA;
 
 	FAIL (FPDelete(Conn2, vol2,  DIRDID_ROOT, name))
 	FAIL (FPCloseVol(Conn2,vol2))
-	return;
+	goto test_exit;
+
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
 test_exit:

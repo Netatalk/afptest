@@ -62,8 +62,9 @@ DSI *dsi;
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
 	if (fork) {
 	
-		FAIL (ntohl(AFPERR_DENYCONF) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1))
+		FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1))
 		FAIL (FPCloseFork(Conn,fork))
+		FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name1))
 	}	
 	else {
 		failed();
@@ -319,6 +320,110 @@ fin:
 }
 
 /* ----------- */
+STATIC void test374()
+{
+int fork;
+u_int16_t vol2;
+u_int16_t bitmap = 0;
+char *name  = "t374 Copy file";
+char *name1 = "t374 new file name";
+u_int16_t vol = VolID;
+DSI *dsi;
+
+	dsi = &Conn->dsi;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPCopyFile:test374: Copy open file, two clients\n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		goto test_exit;
+	}		
+
+	if (Locking) {
+		test_skipped(T_LOCKING);
+		goto test_exit;
+	}
+
+	vol2  = FPOpenVol(Conn2, Vol);
+	if (vol2 == 0xffff) {
+		nottested();
+		goto test_exit;
+	}
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){
+		failed();
+		goto fin;
+	}
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_DRD);
+	if (fork) {
+		FAIL (ntohl(AFPERR_DENYCONF) != FPCopyFile(Conn2, vol2, DIRDID_ROOT, vol2, DIRDID_ROOT, name, name1))
+		FAIL (FPCloseFork(Conn,fork))
+	}	
+	else {
+		failed();
+	}
+
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+	FPDelete(Conn, vol,  DIRDID_ROOT, name1);
+fin:
+	FPCloseVol(Conn2,vol2);
+
+test_exit:
+	exit_test("test374");
+}
+
+/* ------------------------- */
+STATIC void test375()
+{
+int fork;
+int fork1;
+u_int16_t bitmap = 0;
+char *name  = "t375 old file name";
+char *name1 = "t375 new file name";
+u_int16_t vol = VolID;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPCopyFile:test158: copyFile dest exist and is open\n");
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+	}
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name1)) {
+		nottested();
+	}
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name1,OPENACC_WR | OPENACC_DWR);
+	if (!fork) {
+		failed();
+		goto fin;
+	}
+
+	fork1 = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name1,OPENACC_WR);
+	if (fork1) {
+		failed();
+		FAIL (FPCloseFork(Conn,fork1))
+	}
+
+	FAIL (ntohl(AFPERR_EXIST) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1))
+	fork1 = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name1,OPENACC_WR);
+	if (fork1) {
+		failed();
+		FAIL (FPCloseFork(Conn,fork1))
+	}
+
+	FAIL (FPCloseFork(Conn,fork))
+
+fin:
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1))
+
+	exit_test("test375");
+}
+
+/* ----------- */
 void FPCopyFile_test()
 {
     fprintf(stderr,"===================\n");
@@ -328,5 +433,7 @@ void FPCopyFile_test()
 	test315();
 	test317();
 	test332();
+	test374();
+	test375();
 }
 

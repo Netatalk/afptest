@@ -3692,10 +3692,11 @@ char *name2 = "t71 dir";
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
 	if (fork) {
-		if (ntohl(AFPERR_DENYCONF) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1)) {
+		if (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1)) {
 			fprintf(stderr,"\tFAILED\n");
 		}
 		FPCloseFork(Conn,fork);
+		FPDelete(Conn, vol,  DIRDID_ROOT, name1);
 	}	
 	/* dvol bad */
 	if (ntohl(AFPERR_PARAM) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol +1, dir, name, name1)) {
