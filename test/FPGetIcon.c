@@ -10,7 +10,7 @@ STATIC void test115()
 u_int16_t vol = VolID;
 u_int16_t dt;
 unsigned int ret;
-u_char   u_null[] = { 0, 0, 0, 0 };
+char   u_null[] = { 0, 0, 0, 0 };
 
 	enter_test();
     fprintf(stderr,"===================\n");

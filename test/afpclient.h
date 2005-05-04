@@ -157,6 +157,10 @@
 #define VOLPBIT_ATTR_UNIXPRIV     (1 << 5)
 #define VOLPBIT_ATTR_UTF8         (1 << 6)
 #define VOLPBIT_ATTR_NONETUID     (1 << 7)
+#define VOLPBIT_ATTR_PRIVPARENT   (1 << 8)
+#define VOLPBIT_ATTR_NOEXCHANGE   (1 << 9)
+#define VOLPBIT_ATTR_EXTATTRS     (1 << 10)
+#define VOLPBIT_ATTR_ACLS         (1 << 11)
  
 #define VOLPBIT_ATTR    0
 #define VOLPBIT_SIG     1
@@ -256,10 +260,10 @@ struct afp_volume_parms {
     char *utf8_name;
 };
 
-void afp_volume_unpack(struct afp_volume_parms *parms, char *b, u_int16_t rbitmap);
+void afp_volume_unpack(struct afp_volume_parms *parms, unsigned char *b, u_int16_t rbitmap);
 
-void afp_filedir_unpack(struct afp_filedir_parms *filedir, char *b, u_int16_t rfbitmap, u_int16_t rdbitmap);
-int afp_filedir_pack(char *b, struct afp_filedir_parms *filedir, u_int16_t rfbitmap, u_int16_t rdbitmap);
+void afp_filedir_unpack(struct afp_filedir_parms *filedir, unsigned char *b, u_int16_t rfbitmap, u_int16_t rdbitmap);
+int afp_filedir_pack(unsigned char *b, struct afp_filedir_parms *filedir, u_int16_t rfbitmap, u_int16_t rdbitmap);
 
 /* 
  afpcli.c
@@ -269,7 +273,7 @@ int CloseClientSocket(int fd);
 
 
 size_t my_dsi_stream_read(DSI *dsi, void *data, const size_t length);
-int my_dsi_stream_receive(DSI *dsi, void *buf, const int ilength, int *rlength);
+int my_dsi_stream_receive(DSI *dsi, void *buf, const size_t ilength, size_t *rlength);
 size_t my_dsi_stream_write(DSI *dsi, void *data, const size_t length);
 int my_dsi_stream_send(DSI *dsi, void *buf, size_t length);
 
@@ -344,6 +348,12 @@ u_int32_t rbitmap, struct afp_filedir_parms *filedir, struct afp_filedir_parms *
 
 unsigned int AFPSetFileParams(CONN *, u_int16_t vol, int did, char *name, u_int16_t bitmap, struct afp_filedir_parms *);
 unsigned int AFPSetForkParam(CONN *conn, u_int16_t fork,  u_int16_t bitmap, off_t size);
+
+int AFPGetACL(CONN *conn, u_int16_t vol, int did, u_int16_t bitmap, char *name);
+int AFPListExtAttr(CONN *conn, u_int16_t vol, int did, u_int16_t bitmap, int maxsize, char* pathname);
+int AFPGetExtAttr(CONN *conn, u_int16_t vol, int did, u_int16_t bitmap, int maxsize, char* pathname, char* attrname);
+int AFPSetExtAttr(CONN *conn, u_int16_t vol, int did, u_int16_t bitmap, char* pathname, char* attrname, char* data);
+int AFPRemoveExtAttr(CONN *conn, u_int16_t vol, int did, u_int16_t bitmap, char* pathname, char* attrname);
 
 int FPset_name(CONN *conn, int ofs, char *name);
 void u2mac(char *dst, char *name, int len);

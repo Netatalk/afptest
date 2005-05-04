@@ -1,5 +1,5 @@
 /*
- * $Id: encoding_test.c,v 1.3 2003-10-13 22:54:17 didg Exp $
+ * $Id: encoding_test.c,v 1.4 2005-05-04 00:29:02 didg Exp $
  * MANIFEST
  */
 
@@ -34,7 +34,7 @@ unsigned int ret;
 int  dir;
 u_int16_t  tp;
 int  i, j;
-char *b;
+unsigned char *b;
 struct afp_filedir_parms filedir;
 int *stack;
 int cnt = 0;

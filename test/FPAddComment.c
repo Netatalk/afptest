@@ -60,7 +60,7 @@ int  dt;
 	}
 	if (!ret) {
 		ret = FPGetComment(Conn, vol,  DIRDID_ROOT , name2);
-		if (ret || strncmp(cmt, dsi->commands +1, strlen(cmt))) {
+		if (ret || memcmp(cmt, dsi->commands +1, strlen(cmt))) {
 			failed();
 		}
 	}

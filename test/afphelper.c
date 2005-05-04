@@ -767,6 +767,12 @@ char *s;
 	case T_MAC:
 		s = "a server which is not a Mac";
 		break;
+	case T_ACL:
+		s = "volume with ACL support";
+		break;
+	case T_EA:
+		s = "volume with extendend attribute support";
+		break;
 	}
 	fprintf(stderr,"\tSKIPPED (need %s)\n",s);
 	CurTestResult = 3;

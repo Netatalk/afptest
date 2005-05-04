@@ -28,7 +28,7 @@ u_int16_t vol = VolID;
  	FAIL (FPGetVolParam(Conn, vol, bitmap)) 
  	FAIL (htonl(AFPERR_PARAM) != FPGetVolParam(Conn, vol +1, bitmap)) 
  	FAIL (htonl(AFPERR_BITMAP) != FPGetVolParam(Conn, vol , 0xffff)) 
-test_exit:
+
 	exit_test("test56");
 } 	
 

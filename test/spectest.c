@@ -1,5 +1,5 @@
 /*
- * $Id: spectest.c,v 1.10 2003-12-16 15:13:48 didg Exp $
+ * $Id: spectest.c,v 1.11 2005-05-04 00:29:02 didg Exp $
  * MANIFEST
  */
 #include "specs.h"
@@ -77,6 +77,7 @@ EXT_FN(FPWriteExt);
 EXT_FN(FPzzz);
 EXT_FN(Error);
 EXT_FN(Utf8);
+EXT_FN(FPGetACL);
 
 
 struct test_fn {
@@ -151,6 +152,7 @@ FN_N(FPWriteExt)
 FN_N(FPzzz)
 FN_N(Error)
 FN_N(Utf8)
+FN_N(FPGetACL)
 #endif
 
 {NULL, NULL},
@@ -197,11 +199,11 @@ char *token;
 		i++;
 	}
 	if (Test_list[i].name == NULL) {
-		handle = dlopen (NULL, RTLD_LAZY);
+		handle = dlopen (NULL, RTLD_NOW);
         if (handle) {
 			fn = dlsym(handle, token);
 			if ((error = dlerror()) != NULL)  {
-			    fprintf (stderr, "%s\n", error);
+			    fprintf (stderr, "%s (%X)\n", error, fn);
 			}
         }
         else {

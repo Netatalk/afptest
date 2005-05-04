@@ -13,7 +13,7 @@ int nbe,i;
 int found = 0;
 unsigned char len;
 u_int16_t vol2;
-char *b;
+unsigned char *b;
 
 	enter_test();
     fprintf(stderr,"===================\n");
@@ -49,7 +49,7 @@ char *b;
 	    b++; /* flags */
 	    len = *b;
 	    b++;
-	    if (!strncmp(b, Vol, len))
+	    if (!memcmp(b, Vol, len))
 	        found = 1;
 	    b += len;
 	}

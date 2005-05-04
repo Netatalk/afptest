@@ -4,7 +4,6 @@
 #include "test.h"
 
 extern u_int16_t VolID;
-extern DSI *dsi, *dsi2; 
 extern int Mac;
 
 extern int ExitCode;
@@ -57,6 +56,8 @@ extern void test_skipped(int why);
 #define T_ID         11
 #define T_AFP2       12
 #define T_MAC        13
+#define T_ACL        14
+#define T_EA         15
 
 /* ---------------------------------
 */

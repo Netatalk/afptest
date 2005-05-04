@@ -80,7 +80,6 @@ test_exit:
 /* -------------------------- */
 STATIC void test394()
 {
-int fork;
 char *name = "t394 file.txt";
 int dt;
 int dir;

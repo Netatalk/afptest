@@ -90,7 +90,7 @@ u_int16_t vol2;
 
 	enter_test();
     fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPByteRangeLock: test open excl mode\n");
+    fprintf(stderr,"FPByteRangeLock:test117: test open excl mode\n");
 
 	if (!Path) {
 		test_skipped(T_MAC_PATH);                                                             

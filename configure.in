@@ -9,7 +9,7 @@ AC_PROG_CC
 AC_CHECK_HEADERS(fcntl.h strings.h sys/fcntl.h unistd.h sys/cdefs.h)
 
 AM_PROG_LIBTOOL
-AM_ICONV
+# AM_ICONV
 AC_SYS_LARGEFILE
 
 AC_CHECK_LIB(dl, dlopen)

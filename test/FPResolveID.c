@@ -175,7 +175,7 @@ int  dir;
 char *name =  "t311-\xd7\xa4\xd7\xaa\xd7\x99\xd7\x97\xd7\x94#113F.mp3";
 char *name1 = "t311-\xd7\xa4\xd7\xaa\xd7\x99\xd7\x97\xd7\x94#11.mp3";
 int  ofs =  3 * sizeof( u_int16_t );
-u_int16_t bitmap = 0xe93f;
+u_int16_t bitmap = 0x693f;
 struct afp_filedir_parms filedir;
 u_int16_t vol = VolID;
 DSI *dsi;

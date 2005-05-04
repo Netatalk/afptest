@@ -433,6 +433,54 @@ test_exit:
 
 }
 
+/* -------------------------- */
+STATIC void test397()
+{
+u_int16_t vol = VolID;
+char *name = "t397 Resolve ID file";
+int  ofs =  3 * sizeof( u_int16_t );
+u_int16_t bitmap = (1<<FILPBIT_FNUM );
+struct afp_filedir_parms filedir;
+DSI *dsi = &Conn->dsi;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPResolveID:test397: Resolve ID file deleted local fs \n");
+
+	if (!Path) {
+		test_skipped(T_MAC_PATH);
+		goto test_exit;
+	}
+
+	FAIL (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name))
+
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, bitmap,0)) {
+		failed();
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+		FAIL ((FPResolveID(Conn, vol, filedir.did, bitmap)))
+	}
+
+	sprintf(temp1, "%s/.AppleDouble/%s", Path, name);
+	if (unlink(temp1) <0) {
+		fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
+		failed_nomsg();
+	}
+	sprintf(temp1, "%s/%s", Path, name);
+	if (unlink(temp1) <0) {
+		fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
+		failed_nomsg();
+	}
+	FAIL (ntohl(AFPERR_NOID ) != FPResolveID(Conn, vol, filedir.did, bitmap))
+	FAIL (ntohl(AFPERR_NOID ) != FPResolveID(Conn, vol, filedir.did, bitmap))
+
+test_exit:
+	exit_test("test397");
+}
+
+
 /* ----------- */
 void FPResolveID_test()
 {
@@ -443,5 +491,6 @@ void FPResolveID_test()
 	test131();
 	test331();
 	test360();
+	test397();
 }
 

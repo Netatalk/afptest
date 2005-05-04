@@ -96,6 +96,13 @@ extern unsigned int FPCatSearchExt(CONN *conn, u_int16_t vol, u_int32_t  nbe, ch
 
 extern unsigned int FPBadPacket(CONN *conn, char fn, char *name );
 
+extern unsigned int FPGetACL(CONN *conn, u_int16_t svol, int did, u_int16_t bitmap, char *name);
+extern unsigned int FPGetExtAttr(CONN *conn, u_int16_t vol, int did, u_int16_t bitmap, u_int16_t maxsize, char *name, char *attr);
+extern unsigned int FPListExtAttr(CONN *conn, u_int16_t vol, int did, u_int16_t bitmap, int maxsize, char* name);
+extern unsigned int FPSetExtAttr(CONN *conn, u_int16_t vol, int did, u_int16_t bitmap, char* name, char* attr, char* data);
+extern unsigned int FPRemoveExtAttr(CONN *conn, u_int16_t vol, int did, u_int16_t bitmap, char* name, char* attr);
+
+
 void dump_header(DSI *dsi);
 char *afp_error(int error);
 const char *AfpNum2name(int num);

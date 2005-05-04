@@ -72,12 +72,9 @@ test_exit:
 STATIC void test301()
 {
 u_int16_t vol = VolID;
-u_int16_t dt;
 unsigned int ret;
 char *file = "t300 file";
 char *name = "t300 dir";
-char *ndir  = "t300 dir no access";
-unsigned int pdir;
 DSI *dsi, *dsi2;
 u_int16_t vol2;
 u_int32_t  did = DIRDID_ROOT;

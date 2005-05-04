@@ -212,4 +212,11 @@ typedef enum {
 #define AFP_ENUMERATE_EXT2      68
 #define AFP_ZZZ                 122
 
+/* version 3.2 */
+#define AFP_GETEXTATTR		69
+#define AFP_SETEXTATTR		70
+#define AFP_REMOVEEXTATTR	71
+#define AFP_LISTEXTATTRS	72
+#define AFP_GETACL		73
+
 #endif

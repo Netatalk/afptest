@@ -438,7 +438,7 @@ int fd;
 			goto fin;
 		}
 	}
-	bitmap = 0xe93f;
+	bitmap = 0x693f;
 	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, file, bitmap, 0 )) {
 		failed();
 		goto fin;

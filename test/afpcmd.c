@@ -1,5 +1,5 @@
 /*
- * $Id: afpcmd.c,v 1.8 2003-10-16 18:11:38 didg Exp $
+ * $Id: afpcmd.c,v 1.9 2005-05-04 00:29:02 didg Exp $
  *
  */
 #include "afpclient.h"
@@ -149,6 +149,14 @@ const char *AfpNum2name(int num)
     /* version 3.1 */
     case AFP_ENUMERATE_EXT2: return "AFP_ENUMERATE_EXT2";   /*  68 */
     case AFP_ZZZ           : return "AFP_ZZZ           ";	/* 122 */
+
+    /* version 3.2 */
+    case AFP_GETACL        : return "AFP_GETACL        ";   /* 73 */
+    case AFP_GETEXTATTR    : return "AFP_GETEXTATTR    ";   /* 69 */
+    case AFP_SETEXTATTR    : return "AFP_SETEXTATTR    ";   /* 69 */
+    case AFP_REMOVEEXTATTR : return "AFP_REMOVEEXTATTR ";   /* 70 */
+    case AFP_LISTEXTATTRS  : return "AFP_LISTEXTATTRA  ";   /* 72 */
+
 															  
 	case AFP_ADDICON       : return "AFP_ADDICON";       	/* 192 */
 	}                    									  
@@ -1217,7 +1225,7 @@ DSI *dsi;
 	memcpy(dsi->commands +ofs, &tp, sizeof(tp));
 	ofs += sizeof(tp);
 
-	strncpy(&dsi->commands[ofs], name, len);
+	memcpy(&dsi->commands[ofs], name, len);
 	ofs += len;
 		
 	dsi->datalen = ofs;
@@ -1294,7 +1302,7 @@ DSI *dsi;
 	memcpy(dsi->commands +ofs, &tp, sizeof(tp));
 	ofs += sizeof(tp);
 
-	strncpy(&dsi->commands[ofs], name, len);
+	memcpy(&dsi->commands[ofs], name, len);
 	ofs += len;
 		
 	dsi->datalen = ofs;
@@ -2089,4 +2097,93 @@ DSI *dsi;
 	dump_header(dsi);
 	return ret;
 }
+
+unsigned int FPGetACL(CONN *conn, u_int16_t vol, int did, u_int16_t bitmap, char *name)
+{
+int ret;
+DSI *dsi;
+
+	dsi = &conn->dsi;
+
+	if (!Quiet) {
+		fprintf(stderr,"---------------------\n");
+		fprintf(stderr,"Get ACLs Vol: %d Did: %d <%s> bitmap 0x%x\n\n", vol, ntohl(did), name, bitmap);
+	}
+
+	ret = AFPGetACL(conn, vol, did, bitmap, name);
+	dump_header(dsi);
+	return ret;
+}
+
+unsigned int FPGetExtAttr(CONN *conn, u_int16_t vol, int did, u_int16_t bitmap, u_int16_t maxsize, char *name, char *attr)
+{
+int ret;
+DSI *dsi;
+
+	dsi = &conn->dsi;
+
+	if (!Quiet) {
+		fprintf(stderr,"---------------------\n");
+		fprintf(stderr,"Get extended attr Vol: %d Did: %d <%s> bitmap 0x%x, path: %s, attr: %s\n\n", vol, ntohl(did), name, bitmap, name, attr);
+	}
+
+	ret = AFPGetExtAttr(conn, vol, did, bitmap, maxsize, name, attr);
+	dump_header(dsi);
+	return ret;
+}
+
+unsigned int FPListExtAttr(CONN *conn, u_int16_t vol, int did, u_int16_t bitmap, int maxsize, char* name)
+{
+int ret;
+DSI *dsi;
+
+	dsi = &conn->dsi;
+
+	if (!Quiet) {
+		fprintf(stderr,"---------------------\n");
+		fprintf(stderr,"Get extended attrs list Vol: %d Did: %d <%s> bitmap 0x%x, path: %s\n\n", vol, ntohl(did), name, bitmap, name);
+	}
+
+	ret = AFPListExtAttr(conn, vol, did, bitmap, maxsize, name);
+	dump_header(dsi);
+	return ret;
+}
+
+unsigned int FPSetExtAttr(CONN *conn, u_int16_t vol, int did, u_int16_t bitmap, char* name, char* attr, char* data)
+{
+int ret;
+DSI *dsi;
+
+	dsi = &conn->dsi;
+
+	if (!Quiet) {
+		fprintf(stderr,"---------------------\n");
+		fprintf(stderr,"Set extended attr Vol: %d Did: %d <%s> bitmap 0x%x, path: %s, attr: %s, data: %s\n\n", vol, ntohl(did), name, bitmap, name, attr, data);
+	}
+
+	ret = AFPSetExtAttr(conn, vol, did, bitmap, name, attr, data);
+	dump_header(dsi);
+	return ret;
+}
+
+
+unsigned int FPRemoveExtAttr(CONN *conn, u_int16_t vol, int did, u_int16_t bitmap, char* name, char* attr)
+{
+int ret;
+DSI *dsi;
+
+	dsi = &conn->dsi;
+
+	if (!Quiet) {
+		fprintf(stderr,"---------------------\n");
+		fprintf(stderr,"Remove extended attr Vol: %d Did: %d <%s> bitmap 0x%x, path: %s, attr: %s\n\n", vol, ntohl(did), name, bitmap, name, attr);
+	}
+
+	ret = AFPRemoveExtAttr(conn, vol, did, bitmap, name, attr);
+	dump_header(dsi);
+	return ret;
+}
+
+
+
 

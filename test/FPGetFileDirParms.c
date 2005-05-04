@@ -1071,6 +1071,53 @@ fin:
 	exit_test("test380");
 }
 
+/* ------------------------- */
+STATIC void test396()
+{
+char *name = "t396 dir";
+u_int16_t vol = VolID;
+DSI *dsi;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+u_int16_t f_bitmap = 0x73f;
+u_int16_t d_bitmap = 0x133f;
+unsigned int dir;
+
+	dsi = &Conn->dsi;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPGetFileDirParms::test396: dir root attribute\n");
+
+
+	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
+		failed();
+		goto test_exit;
+	}
+	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT_PARENT, Vol, f_bitmap, d_bitmap)) {
+		nottested();
+	}
+	else {
+		filedir.isdir = 1;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, d_bitmap);
+	}
+	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, name, f_bitmap, d_bitmap)) {
+		nottested();
+	}
+	else {
+		filedir.isdir = 1;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, d_bitmap);
+	}
+	
+	FPCreateID(Conn,vol, dir, "");
+	FPCreateID(Conn,vol, DIRDID_ROOT, "");
+	FPCreateID(Conn,vol, DIRDID_ROOT_PARENT, "");
+	
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test396");
+}
+
 /* ----------- */
 void FPGetFileDirParms_test()
 {

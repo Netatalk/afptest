@@ -7,11 +7,9 @@
 STATIC void test225()
 {
 u_int16_t bitmap = (1<<FILPBIT_ATTR);
-int fork;
 char *name = "t225 file.txt";
 u_int16_t vol = VolID;
 u_int32_t temp;
-int size;
 DSI *dsi;
 char pos[16];
 int  ofs =  3 * sizeof( u_int16_t );

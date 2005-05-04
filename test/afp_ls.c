@@ -1,5 +1,5 @@
 /*
- * $Id: afp_ls.c,v 1.6 2005-02-04 10:39:19 didg Exp $
+ * $Id: afp_ls.c,v 1.7 2005-05-04 00:29:01 didg Exp $
  * MANIFEST
  */
 
@@ -19,11 +19,12 @@ CONN *Conn2;
 
 int ExitCode = 0;
 int Recurse = 0;
+int Twice = 0;
 
 static u_int8_t buffer[DSI_DATASIZ];
 
 /* ------------------------- */
-void test300()
+static void test300_enumerate(void)
 {
 u_int16_t vol = VolID;
 u_int16_t d_bitmap;
@@ -40,8 +41,6 @@ int cnt = 0;
 int size = 1000;
 	dsi = &Conn->dsi;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPEnumerate:test300: enumerate recursively a folder\n");
     f_bitmap = (1<<FILPBIT_FNUM ) | (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO)|
 	         (1<<FILPBIT_CDATE) | (1<<FILPBIT_BDATE) | (1<<FILPBIT_MDATE)|
 	         (1 << FILPBIT_DFLEN) |(1 << FILPBIT_RFLEN);
@@ -131,20 +130,22 @@ int size = 1000;
 			return;
 	    }
 	}
-	
 
 	if (!Quiet) {
 		fprintf(stderr,"%lx\n", time(NULL));
 	}
-	/* do it a second time */
-#if 0
-	i = 1;
-	while (!(ret = FPEnumerateFull(Conn, vol, i, 150, 8000, DIRDID_ROOT , Dir, f_bitmap, d_bitmap))) {
-		memcpy(&tp, dsi->data +4, sizeof(tp));
-	    i += ntohs(tp);
-	}
-	fprintf(stderr,"%x\n", time(NULL));
-#endif	
+	FPEnumerateFull(Conn, vol, 1, 150, 8000,  DIRDID_ROOT , "", f_bitmap, d_bitmap);
+}
+
+
+/* ------------------------- */
+void test300()
+{
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPEnumerate:test300: enumerate recursively a folder\n");
+    test300_enumerate();
+    if (Twice)
+        test300_enumerate();
 }
 
 /* ------------------ */
@@ -189,6 +190,7 @@ void usage( char * av0 )
     fprintf( stderr,"\t-3\tAFP 3.0 version\n");
     fprintf( stderr,"\t-4\tAFP 3.1 version\n");
     fprintf( stderr,"\t-v\tverbose\n");
+    fprintf( stderr,"\t-t\trun it twice (ie one with the cache warm)\n");
 
     exit (1);
 }
@@ -203,7 +205,7 @@ int cc;
 static char *vers = "AFPVersion 2.1";
 static char *uam = "Cleartxt Passwrd";
 
-    while (( cc = getopt( ac, av, "Rimlv34h:p:s:u:w:d:" )) != EOF ) {
+    while (( cc = getopt( ac, av, "Rimlv34th:p:s:u:w:d:" )) != EOF ) {
         switch ( cc ) {
         case 'i':
             Quiet = 1;
@@ -249,6 +251,9 @@ static char *uam = "Cleartxt Passwrd";
             break;
 		case 'v':
 			Verbose = 1;
+			break;
+		case 't':
+			Twice = 1;
 			break;
         default :
             usage( av[ 0 ] );

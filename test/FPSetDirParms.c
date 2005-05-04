@@ -568,7 +568,7 @@ DSI *dsi;
 	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) |
 		(1 << DIRPBIT_UNIXPR);
 
-	if (FPGetFileDirParams(Conn, vol, dir, name, bitmap, 0)) {
+	if (htonl(AFPERR_BITMAP) != FPGetFileDirParams(Conn, vol, dir, name, bitmap, 0)) {
 	    failed();
 	    goto fin1;
 	}

@@ -1,5 +1,5 @@
 /*
- * $Id: speedtest.c,v 1.5 2004-06-14 00:45:27 didg Exp $
+ * $Id: speedtest.c,v 1.6 2005-05-04 00:29:02 didg Exp $
  * MANIFEST
  */
 #include "specs.h"
@@ -33,9 +33,9 @@ static int     Proto = 0;
 static int     Port = 548;
 static char    *Password = "";
 char    *Vol = "";
-static char    *Vol2 = "";
-static char    *User;
-static int     Version = 21;
+char    *Vol2 = "";
+char    *User;
+int     Version = 21;
 static char    *Test = "Write";
 static char    *Filename;
 

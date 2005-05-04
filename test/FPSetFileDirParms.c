@@ -614,7 +614,7 @@ DSI *dsi;
 	bitmap = (1<< DIRPBIT_PDINFO) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID) |
 	         (1<< DIRPBIT_UNIXPR);
 
-	if (FPGetFileDirParams(Conn, vol, dir, "", 0, bitmap)) {
+	if (htonl(AFPERR_BITMAP) != FPGetFileDirParams(Conn, vol, dir, "", 0, bitmap)) {
 		failed();
 		goto fin1;
 	}
@@ -634,7 +634,7 @@ DSI *dsi;
 	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) |
 		(1 << DIRPBIT_UNIXPR);
 
-	if (FPGetFileDirParams(Conn, vol, dir, name, bitmap, 0)) {
+	if (htonl(AFPERR_BITMAP) != FPGetFileDirParams(Conn, vol, dir, name, bitmap, 0)) {
 	    failed();
 	    goto fin1;
 	}

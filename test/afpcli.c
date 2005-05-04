@@ -107,8 +107,7 @@ int dsi_read_header(DSI *dsi)
 /* read data. function on success. 0 on failure. data length gets
  * stored in length variable. this should really use size_t's, but
  * that would require changes elsewhere. */
-int my_dsi_stream_receive(DSI *dsi, void *buf, const int ilength,
-                       int *rlength)
+int my_dsi_stream_receive(DSI *dsi, void *buf, const size_t ilength, size_t *rlength)
 {
 int ret;
 
@@ -236,7 +235,7 @@ u_int16_t id;
 }
 
 /* ------------------------------------- */
-static int my_dsi_receive(DSI *x, char *buf, int length)
+static int my_dsi_receive(DSI *x, unsigned char *buf, size_t length)
 {
 int ret;
 
@@ -255,7 +254,7 @@ int ret;
 }
 
 /* ------------------------------------- */
-static int my_dsi_full_receive(DSI *x, char *buf, int length)
+static int my_dsi_full_receive(DSI *x, unsigned char *buf, int length)
 {
 int ret;
 
@@ -465,18 +464,18 @@ DSI *dsi = &conn->dsi;
 
 	len = strlen(vers);
 	dsi->commands[ofs++] = len;
-	strncpy(&dsi->commands[ofs], vers, len);
+	memcpy(&dsi->commands[ofs], vers, len);
 	ofs += len;
 		
 	len = strlen(uam);
 	dsi->commands[ofs++] = len;
-	strncpy(&dsi->commands[ofs], uam, len);
+	memcpy(&dsi->commands[ofs], uam, len);
 	ofs += len;
 
 	len = strlen(usr);
 	if (len) {
 		dsi->commands[ofs++] = len;
-		strncpy(&dsi->commands[ofs], usr, len);
+		memcpy(&dsi->commands[ofs], usr, len);
 		ofs += len;
 
 		len = strlen(pwd);
@@ -484,7 +483,7 @@ DSI *dsi = &conn->dsi;
 			dsi->commands[ofs++] = 0;
 		}
 
-		strncpy(&dsi->commands[ofs], pwd, len);
+		memcpy(&dsi->commands[ofs], pwd, len);
 		ofs += PASSWDLEN;
 	}
 	SetLen(dsi, ofs);
@@ -521,12 +520,12 @@ DSI *dsi;
 
 	len = strlen(vers);
 	dsi->commands[ofs++] = len;
-	strncpy(&dsi->commands[ofs], vers, len);
+	memcpy(&dsi->commands[ofs], vers, len);
 	ofs += len;
 		
 	len = strlen(uam);
 	dsi->commands[ofs++] = len;
-	strncpy(&dsi->commands[ofs], uam, len);
+	memcpy(&dsi->commands[ofs], uam, len);
 	ofs += len;
 
 
@@ -536,7 +535,7 @@ DSI *dsi;
 	temp16 = htons(len16);
 	memcpy(&dsi->commands[ofs], &temp16, sizeof(temp16));
 	ofs += sizeof(temp16);
-	strncpy(&dsi->commands[ofs], usr, len16);
+	memcpy(&dsi->commands[ofs], usr, len16);
 	ofs += len16;
 
 	/* directory service */
@@ -553,13 +552,13 @@ DSI *dsi;
 #if 0		
 	len = len16;
 	dsi->commands[ofs++] = len;
-	strncpy(&dsi->commands[ofs], usr, len);
+	memcpy(&dsi->commands[ofs], usr, len);
 	ofs += len;
 #endif
 	/* HACK */
 	if (len16) {
 		len = strlen(pwd);
-		strncpy(&dsi->commands[ofs], pwd, len);
+		memcpy(&dsi->commands[ofs], pwd, len);
 		ofs += PASSWDLEN;
 	}
 	SetLen(dsi, ofs);
@@ -586,7 +585,7 @@ DSI *dsi;
 
 	len = strlen(uam);
 	dsi->commands[ofs++] = len;
-	strncpy(&dsi->commands[ofs], uam, len);
+	memcpy(&dsi->commands[ofs], uam, len);
 	ofs += len;
 	if (ofs & 1) {
 		dsi->commands[ofs++] = 0;
@@ -595,7 +594,7 @@ DSI *dsi;
 	len = strlen(usr);
 	if (len) {
 		dsi->commands[ofs++] = len;
-		strncpy(&dsi->commands[ofs], usr, len);
+		memcpy(&dsi->commands[ofs], usr, len);
 		ofs += len;
 
 		len = strlen(opwd);
@@ -603,12 +602,12 @@ DSI *dsi;
 			dsi->commands[ofs++] = 0;
 		}
 
-		strncpy(&dsi->commands[ofs], opwd, len);
+		memcpy(&dsi->commands[ofs], opwd, len);
 		ofs += PASSWDLEN;
 
 		len = strlen(pwd);
 
-		strncpy(&dsi->commands[ofs], pwd, len);
+		memcpy(&dsi->commands[ofs], pwd, len);
 		ofs += PASSWDLEN;
 	}
 	SetLen(dsi, ofs);
@@ -917,7 +916,7 @@ DSI *dsi;
 
 	len = strlen(vol);
 	dsi->commands[ofs++] = len;
-	strncpy(&dsi->commands[ofs], vol, len);
+	memcpy(&dsi->commands[ofs], vol, len);
 	ofs += len;
     if ((len + 1) & 1) /* pad to an even boundary */
 		ofs++;
@@ -1008,7 +1007,7 @@ void fp_free(void *ptr)
 }
 
 /* -------------------------------  */
-void afp_volume_unpack(struct afp_volume_parms *parms, char *b, u_int16_t rbitmap)
+void afp_volume_unpack(struct afp_volume_parms *parms, unsigned char *b, u_int16_t rbitmap)
 {
     u_int16_t i;
     u_int32_t l;
@@ -1065,12 +1064,12 @@ void afp_volume_unpack(struct afp_volume_parms *parms, char *b, u_int16_t rbitma
 /* -------------------------------  
  * Only backup date is valid.
 */
-int afp_volume_pack(char *b, struct afp_volume_parms *parms, u_int16_t bitmap)
+int afp_volume_pack(unsigned char *b, struct afp_volume_parms *parms, u_int16_t bitmap)
 {
     u_int16_t i;
     u_int32_t l;
     int bit = 0;
-	char *beg = b;
+	unsigned char *beg = b;
 
 	while (bitmap != 0) {
 		while (( bitmap & 1 ) == 0 ) {
@@ -1121,7 +1120,7 @@ int afp_volume_pack(char *b, struct afp_volume_parms *parms, u_int16_t bitmap)
 /* -------------------------------------- */
 // FIXME: redundant bitmap parameters !
 // FIXME: some of those parameters are not tested.
-void afp_filedir_unpack(struct afp_filedir_parms *filedir, char *b, u_int16_t rfbitmap, u_int16_t rdbitmap)
+void afp_filedir_unpack(struct afp_filedir_parms *filedir, unsigned char *b, u_int16_t rfbitmap, u_int16_t rdbitmap)
 {
     char isdir;
     u_int16_t i,j;
@@ -1129,7 +1128,7 @@ void afp_filedir_unpack(struct afp_filedir_parms *filedir, char *b, u_int16_t rf
     int r;
     int bit = 0;
 	u_int16_t bitmap;
-	char *beg = b;
+	unsigned char *beg = b;
 
     isdir = filedir->isdir;
 	bitmap = (isdir)?rdbitmap:rfbitmap;
@@ -1249,16 +1248,16 @@ void afp_filedir_unpack(struct afp_filedir_parms *filedir, char *b, u_int16_t rf
 } 
 
 /* ---------------------- */
-int afp_filedir_pack(char *b, struct afp_filedir_parms *filedir, u_int16_t rfbitmap, u_int16_t rdbitmap)
+int afp_filedir_pack(unsigned char *b, struct afp_filedir_parms *filedir, u_int16_t rfbitmap, u_int16_t rdbitmap)
 {
     char isdir;
     u_int16_t i,tp;
     u_int32_t l;
     int bit = 0;
 	u_int16_t bitmap;
-	char *beg = b;
-	char *l_ofs = NULL;
-	char *u_ofs = NULL;
+	unsigned char *beg = b;
+	unsigned char *l_ofs = NULL;
+	unsigned char *u_ofs = NULL;
 
     isdir = filedir->isdir;
 	bitmap = (isdir)?rdbitmap:rfbitmap;
@@ -1602,7 +1601,7 @@ int AFPWrite_ext(CONN *conn, u_int16_t fork, off_t offset, off_t size, char *dat
 int ofs;
 DSI *dsi;
 off_t last;
-char *ptr;
+unsigned char *ptr;
 	dsi = &conn->dsi;
 
 	memset(dsi->commands, 0, DSI_CMDSIZ);
@@ -2340,3 +2339,251 @@ u_int16_t i;
 	return(dsi->header.dsi_code);
 }
 
+/* -------------------------------
+*/
+int AFPGetACL(CONN *conn, u_int16_t vol, int did, u_int16_t bitmap, char *name)
+{
+int ofs;
+DSI *dsi;
+
+        dsi = &conn->dsi;
+
+        SendInit(dsi);
+        ofs = 0;
+        dsi->commands[ofs++] = AFP_GETACL;
+        dsi->commands[ofs++] = 0;
+
+        memcpy(dsi->commands +ofs, &vol, sizeof(vol));
+        ofs += sizeof(vol);
+
+        memcpy(dsi->commands +ofs, &did, sizeof(did));
+        ofs += sizeof(did);
+
+	bitmap = htons(bitmap);
+        memcpy(dsi->commands +ofs, &bitmap, sizeof(bitmap));
+        ofs += sizeof(bitmap);
+
+        memset(dsi->commands +ofs, 0, 4);
+        ofs += 4;
+
+        ofs = FPset_name(conn, ofs, name);
+
+        SetLen(dsi, ofs);
+
+        my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
+        /* ------------------ */
+        my_dsi_data_receive(dsi);
+        return(dsi->header.dsi_code);
+}
+
+/* --------------------------------
+*/
+int AFPGetExtAttr(CONN *conn, u_int16_t vol, int did, u_int16_t bitmap, int maxsize, char* pathname, char* attrname)
+{
+int ofs;
+DSI *dsi;
+long long reqcount = -1;
+u_int16_t len;
+	
+	dsi = &conn->dsi;
+
+	SendInit(dsi);
+	ofs = 0;
+	dsi->commands[ofs++] = AFP_GETEXTATTR;
+	dsi->commands[ofs++] = 0;
+
+        memcpy(dsi->commands +ofs, &vol, sizeof(vol));
+        ofs += sizeof(vol);
+
+        memcpy(dsi->commands +ofs, &did, sizeof(did));
+        ofs += sizeof(did);
+
+	bitmap = htons(bitmap);
+        memcpy(dsi->commands +ofs, &bitmap, sizeof(bitmap));
+        ofs += sizeof(bitmap);
+
+	/* offset = 0, 8 bytes */
+        memset(dsi->commands +ofs, 0, 8);
+        ofs += 8;
+
+	/* reqcount = -1, 8 bytes */	
+	reqcount = __bswap_64(reqcount);	
+        memcpy(dsi->commands +ofs, &reqcount, sizeof(reqcount));
+        ofs += sizeof(reqcount);
+
+	/* max reply size */
+	maxsize = htonl(maxsize);
+        memcpy(dsi->commands +ofs, &maxsize, sizeof(maxsize));
+        ofs += sizeof(maxsize);
+
+        ofs = FPset_name(conn, ofs, pathname);
+	
+	if (ofs & 1) /* pad to an even boundary */
+		ofs++;
+
+	len=strlen(attrname);
+	len=htons(len);
+        memcpy(dsi->commands +ofs, &len, sizeof(len));
+        ofs += sizeof(len);
+
+	len=ntohs(len); 
+	memcpy(&dsi->commands[ofs], attrname, len);
+	ofs += len;
+
+        SetLen(dsi, ofs);
+
+        my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
+        /* ------------------ */
+        my_dsi_data_receive(dsi);
+        return(dsi->header.dsi_code);
+}
+
+
+/* --------------------------------
+*/
+int AFPListExtAttr(CONN *conn, u_int16_t vol, int did, u_int16_t bitmap, int maxsize, char* pathname)
+{
+int ofs;
+DSI *dsi;
+	
+	dsi = &conn->dsi;
+
+	SendInit(dsi);
+	ofs = 0;
+	dsi->commands[ofs++] = AFP_LISTEXTATTRS;
+	dsi->commands[ofs++] = 0;
+
+        memcpy(dsi->commands +ofs, &vol, sizeof(vol));
+        ofs += sizeof(vol);
+
+        memcpy(dsi->commands +ofs, &did, sizeof(did));
+        ofs += sizeof(did);
+
+	bitmap = htons(bitmap);
+        memcpy(dsi->commands +ofs, &bitmap, sizeof(bitmap));
+        ofs += sizeof(bitmap);
+
+	/* reqcount / startindex = 0, 6 bytes */
+        memset(dsi->commands +ofs, 0, 6);
+        ofs += 6;
+
+	/* max reply size */
+	maxsize = htonl(maxsize);
+        memcpy(dsi->commands +ofs, &maxsize, sizeof(maxsize));
+        ofs += sizeof(maxsize);
+
+        ofs = FPset_name(conn, ofs, pathname);
+	
+        SetLen(dsi, ofs);
+
+        my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
+        /* ------------------ */
+        my_dsi_data_receive(dsi);
+        return(dsi->header.dsi_code);
+}
+
+/* --------------------------------
+*/
+int AFPSetExtAttr(CONN *conn, u_int16_t vol, int did, u_int16_t bitmap, char* pathname, char* attrname, char* data)
+{
+int ofs;
+DSI *dsi;
+u_int16_t len;
+u_int32_t datalen;
+	
+	dsi = &conn->dsi;
+
+	SendInit(dsi);
+	ofs = 0;
+	dsi->commands[ofs++] = AFP_SETEXTATTR;
+	dsi->commands[ofs++] = 0;
+
+        memcpy(dsi->commands +ofs, &vol, sizeof(vol));
+        ofs += sizeof(vol);
+
+        memcpy(dsi->commands +ofs, &did, sizeof(did));
+        ofs += sizeof(did);
+
+	bitmap = htons(bitmap);
+        memcpy(dsi->commands +ofs, &bitmap, sizeof(bitmap));
+        ofs += sizeof(bitmap);
+
+	/* offset = 0, 8 bytes */
+        memset(dsi->commands +ofs, 0, 8);
+        ofs += 8;
+
+        ofs = FPset_name(conn, ofs, pathname);
+	
+	if (ofs & 1) /* pad to an even boundary */
+		ofs++;
+
+	len=strlen(attrname);
+	len=htons(len);
+        memcpy(dsi->commands +ofs, &len, sizeof(len));
+        ofs += sizeof(len);
+
+	len=ntohs(len); 
+	memcpy(&dsi->commands[ofs], attrname, len);
+	ofs += len;
+
+	datalen=strlen(data);
+	datalen=htonl(datalen);
+	memcpy(dsi->commands + ofs, &datalen, sizeof(datalen));
+	ofs += sizeof(datalen);
+
+	datalen=ntohl(datalen);
+	memcpy(&dsi->commands[ofs], data, datalen);
+	ofs += datalen;
+
+        SetLen(dsi, ofs);
+
+        my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
+        /* ------------------ */
+        my_dsi_data_receive(dsi);
+        return(dsi->header.dsi_code);
+}
+
+int AFPRemoveExtAttr(CONN *conn, u_int16_t vol, int did, u_int16_t bitmap, char* pathname, char* attrname)
+{
+int ofs;
+DSI *dsi;
+u_int16_t len;
+	
+	dsi = &conn->dsi;
+
+	SendInit(dsi);
+	ofs = 0;
+	dsi->commands[ofs++] = AFP_REMOVEEXTATTR;
+	dsi->commands[ofs++] = 0;
+
+        memcpy(dsi->commands +ofs, &vol, sizeof(vol));
+        ofs += sizeof(vol);
+
+        memcpy(dsi->commands +ofs, &did, sizeof(did));
+        ofs += sizeof(did);
+
+	bitmap = htons(bitmap);
+        memcpy(dsi->commands +ofs, &bitmap, sizeof(bitmap));
+        ofs += sizeof(bitmap);
+
+        ofs = FPset_name(conn, ofs, pathname);
+	
+	if (ofs & 1) /* pad to an even boundary */
+		ofs++;
+
+	len=strlen(attrname);
+	len=htons(len);
+        memcpy(dsi->commands +ofs, &len, sizeof(len));
+        ofs += sizeof(len);
+
+	len=ntohs(len); 
+	memcpy(&dsi->commands[ofs], attrname, len);
+	ofs += len;
+
+        SetLen(dsi, ofs);
+
+        my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
+        /* ------------------ */
+        my_dsi_data_receive(dsi);
+        return(dsi->header.dsi_code);
+}
