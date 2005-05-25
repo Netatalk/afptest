@@ -1,5 +1,5 @@
 /*
- * $Id: main.c,v 1.2 2003-08-11 17:37:13 didg Exp $
+ * $Id: main.c,v 1.3 2005-05-25 18:03:32 didg Exp $
  *
  */
 
@@ -167,6 +167,7 @@ void usage( char * av0 )
 
     fprintf( stderr,"\t-3\tAFP 3.0 version\n");
     fprintf( stderr,"\t-4\tAFP 3.1 version\n");
+    fprintf( stderr,"\t-5\tAFP 3.2 version\n");
     fprintf( stderr,"\t-v\tverbose\n");
 
     fprintf( stderr,"\t-a\tall tests\n");
@@ -191,7 +192,7 @@ int mac = 0;
 static char *vers = "AFPVersion 2.1";
 static char *uam = "Cleartxt Passwrd";
 
-    while (( cc = getopt( ac, av, "Qlvxrmd:34anoth:p:s:u:w:c:" )) != EOF ) {
+    while (( cc = getopt( ac, av, "Qlvxrmd:345anoth:p:s:u:w:c:" )) != EOF ) {
         switch ( cc ) {
 		case 'Q':
 			Quirk = 1;
@@ -206,6 +207,10 @@ static char *uam = "Cleartxt Passwrd";
         case '4':
 			vers = "AFP3.1";
 			Version = 31;
+			break;
+        case '5':
+			vers = "AFP3.2";
+			Version = 32;
 			break;
 		case 'c':
 			Path = strdup(optarg);

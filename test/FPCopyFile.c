@@ -423,6 +423,293 @@ fin:
 	exit_test("test375");
 }
 
+/* ------------------------- */
+STATIC void test401()
+{
+int  dir = 0;
+char *name = "t401 file.pdf";
+char *name1= "new t401 file.pdf";
+
+char *ndir = "t401 dir";
+u_int16_t vol = VolID;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+u_int16_t bitmap = 0;
+int fork;
+DSI *dsi;
+
+	dsi = &Conn->dsi;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPCopyFile:t401: unix access privilege, read only file\n");
+
+	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
+		test_skipped(T_UNIX_PREV);
+		goto test_exit;
+	}
+
+	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
+		nottested();
+		goto test_exit;
+	}
+	filedir.isdir = 1;
+	afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+
+	bitmap = (1<< DIRPBIT_UNIXPR);
+	filedir.unix_priv = 0770;
+    filedir.access[0] = 0;
+    filedir.access[1] = filedir.access[2] = filedir.access[3] = 0;
+ 	FAIL (FPSetFilDirParam(Conn, vol, dir , "", bitmap, &filedir)) 
+
+	if (FPCreateFile(Conn, vol,  0, dir , name)) {
+		nottested();
+		goto fin;
+	}
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0, dir, name, OPENACC_WR |OPENACC_RD);
+	if (!fork) {
+		nottested();
+		goto fin;
+	}
+	if (FPSetForkParam(Conn, fork, (1<<FILPBIT_DFLEN), 400)) {
+		FPCloseFork(Conn,fork);
+		nottested();
+		goto fin;
+	}
+	FPCloseFork(Conn,fork);
+	
+	fork = FPOpenFork(Conn, vol, OPENFORK_RSCS , 0, dir, name, OPENACC_WR |OPENACC_RD);
+	if (!fork) {
+		nottested();
+		goto fin;
+	}
+	if (FPSetForkParam(Conn, fork, (1<<FILPBIT_RFLEN), 300)) {
+		FPCloseFork(Conn,fork);
+		nottested();
+		goto fin;
+	}
+	FPCloseFork(Conn,fork);
+	
+	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) |
+		(1 << DIRPBIT_UNIXPR) | (1<<FILPBIT_ATTR);
+
+	if (FPGetFileDirParams(Conn, vol, dir, name, bitmap, 0)) {
+	    failed();
+	    goto fin1;
+	}
+	filedir.isdir = 0;
+	afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+
+	bitmap = (1<< DIRPBIT_UNIXPR);
+	filedir.unix_priv = 0444;
+    filedir.access[0] = 0;
+    filedir.access[1] = filedir.access[2] = filedir.access[3] = 0;
+ 	FAIL (FPSetFilDirParam(Conn, vol, dir , name, bitmap, &filedir)) 
+
+	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) |
+		(1 << DIRPBIT_UNIXPR) | (1<<FILPBIT_ATTR);
+	if (FPGetFileDirParams(Conn, vol, dir, name, bitmap, 0)) {
+	    failed();
+	    goto fin1;
+	}
+	FAIL (FPCopyFile(Conn, vol, dir, vol, dir, name, name1))
+
+	FAIL (FPDelete(Conn, vol,  dir , name1))
+
+fin1:
+	FAIL (FPDelete(Conn, vol,  dir , name))
+fin:	
+	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test401");
+}
+
+/* ------------------------- */
+STATIC void test402()
+{
+int  dir = 0;
+char *name = "t402 file.pdf";
+char *name1= "new t402 file.pdf";
+
+char *ndir = "t402 dir";
+u_int16_t vol = VolID;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+u_int16_t bitmap = 0;
+int fork;
+DSI *dsi;
+
+	dsi = &Conn->dsi;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPCopyFile:t401: unix access privilege, read only file\n");
+
+	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
+		test_skipped(T_UNIX_PREV);
+		goto test_exit;
+	}
+
+	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
+		nottested();
+		goto test_exit;
+	}
+
+	if (FPCreateFile(Conn, vol,  0, dir , name)) {
+		nottested();
+		goto fin;
+	}
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0, dir, name, OPENACC_WR |OPENACC_RD);
+	if (!fork) {
+		nottested();
+		goto fin;
+	}
+	if (FPSetForkParam(Conn, fork, (1<<FILPBIT_DFLEN), 400)) {
+		FPCloseFork(Conn,fork);
+		nottested();
+		goto fin;
+	}
+	FPCloseFork(Conn,fork);
+	
+	fork = FPOpenFork(Conn, vol, OPENFORK_RSCS , 0, dir, name, OPENACC_WR |OPENACC_RD);
+	if (!fork) {
+		nottested();
+		goto fin;
+	}
+	if (FPSetForkParam(Conn, fork, (1<<FILPBIT_RFLEN), 300)) {
+		FPCloseFork(Conn,fork);
+		nottested();
+		goto fin;
+	}
+	FPCloseFork(Conn,fork);
+	
+	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) |
+		(1 << DIRPBIT_UNIXPR) | (1<<FILPBIT_ATTR);
+
+	if (FPGetFileDirParams(Conn, vol, dir, name, bitmap, 0)) {
+	    failed();
+	    goto fin1;
+	}
+	filedir.isdir = 0;
+	afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+
+	bitmap = (1<< DIRPBIT_UNIXPR);
+	filedir.unix_priv = 0222;
+    filedir.access[0] = 0;
+    filedir.access[1] = filedir.access[2] = filedir.access[3] = 0;
+ 	FAIL (FPSetFilDirParam(Conn, vol, dir , name, bitmap, &filedir)) 
+
+	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) |
+		(1 << DIRPBIT_UNIXPR) | (1<<FILPBIT_ATTR);
+	if (FPGetFileDirParams(Conn, vol, dir, name, bitmap, 0)) {
+	    failed();
+	    goto fin1;
+	}
+	FAIL (ntohl(AFPERR_DENYCONF) != FPCopyFile(Conn, vol, dir, vol, dir, name, name1))
+
+fin1:
+	FAIL (FPDelete(Conn, vol,  dir , name))
+fin:	
+	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test402");
+}
+
+/* ------------------------- */
+STATIC void test403()
+{
+int  dir = 0;
+char *name = "t403 file.pdf";
+char *name1= "new t403 file.pdf";
+
+char *ndir = "t403 dir";
+u_int16_t vol = VolID;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+u_int16_t bitmap = 0;
+DSI *dsi;
+
+	dsi = &Conn->dsi;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPCopyFile:t403: unix access privilege, same priv\n");
+
+	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
+		test_skipped(T_UNIX_PREV);
+		goto test_exit;
+	}
+
+	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
+		nottested();
+		goto test_exit;
+	}
+	filedir.isdir = 1;
+	afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+
+	bitmap = (1<< DIRPBIT_UNIXPR);
+	filedir.unix_priv = 0770;
+    filedir.access[0] = 0;
+    filedir.access[1] = filedir.access[2] = filedir.access[3] = 0;
+ 	FAIL (FPSetFilDirParam(Conn, vol, dir , "", bitmap, &filedir)) 
+
+	if (FPCreateFile(Conn, vol,  0, dir , name)) {
+		nottested();
+		goto fin;
+	}
+
+	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) |
+		(1 << DIRPBIT_UNIXPR) | (1<<FILPBIT_ATTR);
+
+	if (FPGetFileDirParams(Conn, vol, dir, name, bitmap, 0)) {
+	    failed();
+	    goto fin1;
+	}
+	filedir.isdir = 0;
+	afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+
+	bitmap = (1<< DIRPBIT_UNIXPR);
+	filedir.unix_priv = 0444;
+    filedir.access[0] = 0;
+    filedir.access[1] = filedir.access[2] = filedir.access[3] = 0;
+ 	FAIL (FPSetFilDirParam(Conn, vol, dir , name, bitmap, &filedir)) 
+
+	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) |
+		(1 << DIRPBIT_UNIXPR) | (1<<FILPBIT_ATTR);
+	if (FPGetFileDirParams(Conn, vol, dir, name, bitmap, 0)) {
+	    failed();
+	    goto fin1;
+	}
+
+	FAIL (FPCopyFile(Conn, vol, dir, vol, dir, name, name1))
+
+	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) |
+		(1 << DIRPBIT_UNIXPR) | (1<<FILPBIT_ATTR);
+
+	if (FPGetFileDirParams(Conn, vol, dir, name1, bitmap, 0)) {
+	    failed();
+	    goto fin1;
+	}
+	filedir.isdir = 0;
+	afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+	if ((filedir.unix_priv & 0444) != 0444) {
+		fprintf(stderr,"\tFAILED unix priv differ\n");
+	    failed_nomsg();
+	}
+
+	FAIL (FPDelete(Conn, vol,  dir , name1))
+
+fin1:
+	FAIL (FPDelete(Conn, vol,  dir , name))
+fin:	
+	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test403");
+}
+
+
 /* ----------- */
 void FPCopyFile_test()
 {
@@ -435,5 +722,8 @@ void FPCopyFile_test()
 	test332();
 	test374();
 	test375();
+	test401();
+	test402();
+	test403();
 }
 

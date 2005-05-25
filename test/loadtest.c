@@ -1,5 +1,5 @@
 /*
- * $Id: loadtest.c,v 1.2 2003-08-18 13:47:16 didg Exp $
+ * $Id: loadtest.c,v 1.3 2005-05-25 18:03:32 didg Exp $
  * MANIFEST
  */
 
@@ -454,6 +454,7 @@ void usage( char * av0 )
     fprintf( stderr,"\t-w\tpassword (default none)\n");
     fprintf( stderr,"\t-3\tAFP 3.0 version\n");
     fprintf( stderr,"\t-4\tAFP 3.1 version\n");
+    fprintf( stderr,"\t-5\tAFP 3.2 version\n");
     fprintf( stderr,"\t-v\tverbose\n");
 
     fprintf( stderr,"\t-l\trun test in loop\n");
@@ -470,7 +471,7 @@ int cc;
 static char *vers = "AFPVersion 2.1";
 static char *uam = "Cleartxt Passwrd";
 
-    while (( cc = getopt( ac, av, "tmlv34h:p:s:u:w:c:" )) != EOF ) {
+    while (( cc = getopt( ac, av, "tmlv345h:p:s:u:w:c:" )) != EOF ) {
         switch ( cc ) {
         case 't':
         	Throttle = 1;
@@ -482,6 +483,10 @@ static char *uam = "Cleartxt Passwrd";
         case '4':
 			vers = "AFP3.1";
 			Version = 31;
+			break;
+        case '5':
+			vers = "AFP3.2";
+			Version = 32;
 			break;
 		case 'c':
 			Path = strdup(optarg);

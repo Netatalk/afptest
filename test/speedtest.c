@@ -1,5 +1,5 @@
 /*
- * $Id: speedtest.c,v 1.6 2005-05-04 00:29:02 didg Exp $
+ * $Id: speedtest.c,v 1.7 2005-05-25 18:03:32 didg Exp $
  * MANIFEST
  */
 #include "specs.h"
@@ -1283,6 +1283,7 @@ void usage( char * av0 )
     fprintf( stderr,"\t-2\tAFP 2.2 version (default 2.1)\n");
     fprintf( stderr,"\t-3\tAFP 3.0 version\n");
     fprintf( stderr,"\t-4\tAFP 3.1 version\n");
+    fprintf( stderr,"\t-5\tAFP 3.2 version\n");
 
     fprintf( stderr,"\t-c\trun test count times\n");
     fprintf( stderr,"\t-d\tfile size (Mbytes, default 64)\n");
@@ -1312,7 +1313,7 @@ char	**av;
 int cc;
 
 	Quiet = 1;
-    while (( cc = getopt( ac, av, "Vv234h:p:s:S:u:d:w:f:ic:""o:q:r:yeLDaF:R:" )) != EOF ) {
+    while (( cc = getopt( ac, av, "Vv2345h:p:s:S:u:d:w:f:ic:""o:q:r:yeLDaF:R:" )) != EOF ) {
         switch ( cc ) {
 		case 'd':
 			Size = atoi(optarg) * MEGABYTE;
@@ -1359,6 +1360,10 @@ int cc;
         case '4':
 			vers = "AFP3.1";
 			Version = 31;
+			break;
+        case '5':
+			vers = "AFP3.2";
+			Version = 32;
 			break;
         case 'n':
             Proto = 1;

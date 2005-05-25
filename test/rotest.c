@@ -1,5 +1,5 @@
 /*
- * $Id: rotest.c,v 1.3 2004-06-14 00:45:27 didg Exp $
+ * $Id: rotest.c,v 1.4 2005-05-25 18:03:32 didg Exp $
  * MANIFEST
  */
 #include "specs.h"
@@ -359,6 +359,7 @@ void usage( char * av0 )
     fprintf( stderr,"\t-2\tAFP 2.2 version (default 2.1)\n");
     fprintf( stderr,"\t-3\tAFP 3.0 version\n");
     fprintf( stderr,"\t-4\tAFP 3.1 version\n");
+    fprintf( stderr,"\t-5\tAFP 3.2 version\n");
     fprintf( stderr,"\t-v\tverbose\n");
 
     exit (1);
@@ -372,7 +373,7 @@ char	**av;
 int cc;
 static char *uam = "Cleartxt Passwrd";
 
-    while (( cc = getopt( ac, av, "v234h:p:u:w:ms:" )) != EOF ) {
+    while (( cc = getopt( ac, av, "v2345h:p:u:w:ms:" )) != EOF ) {
         switch ( cc ) {
         case 's':
             Vol = strdup(optarg);
@@ -388,6 +389,10 @@ static char *uam = "Cleartxt Passwrd";
         case '4':
 			vers = "AFP3.1";
 			Version = 31;
+			break;
+        case '5':
+			vers = "AFP3.2";
+			Version = 32;
 			break;
 		case 'm':
 			Mac = 1;

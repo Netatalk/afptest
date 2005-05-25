@@ -1,5 +1,5 @@
 /*
- * $Id: fail_spectest.c,v 1.3 2004-01-08 03:56:12 didg Exp $
+ * $Id: fail_spectest.c,v 1.4 2005-05-25 18:03:32 didg Exp $
  * MANIFEST
  */
 #define QUIRK
@@ -275,6 +275,7 @@ void usage( char * av0 )
     fprintf( stderr,"\t-2\tAFP 2.2 version (default 2.1)\n");
     fprintf( stderr,"\t-3\tAFP 3.0 version\n");
     fprintf( stderr,"\t-4\tAFP 3.1 version\n");
+    fprintf( stderr,"\t-5\tAFP 3.2 version\n");
     fprintf( stderr,"\t-v\tverbose\n");
 
     fprintf( stderr,"\t-x\tdon't run tests known to kill some afpd versions\n");
@@ -292,7 +293,7 @@ char	**av;
 {
 int cc;
 
-    while (( cc = getopt( ac, av, "v234h:H:p:s:u:d:w:c:f:lmx" )) != EOF ) {
+    while (( cc = getopt( ac, av, "v2345h:H:p:s:u:d:w:c:f:lmx" )) != EOF ) {
         switch ( cc ) {
         case '2':
 			vers = "AFP2.2";
@@ -305,6 +306,10 @@ int cc;
         case '4':
 			vers = "AFP3.1";
 			Version = 31;
+			break;
+        case '5':
+			vers = "AFP3.2";
+			Version = 32;
 			break;
 		case 'c':
 			Path = strdup(optarg);

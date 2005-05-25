@@ -1,5 +1,5 @@
 /*
- * $Id: logintest.c,v 1.3 2003-08-18 13:47:16 didg Exp $
+ * $Id: logintest.c,v 1.4 2005-05-25 18:03:32 didg Exp $
  * MANIFEST
  */
 #include "specs.h"
@@ -135,6 +135,7 @@ void usage( char * av0 )
     fprintf( stderr,"\t-2\tAFP 2.2 version (default 2.1)\n");
     fprintf( stderr,"\t-3\tAFP 3.0 version\n");
     fprintf( stderr,"\t-4\tAFP 3.1 version\n");
+    fprintf( stderr,"\t-5\tAFP 3.2 version\n");
     fprintf( stderr,"\t-v\tverbose\n");
 
     exit (1);
@@ -149,7 +150,7 @@ int cc;
 static char *uam = "Cleartxt Passwrd";
 unsigned int ret;
 
-    while (( cc = getopt( ac, av, "v234h:p:u:w:m" )) != EOF ) {
+    while (( cc = getopt( ac, av, "v2345h:p:u:w:m" )) != EOF ) {
         switch ( cc ) {
         case '2':
 			vers = "AFP2.2";
@@ -162,6 +163,10 @@ unsigned int ret;
         case '4':
 			vers = "AFP3.1";
 			Version = 31;
+			break;
+        case '5':
+			vers = "AFP3.2";
+			Version = 32;
 			break;
 		case 'm':
 			Mac = 1;

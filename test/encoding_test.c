@@ -1,5 +1,5 @@
 /*
- * $Id: encoding_test.c,v 1.4 2005-05-04 00:29:02 didg Exp $
+ * $Id: encoding_test.c,v 1.5 2005-05-25 18:03:32 didg Exp $
  * MANIFEST
  */
 
@@ -220,6 +220,7 @@ void usage( char * av0 )
     fprintf( stderr,"\t-w\tpassword (default none)\n");
     fprintf( stderr,"\t-3\tAFP 3.0 version\n");
     fprintf( stderr,"\t-4\tAFP 3.1 version\n");
+    fprintf( stderr,"\t-5\tAFP 3.2 version\n");
     fprintf( stderr,"\t-v\tverbose\n");
 
     exit (1);
@@ -235,7 +236,7 @@ int cc;
 static char *vers = "AFPVersion 2.1";
 static char *uam = "Cleartxt Passwrd";
 
-    while (( cc = getopt( ac, av, "Rmlv34h:p:s:u:w:d:c:" )) != EOF ) {
+    while (( cc = getopt( ac, av, "Rmlv345h:p:s:u:w:d:c:" )) != EOF ) {
         switch ( cc ) {
         case '3':
 			vers = "AFPX03";
@@ -244,6 +245,10 @@ static char *uam = "Cleartxt Passwrd";
         case '4':
 			vers = "AFP3.1";
 			Version = 31;
+			break;
+        case '5':
+			vers = "AFP3.2";
+			Version = 32;
 			break;
 		case 'R':
 			Recurse = 1;

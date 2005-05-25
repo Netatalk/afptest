@@ -1,5 +1,5 @@
 /*
- * $Id: afp_ls.c,v 1.7 2005-05-04 00:29:01 didg Exp $
+ * $Id: afp_ls.c,v 1.8 2005-05-25 18:03:32 didg Exp $
  * MANIFEST
  */
 
@@ -189,6 +189,7 @@ void usage( char * av0 )
     fprintf( stderr,"\t-i\tprint ID and name\n");
     fprintf( stderr,"\t-3\tAFP 3.0 version\n");
     fprintf( stderr,"\t-4\tAFP 3.1 version\n");
+    fprintf( stderr,"\t-5\tAFP 3.2 version\n");
     fprintf( stderr,"\t-v\tverbose\n");
     fprintf( stderr,"\t-t\trun it twice (ie one with the cache warm)\n");
 
@@ -205,7 +206,7 @@ int cc;
 static char *vers = "AFPVersion 2.1";
 static char *uam = "Cleartxt Passwrd";
 
-    while (( cc = getopt( ac, av, "Rimlv34th:p:s:u:w:d:" )) != EOF ) {
+    while (( cc = getopt( ac, av, "Rimlv345th:p:s:u:w:d:" )) != EOF ) {
         switch ( cc ) {
         case 'i':
             Quiet = 1;
@@ -217,6 +218,10 @@ static char *uam = "Cleartxt Passwrd";
         case '4':
 			vers = "AFP3.1";
 			Version = 31;
+			break;
+        case '5':
+			vers = "AFP3.2";
+			Version = 32;
 			break;
 		case 'R':
 			Recurse = 1;
