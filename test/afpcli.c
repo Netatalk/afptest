@@ -931,9 +931,13 @@ DSI *dsi;
 		/* copy of bitmap */
 		memcpy(&result, dsi->commands, sizeof(result));
 		ofs += sizeof(result);
-		/* volume attribute  */
-		memcpy(&result, dsi->commands, sizeof(result));
-		ofs += sizeof(result);
+		result = ntohs(result);
+		/* XXXX need to fully parse this stuff */
+		if ((result & (1<<VOLPBIT_ATTR))) {
+		    /* volume attribute  */
+		    memcpy(&result, dsi->commands, sizeof(result));
+		    ofs += sizeof(result);
+		}
 		/*  volume ID */
 		memcpy(&result, dsi->commands +ofs, sizeof(result));
 		volID = result;

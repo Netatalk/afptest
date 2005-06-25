@@ -66,6 +66,43 @@ fin:
 	exit_test("test205");
 }
 
+/* -------------------------------- */
+STATIC void test404()
+{
+u_int16_t vol = VolID;
+DSI *dsi = &Conn->dsi;
+u_int16_t ret;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPOpenVol:t404: lazy init of dbd cnid\n");
+
+    FAIL (FPCloseVol(Conn, vol));
+
+	ret = FPGetSrvrParms(Conn);
+	if (ret) {
+		failed();
+		goto fin;
+	}
+
+	/* --------- */
+    ret = FPOpenVolFull(Conn, Vol, 1<<VOLPBIT_VID);
+	if (ret == 0xffff) {
+		failed();
+		goto fin;
+	}
+	FAIL(FPGetFileDirParams(Conn, vol, DIRDID_ROOT, "", 0, 1 << DIRPBIT_ACCESS));
+
+	/* --------- */
+    FAIL (FPCloseVol(Conn, ret));
+fin:
+	ret = VolID = FPOpenVol(Conn, Vol);
+	if (ret == 0xffff) {
+		failed();
+	}
+	exit_test("test404");
+}
+
 /* ----------- */
 void FPOpenVol_test()
 {

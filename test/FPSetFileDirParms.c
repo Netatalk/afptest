@@ -1153,6 +1153,65 @@ test_exit:
 	exit_test("test361");
 }
 
+/* ------------------------- */
+STATIC void test400()
+{
+int  dir = 0;
+char *name = "t400 file.pdf";
+char *ndir = "t400 dir";
+u_int16_t vol = VolID;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+u_int16_t bitmap = 0;
+DSI *dsi;
+
+	dsi = &Conn->dsi;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPSetFileDirParms:t400: set file owner\n");
+
+	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
+		test_skipped(T_UNIX_PREV);
+		goto test_exit;
+	}
+
+	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
+		nottested();
+		goto test_exit;
+	}
+
+	if (FPCreateFile(Conn, vol,  0, dir , name)) {
+		nottested();
+		goto fin;
+	}
+		
+	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) |
+		(1 << DIRPBIT_UNIXPR) | (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO);
+
+	if (FPGetFileDirParams(Conn, vol, dir, name, bitmap, 0)) {
+	    nottested();
+	    goto fin1;
+	}
+	filedir.isdir = 0;
+	afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+
+	bitmap = (1<< DIRPBIT_UNIXPR);
+	filedir.uid = 100000;
+	filedir.gid = 125000;
+	filedir.unix_priv = 0660;
+ 	FAIL (FPSetFilDirParam(Conn, vol, dir , name, bitmap, &filedir)) 
+
+	FAIL(FPGetFileDirParams(Conn, vol, dir, name, bitmap, 0))
+
+fin1:
+	FAIL (FPDelete(Conn, vol,  dir , name))
+fin:	
+	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test400");
+}
+
 /* ----------- */
 void FPSetFileDirParms_test()
 {
@@ -1171,6 +1230,6 @@ void FPSetFileDirParms_test()
     test358();
     test359();
     test361();
-//    test400();
+    test400();
 }
 
