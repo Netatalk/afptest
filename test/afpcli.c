@@ -39,7 +39,7 @@ int attr;
     	return(-1);
    	}
     attr = 1;
-    setsockopt(sock, SOL_TCP, TCP_NODELAY, &attr, sizeof(attr));
+    setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, &attr, sizeof(attr));
  
  	if(connect(sock ,(struct sockaddr*)&server,sizeof(server))==-1) {
     	close(sock);
@@ -2411,7 +2411,7 @@ u_int16_t len;
         ofs += 8;
 
 	/* reqcount = -1, 8 bytes */	
-	reqcount = __bswap_64(reqcount);	
+	reqcount = bswap_64(reqcount);	
         memcpy(dsi->commands +ofs, &reqcount, sizeof(reqcount));
         ofs += sizeof(reqcount);
 
