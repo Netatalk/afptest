@@ -18,6 +18,10 @@
 #endif /* HAVE_FCNTL_H */
 #include <signal.h>
 
+#ifdef HAVE_BYTESWAP_H
+#include <byteswap.h>
+#endif
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/param.h>
