@@ -24,15 +24,14 @@ STATIC void test2()
 		nottested();
 		goto test_exit;
 	}
-	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, 0, DIRPBIT_DID )) {
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, 0, (1 << DIRPBIT_DID) )) {
 		failed();
         goto fin;
 	}
 
     filedir.isdir = 1;
-    afp_filedir_unpack(&filedir, dsi->data +ofs, 0, DIRPBIT_DID);
-    printf("did: '%u'\n", filedir.did);
- 	if (FPSyncDir(Conn, vol, htonl(filedir.did)))
+    afp_filedir_unpack(&filedir, dsi->data +ofs, 0, (1 << DIRPBIT_DID));
+ 	if (FPSyncDir(Conn, vol, filedir.did))
 		failed();
 
 fin:
