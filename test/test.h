@@ -101,7 +101,7 @@ extern unsigned int FPGetExtAttr(CONN *conn, u_int16_t vol, int did, u_int16_t b
 extern unsigned int FPListExtAttr(CONN *conn, u_int16_t vol, int did, u_int16_t bitmap, int maxsize, char* name);
 extern unsigned int FPSetExtAttr(CONN *conn, u_int16_t vol, int did, u_int16_t bitmap, char* name, char* attr, char* data);
 extern unsigned int FPRemoveExtAttr(CONN *conn, u_int16_t vol, int did, u_int16_t bitmap, char* name, char* attr);
-
+extern unsigned int FPSyncDir(CONN *conn, u_int16_t vol, int did);
 
 void dump_header(DSI *dsi);
 char *afp_error(int error);

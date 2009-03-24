@@ -1,5 +1,5 @@
 /*
- * $Id: afpcmd.c,v 1.9 2005-05-04 00:29:02 didg Exp $
+ * $Id: afpcmd.c,v 1.10 2009-03-24 10:02:51 franklahm Exp $
  *
  */
 #include "afpclient.h"
@@ -1690,6 +1690,44 @@ DSI *dsi;
 	dump_header(dsi);
 	return dsi->header.dsi_code;
 	
+}
+
+/* ------------------------------- */
+unsigned int FPSyncDir(CONN *conn, u_int16_t vol, int did)
+{
+    DSI *dsi;
+    unsigned int ofs;
+
+	dsi = &conn->dsi;
+
+	if (!Quiet) {
+		fprintf(stderr,"---------------------\n");
+		fprintf(stderr,"FPSyncDir 0x%x\n\n", ntohl(did));
+	}
+
+	memset(dsi->commands, 0, DSI_CMDSIZ);
+	dsi->header.dsi_flags = DSIFL_REQUEST;     
+	dsi->header.dsi_command = DSIFUNC_CMD;
+	dsi->header.dsi_requestID = htons(dsi_clientID(dsi));
+	ofs = 0;
+	dsi->commands[ofs++] = AFP_SYNCDIR;
+	dsi->commands[ofs++] = 0;
+
+	memcpy(dsi->commands +ofs, &vol, sizeof(vol));	/* volume */
+	ofs += sizeof(vol);
+
+	memcpy(dsi->commands +ofs, &did, sizeof(did));  /* directory did */
+	ofs += sizeof(did);
+
+	dsi->datalen = ofs;
+	dsi->header.dsi_len = htonl(dsi->datalen);
+	dsi->header.dsi_code = 0; 
+ 
+   	my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
+	/* ------------------ */
+	my_dsi_cmd_receive(dsi);
+	dump_header(dsi);
+	return dsi->header.dsi_code;
 }
 
 /* ------------------------------- */
