@@ -1,6 +1,6 @@
 SUBDIRS =
  
-bin_PROGRAMS = afpclient afp_ls loadtest spectest postmark fail_spectest T2_spectest logintest rotest \
+bin_PROGRAMS = afpclient afparg afp_ls loadtest spectest postmark fail_spectest T2_spectest logintest rotest \
                encoding_test speedtest
  
 noinst_LTLIBRARIES = libafptest.la
@@ -10,6 +10,10 @@ libafptest_la_SOURCES = afpcli.c afpcmd.c afphelper.c adoublehelper.c
 afpclient_SOURCES = main.c testsrc.c
 afpclient_LDFLAGS = -export-dynamic
 afpclient_LDADD = libafptest.la
+
+afparg_SOURCES = afparg.c \
+				 FPResolveID.c
+afparg_LDADD = libafptest.la
  
 postmark_SOURCES = postmark-1_5.c
 postmark_LDFLAGS = -export-dynamic

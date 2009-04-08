@@ -7,6 +7,8 @@ Error.c: exercise AFP errors
 
 afpcli.c: low level AFP call 
 
+afparg: run AFP calls with arg from cmdline
+
 main.c: old test suite, for reference only.
 afpcli_asp.c ref. only.
 testsrc.c: 
