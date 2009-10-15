@@ -1,5 +1,5 @@
 /*
- * $Id: afparg.c,v 1.1 2009-04-08 12:58:40 franklahm Exp $
+ * $Id: afparg.c,v 1.2 2009-10-15 11:54:06 franklahm Exp $
  * MANIFEST
  */
 #include "specs.h"
@@ -9,6 +9,7 @@
 #define EXT_FN(a) extern void FN(a) (char **argv)
 
 EXT_FN(FPResolveID);
+EXT_FN(FPCopyFile);
 #if 0
 EXT_FN(FPAddAPPL);
 EXT_FN(FPAddComment);
@@ -80,6 +81,7 @@ char *helptext;
 static struct test_fn Test_list[] =
 {
 FN_N(FPResolveID, <file CNID>)
+FN_N(FPCopyFile, <source> <dest>)
 #if 0
 FN_N(FPAddAPPL)
 FN_N(FPAddComment)
@@ -94,7 +96,6 @@ FN_N(FPCloseFork)
 FN_N(FPCloseVol)
 FN_N(FPCreateDir)
 FN_N(FPCreateFile)
-FN_N(FPCopyFile)
 FN_N(FPDelete)
 FN_N(FPDisconnectOldSession)
 FN_N(FPEnumerate)

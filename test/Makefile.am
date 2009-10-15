@@ -11,8 +11,7 @@ afpclient_SOURCES = main.c testsrc.c
 afpclient_LDFLAGS = -export-dynamic
 afpclient_LDADD = libafptest.la
 
-afparg_SOURCES = afparg.c \
-				 FPResolveID.c
+afparg_SOURCES = afparg.c afparg_FPfuncs.c
 afparg_LDADD = libafptest.la
  
 postmark_SOURCES = postmark-1_5.c
