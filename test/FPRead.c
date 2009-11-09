@@ -378,8 +378,6 @@ struct itimerval    it;
 	sock = -1;
 	sigp = 0;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPRread:test309: FPRead, FPWrite deadlock\n");
 	quantum = min(size, dsi->server_quantum);
 	if (quantum < size) {
 		fprintf(stderr,"\t server quantum (%d) too small\n", quantum);
@@ -446,7 +444,7 @@ struct itimerval    it;
 		failed();
 		goto fin;
 	}
- 	FAIL (FPSetForkParam(Conn2, fork, (1<<FILPBIT_DFLEN), 4*128*1024))
+ 	FAIL (FPSetForkParam(Conn2, fork, (1<<FILPBIT_DFLEN), 10*128*1024))
 
 	offset = 0;
 	FAIL (FPReadHeader(dsi2, fork, offset, size, Data))
@@ -460,6 +458,17 @@ struct itimerval    it;
 	offset += size;	
 	FAIL (FPReadHeader(dsi2, fork, offset, size, Data))
 
+	offset += size;	
+	FAIL (FPReadHeader(dsi2, fork, offset, size, Data))
+	offset += size;	
+	FAIL (FPReadHeader(dsi2, fork, offset, size, Data))
+	offset += size;	
+	FAIL (FPReadHeader(dsi2, fork, offset, size, Data))
+	offset += size;	
+	FAIL (FPReadHeader(dsi2, fork, offset, size, Data))
+	offset += size;	
+	FAIL (FPReadHeader(dsi2, fork, offset, size, Data))
+
 	offset = 0;
 	FAIL (FPWriteHeader(dsi2, fork1, offset, size, Data, 0)) 
 	offset += size;	
@@ -470,6 +479,17 @@ struct itimerval    it;
 	FAIL (FPWriteHeader(dsi2, fork1, offset, size, Data, 0)) 
 
 	offset = 0;
+	offset += size;
+	FAIL (FPReadFooter(dsi2, fork, offset, size, Data))
+	offset += size;
+	FAIL (FPReadFooter(dsi2, fork, offset, size, Data))
+	offset += size;
+	FAIL (FPReadFooter(dsi2, fork, offset, size, Data))
+
+	offset += size;
+	FAIL (FPReadFooter(dsi2, fork, offset, size, Data))
+	offset += size;
+	FAIL (FPReadFooter(dsi2, fork, offset, size, Data))
 	offset += size;
 	FAIL (FPReadFooter(dsi2, fork, offset, size, Data))
 	offset += size;
@@ -519,6 +539,8 @@ fin:
 STATIC void test309()
 {
 	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPRread:test309: FPRead, FPWrite deadlock\n");
     write_test(1024);
 	exit_test("test309");
 }
@@ -527,6 +549,8 @@ STATIC void test309()
 STATIC void test327()
 {
 	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPRread:test327: FPRead, FPWrite deadlock\n");
     write_test(	128*1024);
 	exit_test("test327");
 }
