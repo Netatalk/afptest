@@ -178,10 +178,8 @@ test_exit:
 }
 
 /* ------------------------- */
-STATIC void test317()
+static void test_meta(char *name, char *name1, u_int16_t vol2)
 {
-char *name  = "t317 old file name";
-char *name1 = "t317 new file name";
 u_int16_t vol = VolID;
 int tp,tp1;
 int  ofs =  3 * sizeof( u_int16_t );
@@ -189,10 +187,6 @@ struct afp_filedir_parms filedir;
 DSI *dsi = &Conn->dsi; 
 u_int16_t bitmap;
 char finder_info[32];
-
-	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCopyFile:test317: copyFile check meta data\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -217,9 +211,9 @@ char finder_info[32];
 	    FAIL (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, bitmap,0))
 	}
 	
-	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1))
+	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol2, DIRDID_ROOT, name, name1))
 
-	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name1, bitmap,0)) {
+	if (FPGetFileDirParams(Conn, vol2,  DIRDID_ROOT , name1, bitmap,0)) {
 		failed();
 	}
 	else {
@@ -232,7 +226,7 @@ char finder_info[32];
 		}
 	}
 
-	tp1 = get_fid(Conn, vol, DIRDID_ROOT, name1);
+	tp1 = get_fid(Conn, vol2, DIRDID_ROOT, name1);
 	if (!tp1) {
 		nottested();
 		goto fin;
@@ -244,7 +238,20 @@ char finder_info[32];
 
 fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
-	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1))
+	FAIL (FPDelete(Conn, vol2,  DIRDID_ROOT , name1))
+}
+
+
+/* ------------------------- */
+STATIC void test317()
+{
+char *name  = "t317 old file name";
+char *name1 = "t317 new file name";
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPCopyFile:test317: copyFile check meta data\n");
+    test_meta(name, name1, VolID);
 
 	exit_test("test317");
 }
@@ -334,7 +341,7 @@ DSI *dsi;
 
 	enter_test();
     fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCopyFile:test374: Copy open file, two clients\n");
+    fprintf(stderr,"FPCopyFile:test374: Copy open file (deny read), two clients\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
 		goto test_exit;
@@ -710,6 +717,288 @@ test_exit:
 }
 
 
+/* ------------------------- 
+ * this one is not run by default
+*/
+STATIC void test406()
+{
+int  dir = DIRDID_ROOT;
+char *name = "Ducky.tif";
+char *name1= "new ducky.tif";
+
+u_int16_t vol = VolID;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+u_int16_t bitmap = 0;
+int fork;
+DSI *dsi;
+
+	dsi = &Conn->dsi;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPCopyFile:t406: unix access privilege, read only file\n");
+
+	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) | (1<<FILPBIT_ATTR);
+
+	if (FPGetFileDirParams(Conn, vol, dir, name, bitmap, 0)){
+	    failed();
+	    goto test_exit;
+	}
+	FPCopyFile(Conn, vol, dir, vol, dir, name, name1);
+
+test_exit:
+	exit_test("test406");
+}
+
+/* ------------------------- */
+static void test_data(char *name, char *name1, u_int16_t vol2)
+{
+int  dir = DIRDID_ROOT;
+u_int16_t vol = VolID;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+u_int16_t bitmap = 0;
+int fork;
+DSI *dsi;
+char data[20];
+
+	dsi = &Conn->dsi;
+
+	if (FPCreateFile(Conn, vol,  0, dir , name)) {
+		nottested();
+		goto fin;
+	}
+	/* put something in the data fork */
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0, dir, name, OPENACC_WR |OPENACC_RD);
+	if (!fork) {
+		nottested();
+		goto fin1;
+	}
+	if (FPSetForkParam(Conn, fork, (1<<FILPBIT_DFLEN), 400)) {
+		FPCloseFork(Conn,fork);
+		nottested();
+		goto fin1;
+	}
+	if (FPWrite(Conn, fork, 0, 9, "Data fork", 0 )) {
+		FPCloseFork(Conn,fork);
+		nottested();
+		goto fin1;
+	}
+	FPCloseFork(Conn,fork);
+	
+	/* put something in the resource fork */
+	fork = FPOpenFork(Conn, vol, OPENFORK_RSCS , 0, dir, name, OPENACC_WR |OPENACC_RD);
+	if (!fork) {
+		nottested();
+		goto fin;
+	}
+	if (FPSetForkParam(Conn, fork, (1<<FILPBIT_RFLEN), 300)) {
+		FPCloseFork(Conn,fork);
+		nottested();
+		goto fin;
+	}
+
+	if (FPWrite(Conn, fork, 0, 13, "Resource fork", 0 )) {
+		FPCloseFork(Conn,fork);
+		nottested();
+		goto fin1;
+	}
+	FPCloseFork(Conn,fork);
+	
+	/* *************** */
+
+	FAIL (FPCopyFile(Conn, vol, dir, vol2, dir, name, name1))
+
+	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) | (1<<FILPBIT_ATTR)
+	  | (1<<FILPBIT_RFLEN) | (1<<FILPBIT_DFLEN);
+	  
+	if (FPGetFileDirParams(Conn, vol2, dir, name1, bitmap, 0)){
+	    failed();
+	    goto fin2;
+	}
+	filedir.isdir = 0;
+	afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+	if (filedir.dflen != 400 || filedir.rflen != 300 ) {
+		fprintf(stderr, "\tFAILED after copy wrong size (data %d, resource %d) \n",
+			filedir.dflen, filedir.rflen);
+		failed_nomsg();
+		goto fin2;
+	}
+	
+	/* check data fork */
+	memset(data, 0, sizeof(data));
+	fork = FPOpenFork(Conn, vol2, OPENFORK_DATA , 0 ,DIRDID_ROOT, name1, OPENACC_WR | OPENACC_RD);
+	if (!fork) {
+		failed();
+		goto fin2;
+	}
+
+	if (FPRead(Conn, fork, 0, 9, data)) {
+		failed();
+		goto fin2;
+	}
+	FPCloseFork(Conn,fork);
+
+	if (memcmp(data, "Data fork", 9)) {
+		fprintf(stderr, "\tFAILED not \"Data fork\" read\n");
+		failed_nomsg();
+		goto fin2;
+	}
+	/* check resource fork */
+	memset(data, 0, sizeof(data));
+	fork = FPOpenFork(Conn, vol2, OPENFORK_RSCS , 0, dir, name1, OPENACC_WR |OPENACC_RD);
+	if (!fork) {
+		failed();
+		goto fin2;
+	}
+
+	if (FPRead(Conn, fork, 0, 13, data)) {
+		failed();
+		goto fin2;
+	}
+	FPCloseFork(Conn,fork);
+
+	if (memcmp(data, "Resource fork", 13)) {
+		fprintf(stderr, "\tFAILED not \"Resource fork\" read\n");
+		failed_nomsg();
+		goto fin2;
+	}
+	
+	/* other way */
+	FAIL (FPDelete(Conn, vol,  dir , name))
+	FAIL (FPCopyFile(Conn, vol2, dir, vol, dir, name1, name))
+
+	if (FPGetFileDirParams(Conn, vol, dir, name, bitmap, 0)){
+	    failed();
+	    goto fin2;
+	}
+	filedir.isdir = 0;
+	afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+	if (filedir.dflen != 400 || filedir.rflen != 300 ) {
+		fprintf(stderr, "\tFAILED after copy wrong size\n");
+		failed_nomsg();
+		goto fin2;
+	}
+	
+
+	/* check data fork */
+	memset(data, 0, sizeof(data));
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0 ,DIRDID_ROOT, name, OPENACC_WR | OPENACC_RD);
+	if (!fork) {
+		failed();
+		goto fin2;
+	}
+
+	if (FPRead(Conn, fork, 0, 9, data)) {
+		failed();
+		goto fin2;
+	}
+	FPCloseFork(Conn,fork);
+
+	if (memcmp(data, "Data fork", 9)) {
+		fprintf(stderr, "\tFAILED not \"Data fork\" read\n");
+		failed_nomsg();
+		goto fin2;
+	}
+	/* check resource fork */
+	memset(data, 0, sizeof(data));
+	fork = FPOpenFork(Conn, vol, OPENFORK_RSCS , 0, dir, name, OPENACC_WR |OPENACC_RD);
+	if (!fork) {
+		failed();
+		goto fin2;
+	}
+
+	if (FPRead(Conn, fork, 0, 13, data)) {
+		failed();
+		goto fin2;
+	}
+	FPCloseFork(Conn,fork);
+
+	if (memcmp(data, "Resource fork", 13)) {
+		fprintf(stderr, "\tFAILED not \"Resource fork\" read\n");
+		failed_nomsg();
+		goto fin2;
+	}
+	
+fin2:	
+	FAIL (FPDelete(Conn, vol2,  dir , name1))
+fin1:
+	FAIL (FPDelete(Conn, vol,  dir , name))
+fin:
+	return;
+}
+
+/* ---------------------- */
+STATIC void test407()
+{
+char *name = "t407 file.pdf";
+char *name1= "new t407 file.pdf";
+u_int16_t vol2;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPCopyFile:t407: copy file between two volumes\n");
+	if (!*Vol2) {
+		test_skipped(T_VOL2);
+		goto test_exit;
+	}
+	vol2  = FPOpenVol(Conn, Vol2);
+	if (vol2 == 0xffff) {
+		nottested();
+		goto test_exit;
+	}
+    test_data(name, name1, vol2);
+	FAIL (FPCloseVol(Conn, vol2))
+
+test_exit:
+	exit_test("test407");
+}
+
+/* ------------------------- */
+STATIC void test408()
+{
+char *name  = "t408 old file name";
+char *name1 = "t408 new file name";
+u_int16_t vol2;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPCopyFile:test408: copyFile check meta data, two volumes\n");
+	if (!*Vol2) {
+		test_skipped(T_VOL2);
+		goto test_exit;
+	}
+	vol2  = FPOpenVol(Conn, Vol2);
+	if (vol2 == 0xffff) {
+		nottested();
+		goto test_exit;
+	}
+
+    test_meta(name, name1, vol2);
+
+	FAIL (FPCloseVol(Conn, vol2))
+test_exit:
+	exit_test("test408");
+}
+
+
+/* ------------------------- */
+STATIC void test409()
+{
+char *name  = "t409 old file name";
+char *name1 = "t409 new file name";
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPCopyFile:test409: copyFile check meta data, one volume\n");
+
+    test_data(name, name1, VolID);
+
+	exit_test("test409");
+}
+
+
 /* ----------- */
 void FPCopyFile_test()
 {
@@ -725,5 +1014,8 @@ void FPCopyFile_test()
 	test401();
 	test402();
 	test403();
+	test407();
+	test408();
+	test409();
 }
 
