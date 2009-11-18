@@ -35,6 +35,7 @@ extern unsigned int get_vol_free(u_int16_t vol) ;
 extern void failed_nomsg(void);
 extern void skipped_nomsg(void);
 extern void failed(void);
+extern void known_failure(char *why);
 extern void enter_test(void);
 extern void exit_test(char *name);
 
@@ -58,6 +59,7 @@ extern void test_skipped(int why);
 #define T_MAC        13
 #define T_ACL        14
 #define T_EA         15
+#define T_UNIX_GROUP 16
 
 /* ---------------------------------
 */

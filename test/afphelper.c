@@ -723,6 +723,8 @@ int not_valid_bitmap(unsigned int ret, unsigned int bitmap, int netatalk_error)
 }
 
 static int CurTestResult;
+static char *Why;
+
 /* ------------------------- */
 void test_skipped(int why) 
 {
@@ -748,6 +750,9 @@ char *s;
 		break;
 	case T_UNIX_PREV:
 		s =" Volume with unix privilege";
+		break;
+	case T_UNIX_GROUP:
+		s =" server and client same groups mapping";
 		break;
 	case T_UTF8:
 		s = "Volume with UTF8 encoding";
@@ -811,9 +816,19 @@ void nottested(void)
 }
 
 /* ------------------------- */
+void known_failure(char *why)
+{
+	fprintf(stderr,"\tFAILED (known)\n");
+	CurTestResult = 4;
+	Why = why;
+}
+
+
+/* ------------------------- */
 void enter_test(void)
 {
 	CurTestResult = 0;
+	Why = "";
 }
 
 /* ------------------------- */
@@ -826,6 +841,7 @@ char *s;
 	case 0:
 		s = "PASSED";
 		break;
+	case 4:
 	case 1:
 		s = "FAILED";
 		break;
@@ -836,5 +852,5 @@ char *s;
 		s = "SKIPPED";
 		break;
 	}
-	fprintf(stderr, "%s\n", s);
+	fprintf(stderr, "%s%s\n", s, Why);
 }
