@@ -1,5 +1,5 @@
 /*
- * $Id: spectest.c,v 1.12 2005-05-25 18:03:32 didg Exp $
+ * $Id: spectest.c,v 1.13 2009-11-18 05:38:52 didg Exp $
  * MANIFEST
  */
 #include "specs.h"
@@ -324,7 +324,7 @@ char	**av;
 {
 int cc;
 
-    while (( cc = getopt( ac, av, "v2345h:H:p:s:u:d:w:c:f:Llmxi" )) != EOF ) {
+    while (( cc = getopt( ac, av, "v2345h:H:p:s:S:u:d:w:c:f:Llmxi" )) != EOF ) {
         switch ( cc ) {
         case '2':
 			vers = "AFP2.2";
