@@ -548,10 +548,19 @@ DSI *dsi;
 	bitmap = (1<< DIRPBIT_PDINFO) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID) |
 	         (1<< DIRPBIT_UNIXPR);
 
+#if 0
 	if (htonl(AFPERR_BITMAP) != FPGetFileDirParams(Conn, vol, dir, "", 0, bitmap)) {
+		known_failure(" current version doesn't return an error if for unixpriv");
+		//failed();
+		goto fin1;
+	}
+#else
+	if (FPGetFileDirParams(Conn, vol, dir, "", 0, bitmap)) {
 		failed();
 		goto fin1;
 	}
+#endif
+
 	bitmap = (1<< DIRPBIT_UNIXPR);
 	filedir.isdir = 1;
 	afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
@@ -568,7 +577,7 @@ DSI *dsi;
 	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) |
 		(1 << DIRPBIT_UNIXPR);
 
-	if (htonl(AFPERR_BITMAP) != FPGetFileDirParams(Conn, vol, dir, name, bitmap, 0)) {
+	if (/* htonl(AFPERR_BITMAP) != */ FPGetFileDirParams(Conn, vol, dir, name, bitmap, 0)) {
 	    failed();
 	    goto fin1;
 	}
@@ -818,6 +827,113 @@ test_exit:
 	exit_test("test356");
 }
 
+/* ---------------------- */
+static gid_t   *groups;
+#define GROUPS_SIZE sizeof(gid_t)
+static int     ngroups;
+
+static int init_groups(void)
+{
+    if (( ngroups = getgroups( 0, NULL )) < 0 ) {
+    	return 0;
+    }
+
+    if (ngroups < 2) {
+		/* we need at least 2 groups for testing */    
+    	return 0;
+   	}
+                         
+    if ( NULL == (groups = calloc(ngroups, GROUPS_SIZE)) ) {
+    	return 0;
+    }
+                                                  
+    if (( ngroups = getgroups( ngroups, groups )) < 0 ) {
+    	return 0;
+    }
+    return ngroups;
+}    
+
+/* ----------------- 
+ * only work if client and server share the same numeric ids
+*/
+static  int check_group(gid_t group)
+{
+int i, j;
+
+	for (i = 0; i < ngroups; i++) {
+		if (groups[i] == group) {
+			for (j = 0; j < ngroups; j++) {
+				if (groups[j] != group) {
+					/* find a different group */
+					return groups[j];
+				}
+			}
+			return 0;
+		}
+	}
+	return 0;
+}
+
+
+/* ------------------------- */
+STATIC void test405()
+{
+int  dir = 0;
+char *ndir = "t405 dir";
+u_int16_t vol = VolID;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+u_int16_t bitmap = 0;
+
+DSI *dsi;
+
+	dsi = &Conn->dsi;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPSetDirParms:t405: change a folder group owner in the root folder\n");
+
+	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
+		test_skipped(T_UNIX_PREV);
+		goto test_exit;
+	}
+	
+	if (!init_groups()) {
+		test_skipped(T_UNIX_GROUP);
+		goto test_exit;
+	}
+
+	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
+		nottested();
+		goto test_exit;
+	}
+
+	bitmap = (1<< DIRPBIT_PDINFO) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID) |
+	         (1<< DIRPBIT_UNIXPR);
+
+	if (FPGetFileDirParams(Conn, vol, dir, "", 0, bitmap)) {
+		failed();
+		goto fin;
+	}
+		
+	filedir.isdir = 1;
+	afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
+
+	if (!(filedir.gid = check_group(filedir.gid))) {
+		test_skipped(T_UNIX_GROUP);
+		FPDelete(Conn, vol,  dir , "");
+		goto test_exit;
+	}
+	
+	bitmap = (1<< DIRPBIT_UNIXPR);
+ 	FAIL (FPSetDirParms(Conn, vol, dir , "", bitmap, &filedir)) 
+
+fin:	
+	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test405");
+}
+
 /* ----------- */
 void FPSetDirParms_test()
 {
@@ -835,5 +951,6 @@ void FPSetDirParms_test()
     test354();
     test355();
     test356();
+    test405();
 }
 
