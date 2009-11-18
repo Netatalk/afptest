@@ -727,10 +727,7 @@ char *name = "Ducky.tif";
 char *name1= "new ducky.tif";
 
 u_int16_t vol = VolID;
-int  ofs =  3 * sizeof( u_int16_t );
-struct afp_filedir_parms filedir;
 u_int16_t bitmap = 0;
-int fork;
 DSI *dsi;
 
 	dsi = &Conn->dsi;
@@ -998,6 +995,58 @@ char *name1 = "t409 new file name";
 	exit_test("test409");
 }
 
+/* ------------------------- */
+STATIC void test416()
+{
+u_int16_t vol = VolID;
+u_int16_t bitmap;
+DSI *dsi;
+char *file="test416_file";
+char *file1="test416 new file";
+char *attr_name="test416_attribute";
+
+    dsi = &Conn->dsi;
+
+	enter_test();
+	fprintf(stderr,"===================\n");
+	fprintf(stderr,"FPCopyFile:test416: copy xattr\n");
+
+    if (Conn->afp_version < 32) {
+        test_skipped(T_AFP3);
+        goto test_exit;
+    }
+
+    if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_EXTATTRS)) {
+        test_skipped(T_UTF8);
+        goto test_exit;
+    }
+
+    bitmap = (1<< FILPBIT_PDID) | (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_RFLEN);
+
+    if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , file)) {
+    	nottested();
+        goto test_exit;
+    }
+
+	FAIL(FPSetExtAttr(Conn,vol, DIRDID_ROOT, 2, file, attr_name, "test416_data"))
+	FAIL(FPGetExtAttr(Conn,vol, DIRDID_ROOT , 0, 4096, file, attr_name))
+
+	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, file, file1)) 
+
+	FAIL(FPListExtAttr(Conn,vol, DIRDID_ROOT , 0, 4096, file))
+
+	FAIL(FPGetExtAttr(Conn,vol, DIRDID_ROOT , 0, 4096, file, attr_name))
+	FAIL(FPGetExtAttr(Conn,vol, DIRDID_ROOT , 0, 4096, file1, attr_name))
+
+	FAIL(FPRemoveExtAttr(Conn,vol, DIRDID_ROOT , 0, file1, attr_name))
+
+    FAIL(FPDelete(Conn, vol,  DIRDID_ROOT , file))
+    FAIL(FPDelete(Conn, vol,  DIRDID_ROOT , file1))
+
+test_exit:
+	exit_test("test416");
+}
+
 
 /* ----------- */
 void FPCopyFile_test()
@@ -1017,5 +1066,6 @@ void FPCopyFile_test()
 	test407();
 	test408();
 	test409();
+	test416();
 }
 
