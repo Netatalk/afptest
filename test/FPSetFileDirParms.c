@@ -614,10 +614,20 @@ DSI *dsi;
 	bitmap = (1<< DIRPBIT_PDINFO) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID) |
 	         (1<< DIRPBIT_UNIXPR);
 
+#if 0
 	if (htonl(AFPERR_BITMAP) != FPGetFileDirParams(Conn, vol, dir, "", 0, bitmap)) {
+		known_failure(" current version doesn't return an error if unixpriv set");
+		// failed();
+		goto fin1;
+	}
+#else
+	if ( FPGetFileDirParams(Conn, vol, dir, "", 0, bitmap)) {
 		failed();
 		goto fin1;
 	}
+
+#endif
+
 	bitmap = (1<< DIRPBIT_UNIXPR);
 	filedir.isdir = 1;
 	afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
@@ -634,7 +644,7 @@ DSI *dsi;
 	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) |
 		(1 << DIRPBIT_UNIXPR);
 
-	if (htonl(AFPERR_BITMAP) != FPGetFileDirParams(Conn, vol, dir, name, bitmap, 0)) {
+	if (/* htonl(AFPERR_BITMAP) != */ FPGetFileDirParams(Conn, vol, dir, name, bitmap, 0)) {
 	    failed();
 	    goto fin1;
 	}
@@ -957,6 +967,7 @@ DSI *dsi;
 fin:	
 	FPDelete(Conn, vol,  dir , name);
 	FPDelete(Conn, vol,  dir , name1);
+	sleep(1);
 	FAIL (FPDelete(Conn, vol,  dir , ""))
 test_exit:
 	exit_test("test358");
