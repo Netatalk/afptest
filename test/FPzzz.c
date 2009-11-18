@@ -114,7 +114,7 @@ int sock;
 	fprintf(stderr,"sleep more than 2 mn\n");
 	sleep(60 *3);
 	ret = FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name);
-	if (!sigp) {
+	if (!sigp && ret != (unsigned)-1) {
 		fprintf(stderr,"\tFAILED not disconnected \n");
 		failed_nomsg();
 	}
