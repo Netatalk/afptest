@@ -47,25 +47,30 @@ Return Code
 1 FAILED
 2 NOT TESTED the test failed too early
 
-Tests prg
----------
-in test directory
-spectest
+Tests prg in test directory:
+----------------------------
+
+./spectest:
 exercise AFP calls
 Assume exported volumes are only modified with netatalk.
 
-failed_spectest
+./failed_spectest
 Tests which fail with current netatalk but pass on a Mac.
 
-T2_spectest
+./T2_spectest
 Tests when .AppleDouble is missing, bogus.
 Need local access to volume (-c option).
 
-logintest
+./logintest
 Tests for DSI and login.
 
-rotest
+./rotest
 Tests on a read only volume.
+
+./afparg
+The beginning of an AFP CLI client, cf ./afparg -l
+FPResolveID <file CNID>
+FPCopyFile <source> <dest>
 
 Ex:
 ---
