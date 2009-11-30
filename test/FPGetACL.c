@@ -57,7 +57,7 @@ char *attr_name="test399_attribute";
 
 	enter_test();
 	fprintf(stderr,"===================\n");
-	fprintf(stderr,"FPGetACL:test996: enumerate arguments\n");
+	fprintf(stderr,"FPGetExtAttr:test399: enumerate arguments\n");
     if (Conn->afp_version < 30) {
         test_skipped(T_AFP3);
         goto test_exit;
