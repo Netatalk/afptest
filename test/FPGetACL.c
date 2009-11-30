@@ -13,7 +13,7 @@ char *file="test398_file";
 
     enter_test();
 	fprintf(stderr,"===================\n");
-	fprintf(stderr,"FPGetACL:test398: enumerate arguments\n");
+	fprintf(stderr,"FPGetACL:test398: check ACL support\n");
     if (Conn->afp_version < 30) {
     	test_skipped(T_AFP3);
         goto test_exit;
@@ -57,7 +57,7 @@ char *attr_name="test399_attribute";
 
 	enter_test();
 	fprintf(stderr,"===================\n");
-	fprintf(stderr,"FPGetExtAttr:test399: enumerate arguments\n");
+	fprintf(stderr,"FPGetExtAttr:test399: check Extended Attributes Support\n");
     if (Conn->afp_version < 30) {
         test_skipped(T_AFP3);
         goto test_exit;
