@@ -1,5 +1,5 @@
 /*
- * $Id: speedtest.c,v 1.7 2005-05-25 18:03:32 didg Exp $
+ * $Id: speedtest.c,v 1.8 2009-12-09 04:28:02 didg Exp $
  * MANIFEST
  */
 #include "specs.h"
@@ -942,7 +942,7 @@ int i;
 		goto fin;
 	}
 	for (i = 1; i <= Count; i++) {
-		fork = VFS.openfork(Conn, vol, OPENFORK_DATA , (1<<FILPBIT_FNUM), dir, "Source", OPENACC_WR |OPENACC_RD| OPENACC_DWR| OPENACC_DRD);
+		fork = VFS.openfork(Conn, vol, OPENFORK_DATA , (1<<FILPBIT_FNUM), dir, "Source", OPENACC_WR |OPENACC_RD );
 		if (!fork) {
 			failed();
 			goto fin1;
@@ -952,12 +952,12 @@ int i;
 				failed();
 				goto fin1;
 			}
-			if (VFS.closefork(Conn,fork)) {
-				failed();
-				goto fin1;
-			}
-			fork = 0;
 		}
+		if (VFS.closefork(Conn,fork)) {
+			failed();
+			goto fin1;
+		}
+		fork = 0;
 		fprintf(stderr,"%d\t", i);
 		gettimeofday(&Timer_start, NULL);
 		if (VFS.copyfile(Conn, vol, dir, vol2, dir2, "Source", "Destination")) {
