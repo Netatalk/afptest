@@ -1,8 +1,3 @@
-Requirements
-------------
-- glibc2.2 or >
-- a kernel with large files support.
-
 Compilation 
 -----------
 ./autogen.sh 
@@ -47,12 +42,21 @@ Return Code
 1 FAILED
 2 NOT TESTED the test failed too early
 
+spectest, logintext and rotest shall return the same results whether they are run
+on a Mac server or afpd.
+
 Tests prg in test directory:
 ----------------------------
 
 ./spectest:
 exercise AFP calls
 Assume exported volumes are only modified with netatalk.
+
+./logintest
+Tests for DSI and login. Not included in spectest.
+
+./rotest
+Tests on a read only volume. Not included in spectest.
 
 ./failed_spectest
 Tests which fail with current netatalk but pass on a Mac.
@@ -61,19 +65,31 @@ Tests which fail with current netatalk but pass on a Mac.
 Tests when .AppleDouble is missing, bogus.
 Need local access to volume (-c option).
 
-./logintest
-Tests for DSI and login.
+./afpclient
+First try for a test suite and is obsolete.
 
-./rotest
-Tests on a read only volume.
-
+Helpers and benchmarks:
 ./afparg
 The beginning of an AFP CLI client, cf ./afparg -l
 FPResolveID <file CNID>
 FPCopyFile <source> <dest>
 
-Ex:
----
+./afp_ls
+'minimal' ls using AFP commands. Should be migrated to afparg.
+
+./postmark
+Classic postmark benchmark with AFP commands.
+
+./speedtest
+bench Read, Write and file copy (either Read/Write or FPCopyFile),
+it can also run the same tests using Posix syscalls and can
+be use for testing afpd speed against local or others protocols.
+
+./loadtest
+run a bunch of cmds for testing server load.
+
+Example:
+--------
 Run all tests on server 192.168.2.123
 spectest  -h 192.168.2.123 -u user1 -d usr2 -s test -w  toto
 Same but on a Mac
@@ -88,10 +104,9 @@ and the program can run individual test:
 
 Tests output
 ------------
-Test name
-if the test is not executed, reason.
-ex:  SKIPPED (need AFP 3.x)      
 
+Test name
+if the test is not executed, reason, ex: SKIPPED (need AFP 3.x)      
 list of AFP calls executed with error code if any
 
 if Mac result and Netatalk differ or if Mac result differ between versions, Mac result
