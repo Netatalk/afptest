@@ -960,8 +960,9 @@ test_exit:
 /* ------------------------- 
  * for this test you need
 .         "????"  "????"
-in AppleVolume.system
-*/
+.pdf      "PDF "  "CARO"
+ * in AppleVolume.system
+ */
 STATIC void test371()
 {
 char *name  = "t371 file name";
