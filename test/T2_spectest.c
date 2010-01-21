@@ -1,5 +1,5 @@
 /*
- * $Id: T2_spectest.c,v 1.9 2005-05-25 18:03:32 didg Exp $
+ * $Id: T2_spectest.c,v 1.10 2010-01-21 08:35:34 didg Exp $
  * MANIFEST
  */
 #include "afpclient.h"
@@ -8,6 +8,7 @@
 
 int Verbose = 0;
 int Quirk = 0;
+int Interactive = 0;
 
 u_int16_t VolID;
 static DSI *dsi;
@@ -107,6 +108,20 @@ FN_N(FPResolveID)
 };
 
 /* =============================== */
+static void press_enter(char *s)
+{
+    if (!Interactive)
+	return;
+	
+    if (s) 
+	fprintf(stderr, "--> Performing: %s\n", s);
+    fprintf(stderr, "Press <ENTER> to continue.\n");
+    
+    while (fgetc(stdin) != '\n') 
+	;
+}
+
+/* =============================== */
 static void list_tests(void)
 {
 int i = 0;
@@ -132,6 +147,7 @@ int i = 0;
 	}
 
 	dsi = &Conn->dsi;
+	press_enter("Opening volume.");
 	VolID = FPOpenVol(Conn, Vol);
 	if (VolID == 0xffff) {
 		nottested();
@@ -180,6 +196,7 @@ char *token;
 	}
 
 	dsi = &Conn->dsi;
+	press_enter("Opening volume.");
 	VolID = FPOpenVol(Conn, Vol);
 	if (VolID == 0xffff) {
 		nottested();
@@ -209,6 +226,7 @@ static void run_all()
 int i = 0;
 
 	dsi = &Conn->dsi;
+	press_enter("Opening volume.");
 	VolID = FPOpenVol(Conn, Vol);
 	if (VolID == 0xffff) {
 		nottested();
@@ -266,6 +284,7 @@ void usage( char * av0 )
 
     fprintf( stderr,"\t-f\ttest to run\n");
     fprintf( stderr,"\t-l\tlist tests\n");
+    fprintf( stderr,"\t-i\tinteractive mode, prompts before every test (debug purposes)\n");
     exit (1);
 }
 
@@ -278,7 +297,7 @@ int cc;
 static char *vers = "AFPVersion 2.1";
 static char *uam = "Cleartxt Passwrd";
 
-    while (( cc = getopt( ac, av, "v2345h:H:p:s:u:d:w:c:f:lmMS:L" )) != EOF ) {
+    while (( cc = getopt( ac, av, "iv2345h:H:p:s:u:d:w:c:f:lmMS:L" )) != EOF ) {
         switch ( cc ) {
         case '2':
 			vers = "AFP2.2";
@@ -332,6 +351,9 @@ static char *uam = "Cleartxt Passwrd";
         case 'f' :
             Test = strdup(optarg);
             break;
+	case 'i':
+		Interactive = 1;
+		break;
         case 'p' :
             Port = atoi( optarg );
             if (Port <= 0) {
