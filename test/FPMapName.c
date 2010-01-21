@@ -78,8 +78,14 @@ char *usr = NULL;
 
 	FAIL (htonl(AFPERR_PARAM) != FPMapName(Conn, 5, "toto")) 
 
-	FAIL (FPMapName(Conn, 3, "")) 
-
+	if (!Exclude) {
+		/* fail with OSX and new netatalk */
+		ret = FPMapName(Conn, 3, "");
+		if (ret && not_valid_bitmap(ret, BITERR_NOOBJ, AFPERR_PARAM)) {
+			failed();
+		}
+	}
+	
 	ret = FPMapName(Conn, 3, "toto");
 	if (not_valid_bitmap(ret, BITERR_NOOBJ | BITERR_NOITEM, AFPERR_NOITEM)) {
 		failed();
