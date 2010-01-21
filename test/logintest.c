@@ -1,5 +1,5 @@
 /*
- * $Id: logintest.c,v 1.4 2005-05-25 18:03:32 didg Exp $
+ * $Id: logintest.c,v 1.5 2010-01-21 08:38:30 didg Exp $
  * MANIFEST
  */
 #include "specs.h"
@@ -233,6 +233,46 @@ unsigned int ret;
 			return ExitCode;
 		}
 	}
+	fprintf(stderr,"DSICloseSession\n");
+	if (DSICloseSession(Conn)) {
+		failed();
+		return ExitCode;
+	}
+	CloseClientSocket(Dsi->socket);
+	/* -------------------------- */
+
+    fprintf(stderr,"===================\n");
+	fprintf(stderr,"DSIOpenSession non zero parameter should be ignored by the server\n");
+
+    connect_server(Conn);
+    Dsi = &Conn->dsi;
+{
+DSI *dsi;
+u_int32_t i = 0; 
+
+	dsi = Dsi;
+	/* DSIOpenSession */
+	memset(&dsi->header, 0, sizeof(dsi->header));
+	dsi->header.dsi_flags = DSIFL_REQUEST;     
+	dsi->header.dsi_command = DSIFUNC_OPEN;
+	dsi->header.dsi_requestID = htons(dsi_clientID(dsi));
+	dsi->header.dsi_code = 6;
+	
+
+	dsi->cmdlen = 2 + sizeof(i);
+	dsi->commands[0] = DSIOPT_ATTNQUANT;
+  	dsi->commands[1] = sizeof(i);
+  	i = htonl(DSI_DEFQUANT);
+  	memcpy(dsi->commands + 2, &i, sizeof(i));	    
+	my_dsi_send(dsi);
+	my_dsi_cmd_receive(dsi);
+
+	if (dsi->header.dsi_code) {
+		failed();
+		return ExitCode;
+	}
+}
+
 	fprintf(stderr,"DSICloseSession\n");
 	if (DSICloseSession(Conn)) {
 		failed();
