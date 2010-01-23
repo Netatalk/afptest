@@ -1,6 +1,28 @@
 #!/bin/sh
 
 ret=0
+
+echo =====================================
+
+if [ ! -f spectest.conf ] ; then
+    cat > spectest.conf <<EOF
+# AFPSERVER=127.0.0.1
+# AFPPORT=548
+# USER1=
+# USER2=
+# PASSWD=
+# VOLUME=
+# LOCALVOLPATH=
+
+# AFPVERSION: 3 = AFP 3.0, 4 = AFP 3.1, 5 = AFP 3.2
+# AFPVERSION=5
+EOF
+    echo 'A template configuration file "spectest.conf" has been generated.'
+    echo Adjust it to match your setup.
+    echo =====================================
+    exit 1
+fi
+
 . spectest.conf
 rm -f spectest.log
 
