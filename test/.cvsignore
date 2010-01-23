@@ -16,3 +16,5 @@ spectest
 speedtest
 *.lo
 *.la
+spectest.log
+spectest.conf
