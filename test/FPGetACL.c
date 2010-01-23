@@ -75,22 +75,22 @@ char *attr_name="test399_attribute";
         goto test_exit;
     }
 
-	FAIL(FPSetExtAttr(Conn,vol, DIRDID_ROOT, 2, "file", attr_name, "test399_data"))
-	FAIL(FPGetExtAttr(Conn,vol, DIRDID_ROOT , 0, 4096, "file", attr_name))
+	FAIL(FPSetExtAttr(Conn,vol, DIRDID_ROOT, 2, file, attr_name, "test399_data"))
+	FAIL(FPGetExtAttr(Conn,vol, DIRDID_ROOT , 0, 4096, file, attr_name))
 
 	/* check create flag */
-	if (ntohl(AFPERR_EXIST) != FPSetExtAttr(Conn, vol, DIRDID_ROOT, 2, "file", attr_name, "test399_newdata"))
+	if (ntohl(AFPERR_EXIST) != FPSetExtAttr(Conn, vol, DIRDID_ROOT, 2, file, attr_name, "test399_newdata"))
 		failed();
 
-	FAIL(FPListExtAttr(Conn,vol, DIRDID_ROOT , 0, 4096, "file"))
+	FAIL(FPListExtAttr(Conn,vol, DIRDID_ROOT , 0, 4096, file))
 
-	FAIL(FPSetExtAttr(Conn, vol, DIRDID_ROOT, 4, "file", attr_name, "test399_newdata"))
-	FAIL(FPGetExtAttr(Conn,vol, DIRDID_ROOT , 0, 4096, "file", attr_name))
-	FAIL(FPRemoveExtAttr(Conn,vol, DIRDID_ROOT , 0, "file", attr_name))
-	if (ntohl(AFPERR_PARAM) != FPGetExtAttr(Conn,vol, DIRDID_ROOT , 0, 4096, "file", attr_name)) {
+	FAIL(FPSetExtAttr(Conn, vol, DIRDID_ROOT, 4, file, attr_name, "test399_newdata"))
+	FAIL(FPGetExtAttr(Conn,vol, DIRDID_ROOT , 0, 4096, file, attr_name))
+	FAIL(FPRemoveExtAttr(Conn,vol, DIRDID_ROOT , 0, file, attr_name))
+	if (ntohl(AFPERR_PARAM) != FPGetExtAttr(Conn,vol, DIRDID_ROOT , 0, 4096, file, attr_name)) {
 		failed();
 	}
-	if (ntohl(AFPERR_PARAM) != FPRemoveExtAttr(Conn,vol, DIRDID_ROOT , 0, "file", attr_name))
+	if (ntohl(AFPERR_PARAM) != FPRemoveExtAttr(Conn,vol, DIRDID_ROOT , 0, file, attr_name))
 		failed();
 
     FPDelete(Conn, vol,  DIRDID_ROOT , file);
