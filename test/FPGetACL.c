@@ -87,10 +87,10 @@ char *attr_name="test399_attribute";
 	FAIL(FPSetExtAttr(Conn, vol, DIRDID_ROOT, 4, file, attr_name, "test399_newdata"))
 	FAIL(FPGetExtAttr(Conn,vol, DIRDID_ROOT , 0, 4096, file, attr_name))
 	FAIL(FPRemoveExtAttr(Conn,vol, DIRDID_ROOT , 0, file, attr_name))
-	if (ntohl(AFPERR_PARAM) != FPGetExtAttr(Conn,vol, DIRDID_ROOT , 0, 4096, file, attr_name)) {
+	if (ntohl(AFPERR_MISC) != FPGetExtAttr(Conn,vol, DIRDID_ROOT , 0, 4096, file, attr_name)) {
 		failed();
 	}
-	if (ntohl(AFPERR_PARAM) != FPRemoveExtAttr(Conn,vol, DIRDID_ROOT , 0, file, attr_name))
+	if (ntohl(AFPERR_MISC) != FPRemoveExtAttr(Conn,vol, DIRDID_ROOT , 0, file, attr_name))
 		failed();
 
     FPDelete(Conn, vol,  DIRDID_ROOT , file);

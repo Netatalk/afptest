@@ -1,4 +1,7 @@
 SUBDIRS =
+
+TESTS = spectest.sh
+noinst_SCRIPTS = spectest.sh
  
 bin_PROGRAMS = afpclient afparg afp_ls loadtest spectest postmark fail_spectest T2_spectest logintest rotest \
                encoding_test speedtest
