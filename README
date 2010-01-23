@@ -36,6 +36,15 @@ AppleVolume.default
 
 For testing with a Mac, same config (user1 or user2 are not owner)
 
+make check
+----------
+
+You can also run the complete spectest (one user, two users, local access) with
+`make check`. To do so, run:
+- `make check` once in order to generate a boilerplate config file "spectest.conf"
+- edit "spectest.conf" to suit your need
+- run `make check` again
+
 Return Code
 -----------
 0 PASSED 
