@@ -310,7 +310,8 @@ test_exit:
 STATIC void test196()
 {
 char *name = "test196";
-char *name1 = "test196/test196";
+char *name2 = "test196_subdir";
+char *name1 = "test196/test196_subdir";
 u_int16_t vol = VolID;
 u_int16_t vol2;
 int tdir;
@@ -341,7 +342,7 @@ u_int16_t bitmap = (1 <<  DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID
 		goto test_exit;
 	}
 
-	tdir1  = FPCreateDir(Conn,vol,tdir, name);
+	tdir1  = FPCreateDir(Conn,vol,tdir, name2);
 	if (!tdir1) {
 		nottested();
 		goto fin;
@@ -373,17 +374,17 @@ u_int16_t bitmap = (1 <<  DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID
 	if (FPDelete(Conn2, vol2,  DIRDID_ROOT , name)) { 
 		nottested();
 		FPDelete(Conn, vol, tdir , "");
-		tdir1 = 0;
+		tdir = 0;
 	}	
 	FPCloseVol(Conn2,vol2);
 
-	FAIL (ntohl(AFPERR_NOOBJ) != FPDelete(Conn, vol, tdir , ""))
 	FAIL (ntohl(AFPERR_NOOBJ) != FPDelete(Conn, vol, tdir1 , ""))
+	FAIL (ntohl(AFPERR_NOOBJ) != FPDelete(Conn, vol, tdir , ""))
 	tdir = tdir1 = 0;
 
 fin:
-	FAIL (tdir && FPDelete(Conn, vol, tdir , ""))
 	FAIL (tdir1 && FPDelete(Conn, vol, tdir1 , ""))
+	FAIL (tdir && FPDelete(Conn, vol, tdir , ""))
 test_exit:
 	exit_test("test196");
 }
