@@ -235,15 +235,22 @@ u_int16_t id;
 }
 
 /* ------------------------------------- */
+int Attention_received;
+
 static int my_dsi_receive(DSI *x, unsigned char *buf, size_t length)
 {
 int ret;
 
+        Attention_received = 0;
 	while (1) {
 		ret = my_dsi_stream_receive(x, buf, length, &x->cmdlen);
-		if (ret == DSIFUNC_ATTN || ret == DSIFUNC_CLOSE) {
+		if (ret == DSIFUNC_ATTN) {
+		        Attention_received = 1;
 			continue;
 		}
+		else if (ret == DSIFUNC_CLOSE) {
+		        continue;
+                }
 		else if (ret == DSIFUNC_TICKLE) {
 			my_dsi_tickle(x);
 		}
@@ -258,9 +265,11 @@ static int my_dsi_full_receive(DSI *x, unsigned char *buf, int length)
 {
 int ret;
 
+        Attention_received = 0;
 	while (1) {
 		ret = my_dsi_stream_receive(x, buf, length, &x->cmdlen);
 		if (ret == DSIFUNC_ATTN) {
+		        Attention_received = 1;
 			continue;
 		}
 		else if (ret == DSIFUNC_TICKLE) {

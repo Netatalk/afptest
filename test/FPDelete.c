@@ -570,6 +570,52 @@ test_exit:
 	exit_test("test421");
 }
 
+/* ------------------------- */
+extern int Attention_received;
+
+STATIC void test422()
+{
+u_int16_t vol = VolID;
+char *name = "t422 file";
+int ret;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"test422: Server notification on volume date change if AFP < 3.2\n");
+
+	if (Mac) {
+		test_skipped(T_MAC);
+		goto test_exit;
+	}
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		goto test_exit;
+	}
+	
+	sleep(2);
+	ret = FPDelete(Conn, vol,  DIRDID_ROOT , name);
+
+	if (ret) {
+		nottested();
+		goto test_exit;
+	}
+    if (Conn->afp_version < 32) {
+    	if (!Attention_received) {
+			fprintf(stderr, "\tFAILED no attention received\n");
+			failed_nomsg(); 
+		}
+    }
+    else if (Attention_received) {
+		fprintf(stderr, "\tFAILED attention received\n");
+		failed_nomsg(); 
+    }
+    
+test_exit:
+	exit_test("test422");
+}
+
+
 /* ----------- */
 void FPDelete_test()
 {
@@ -583,5 +629,6 @@ void FPDelete_test()
 	test368();
 	test369();
 	test421();
+	test422();
 }
 
