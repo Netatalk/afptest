@@ -511,6 +511,65 @@ test_exit:
 	exit_test("test369");
 }
 
+/* -------------------------- */
+STATIC void test421()
+{
+char *name = "test421";
+u_int16_t vol = VolID;
+u_int16_t vol2;
+int tdir;
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+DSI *dsi = &Conn->dsi; 
+u_int16_t bitmap = (1 <<  DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID) | (1<<DIRPBIT_UID) |
+	    	(1 << DIRPBIT_GID) |(1 << DIRPBIT_ACCESS);
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPDelete:test421: delete an already deleted curdir folder\n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		goto test_exit;
+	}		
+
+	tdir  = FPCreateDir(Conn,vol, DIRDID_ROOT, name);
+	if (!tdir) {
+		nottested();
+		goto test_exit;
+	}
+
+	bitmap = (1 << DIRPBIT_ACCESS);
+	FAIL (FPGetFileDirParams(Conn, vol,  tdir , "", 0, bitmap))
+	filedir.isdir = 1;
+	afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
+    filedir.access[0] = 0; 
+    filedir.access[1] = 7; 
+    filedir.access[2] = 7; 
+    filedir.access[3] = 7; 
+ 	FAIL ( FPSetDirParms(Conn, vol, tdir , "", bitmap, &filedir))
+
+	FAIL (FPGetFileDirParams(Conn, vol,  tdir , "", 0, bitmap))
+
+	vol2  = FPOpenVol(Conn2, Vol);
+	if (vol2 == 0xffff) {
+		nottested();
+		goto fin;
+	}
+	if (FPDelete(Conn2, vol2,  DIRDID_ROOT , name)) { 
+		nottested();
+		FPDelete(Conn, vol, tdir , "");
+	}	
+	FPCloseVol(Conn2,vol2);
+
+	FAIL (ntohl(AFPERR_NOOBJ) != FPDelete(Conn, vol, tdir , ""))
+	tdir = 0;
+
+fin:
+	FAIL (tdir && FPDelete(Conn, vol, tdir , ""))
+test_exit:
+	exit_test("test421");
+}
+
 /* ----------- */
 void FPDelete_test()
 {
@@ -523,5 +582,6 @@ void FPDelete_test()
 	test196();
 	test368();
 	test369();
+	test421();
 }
 
