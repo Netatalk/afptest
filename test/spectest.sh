@@ -2,6 +2,15 @@
 
 ret=0
 
+check_return() {
+    if [ $? -ne 0 -o $? -ne 2 -o $? -ne 3 ] ; then
+        echo "[error]"
+        ret=1
+    else
+        echo "[OK]"
+    fi    
+}
+
 echo =====================================
 
 if [ ! -f spectest.conf ] ; then
@@ -29,35 +38,17 @@ rm -f spectest.log
 ##
 echo -n "Running spectest with one user ..."
 ./spectest -"$AFPVERSION" -h "$AFPSERVER" -p "$AFPPORT" -u "$USER1" -w "$PASSWD" -s "$VOLUME" > spectest.log 2>&1
-
-if [ "$?" -eq 1 ] ; then
-    echo "[error]"
-    ret=1
-else
-    echo "[OK]"
-fi
+check_return
 
 ##
 echo -n "Running spectest with two user ..."
 ./spectest -"$AFPVERSION" -h "$AFPSERVER" -p "$AFPPORT" -u "$USER1" -d "$USER2" -w "$PASSWD" -s "$VOLUME" >> spectest.log 2>&1
-
-if [ "$?" -eq 1 ] ; then
-    echo "[error]"
-    ret=1
-else
-    echo "[OK]"
-fi
+check_return
 
 ##
 echo -n "Running spectest with local filesystem modifications..."
 ./T2_spectest -"$AFPVERSION" -h "$AFPSERVER" -p "$AFPPORT" -u "$USER1" -d "$USER2" -w "$PASSWD" -s "$VOLUME" >> spectest.log 2>&1
-
-if [ "$?" -eq 1 ] ; then
-    echo "[error]"
-    ret=1
-else
-    echo "[OK]"
-fi
+check_return
 
 if [ $ret -ne 0 ] ; then
     echo The following individual tests failed
