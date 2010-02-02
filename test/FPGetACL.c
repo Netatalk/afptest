@@ -20,7 +20,7 @@ char *file="test398_file";
     }
 
     if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_ACLS)) {
-       test_skipped(T_UTF8);
+       test_skipped(T_ACL);
        goto test_exit;
     }
 
