@@ -77,6 +77,7 @@ int  ofs =  3 * sizeof( u_int16_t );
 u_int16_t bitmap = (1<<FILPBIT_FNUM );
 struct afp_filedir_parms filedir;
 DSI *dsi = &Conn->dsi;
+int ret;
 
 	enter_test();
     fprintf(stderr,"===================\n");
@@ -122,7 +123,12 @@ DSI *dsi = &Conn->dsi;
 
 	FPCloseVol(Conn,vol);
 	vol  = FPOpenVol(Conn, Vol);
-	FAIL (ntohl(AFPERR_PARAM ) != FPDeleteID(Conn, vol, filedir.did))
+
+    ret = FPDeleteID(Conn, vol, filedir.did);
+	if (not_valid_bitmap(ret, BITERR_PARAM | BITERR_NOOBJ, AFPERR_PARAM)) {
+		failed();
+	}
+
 test_exit:
 	exit_test("test130");
 }
