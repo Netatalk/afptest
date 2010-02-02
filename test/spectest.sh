@@ -3,8 +3,9 @@
 ret=0
 
 check_return() {
-    if [ $? -ne 0 -o $? -ne 2 -o $? -ne 3 ] ; then
-        echo "[error]"
+    ERRNO=$?
+    if test $ERRNO -eq 1 -o $ERRNO -gt 3 ; then
+        echo "[error: $ERRNO]"
         ret=1
     else
         echo "[OK]"
@@ -47,7 +48,7 @@ check_return
 
 ##
 echo -n "Running spectest with local filesystem modifications..."
-./T2_spectest -"$AFPVERSION" -h "$AFPSERVER" -p "$AFPPORT" -u "$USER1" -d "$USER2" -w "$PASSWD" -s "$VOLUME" >> spectest.log 2>&1
+./T2_spectest -"$AFPVERSION" -h "$AFPSERVER" -p "$AFPPORT" -u "$USER1" -d "$USER2" -w "$PASSWD" -s "$VOLUME" -c "$LOCALVOLPATH" >> spectest.log 2>&1
 check_return
 
 if [ $ret -ne 0 ] ; then
