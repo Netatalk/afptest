@@ -821,6 +821,82 @@ test_exit:
 	exit_test("test392");
 }
 
+/* ------------------------- */
+STATIC void test236()
+{
+    char *name1 = "t236 dir";
+    char *name2 = "etc";
+    char *name3 = "t236 dir/etc";
+    char *name4 = "passwd";
+    int  testdir, etcdir;
+    int fork;
+    u_int16_t vol = VolID, bitmap;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPOpenFork:test236: symlink attack: try reading /etc/passwd\n");
+
+	if (!Path) {
+		test_skipped(T_MAC_PATH);
+		goto test_exit;
+	}
+
+	bitmap = (1<< DIRPBIT_ATTR) |  (1<<DIRPBIT_ATTR) | (1<<FILPBIT_FINFO) |
+	         (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE) |
+		     (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID);
+
+
+    /* create "t236 dir" */
+	testdir  = FPCreateDir(Conn, vol, DIRDID_ROOT , name1);
+	if (!testdir) {
+		nottested();
+		goto test_exit;
+	}
+
+    /* create "t236 dir/etc" */
+	etcdir = FPCreateDir(Conn, vol, testdir, name2);
+	if (!etcdir) {
+		nottested();
+		goto fin;
+	}
+
+    /* make sure the server has "etc" in the dircache */
+	if (FPGetFileDirParams(Conn, vol,  etcdir, "", 0, (1<< DIRPBIT_DID))) {
+		failed();
+	}
+
+    /* make sure the server's curdir is *not* etc */
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, "", 0, (1<< DIRPBIT_DID))) {
+		failed();
+	}
+
+    /* remove "etc" */
+	if (delete_unix_dir(Path, name3)) {
+		failed();
+		goto fin;
+	}
+
+    /* symlink "etc" to "/etc/passwd" */
+    if (symlink_unix_file("/etc", Path, name3)) {
+        failed();
+        goto fin;
+    }
+
+    /* Ok, we've malicously prepared the dircache and filesystem, now confront afpd with it */
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap, etcdir, name4, OPENACC_RD);
+	if (fork) {
+		failed();
+		goto fin;
+	}
+
+fin:
+	FAIL (fork && FPCloseFork(Conn,fork))
+    FAIL (unlink_unix_file(Path, name1, name2))
+	FAIL (testdir && FPDelete(Conn, vol,  testdir, "")) 
+test_exit:
+	exit_test("test236");
+}
+
 /* ----------- */
 void FPOpenFork_test()
 {
@@ -836,5 +912,6 @@ void FPOpenFork_test()
 	test321();
 	test372();
 	test392();
+    test236();
 }
 

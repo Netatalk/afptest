@@ -43,6 +43,32 @@ int delete_unix_file(char *path, char *name, char *file)
 	return 0;
 }
 
+/* unlink file only, dont care about adouble file */
+int unlink_unix_file(char *path, char *name, char *file)
+{
+	sprintf(temp, "%s/%s/%s", path, name, file);
+	fprintf(stderr,"unlink(%s)\n", temp);
+	if (unlink(temp) <0) {
+		fprintf(stderr,"\tFAILED unlink(%s) %s\n", temp, strerror(errno));
+		failed_nomsg();
+		return -1;
+	}
+	return 0;
+}
+
+/* ----------------------------- */
+int symlink_unix_file(char *target, char *path, char *source)
+{
+	sprintf(temp, "%s/%s", path, source);
+	fprintf(stderr,"symlink(%s -> %s)\n", temp, target);
+	if (symlink(target, temp) <0) {
+		fprintf(stderr,"\tFAILED symlink(%s -> %s) %s\n", temp, target, strerror(errno));
+		failed_nomsg();
+		return -1;
+	}
+	return 0;
+}
+
 /* ----------------------------- */
 int delete_unix_adouble(char *path, char *name)
 {
