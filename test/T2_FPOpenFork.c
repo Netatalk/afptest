@@ -897,6 +897,71 @@ test_exit:
 	exit_test("test236");
 }
 
+/* ------------------------- */
+STATIC void test237()
+{
+    char *name1 = "t237 dir";
+    char *name2 = "passwd";
+    char *name3 = "t237 dir/passwd";
+    char *name4 = "/etc/passwd";
+    int  testdir;
+    int fork;
+    u_int16_t vol = VolID, bitmap;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPOpenFork:test237: symlink reading and attack: try reading /etc/passwd\n");
+
+	if (!Path) {
+		test_skipped(T_MAC_PATH);
+		goto test_exit;
+	}
+
+	bitmap = (1<< DIRPBIT_ATTR) |  (1<<DIRPBIT_ATTR) | (1<<FILPBIT_FINFO) |
+	         (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE) |
+		     (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID);
+
+
+    /* create "t236 dir" */
+	testdir  = FPCreateDir(Conn, vol, DIRDID_ROOT , name1);
+	if (!testdir) {
+		nottested();
+		goto test_exit;
+	}
+
+    /* symlink "etc" to "/etc/passwd" */
+    if (symlink_unix_file(name4, Path, name3)) {
+        failed();
+        goto fin;
+    }
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap, testdir, name2, OPENACC_RD);
+	if (!fork) {
+		failed();
+		goto fin;
+	}
+
+	if (FPRead_ext(Conn, fork, 0, strlen(name4), Data)) {
+		failed();
+		goto fin;
+	}
+    
+    Data[11] = 0;
+    fprintf(stderr, "readlink: %s\n", Data);
+
+    if (strcmp(Data, name4) != 0) {
+		failed();
+		goto fin;
+    }        
+
+fin:
+	FAIL (fork && FPCloseFork(Conn,fork))
+    FAIL (unlink_unix_file(Path, name1, name2))
+	FAIL (testdir && FPDelete(Conn, vol,  testdir, "")) 
+test_exit:
+	exit_test("test237");
+}
+
 /* ----------- */
 void FPOpenFork_test()
 {
@@ -913,5 +978,6 @@ void FPOpenFork_test()
 	test372();
 	test392();
     test236();
+    test237();
 }
 
