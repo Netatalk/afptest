@@ -962,6 +962,75 @@ test_exit:
 	exit_test("test237");
 }
 
+/* ------------------------- */
+STATIC void test238()
+{
+    char *name1 = "t238 dir";
+    char *name2 = "link";
+    char *name3 = "t238 dir/link";
+    char *verylonglinkname = "verylonglinkname";
+    int  testdir;
+    int fork;
+    u_int16_t vol = VolID, bitmap;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPOpenFork:test238: symlink reading with short reqcount\n");
+
+	if (!Path) {
+		test_skipped(T_MAC_PATH);
+		goto test_exit;
+	}
+
+	bitmap = (1<< DIRPBIT_ATTR) |  (1<<DIRPBIT_ATTR) | (1<<FILPBIT_FINFO) |
+	         (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE) |
+		     (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID);
+
+
+    /* create "t238 dir" */
+	testdir  = FPCreateDir(Conn, vol, DIRDID_ROOT , name1);
+	if (!testdir) {
+		nottested();
+		goto test_exit;
+	}
+
+    if (symlink_unix_file(verylonglinkname, Path, name3)) {
+        failed();
+        goto fin;
+    }
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap, testdir, name2, OPENACC_RD);
+	if (!fork) {
+		failed();
+		goto fin;
+	}
+
+	if (ntohl(AFPERR_PARAM) != FPRead_ext(Conn, fork, 0, 8, Data)) {
+		failed();
+		goto fin;
+	}
+    
+	if (FPRead_ext(Conn, fork, 0, strlen(verylonglinkname), Data)) {
+		failed();
+		goto fin;
+	}
+
+    Data[strlen(verylonglinkname)] = 0;
+    fprintf(stderr, "readlink: %s\n", Data);
+
+    if (strcmp(Data, verylonglinkname) != 0) {
+		failed();
+		goto fin;
+    }        
+
+fin:
+	FAIL (fork && FPCloseFork(Conn,fork))
+    FAIL (unlink_unix_file(Path, name1, name2))
+	FAIL (testdir && FPDelete(Conn, vol,  testdir, "")) 
+test_exit:
+	exit_test("test238");
+}
+
 /* ----------- */
 void FPOpenFork_test()
 {
@@ -979,5 +1048,6 @@ void FPOpenFork_test()
 	test392();
     test236();
     test237();
+    test238();
 }
 
