@@ -1,10 +1,11 @@
 /*
- * $Id: loadtest.c,v 1.3 2005-05-25 18:03:32 didg Exp $
+ * $Id: loadtest.c,v 1.4 2010-02-11 14:51:05 franklahm Exp $
  * MANIFEST
  */
 
 #include "afpclient.h"
 #include "test.h"
+#include "specs.h"
 
 int Verbose = 0;
 int Quirk = 0;
@@ -14,6 +15,27 @@ static DSI *dsi;
 CONN *Conn;
 
 int ExitCode = 0;
+
+/* =============================== */
+
+DSI *Dsi;
+
+char Data[300000] = "";
+/* ------------------------------- */
+char    *Server = "localhost";
+int     Proto = 0;
+int     Port = 548;
+char    *Password = "";
+char    *Vol = "";
+char    *User;
+char    *Path;
+int     Version = 21;
+int     Loop = 0;
+int     Mac = 0;
+int     Iterations = 1;
+
+extern  int     Throttle;
+
 
 /* ------------------------- */
 void failed(void)
@@ -51,12 +73,12 @@ int is_there(CONN *conn, int did, char *name)
 void test143()
 {
 int id = getpid();
-char *ndir;
+char *ndir = NULL;
 int dir;
 int i,maxi = 0;
-int j;
+int j, k;
 int fork;
-char *data;
+char *data = NULL;
 int nowrite;
 int numread = /*2*/ 469;
 static char temp[MAXPATHLEN];   
@@ -95,6 +117,7 @@ static char temp[MAXPATHLEN];
 		failed();
 		goto fin1;
 	}
+
 	/* --------------- */
 	for (i=1; i <= 100; i++) {
 		sprintf(temp, "File.small%d", i);
@@ -385,8 +408,41 @@ static char temp[MAXPATHLEN];
 
 		if (FPDelete(Conn, vol,  dir, temp)) {fatal_failed();}
 	}
-	    
-	
+
+	/* ---------------- */
+    /* Create a DIRNUM^3 nested dirtree */
+
+#define DIRNUM 20
+    uint32_t idirs[DIRNUM];
+    uint32_t jdirs[DIRNUM][DIRNUM];
+    uint32_t kdirs[DIRNUM][DIRNUM][DIRNUM];
+
+    for (i=0; i < DIRNUM; i++) {
+        sprintf(temp, "dir%02u", i+1);
+        FAILEXIT(!(idirs[i] = FPCreateDir(Conn,vol, dir, temp)), fin1);
+
+        for (j=0; j < DIRNUM; j++) {
+            sprintf(temp, "dir%02u", j+1);
+            FAILEXIT(!(jdirs[i][j] = FPCreateDir(Conn,vol, idirs[i], temp)), fin1);
+
+            for (k=0; k < DIRNUM; k++) {
+
+                sprintf(temp, "dir%02u", k+1);
+                FAILEXIT(!(kdirs[i][j][k] = FPCreateDir(Conn,vol, jdirs[i][j], temp)), fin1);
+            }
+        }
+    }
+    
+    for (i=0; i < DIRNUM; i++) {
+        for (j=0; j < DIRNUM; j++) {
+            for (k=0; k < DIRNUM; k++) {
+                FAILEXIT(FPDelete(Conn,vol, kdirs[i][j][k], "") != 0, fin1);
+            }
+            FAILEXIT(FPDelete(Conn,vol, jdirs[i][j], "") != 0, fin1);
+        }
+        FAILEXIT(FPDelete(Conn,vol, idirs[i], "") != 0, fin1);
+    }
+
 fin1:
 	if (FPDelete(Conn, vol,  dir, "File.big")) {failed();}
 	if (FPDelete(Conn, vol,  dir, "")) {failed();}
@@ -418,27 +474,9 @@ static void run_one()
 		nottested();
 		return;
 	}
-	test143();
+    while (Iterations--)
+        test143();
 }
-
-/* =============================== */
-
-DSI *Dsi;
-
-char Data[300000] = "";
-/* ------------------------------- */
-char    *Server = "localhost";
-int     Proto = 0;
-int     Port = 548;
-char    *Password = "";
-char    *Vol = "";
-char    *User;
-char    *Path;
-int     Version = 21;
-int     Loop = 0;
-int     Mac = 0;
-
-extern  int     Throttle;
 
 /* =============================== */
 void usage( char * av0 )
@@ -455,6 +493,7 @@ void usage( char * av0 )
     fprintf( stderr,"\t-3\tAFP 3.0 version\n");
     fprintf( stderr,"\t-4\tAFP 3.1 version\n");
     fprintf( stderr,"\t-5\tAFP 3.2 version\n");
+    fprintf( stderr,"\t-n\thow often to run\n");
     fprintf( stderr,"\t-v\tverbose\n");
 
     fprintf( stderr,"\t-l\trun test in loop\n");
@@ -471,7 +510,7 @@ int cc;
 static char *vers = "AFPVersion 2.1";
 static char *uam = "Cleartxt Passwrd";
 
-    while (( cc = getopt( ac, av, "tmlv345h:p:s:u:w:c:" )) != EOF ) {
+    while (( cc = getopt( ac, av, "tmlv345h:n:p:s:u:w:c:" )) != EOF ) {
         switch ( cc ) {
         case 't':
         	Throttle = 1;
@@ -495,7 +534,7 @@ static char *uam = "Cleartxt Passwrd";
 			Mac = 1;
 			break;
         case 'n':
-            Proto = 1;
+            Iterations = atoi(optarg);
             break;
         case 'h':
             Server = strdup(optarg);
