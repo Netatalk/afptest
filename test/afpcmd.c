@@ -1,5 +1,5 @@
 /*
- * $Id: afpcmd.c,v 1.10 2009-03-24 10:02:51 franklahm Exp $
+ * $Id: afpcmd.c,v 1.11 2010-02-18 04:09:21 didg Exp $
  *
  */
 #include "afpclient.h"
@@ -1818,7 +1818,7 @@ DSI *dsi;
 }
 
 /* ------------------------------- */
-unsigned int FPCopyFile(CONN *conn, u_int16_t svol, int sdid, u_int16_t dvol, int ddid, char *src, char *dst)
+unsigned int FPCopyFile(CONN *conn, u_int16_t svol, int sdid, u_int16_t dvol, int ddid, char *src, char *dstdir, char *dst)
 {
 int ofs;
 DSI *dsi;
@@ -1851,7 +1851,7 @@ DSI *dsi;
 
 	ofs = FPset_name(conn, ofs, src);
 
-	ofs = FPset_name(conn, ofs, "");
+	ofs = FPset_name(conn, ofs, dstdir);
 
 	ofs = FPset_name(conn, ofs, dst);
 

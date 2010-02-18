@@ -9,7 +9,7 @@ void FPCopyFile_arg(char **argv)
 
     fprintf(stderr,"source: \"%s\" -> dest: \"%s\"\n", argv[0], argv[1]);    
 
-	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, argv[0], argv[1]))
+	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, argv[0], "", argv[1]))
 
 }
 

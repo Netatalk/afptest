@@ -207,12 +207,12 @@ int dt;
 	/* -------------------- */
 	FAIL (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) 
 	
-	if (htonl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, tdir , vol, DIRDID_ROOT, tname, name1)) {
+	if (htonl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, tdir , vol, DIRDID_ROOT, tname, "", name1)) {
 		failed();
 		FPDelete(Conn, vol,  DIRDID_ROOT , name1);
 	}
 
-	FAIL (htonl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, tdir, name, tname)) 
+	FAIL (htonl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, tdir, name, "", tname)) 
 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
 	

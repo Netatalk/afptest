@@ -905,7 +905,7 @@ int  dir;
 	if (FPRename(Conn, vol, DIRDID_ROOT, name, name1)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
-	FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name1, name);
+	FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name1, "", name);
 	FPDelete(Conn, vol,  DIRDID_ROOT , name1);
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name2);
 	if (!dir) {
@@ -3663,18 +3663,18 @@ char *name2 = "t71 dir";
 	if (FPDelete(Conn, vol,  DIRDID_ROOT , name2)) { fprintf(stderr,"\tFAILED\n");}
 
 	/* sdid bad */
-	if (ntohl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, dir, vol, DIRDID_ROOT, name, name1)) {
+	if (ntohl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, dir, vol, DIRDID_ROOT, name, "", name1)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 
 	FPCloseVol(Conn,vol);
 	vol  = FPOpenVol(Conn, Vol);
 	/* cname unchdirable */
-	if (ntohl(AFPERR_BADTYPE) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, "bar", name1)) {
+	if (ntohl(AFPERR_BADTYPE) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, "bar", "", name1)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 	/* second time once bar is in the cache */
-	if (ntohl(AFPERR_BADTYPE) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, "bar", name1)) {
+	if (ntohl(AFPERR_BADTYPE) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, "bar", "", name1)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 
@@ -3686,30 +3686,30 @@ char *name2 = "t71 dir";
 	if (!(dir1 = FPCreateDir(Conn,vol, DIRDID_ROOT , name2))) {fprintf(stderr,"\tFAILED\n");}
 
 	/* source is a dir */
-	if (ntohl(AFPERR_BADTYPE) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name2, name1)) {
+	if (ntohl(AFPERR_BADTYPE) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name2, "", name1)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
 	if (fork) {
-		if (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1)) {
+		if (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, "", name1)) {
 			fprintf(stderr,"\tFAILED\n");
 		}
 		FPCloseFork(Conn,fork);
 		FPDelete(Conn, vol,  DIRDID_ROOT, name1);
 	}	
 	/* dvol bad */
-	if (ntohl(AFPERR_PARAM) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol +1, dir, name, name1)) {
+	if (ntohl(AFPERR_PARAM) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol +1, dir, name, "", name1)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 
 	/* ddid bad */
-	if (ntohl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, DIRDID_ROOT , vol, dir,  name, name1)) {
+	if (ntohl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, DIRDID_ROOT , vol, dir,  name, "", name1)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 
 	/* ok */
-	if (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1)) {
+	if (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, "", name1)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 
@@ -5097,7 +5097,7 @@ char *name2 = "Contents";
 		fprintf(stderr,"\tFAILED\n");
 	}
 	/* FIXME second time once bar is in the cache */
-	if (ntohl(AFPERR_ACCESS) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, "bar/2.txt", name1)) {
+	if (ntohl(AFPERR_ACCESS) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, "bar/2.txt", "", name1)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 
@@ -5107,7 +5107,7 @@ char *name2 = "Contents";
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
 	if (fork) {
-		if (ntohl(AFPERR_DENYCONF) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1)) {
+		if (ntohl(AFPERR_DENYCONF) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, "", name1)) {
 			fprintf(stderr,"\tFAILED\n");
 		}
 		FPCloseFork(Conn,fork);
@@ -5274,18 +5274,18 @@ int  vol1;
 	if (FPDelete(Conn, vol,  DIRDID_ROOT , name2)) { fprintf(stderr,"\tFAILED\n");}
 
 	/* sdid bad */
-	if (ntohl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, dir, vol, DIRDID_ROOT, name, name1)) {
+	if (ntohl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, dir, vol, DIRDID_ROOT, name, "", name1)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 
 	FPCloseVol(Conn,vol);
 	vol  = FPOpenVol(Conn, Vol);
 	/* cname unchdirable */
-	if (ntohl(AFPERR_ACCESS) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, "bar", name1)) {
+	if (ntohl(AFPERR_ACCESS) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, "bar", "", name1)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 	/* second time once bar is in the cache */
-	if (ntohl(AFPERR_ACCESS) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, "bar", name1)) {
+	if (ntohl(AFPERR_ACCESS) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, "bar", "", name1)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 
@@ -5297,29 +5297,29 @@ int  vol1;
 	if (!(dir1 = FPCreateDir(Conn,vol, DIRDID_ROOT , name2))) {fprintf(stderr,"\tFAILED\n");}
 
 	/* source is a dir */
-	if (ntohl(AFPERR_BADTYPE) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name2, name1)) {
+	if (ntohl(AFPERR_BADTYPE) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name2, "", name1)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
 	if (fork) {
-		if (ntohl(AFPERR_DENYCONF) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1)) {
+		if (ntohl(AFPERR_DENYCONF) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, "", name1)) {
 			fprintf(stderr,"\tFAILED\n");
 		}
 		FPCloseFork(Conn,fork);
 	}	
 	/* dvol bad */
-	if (ntohl(AFPERR_PARAM) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol +1, dir, name, name1)) {
+	if (ntohl(AFPERR_PARAM) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol +1, dir, name, "", name1)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 
 	/* ddid bad */
-	if (ntohl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, DIRDID_ROOT , vol, dir,  name, name1)) {
+	if (ntohl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, DIRDID_ROOT , vol, dir,  name, "", name1)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 
 	/* ok */
-	if (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1)) {
+	if (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, "", name1)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 
@@ -5540,7 +5540,7 @@ int ret;
 		fprintf(stderr,"\tFAILED\n");
 	}
 
-	if (ntohl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name1, name)) {
+	if (ntohl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name1, "", name)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 
@@ -5635,7 +5635,7 @@ int ret;
 			fprintf(stderr,"\tFAILED\n");
 	}
 
-	if (ntohl(AFPERR_ACCESS) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name1, name)) {
+	if (ntohl(AFPERR_ACCESS) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name1, "", name)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 
@@ -5743,7 +5743,7 @@ u_int16_t bitmap = (1<<DIRPBIT_ATTR);
 		fprintf(stderr,"\tFAILED AFPERR_NODIR expected\n");
 	}
 
-	if (ntohl(AFPERR_BADTYPE) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name1, name)) {
+	if (ntohl(AFPERR_BADTYPE) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name1, "", name)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 
@@ -5850,7 +5850,7 @@ u_int16_t bitmap = (1<< DIRPBIT_DID);
 		fprintf(stderr,"\tFAILED AFPERR_NODIR expected\n");
 	}
 
-	if (ntohl(AFPERR_BADTYPE) != FPCopyFile(Conn, vol, dir, vol, DIRDID_ROOT, "", name)) {
+	if (ntohl(AFPERR_BADTYPE) != FPCopyFile(Conn, vol, dir, vol, DIRDID_ROOT, "", "", name)) {
 	    if (Quirk) {
 			fprintf(stderr,"\tFAILED (IGNORED) netatalk AFPERR_BADTYPE\n");
 	    }
@@ -6034,7 +6034,7 @@ u_int16_t bitmap = (1<<DIRPBIT_ATTR);
 		fprintf(stderr,"\tFAILED\n");
 	}
 
-	if (err != FPCopyFile(Conn, vol, dir, vol, DIRDID_ROOT, name1, name)) {
+	if (err != FPCopyFile(Conn, vol, dir, vol, DIRDID_ROOT, name1, "", name)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 
@@ -6402,7 +6402,7 @@ struct stat st;
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
 	if (fork) {
-		if (ntohl(AFPERR_DENYCONF) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1)) {
+		if (ntohl(AFPERR_DENYCONF) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, "", name1)) {
 			fprintf(stderr,"\tFAILED\n");
 		}
 		FPCloseFork(Conn,fork);
@@ -7798,7 +7798,7 @@ int err;
 	}
 	dir = filedir.did;
 	
-	if (htonl(AFPERR_ACCESS) != (err = FPCopyFile(Conn, vol, DIRDID_ROOT, vol , dir, name, name1))) {
+	if (htonl(AFPERR_ACCESS) != (err = FPCopyFile(Conn, vol, DIRDID_ROOT, vol , dir, name, "", name1))) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 	if (ntohl(AFPERR_NOOBJ) !=  FPDelete(Conn, vol,  dir, name1)) {
@@ -7812,7 +7812,7 @@ int err;
 		fprintf(stderr,"\tFAILED\n");
 	}
 	
-	if (FPCopyFile(Conn, vol, dir, vol , DIRDID_ROOT, "test.pdf", name1) ) {
+	if (FPCopyFile(Conn, vol, dir, vol , DIRDID_ROOT, "test.pdf", "", name1) ) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 	else if (FPDelete(Conn, vol,  DIRDID_ROOT, name1) ) {
@@ -8835,7 +8835,7 @@ int  vol1;
 	if (FPDelete(Conn, vol,  DIRDID_ROOT , name2)) { fprintf(stderr,"\tFAILED\n");}
 
 	/* sdid bad */
-	if (ntohl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, dir, vol, DIRDID_ROOT, name, name1)) {
+	if (ntohl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, dir, vol, DIRDID_ROOT, name, "", name1)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 #endif
@@ -9394,7 +9394,7 @@ char *name1 = "t158 new file name";
 	}
 
 	/* sdid bad */
-	if (ntohl(AFPERR_EXIST) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1)) {
+	if (ntohl(AFPERR_EXIST) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, "", name1)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 	if (FPDelete(Conn, vol,  DIRDID_ROOT , name)) { fprintf(stderr,"\tFAILED\n");}
@@ -10001,12 +10001,12 @@ int ret;
 		fprintf(stderr,"\tFAILED\n");
 	}
 	
-	if (htonl(AFPERR_PARAM) != FPCopyFile(Conn, vol, DIRDID_ROOT_PARENT, vol, DIRDID_ROOT, "", name1)) {
+	if (htonl(AFPERR_PARAM) != FPCopyFile(Conn, vol, DIRDID_ROOT_PARENT, vol, DIRDID_ROOT, "", "", name1)) {
 		fprintf(stderr,"\tFAILED\n");
 		FPDelete(Conn, vol,  DIRDID_ROOT , name1);
 	}
 
-	if (htonl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT_PARENT, name, "")) {
+	if (htonl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT_PARENT, name, "", "")) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 
@@ -10177,12 +10177,12 @@ int ret;
 		fprintf(stderr,"\tFAILED\n");
 	}
 	
-	if (htonl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, tdir , vol, DIRDID_ROOT, tname, name1)) {
+	if (htonl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, tdir , vol, DIRDID_ROOT, tname, "", name1)) {
 		fprintf(stderr,"\tFAILED\n");
 		FPDelete(Conn, vol,  DIRDID_ROOT , name1);
 	}
 
-	if (htonl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, tdir, name, tname)) {
+	if (htonl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, tdir, name, "", tname)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 
@@ -10362,12 +10362,12 @@ int ret;
 		fprintf(stderr,"\tFAILED\n");
 	}
 	
-	if (htonl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, tdir , vol, DIRDID_ROOT, tname, name1)) {
+	if (htonl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, tdir , vol, DIRDID_ROOT, tname, "", name1)) {
 		fprintf(stderr,"\tFAILED\n");
 		FPDelete(Conn, vol,  DIRDID_ROOT , name1);
 	}
 
-	if (htonl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, tdir, name, tname)) {
+	if (htonl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, tdir, name, "", tname)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 
@@ -10540,12 +10540,12 @@ int ret;
 		fprintf(stderr,"\tFAILED\n");
 	}
 	
-	if (htonl(AFPERR_PARAM) != FPCopyFile(Conn, vol, tdir , vol, DIRDID_ROOT, tname, name1)) {
+	if (htonl(AFPERR_PARAM) != FPCopyFile(Conn, vol, tdir , vol, DIRDID_ROOT, tname, "", name1)) {
 		fprintf(stderr,"\tFAILED\n");
 		FPDelete(Conn, vol,  DIRDID_ROOT , name1);
 	}
 
-	if (htonl(AFPERR_PARAM) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, tdir, name, tname)) {
+	if (htonl(AFPERR_PARAM) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, tdir, name, "", tname)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 
@@ -10743,12 +10743,12 @@ int ret;
 		fprintf(stderr,"\tFAILED\n");
 	}
 	
-	if (htonl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, tdir , vol, DIRDID_ROOT, tname, name1)) {
+	if (htonl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, tdir , vol, DIRDID_ROOT, tname, "", name1)) {
 		fprintf(stderr,"\tFAILED\n");
 		FPDelete(Conn, vol,  DIRDID_ROOT , name1);
 	}
 
-	if (htonl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, tdir, name, tname)) {
+	if (htonl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, tdir, name, "", tname)) {
 		fprintf(stderr,"\tFAILED\n");
 	}
 

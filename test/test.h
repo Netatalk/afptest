@@ -40,7 +40,7 @@ extern unsigned int FPCreateDir(CONN *conn, u_int16_t vol, int did , char *name)
 extern u_int16_t    FPOpenFork(CONN *conn, u_int16_t vol, char type, u_int16_t bitmap, int did , char *name, int access);
 extern unsigned int FPCreateFile(CONN *conn, u_int16_t vol, char type, int did , char *name);
 extern unsigned int FPGetForkParam(CONN *conn, u_int16_t fork, u_int16_t bitmap);
-extern unsigned int FPCopyFile(CONN *conn, u_int16_t svol, int sdid, u_int16_t dvol, int ddid, char *src, char *dst);
+extern unsigned int FPCopyFile(CONN *conn, u_int16_t svol, int sdid, u_int16_t dvol, int ddid, char *src, char *dstdir, char *dst);
 extern unsigned int FPExchangeFile(CONN *conn, u_int16_t vol, int sdid, int ddid, char *src, char *dst);
 
 extern unsigned int FPMoveAndRename(CONN *conn, u_int16_t svol, int sdid, int ddid, char *src, char *dst);

@@ -803,7 +803,7 @@ u_int16_t vol = VolID;
 		goto test_exit;
 	}
 	Force_type2 = 1;
-	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, file2, nfile2))
+	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, file2, "", nfile2))
 	Force_type2 = 0;
 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , nfile))

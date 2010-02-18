@@ -1,5 +1,5 @@
 /*
- * $Id: main.c,v 1.3 2005-05-25 18:03:32 didg Exp $
+ * $Id: main.c,v 1.4 2010-02-18 04:09:21 didg Exp $
  *
  */
 
@@ -95,7 +95,7 @@ int fork;
 	FPRead(Conn,fork, 0, 277416, Data);
 	FPCloseFork(Conn,fork);
 #if 0
-			FPCopyFile(Conn,vol, DIRDID_ROOT, vol, DIRDID_ROOT, "mc-osdi.ps", "mc-osdi.ps1");
+			FPCopyFile(Conn,vol, DIRDID_ROOT, vol, DIRDID_ROOT, "mc-osdi.ps", "", "mc-osdi.ps1");
 			fork = FPOpenFork(Conn,vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, ".pynche",OPENACC_RD);
 			if (0 != fork) {
 				FPCloseFork(Conn,fork);

@@ -1,5 +1,5 @@
 /*
- * $Id: rotest.c,v 1.4 2005-05-25 18:03:32 didg Exp $
+ * $Id: rotest.c,v 1.5 2010-02-18 04:09:21 didg Exp $
  * MANIFEST
  */
 #include "specs.h"
@@ -171,7 +171,7 @@ unsigned int ret;
  		ret  = FPSetFileParams(Conn, VolID,  DIRDID_ROOT , file, bitmap, &filedir);
  		check_test(ret);
 	}
-	FAIL (ntohl(AFPERR_VLOCK) != FPCopyFile(Conn, VolID, DIRDID_ROOT, VolID, DIRDID_ROOT, file, nfile)) 
+	FAIL (ntohl(AFPERR_VLOCK) != FPCopyFile(Conn, VolID, DIRDID_ROOT, VolID, DIRDID_ROOT, file, "", nfile)) 
 
 	if (!(get_vol_attrib(VolID) & VOLPBIT_ATTR_FILEID) ) {
 		fprintf(stderr,"FileID calls Not supported\n");

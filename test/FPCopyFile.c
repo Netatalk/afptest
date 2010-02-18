@@ -40,14 +40,14 @@ DSI *dsi;
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name2)) 
 
 	/* sdid bad */
-	FAIL (ntohl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, dir, vol, DIRDID_ROOT, name, name1))
+	FAIL (ntohl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, dir, vol, DIRDID_ROOT, name, "", name1))
 
 	FPCloseVol(Conn,vol);
 	vol  = FPOpenVol(Conn, Vol);
 	/* cname unchdirable */
-	FAIL (ntohl(AFPERR_BADTYPE) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, ndir, name1)) 
+	FAIL (ntohl(AFPERR_BADTYPE) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, ndir, "", name1)) 
 	/* second time once bar is in the cache */
-	FAIL (ntohl(AFPERR_BADTYPE) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, ndir, name1)) 
+	FAIL (ntohl(AFPERR_BADTYPE) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, ndir, "", name1)) 
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){
 		failed();
@@ -57,12 +57,12 @@ DSI *dsi;
 	FAIL (!(dir1 = FPCreateDir(Conn,vol, DIRDID_ROOT , name2))) 
 
 	/* source is a dir */
-	FAIL (ntohl(AFPERR_BADTYPE) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name2, name1)) 
+	FAIL (ntohl(AFPERR_BADTYPE) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name2, "", name1)) 
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
 	if (fork) {
 	
-		FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1))
+		FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, "", name1))
 		FAIL (FPCloseFork(Conn,fork))
 		FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name1))
 	}	
@@ -70,13 +70,13 @@ DSI *dsi;
 		failed();
 	}
 	/* dvol bad */
-	FAIL (ntohl(AFPERR_PARAM) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol +1, dir, name, name1)) 
+	FAIL (ntohl(AFPERR_PARAM) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol +1, dir, name, "", name1)) 
 
 	/* ddid bad */
-	FAIL (ntohl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, DIRDID_ROOT , vol, dir,  name, name1)) 
+	FAIL (ntohl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, DIRDID_ROOT , vol, dir,  name, "", name1)) 
 
 	/* ok */
-	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1)) 
+	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, "", name1)) 
 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name1))
@@ -106,7 +106,7 @@ u_int16_t vol = VolID;
 	}
 
 	/* sdid bad */
-	FAIL (ntohl(AFPERR_EXIST) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1))
+	FAIL (ntohl(AFPERR_EXIST) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, "", name1))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name1))
 
@@ -151,7 +151,7 @@ int fork;
 
 	FAIL (FPCloseFork(Conn,fork))
 
-	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1))
+	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, "", name1))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name1))
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name, OPENACC_WR | OPENACC_RD);
@@ -168,7 +168,7 @@ int fork;
 
 	FAIL (FPCloseFork(Conn,fork))
 
-	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1))
+	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, "", name1))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name1))
 
 fin:	
@@ -211,7 +211,7 @@ char finder_info[32];
 	    FAIL (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, bitmap,0))
 	}
 	
-	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol2, DIRDID_ROOT, name, name1))
+	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol2, DIRDID_ROOT, name, "", name1))
 
 	if (FPGetFileDirParams(Conn, vol2,  DIRDID_ROOT , name1, bitmap,0)) {
 		failed();
@@ -294,7 +294,7 @@ u_int32_t mdate = 0;
 		mdate = filedir.mdate;
 	}
 	
-	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1))
+	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, "", name1))
 
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name1, bitmap,0)) {
 		failed();
@@ -365,7 +365,7 @@ DSI *dsi;
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_DRD);
 	if (fork) {
-		FAIL (ntohl(AFPERR_DENYCONF) != FPCopyFile(Conn2, vol2, DIRDID_ROOT, vol2, DIRDID_ROOT, name, name1))
+		FAIL (ntohl(AFPERR_DENYCONF) != FPCopyFile(Conn2, vol2, DIRDID_ROOT, vol2, DIRDID_ROOT, name, "", name1))
 		FAIL (FPCloseFork(Conn,fork))
 	}	
 	else {
@@ -414,7 +414,7 @@ u_int16_t vol = VolID;
 		FAIL (FPCloseFork(Conn,fork1))
 	}
 
-	FAIL (ntohl(AFPERR_EXIST) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name1))
+	FAIL (ntohl(AFPERR_EXIST) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, "", name1))
 	fork1 = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name1,OPENACC_WR);
 	if (fork1) {
 		failed();
@@ -520,7 +520,7 @@ DSI *dsi;
 	    failed();
 	    goto fin1;
 	}
-	FAIL (FPCopyFile(Conn, vol, dir, vol, dir, name, name1))
+	FAIL (FPCopyFile(Conn, vol, dir, vol, dir, name, "", name1))
 
 	FAIL (FPDelete(Conn, vol,  dir , name1))
 
@@ -614,7 +614,7 @@ DSI *dsi;
 	    failed();
 	    goto fin1;
 	}
-	FAIL (ntohl(AFPERR_DENYCONF) != FPCopyFile(Conn, vol, dir, vol, dir, name, name1))
+	FAIL (ntohl(AFPERR_DENYCONF) != FPCopyFile(Conn, vol, dir, vol, dir, name, "", name1))
 
 fin1:
 	FAIL (FPDelete(Conn, vol,  dir , name))
@@ -690,7 +690,7 @@ DSI *dsi;
 	    goto fin1;
 	}
 
-	FAIL (FPCopyFile(Conn, vol, dir, vol, dir, name, name1))
+	FAIL (FPCopyFile(Conn, vol, dir, vol, dir, name, "", name1))
 
 	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) |
 		(1 << DIRPBIT_UNIXPR) | (1<<FILPBIT_ATTR);
@@ -742,7 +742,7 @@ DSI *dsi;
 	    failed();
 	    goto test_exit;
 	}
-	FPCopyFile(Conn, vol, dir, vol, dir, name, name1);
+	FPCopyFile(Conn, vol, dir, vol, dir, name, "", name1);
 
 test_exit:
 	exit_test("test406");
@@ -805,7 +805,7 @@ char data[20];
 	
 	/* *************** */
 
-	FAIL (FPCopyFile(Conn, vol, dir, vol2, dir, name, name1))
+	FAIL (FPCopyFile(Conn, vol, dir, vol2, dir, name, "", name1))
 
 	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) | (1<<FILPBIT_ATTR)
 	  | (1<<FILPBIT_RFLEN) | (1<<FILPBIT_DFLEN);
@@ -864,7 +864,7 @@ char data[20];
 	
 	/* other way */
 	FAIL (FPDelete(Conn, vol,  dir , name))
-	FAIL (FPCopyFile(Conn, vol2, dir, vol, dir, name1, name))
+	FAIL (FPCopyFile(Conn, vol2, dir, vol, dir, name1, "", name))
 
 	if (FPGetFileDirParams(Conn, vol, dir, name, bitmap, 0)){
 	    failed();
@@ -1031,7 +1031,7 @@ char *attr_name="test416_attribute";
 	FAIL(FPSetExtAttr(Conn,vol, DIRDID_ROOT, 2, file, attr_name, "test416_data"))
 	FAIL(FPGetExtAttr(Conn,vol, DIRDID_ROOT , 0, 4096, file, attr_name))
 
-	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, file, file1)) 
+	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, file, "", file1)) 
 
 	FAIL(FPListExtAttr(Conn,vol, DIRDID_ROOT , 0, 4096, file))
 

@@ -1,5 +1,5 @@
 /*
- * $Id: speedtest.c,v 1.8 2009-12-09 04:28:02 didg Exp $
+ * $Id: speedtest.c,v 1.9 2010-02-18 04:09:21 didg Exp $
  * MANIFEST
  */
 #include "specs.h"
@@ -69,7 +69,7 @@ struct vfs {
 	unsigned int (*read)(CONN *, u_int16_t , int , int , char *);
 	unsigned int (*readheader)(DSI *, u_int16_t , int , int , char *);
 	unsigned int (*readfooter)(DSI *, u_int16_t , int , int , char *);
-	unsigned int (*copyfile)(CONN *, u_int16_t , int , u_int16_t , int , char *, char *);
+	unsigned int (*copyfile)(CONN *, u_int16_t , int , u_int16_t , int , char *, char *, char *);
 	u_int16_t    (*openvol)(CONN *, char *);
 	unsigned int (*closevol)(CONN *conn, u_int16_t vol);
 };
@@ -960,7 +960,7 @@ int i;
 		fork = 0;
 		fprintf(stderr,"%d\t", i);
 		gettimeofday(&Timer_start, NULL);
-		if (VFS.copyfile(Conn, vol, dir, vol2, dir2, "Source", "Destination")) {
+		if (VFS.copyfile(Conn, vol, dir, vol2, dir2, "Source", "", "Destination")) {
 			failed();
 			goto fin1;
 		}
