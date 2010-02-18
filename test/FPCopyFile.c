@@ -1047,6 +1047,96 @@ test_exit:
 	exit_test("test416");
 }
 
+/* ------------------------- */
+STATIC void test414()
+{
+int dir;
+char *name  = "t414 old file name";
+char *name1 = "t414 new file name";
+char *name2 = "t414 dir";
+u_int16_t vol = VolID;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPCopyFile:test414: copyFile with bad dest directory\n");
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		goto test_exit;
+	}
+
+	/* wrong destdir */
+	FAIL (ntohl(AFPERR_BADTYPE) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name, name1))
+
+	FAIL (ntohl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name2, name1))
+
+	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name2))) {
+		nottested();
+		goto test_exit;
+	}
+
+	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name2, name1))
+	FAIL (FPDelete(Conn, vol,  dir , name1)) 
+
+test_exit:
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name2)) 
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
+
+	exit_test("test414");
+}
+
+/* ------------------------- */
+STATIC void test424()
+{
+int dir;
+char *name  = "t424 Copy file";
+char *name1 = "t424 new file name";
+char *name2 = "t424 dir";
+char *ndir = "t424 no access";
+int pdir = 0;
+
+u_int16_t vol = VolID;
+DSI *dsi;
+
+	dsi = &Conn->dsi;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPCopyFile:test424: Copy file with dest directory\n");
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		goto test_exit;
+	}		
+
+	if (!(pdir = no_access_folder(vol, DIRDID_ROOT, ndir))) {
+		goto test_exit;
+	}
+
+	FPCloseVol(Conn,vol);
+	vol  = FPOpenVol(Conn, Vol);
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){
+		failed();
+		goto fin;
+	}
+
+	/* sdid bad */
+	FAIL (ntohl(AFPERR_ACCESS) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, ndir, name1))
+
+	FAIL (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name2))) 
+
+	/* ok */
+	FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, name2, name1)) 
+
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+	FAIL (FPDelete(Conn, vol,  dir, name1))
+fin:	
+	delete_folder(vol, DIRDID_ROOT, ndir);
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name2))
+test_exit:
+	exit_test("test424");
+}
+
 
 /* ----------- */
 void FPCopyFile_test()
@@ -1067,5 +1157,7 @@ void FPCopyFile_test()
 	test408();
 	test409();
 	test416();
+	test414();
+	test424();
 }
 
