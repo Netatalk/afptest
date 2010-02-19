@@ -251,6 +251,193 @@ test_exit:
 	exit_test("test318");
 }
 
+/* ------------------------ */
+static int afp_symlink(char *oldpath, char *newpath)
+{
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+u_int16_t bitmap;
+u_int16_t vol = VolID;
+DSI *dsi;
+int fork = 0;
+
+	dsi = &Conn->dsi;
+
+    if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , newpath)) {
+	    return -1;
+	}
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0 ,DIRDID_ROOT, newpath , OPENACC_WR | OPENACC_RD);
+	if (!fork) {
+	    return -1;
+	}
+
+	if (FPWrite(Conn, fork, 0, strlen(oldpath), oldpath, 0 )) {
+	    return -1;
+	}
+
+    if (FPCloseFork(Conn,fork)) {
+	    return -1;
+    }
+    fork = 0;
+
+	bitmap = (1<< DIRPBIT_ATTR) |  (1<<FILPBIT_FINFO) |
+	         (1<<DIRPBIT_CDATE) |  (1<<DIRPBIT_MDATE) |
+		     (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<<FILPBIT_FNUM );
+    
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , newpath, bitmap,0 )) {
+	    return -1;
+    }
+
+    filedir.isdir = 0;
+    afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+    memcpy(filedir.finder_info, "slnkrhap", 8);
+	bitmap = (1<<FILPBIT_FINFO);
+    
+    if (FPSetFileParams(Conn, vol, DIRDID_ROOT , newpath, bitmap, &filedir))
+        return -1;
+    return 0;
+}
+
+/* ------------------------- */
+STATIC void test426()
+{
+char *name = "t426 Symlink";
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+u_int16_t bitmap;
+u_int16_t vol = VolID;
+DSI *dsi;
+int fork = 0;
+
+	dsi = &Conn->dsi;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPSetFileParms:t426: Create a dangling symlink\n");
+    
+    if (afp_symlink("t426 dest", name)) {
+		nottested();
+		goto test_exit;
+	}
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0 ,DIRDID_ROOT, name , OPENACC_WR | OPENACC_RD);
+	if (!fork) {
+		failed();
+	}
+	else {
+	    FPCloseFork(Conn,fork);
+    }
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0 ,DIRDID_ROOT, name , OPENACC_RD);
+	if (!fork) {
+	    /* Trying to open the linked file? */
+		failed();
+	}
+
+test_exit:
+    if (fork) {
+	    FPCloseFork(Conn,fork);
+    }
+    FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
+	exit_test("test426");
+}
+
+/* ------------------------- */
+STATIC void test427()
+{
+char *name = "t427 Symlink";
+char *dest = "t427 dest";
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+u_int16_t bitmap;
+u_int16_t vol = VolID;
+DSI *dsi;
+int fork = 0;
+
+	dsi = &Conn->dsi;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPSetFileParms:t427: Create a symlink\n");
+    
+    if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , dest)) {
+		nottested();
+		goto test_exit;
+	}
+
+    if (afp_symlink(dest, name)) {
+		nottested();
+		goto test_exit;
+	}
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0 ,DIRDID_ROOT, name , OPENACC_RD);
+	if (!fork) {
+	    /* Trying to open the linked file? */
+		failed();
+	}
+
+test_exit:
+    if (fork) {
+	    FPCloseFork(Conn,fork);
+    }
+    FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , dest))
+    FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
+	exit_test("test427");
+}
+
+/* ------------------------- */
+STATIC void test428()
+{
+char *name = "t428 Symlink";
+char *name2 = "t428 Symlink2";
+char *dest = "t428 dest";
+u_int16_t vol = VolID;
+u_int16_t vol2 = 0xffff;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPSetFileParms:t428: Delete symlinks, two users\n");
+
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		goto test_exit;
+	}		
+
+	vol2  = FPOpenVol(Conn2, Vol);
+	if (vol2 == 0xffff) {
+		nottested();
+		goto test_exit;
+	}
+    
+    if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , dest)) {
+		nottested();
+		goto test_error;
+	}
+
+    if (afp_symlink(dest, name)) {
+		nottested();
+		goto test_error;
+	}
+    if (afp_symlink(dest, name2)) {
+		nottested();
+		goto test_error;
+	}
+    FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
+    FAIL (FPDelete(Conn2, vol2,  DIRDID_ROOT , name2))
+
+test_error:
+	if (vol2 != 0xffff)
+	    FPCloseVol(Conn2,vol2);
+    FPDelete(Conn, vol,  DIRDID_ROOT , dest);
+    FPDelete(Conn, vol,  DIRDID_ROOT , name);
+    FPDelete(Conn, vol,  DIRDID_ROOT , name2);
+
+test_exit:
+	exit_test("test428");
+}
+
+
 /* ----------- */
 void FPSetFileParms_test()
 {
@@ -261,5 +448,8 @@ void FPSetFileParms_test()
     test118();
     test122();
     test318();
+    test426();
+    test427();
+    test428();
 }
 
