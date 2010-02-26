@@ -437,6 +437,66 @@ test_exit:
 	exit_test("test428");
 }
 
+/* ------------------------- */
+STATIC void test429()
+{
+char *name = "t429 Symlink";
+char *dest = "t429 dest";
+int  ofs =  sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+u_int16_t bitmap = (1<<FILPBIT_FNUM );
+u_int16_t vol = VolID;
+DSI *dsi;
+int fork = 0;
+int id;
+
+	dsi = &Conn->dsi;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPSetFileParms:t429: symlink File ID\n");
+    
+    if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , dest)) {
+		nottested();
+		goto test_exit;
+	}
+
+    if (afp_symlink(dest, name)) {
+		nottested();
+		goto test_exit;
+	}
+
+	id = get_fid(Conn, vol, DIRDID_ROOT , name);
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0 ,DIRDID_ROOT, name , OPENACC_RD);
+	if (!fork) {
+	    /* Trying to open the linked file? */
+		failed();
+		goto test_exit;
+	}
+
+	filedir.did = 0;
+	if (FPGetForkParam(Conn, fork, bitmap)) {
+		failed();
+	}
+	else {
+		filedir.isdir = 0;
+		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+		if (!filedir.did || filedir.did != id) {
+		    fprintf(stderr,"\tFAILED cnids differ %x %x\n", filedir.did, id);
+			failed_nomsg();
+		}
+	}
+
+test_exit:
+    if (fork) {
+	    FPCloseFork(Conn,fork);
+    }
+    FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , dest))
+    FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
+	exit_test("test429");
+}
+
 
 /* ----------- */
 void FPSetFileParms_test()
@@ -451,5 +511,6 @@ void FPSetFileParms_test()
     test426();
     test427();
     test428();
+    test429();
 }
 
