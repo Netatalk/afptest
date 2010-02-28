@@ -822,6 +822,64 @@ test_exit:
 }
 
 /* ------------------------- */
+STATIC void test411()
+{
+char *name = "t411 folder";
+char *file = "t411 file.txt";
+u_int16_t bitmap = 0;
+int fork;
+u_int16_t vol = VolID;
+int dir;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPOpenFork:test411: open read-only a file without ressource fork\n");
+
+	if (!Mac && !Path) {
+		test_skipped(T_MAC_PATH);
+		goto test_exit;
+	}
+
+	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
+		nottested();
+		goto test_exit;
+	}
+	if (FPCreateFile(Conn, vol,  0, dir , file)){ 
+		nottested();
+		goto fin;
+	}
+
+	if (!Mac) {
+		sprintf(temp,"%s/%s/.AppleDouble/%s", Path, name, file);
+		if (unlink(temp)) {
+		    nottested();
+		    goto fin;
+		}
+	}
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,dir, file, OPENACC_RD);
+
+	if (!fork) {
+		failed();
+		goto fin;
+	}		
+
+	FAIL (FPCloseFork(Conn,fork))
+
+	if (!Mac && !unlink(temp)) {
+		fprintf(stderr,"\tFAILED Ressource fork there!\n");
+		failed_nomsg();
+	}
+
+fin:
+	FAIL (FPDelete(Conn, vol,  dir , file))
+	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test411");
+
+}
+
+/* ------------------------- */
 STATIC void test236()
 {
     char *name1 = "t236 dir";
@@ -1046,8 +1104,8 @@ void FPOpenFork_test()
 	test321();
 	test372();
 	test392();
+	test411();
     test236();
     test237();
     test238();
 }
-
