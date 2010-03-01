@@ -999,7 +999,7 @@ STATIC void test237()
 		goto fin;
 	}
 
-	if (FPRead_ext(Conn, fork, 0, strlen(name4), Data)) {
+	if (FPRead(Conn, fork, 0, strlen(name4), Data)) {
 		failed();
 		goto fin;
 	}
@@ -1063,12 +1063,12 @@ STATIC void test238()
 		goto fin;
 	}
 
-	if (ntohl(AFPERR_PARAM) != FPRead_ext(Conn, fork, 0, 8, Data)) {
+	if (ntohl(AFPERR_PARAM) != FPRead(Conn, fork, 0, 8, Data)) {
 		failed();
 		goto fin;
 	}
     
-	if (FPRead_ext(Conn, fork, 0, strlen(verylonglinkname), Data)) {
+	if (FPRead(Conn, fork, 0, strlen(verylonglinkname), Data)) {
 		failed();
 		goto fin;
 	}
