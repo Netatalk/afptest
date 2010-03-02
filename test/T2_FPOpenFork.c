@@ -879,6 +879,71 @@ test_exit:
 
 }
 
+/* ------------------------- 
+   Didn't fail but help when tracing afpd
+*/
+STATIC void test430()
+{
+char *name = "t430 folder";
+char *file = "t430 file.txt";
+u_int16_t bitmap = 0;
+int fork;
+int fork1;
+u_int16_t vol = VolID;
+int dir;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPOpenFork:test430: don't set the name again in the resource fork if file open twice\n");
+
+	if (!Mac && !Path) {
+		test_skipped(T_MAC_PATH);
+		goto test_exit;
+	}
+
+	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
+		nottested();
+		goto test_exit;
+	}
+	if (FPCreateFile(Conn, vol,  0, dir , file)){ 
+		nottested();
+		goto fin;
+	}
+
+	if (!Mac) {
+		sprintf(temp,"%s/%s/.AppleDouble/%s", Path, name, file);
+		if (unlink(temp)) {
+		    nottested();
+		    goto fin;
+		}
+	}
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap ,dir, file, OPENACC_WR | OPENACC_RD);
+
+	if (!fork) {
+		failed();
+		goto fin;
+	}		
+
+	fork1 = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap ,dir, file, OPENACC_WR | OPENACC_RD);
+
+	if (!fork1) {
+		failed();
+		goto fin1;
+	}		
+
+	FAIL (FPCloseFork(Conn,fork1))
+
+fin1:
+	FAIL (FPCloseFork(Conn,fork))
+
+fin:
+	FAIL (FPDelete(Conn, vol,  dir , file))
+	FAIL (FPDelete(Conn, vol,  dir , ""))
+test_exit:
+	exit_test("test430");
+}
+
 /* ------------------------- */
 STATIC void test236()
 {
