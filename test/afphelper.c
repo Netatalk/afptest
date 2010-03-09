@@ -648,6 +648,8 @@ static int error_in_list(unsigned int bitmap, unsigned int error)
 		return 1;
 	if ((BITERR_BITMAP & bitmap) && htonl(error) == AFPERR_BITMAP)
 		return 1;
+	if ((BITERR_MISC & bitmap) && htonl(error) == AFPERR_MISC)
+		return 1;
 
 	return 0;
 }
@@ -702,6 +704,10 @@ static char temp1[4096];
 	}
 	if ((BITERR_BITMAP & bitmap)) {
 	    sprintf(temp1, "%d %s ", AFPERR_BITMAP, afp_error(htonl(AFPERR_BITMAP)));
+		strcat(temp, temp1);
+	}
+	if ((BITERR_MISC & bitmap)) {
+	    sprintf(temp1, "%d %s ", AFPERR_MISC, afp_error(htonl(AFPERR_MISC)));
 		strcat(temp, temp1);
 	}
 	return temp;

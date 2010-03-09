@@ -302,13 +302,14 @@ int fork = 0;
 /* ------------------------- */
 STATIC void test426()
 {
-char *name = "t426 Symlink";
-int  ofs =  3 * sizeof( u_int16_t );
-struct afp_filedir_parms filedir;
-u_int16_t bitmap;
-u_int16_t vol = VolID;
-DSI *dsi;
-int fork = 0;
+    char *name = "t426 Symlink";
+    int  ofs =  3 * sizeof( u_int16_t );
+    struct afp_filedir_parms filedir;
+    u_int16_t bitmap;
+    u_int16_t vol = VolID;
+    DSI *dsi;
+    int fork = 0;
+    unsigned int ret;
 
 	dsi = &Conn->dsi;
 
@@ -326,6 +327,10 @@ int fork = 0;
 		failed();
 	}
 	else {
+        char *ln2 = "t426 dest 2";
+        ret = FPWrite_ext(Conn, fork, 0, strlen(ln2), ln2, 0);
+        if (not_valid_bitmap(ret, BITERR_ACCESS | BITERR_MISC, AFPERR_MISC))
+            failed();
 	    FPCloseFork(Conn,fork);
     }
 
