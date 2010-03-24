@@ -1,5 +1,5 @@
 /*
- * $Id: loadtest.c,v 1.4 2010-02-11 14:51:05 franklahm Exp $
+ * $Id: loadtest.c,v 1.5 2010-03-24 13:55:47 franklahm Exp $
  * MANIFEST
  */
 
@@ -412,7 +412,7 @@ static char temp[MAXPATHLEN];
 	/* ---------------- */
     /* Create a DIRNUM^3 nested dirtree */
 
-#define DIRNUM 20
+#define DIRNUM 10
     uint32_t idirs[DIRNUM];
     uint32_t jdirs[DIRNUM][DIRNUM];
     uint32_t kdirs[DIRNUM][DIRNUM][DIRNUM];
