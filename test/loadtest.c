@@ -1,7 +1,10 @@
 /*
- * $Id: loadtest.c,v 1.5 2010-03-24 13:55:47 franklahm Exp $
+ * $Id: loadtest.c,v 1.6 2010-03-24 15:39:50 franklahm Exp $
  * MANIFEST
  */
+
+#include <sys/time.h>
+#include <time.h>
 
 #include "afpclient.h"
 #include "test.h"
@@ -30,12 +33,63 @@ char    *Vol = "";
 char    *User;
 char    *Path;
 int     Version = 21;
-int     Loop = 0;
 int     Mac = 0;
 int     Iterations = 1;
 
 extern  int     Throttle;
 
+struct timeval tv_start;
+struct timeval tv_end;
+struct timeval tv_dif;
+#define RESBUF 64000
+char results[RESBUF+1];
+
+static void starttimer(void)
+{
+    gettimeofday(&tv_start, NULL);
+}
+
+static void stoptimer(void)
+{
+    gettimeofday(&tv_end, NULL);
+}
+
+static char *timerstr(void)
+{
+    static char buf[100];
+
+    if (tv_end.tv_usec < tv_start.tv_usec) {
+        tv_end.tv_usec += 1000000;
+        tv_end.tv_sec -= 1;
+    }
+    tv_dif.tv_sec = tv_end.tv_sec - tv_start.tv_sec;
+    tv_dif.tv_usec = tv_end.tv_usec - tv_start.tv_usec;
+
+    snprintf(buf, 99, "%u.%03u s", tv_dif.tv_sec, tv_dif.tv_usec / 1000);
+    return buf;
+}
+
+static void addemptyline(void)
+{
+    strncat(results, "\n", RESBUF);
+}
+
+static void addresult(const char *msg)
+{
+    int i;
+    strncat(results, msg, RESBUF);
+    for (i = 60 - strlen(msg); i > 0; i--)
+        strncat(results, " ", RESBUF);
+    strncat(results, timerstr(), RESBUF);
+    strncat(results, "\n", RESBUF);
+}
+
+static void displayresults(void)
+{
+    printf("Netatalk Lantest Results\n");
+    printf("========================\n\n");
+    printf("%s", results);
+}
 
 /* ------------------------- */
 void failed(void)
@@ -166,6 +220,7 @@ static char temp[MAXPATHLEN];
 		}
 		maxi = i;
 	}
+
 	if (FPEnumerate(Conn, vol,  dir , "", 
 	         (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO)|
 	         (1<<FILPBIT_CDATE) | (1<<FILPBIT_BDATE) | (1<<FILPBIT_MDATE) |
@@ -177,6 +232,8 @@ static char temp[MAXPATHLEN];
 		)) {
 		fatal_failed();
 	}
+
+    starttimer();
 	for (i=1; i <= maxi; i++) {
 		sprintf(temp, "File.small%d", i);
 		if (is_there(Conn, dir, temp)) {
@@ -209,6 +266,9 @@ static char temp[MAXPATHLEN];
 			if (FPCloseFork(Conn,fork)) {fatal_failed();}
 		}
 	}
+    stoptimer();
+    addresult("Opening, stating and reading 512 bytes from 200 files: ");
+
 	/* ---------------- */
 	for (i=1; i <= maxi; i++) {
 		sprintf(temp, "File.small%d", i);
@@ -225,6 +285,7 @@ static char temp[MAXPATHLEN];
  	if (FPGetVolParam(Conn, vol, (1 << VOLPBIT_MDATE )|(1 << VOLPBIT_XBFREE))) {
 		fatal_failed();
 	}
+
 	/* --------------- */
 	strcpy(temp, "File.big");
 	if (is_there(Conn, dir, temp)) {fatal_failed();}
@@ -243,6 +304,7 @@ static char temp[MAXPATHLEN];
 		if (FPGetForkParam(Conn, fork, (1<<FILPBIT_PDID)|(1<< DIRPBIT_LNAME)|(1<<FILPBIT_DFLEN))) {
 			fatal_failed();
 		}
+        starttimer();
 		for (i=0; i <= numread ; i++) {
 			if (FPWrite(Conn, fork, i*65536, 65536, data, 0 )) {
 				fatal_failed();
@@ -250,6 +312,8 @@ static char temp[MAXPATHLEN];
 			}
 		}
 		if (FPCloseFork(Conn,fork)) {fatal_failed();}
+        stoptimer();
+        addresult("Writing 30 MB to one file: ");        
 	}
 
 	if (is_there(Conn, dir, temp)) {fatal_failed();}
@@ -278,14 +342,18 @@ static char temp[MAXPATHLEN];
 			if (FPGetFileDirParams(Conn, vol,  dir, temp, 0x72d,0)) {
 				fatal_failed();
 			}
+            starttimer();
 			for (i=0; i <= numread ; i++) {
 				if (FPRead(Conn, fork, i*65536, 65536, data)) {
 					fatal_failed();
 				}
 			}
 			if (FPCloseFork(Conn,fork)) {fatal_failed();}
+            stoptimer();
+            addresult("Reading 30 MB from one file: ");
 		}
 	}
+
 	/* --------------- */
 	strcpy(temp, "File.lock");
 	
@@ -354,7 +422,8 @@ static char temp[MAXPATHLEN];
 			if (FPGetFileDirParams(Conn, vol,  dir, temp, 0x72d, 0)) {
 				fatal_failed();
 			}
-			for (j = 0; j <= 10; j++) {
+            starttimer();
+			for (j = 0; j < 100; j++) {
 				for (i = 0;i <= 390; i += 10) {
 					if (FPByteLock(Conn, fork, 0, 0 , i , 10)) {fatal_failed();}
 				}	
@@ -362,6 +431,9 @@ static char temp[MAXPATHLEN];
 					if (FPByteLock(Conn, fork, 0, 1 , i , 10)) {fatal_failed();}
 				}
 			}	
+            stoptimer();
+            addresult("Locking/Unlocking 4000 times each: ");
+
 			if (is_there(Conn, dir, temp)) {fatal_failed();}
 			if (FPCloseFork(Conn,fork)) {fatal_failed();}
 			if (FPDelete(Conn, vol,  dir, "File.lock")) {fatal_failed();}
@@ -385,6 +457,8 @@ static char temp[MAXPATHLEN];
 		}
 		maxi = i;
 	}
+
+    starttimer();
 	if (FPEnumerate(Conn, vol,  dir , "", 
 	         (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO)|
 	         (1<<FILPBIT_CDATE) | (1<<FILPBIT_BDATE) | (1<<FILPBIT_MDATE) |
@@ -396,6 +470,9 @@ static char temp[MAXPATHLEN];
 		)) {
 		fatal_failed();
 	}
+    stoptimer();
+    addresult("Enumerate dir with 320 files: ");
+
 	/* ---------------- */
 	for (i=1; i <= maxi; i++) {
 		sprintf(temp, "File.0k%d", i);
@@ -417,6 +494,7 @@ static char temp[MAXPATHLEN];
     uint32_t jdirs[DIRNUM][DIRNUM];
     uint32_t kdirs[DIRNUM][DIRNUM][DIRNUM];
 
+    starttimer();
     for (i=0; i < DIRNUM; i++) {
         sprintf(temp, "dir%02u", i+1);
         FAILEXIT(!(idirs[i] = FPCreateDir(Conn,vol, dir, temp)), fin1);
@@ -432,6 +510,8 @@ static char temp[MAXPATHLEN];
             }
         }
     }
+    stoptimer();
+    addresult("Created directory tree with 10^3 dirs: ");
     
     for (i=0; i < DIRNUM; i++) {
         for (j=0; j < DIRNUM; j++) {
@@ -449,20 +529,8 @@ fin1:
 fin:
 	free(ndir);
 	free(data);
-}
-/* ------------------ */
-static void run_loop()
-{
-	dsi = &Conn->dsi;
-	vol  = FPOpenVol(Conn, Vol);
-	if (vol == 0xffff) {
-		nottested();
-		return;
-	}
-	while (1) {
-		test143();
-	}
-	
+
+    addemptyline();
 }
 
 /* ------------------ */
@@ -495,22 +563,21 @@ void usage( char * av0 )
     fprintf( stderr,"\t-5\tAFP 3.2 version\n");
     fprintf( stderr,"\t-n\thow often to run\n");
     fprintf( stderr,"\t-v\tverbose\n");
+    fprintf( stderr,"\t-V\tvery verbose\n");
 
-    fprintf( stderr,"\t-l\trun test in loop\n");
     exit (1);
 }
 
 /* ------------------------------- */
-int main( ac, av )
-int		ac;
-char	**av;
+int main(int ac, char **av)
 {
-int cc;
+    int cc;
+    int Debug = 0;
 //	static char *vers = "AFP2.2";
-static char *vers = "AFPVersion 2.1";
-static char *uam = "Cleartxt Passwrd";
+    static char *vers = "AFPVersion 2.1";
+    static char *uam = "Cleartxt Passwrd";
 
-    while (( cc = getopt( ac, av, "tmlv345h:n:p:s:u:w:c:" )) != EOF ) {
+    while (( cc = getopt( ac, av, "tmvV345h:n:p:s:u:w:c:" )) != EOF ) {
         switch ( cc ) {
         case 't':
         	Throttle = 1;
@@ -548,9 +615,6 @@ static char *uam = "Cleartxt Passwrd";
         case 'w':
             Password = strdup(optarg);
             break;
-        case 'l' :
-            Loop = 1;
-            break;
         case 'p' :
             Port = atoi( optarg );
             if (Port <= 0) {
@@ -558,12 +622,20 @@ static char *uam = "Cleartxt Passwrd";
                 exit(1);
             }
             break;
-		case 'v':
+        case 'v':
+            Debug = 1;
+            break;
+		case 'V':
 			Verbose = 1;
 			break;
         default :
             usage( av[ 0 ] );
         }
+    }
+
+    if (! Debug) {
+        Verbose = 0;
+        freopen("/dev/null", "w", stderr);
     }
 
 	/************************************
@@ -594,13 +666,10 @@ static char *uam = "Cleartxt Passwrd";
 	FPopenLogin(Conn, vers, uam, User, Password);
 	Conn->afp_version = Version;
 
-	
-    if (Loop) {
-    	run_loop();
-    }
-    else {
-		run_one();
-    }
+    run_one();
+
    	FPLogOut(Conn);
+
+    displayresults();
 	return ExitCode;
 }

@@ -3,7 +3,7 @@ SUBDIRS =
 TESTS = spectest.sh
 noinst_SCRIPTS = spectest.sh
  
-bin_PROGRAMS = afpclient afparg afp_ls loadtest spectest postmark fail_spectest T2_spectest logintest rotest \
+bin_PROGRAMS = afpclient afparg afp_ls lantest spectest postmark fail_spectest T2_spectest logintest rotest \
                encoding_test speedtest
  
 noinst_LTLIBRARIES = libafptest.la
@@ -21,8 +21,8 @@ postmark_SOURCES = postmark-1_5.c
 postmark_LDFLAGS = -export-dynamic
 postmark_LDADD = libafptest.la
 #
-loadtest_SOURCES = loadtest.c
-loadtest_LDADD = libafptest.la
+lantest_SOURCES = loadtest.c
+lantest_LDADD = libafptest.la
  
 afp_ls_SOURCES = afp_ls.c
 afp_ls_LDADD = libafptest.la

@@ -74,6 +74,9 @@ Tests which fail with current netatalk but pass on a Mac.
 Tests when .AppleDouble is missing, bogus.
 Need local access to volume (-c option).
 
+./lantest
+Netatalk implementation of HELIOS Lan Test.
+
 ./afpclient
 First try for a test suite and is obsolete.
 
@@ -93,9 +96,6 @@ Classic postmark benchmark with AFP commands.
 bench Read, Write and file copy (either Read/Write or FPCopyFile),
 it can also run the same tests using Posix syscalls and can
 be use for testing afpd speed against local or others protocols.
-
-./loadtest
-run a bunch of cmds for testing server load.
 
 Example:
 --------
