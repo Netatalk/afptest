@@ -1,9 +1,9 @@
-AC_INIT(test/spectest.c)
-
-AC_CANONICAL_SYSTEM
-AM_INIT_AUTOMAKE(afptest, 0.1)
+AC_INIT([afptest], [0.1])
+AC_CONFIG_SRCDIR([test/spectest.c])
+AM_INIT_AUTOMAKE(foreign)
 AM_CONFIG_HEADER(config.h)
 
+AC_CANONICAL_SYSTEM
 AC_PROG_CC
 
 AC_CHECK_HEADERS(fcntl.h strings.h sys/fcntl.h unistd.h sys/cdefs.h)
