@@ -30,7 +30,7 @@ EOF
     echo 'A template configuration file "spectest.conf" has been generated.'
     echo Adjust it to match your setup.
     echo =====================================
-    exit 1
+    exit 0
 fi
 
 . spectest.conf

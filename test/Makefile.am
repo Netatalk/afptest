@@ -1,9 +1,10 @@
-TESTS = spectest.sh
-noinst_SCRIPTS = spectest.sh
+dist_check_SCRIPTS = spectest.sh
 noinst_HEADERS = adoublehelper.h afpclient.h specs.h test.h dsi.h afp.h
 bin_PROGRAMS = afpclient afparg afp_ls lantest spectest postmark fail_spectest T2_spectest logintest rotest \
                encoding_test speedtest
 noinst_LTLIBRARIES = libafptest.la
+TESTS = spectest.sh
+CLEANFILES = spectest.conf
 
 libafptest_la_SOURCES = afpcli.c afpcmd.c afphelper.c adoublehelper.c
 
