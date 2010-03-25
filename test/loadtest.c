@@ -1,5 +1,5 @@
 /*
- * $Id: loadtest.c,v 1.6 2010-03-24 15:39:50 franklahm Exp $
+ * $Id: loadtest.c,v 1.7 2010-03-25 07:56:34 franklahm Exp $
  * MANIFEST
  */
 
@@ -25,7 +25,7 @@ DSI *Dsi;
 
 char Data[300000] = "";
 /* ------------------------------- */
-char    *Server = "localhost";
+char    *Server = NULL;
 int     Proto = 0;
 int     Port = 548;
 char    *Password = "";
@@ -549,19 +549,18 @@ static void run_one()
 /* =============================== */
 void usage( char * av0 )
 {
-    fprintf( stderr, "usage:\t%s [-m] [-n] [-t] [-h host] [-p port] [-s vol] [-u user] [-w password]\n", av0 );
-    fprintf( stderr,"\t-t\tthrottle execution\n");
-    fprintf( stderr,"\t-m\tserver is a Mac\n");
+    fprintf( stderr, "usage:\t%s -h host [-m|t|v|V] [-3|4|5] [-p port] [-s vol] [-u user] [-w password] [-n iterations]\n", av0 );
+    fprintf( stderr,"\t-t\tthrottle execution (ignore this!)\n");
+    fprintf( stderr,"\t-m\tserver is a Mac (ignore this too!)\n");
     fprintf( stderr,"\t-h\tserver host name (default localhost)\n");
     fprintf( stderr,"\t-p\tserver port (default 548)\n");
     fprintf( stderr,"\t-s\tvolume to mount (default home)\n");
-    fprintf( stderr,"\t-c\tvolume path on the server\n");
     fprintf( stderr,"\t-u\tuser name (default uid)\n");
     fprintf( stderr,"\t-w\tpassword (default none)\n");
     fprintf( stderr,"\t-3\tAFP 3.0 version\n");
-    fprintf( stderr,"\t-4\tAFP 3.1 version\n");
+    fprintf( stderr,"\t-4\tAFP 3.1 version (default)\n");
     fprintf( stderr,"\t-5\tAFP 3.2 version\n");
-    fprintf( stderr,"\t-n\thow often to run\n");
+    fprintf( stderr,"\t-n\thow often to run (default: 1)\n");
     fprintf( stderr,"\t-v\tverbose\n");
     fprintf( stderr,"\t-V\tvery verbose\n");
 
@@ -573,8 +572,7 @@ int main(int ac, char **av)
 {
     int cc;
     int Debug = 0;
-//	static char *vers = "AFP2.2";
-    static char *vers = "AFPVersion 2.1";
+    static char *vers = "AFP3.1";
     static char *uam = "Cleartxt Passwrd";
 
     while (( cc = getopt( ac, av, "tmvV345h:n:p:s:u:w:c:" )) != EOF ) {
@@ -593,9 +591,6 @@ int main(int ac, char **av)
         case '5':
 			vers = "AFP3.2";
 			Version = 32;
-			break;
-		case 'c':
-			Path = strdup(optarg);
 			break;
 		case 'm':
 			Mac = 1;
@@ -633,6 +628,9 @@ int main(int ac, char **av)
         }
     }
 
+    if (! Server)
+        usage( av[ 0 ] );
+
     if (! Debug) {
         Verbose = 0;
         freopen("/dev/null", "w", stderr);
@@ -649,7 +647,7 @@ int main(int ac, char **av)
     }
     Conn->type = Proto;
     if (!Proto) {
-	int sock;
+        int sock;
     	Dsi = &Conn->dsi;
 		dsi = Dsi;         
 	    sock = OpenClientSocket(Server, Port);
@@ -659,17 +657,21 @@ int main(int ac, char **av)
      	Dsi->protocol = DSI_TCPIP; 
 	    Dsi->socket = sock;
     }
-    else {
-	}
 
     /* login */	
-	FPopenLogin(Conn, vers, uam, User, Password);
-	Conn->afp_version = Version;
+    ExitCode = ntohs(FPopenLogin(Conn, vers, uam, User, Password));
 
-    run_one();
+	if (ExitCode == AFP_OK) {
+        Conn->afp_version = Version;
+        run_one();
+        FPLogOut(Conn);
+    }
 
-   	FPLogOut(Conn);
+    if (ExitCode) {
+        if (! Debug)
+            printf("Error, ExitCode: %u. Run with -v to see what went wrong.\n", ExitCode);
+    } else
+        displayresults();
 
-    displayresults();
 	return ExitCode;
 }

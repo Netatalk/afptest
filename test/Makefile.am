@@ -1,29 +1,26 @@
-SUBDIRS =
-
 TESTS = spectest.sh
 noinst_SCRIPTS = spectest.sh
- 
+noinst_HEADERS = adoublehelper.h afpclient.h specs.h test.h dsi.h afp.h
 bin_PROGRAMS = afpclient afparg afp_ls lantest spectest postmark fail_spectest T2_spectest logintest rotest \
                encoding_test speedtest
- 
 noinst_LTLIBRARIES = libafptest.la
- 
+
 libafptest_la_SOURCES = afpcli.c afpcmd.c afphelper.c adoublehelper.c
- 
+
 afpclient_SOURCES = main.c testsrc.c
 afpclient_LDFLAGS = -export-dynamic
 afpclient_LDADD = libafptest.la
 
 afparg_SOURCES = afparg.c afparg_FPfuncs.c
 afparg_LDADD = libafptest.la
- 
+
 postmark_SOURCES = postmark-1_5.c
 postmark_LDFLAGS = -export-dynamic
 postmark_LDADD = libafptest.la
-#
+
 lantest_SOURCES = loadtest.c
 lantest_LDADD = libafptest.la
- 
+
 afp_ls_SOURCES = afp_ls.c
 afp_ls_LDADD = libafptest.la
 
@@ -32,13 +29,13 @@ encoding_test_LDADD = libafptest.la
 
 logintest_SOURCES = logintest.c
 logintest_LDADD = libafptest.la
- 
+
 rotest_SOURCES = rotest.c
 rotest_LDADD = libafptest.la
- 
+
 speedtest_SOURCES = speedtest.c
 speedtest_LDADD = libafptest.la
-#
+
 spectest_SOURCES = spectest.c FPAddAPPL.c FPAddComment.c FPAddIcon.c \
         FPByteRangeLock.c FPByteRangeLockExt.c FPCloseFork.c FPCopyFile.c FPCreateDir.c FPCreateFile.c\
         FPCloseDir.c FPCloseDT.c FPCloseVol.c FPDelete.c FPExchangeFiles.c FPOpenDT.c FPOpenFork.c \
@@ -51,22 +48,16 @@ spectest_SOURCES = spectest.c FPAddAPPL.c FPAddComment.c FPAddIcon.c \
 	FPRemoveComment.c FPResolveID.c FPGetSessionToken.c \
         FPWrite.c FPWriteExt.c FPzzz.c Error.c Utf8.c FPGetACL.c \
 		FPSync.c
- 
 spectest_LDADD = libafptest.la
-#
+
 fail_spectest_SOURCES = fail_spectest.c failed_FPEnumerate.c failed_FPExchangeFiles.c \
 	failed_FPMoveAndRename.c failed_Error.c
-
 fail_spectest_CFLAGS = -DQUIRK
- 
 fail_spectest_LDADD = libafptest.la
- 
-#
+
 T2_spectest_SOURCES = T2_spectest.c T2_FPByteRangeLock.c\
         T2_FPDelete.c T2_FPGetFileDirParms.c T2_FPOpenFork.c T2_FPSetDirParms.c T2_FPSetFileParms.c \
 	T2_FPMoveAndRename.c T2_FPResolveID.c T2_FPGetSrvrParms.c T2_FPCreateFile.c \
 	T2_FPCopyFile.c
-
 T2_spectest_LDADD = libafptest.la
- 
-noinst_HEADERS = adoublehelper.h afpclient.h specs.h test.h 
+
