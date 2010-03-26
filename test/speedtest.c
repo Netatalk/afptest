@@ -1,12 +1,20 @@
 /*
- * $Id: speedtest.c,v 1.9 2010-02-18 04:09:21 didg Exp $
+ * $Id: speedtest.c,v 1.10 2010-03-26 10:12:49 franklahm Exp $
  * MANIFEST
  */
+
 #include "specs.h"
 #include <dlfcn.h>
 #include <sys/time.h>
 #include <unistd.h>
 #include <sys/mman.h>
+
+/* For compiling os OS X */
+#ifndef MAP_ANONYMOUS
+#ifdef MAP_ANON
+#define MAP_ANONYMOUS MAP_ANON
+#endif
+#endif
 
 int Verbose = 0;
 int Interactive = 0;
