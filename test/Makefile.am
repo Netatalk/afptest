@@ -1,5 +1,5 @@
 dist_check_SCRIPTS = spectest.sh
-noinst_HEADERS = adoublehelper.h afpclient.h specs.h test.h dsi.h afp.h
+noinst_HEADERS = adoublehelper.h afp.h afpclient.h cdefs.h dsi.h specs.h test.h
 bin_PROGRAMS = afpclient afparg afp_ls lantest spectest postmark fail_spectest T2_spectest logintest rotest \
                encoding_test speedtest
 noinst_LTLIBRARIES = libafptest.la
