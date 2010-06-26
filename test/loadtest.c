@@ -6,6 +6,10 @@
 #include <sys/time.h>
 #include <time.h>
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+
 #include "afpclient.h"
 #include "test.h"
 #include "specs.h"
@@ -74,11 +78,18 @@ static void addemptyline(void)
     strncat(results, "\n", RESBUF);
 }
 
-static void addresult(const char *msg)
+static void addresult(const char *msg, ...)
 {
     int i;
-    strncat(results, msg, RESBUF);
-    for (i = 60 - strlen(msg); i > 0; i--)
+    va_list args;
+    char buf[256];
+
+    va_start(args, msg);
+    vsnprintf(buf, 255, msg, args);
+    va_end(args);
+
+    strncat(results, buf, RESBUF);
+    for (i = 60 - strlen(buf); i > 0; i--)
         strncat(results, " ", RESBUF);
     strncat(results, timerstr(), RESBUF);
     strncat(results, "\n", RESBUF);
@@ -126,16 +137,23 @@ int is_there(CONN *conn, int did, char *name)
 /* ------------------------- */
 void test143()
 {
-int id = getpid();
-char *ndir = NULL;
-int dir;
-int i,maxi = 0;
-int j, k;
-int fork;
-char *data = NULL;
-int nowrite;
-int numread = /*2*/ 469;
-static char temp[MAXPATHLEN];   
+    int id = getpid();
+    char *ndir = NULL;
+    int dir;
+    int i,maxi = 0;
+    int j, k;
+    int fork;
+    char *data = NULL;
+    int nowrite;
+    static char temp[MAXPATHLEN];   
+
+    /* Configure the tests */
+    int smallfiles = 1000;                     /* 1000 files */
+    int numread = (100*1024*1024) / (64*1024); /* 100 MB in blocks of 64k */
+    int locking = 10000 / 40;                  /* 10000 times */
+    int create_enum_files = 2000;              /* 2000 files */
+#define DIRNUM 10                              /* 10^3 nested dirs. This is a define because we
+                                                  currently create static arrays based on it*/
 
     fprintf(stderr,"===================\n");
     fprintf(stderr,"test143: LanTest\n");
@@ -173,7 +191,7 @@ static char temp[MAXPATHLEN];
 	}
 
 	/* --------------- */
-	for (i=1; i <= 100; i++) {
+	for (i=0; i <= smallfiles; i++) {
 		sprintf(temp, "File.small%d", i);
 		if (ntohl(AFPERR_NOOBJ) != is_there(Conn, dir, temp)) {
 			fatal_failed();
@@ -267,10 +285,10 @@ static char temp[MAXPATHLEN];
 		}
 	}
     stoptimer();
-    addresult("Opening, stating and reading 512 bytes from 200 files: ");
+    addresult("Opening, stating and reading 512 bytes from %u files: ", maxi);
 
 	/* ---------------- */
-	for (i=1; i <= maxi; i++) {
+	for (i=0; i <= maxi; i++) {
 		sprintf(temp, "File.small%d", i);
 		if (is_there(Conn, dir, temp)) {
 			fatal_failed();
@@ -313,7 +331,7 @@ static char temp[MAXPATHLEN];
 		}
 		if (FPCloseFork(Conn,fork)) {fatal_failed();}
         stoptimer();
-        addresult("Writing 30 MB to one file: ");        
+        addresult("Writing %u MB to one file: ", numread * 64 / 1024 );
 	}
 
 	if (is_there(Conn, dir, temp)) {fatal_failed();}
@@ -350,7 +368,7 @@ static char temp[MAXPATHLEN];
 			}
 			if (FPCloseFork(Conn,fork)) {fatal_failed();}
             stoptimer();
-            addresult("Reading 30 MB from one file: ");
+            addresult("Reading %u MB from one file: ", numread * 64 / 1024);
 		}
 	}
 
@@ -423,7 +441,7 @@ static char temp[MAXPATHLEN];
 				fatal_failed();
 			}
             starttimer();
-			for (j = 0; j < 100; j++) {
+			for (j = 0; j < locking; j++) {
 				for (i = 0;i <= 390; i += 10) {
 					if (FPByteLock(Conn, fork, 0, 0 , i , 10)) {fatal_failed();}
 				}	
@@ -432,7 +450,7 @@ static char temp[MAXPATHLEN];
 				}
 			}	
             stoptimer();
-            addresult("Locking/Unlocking 4000 times each: ");
+            addresult("Locking/Unlocking %u times each: ", locking * 40);
 
 			if (is_there(Conn, dir, temp)) {fatal_failed();}
 			if (FPCloseFork(Conn,fork)) {fatal_failed();}
@@ -441,7 +459,8 @@ static char temp[MAXPATHLEN];
 	}		
 
 	/* --------------- */
-	for (i=1; i <= 320; i++) {
+    starttimer();
+	for (i=1; i <= create_enum_files; i++) {
 		sprintf(temp, "File.0k%d", i);
 		if (ntohl(AFPERR_NOOBJ) != is_there(Conn, dir, temp)) {
 			fatal_failed();
@@ -457,6 +476,8 @@ static char temp[MAXPATHLEN];
 		}
 		maxi = i;
 	}
+    stoptimer();
+    addresult("Creating dir with %u files: ", create_enum_files);
 
     starttimer();
 	if (FPEnumerate(Conn, vol,  dir , "", 
@@ -471,7 +492,7 @@ static char temp[MAXPATHLEN];
 		fatal_failed();
 	}
     stoptimer();
-    addresult("Enumerate dir with 320 files: ");
+    addresult("Enumerate dir with %u files: ", create_enum_files);
 
 	/* ---------------- */
 	for (i=1; i <= maxi; i++) {
@@ -489,7 +510,6 @@ static char temp[MAXPATHLEN];
 	/* ---------------- */
     /* Create a DIRNUM^3 nested dirtree */
 
-#define DIRNUM 10
     uint32_t idirs[DIRNUM];
     uint32_t jdirs[DIRNUM][DIRNUM];
     uint32_t kdirs[DIRNUM][DIRNUM][DIRNUM];
@@ -524,8 +544,8 @@ static char temp[MAXPATHLEN];
     }
 
 fin1:
-	if (FPDelete(Conn, vol,  dir, "File.big")) {failed();}
-	if (FPDelete(Conn, vol,  dir, "")) {failed();}
+	FPDelete(Conn, vol,  dir, "File.big");
+	FPDelete(Conn, vol,  dir, "");
 fin:
 	free(ndir);
 	free(data);
