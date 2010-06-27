@@ -859,7 +859,12 @@ DSI *dsi;
 
 /* ------------------------------- 
 */
-unsigned int FPEnumerate(CONN *conn, u_int16_t vol, int did , char *name, u_int16_t f_bitmap, u_int16_t d_bitmap)
+unsigned int FPEnumerate(CONN *conn,
+                         u_int16_t vol,
+                         int did,
+                         char *name,
+                         u_int16_t f_bitmap,
+                         u_int16_t d_bitmap)
 {
 int ofs;
 u_int16_t bitmap;
@@ -927,7 +932,15 @@ DSI *dsi;
 
 /* ------------------------------- 
 */
-unsigned int FPEnumerateFull(CONN *conn, u_int16_t vol, u_int16_t sindex, u_int16_t reqcnt, u_int16_t size, int did , char *name, u_int16_t f_bitmap, u_int16_t d_bitmap)
+unsigned int FPEnumerateFull(CONN *conn,
+                             u_int16_t vol,
+                             u_int16_t sindex,
+                             u_int16_t reqcnt,
+                             u_int16_t size,
+                             int did,
+                             char *name,
+                             u_int16_t f_bitmap,
+                             u_int16_t d_bitmap)
 {
 int ofs;
 u_int16_t bitmap;

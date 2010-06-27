@@ -480,17 +480,19 @@ void test143()
     addresult("Creating dir with %u files: ", create_enum_files);
 
     starttimer();
-	if (FPEnumerate(Conn, vol,  dir , "", 
-	         (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO)|
-	         (1<<FILPBIT_CDATE) | (1<<FILPBIT_BDATE) | (1<<FILPBIT_MDATE) |
-	         (1<<FILPBIT_DFLEN) | (1<<FILPBIT_RFLEN)
-	         ,
-		     (1<< DIRPBIT_ATTR) |  (1<<DIRPBIT_ATTR) | (1<<DIRPBIT_FINFO) |
-	         (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE) |
-		    (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
-		)) {
-		fatal_failed();
-	}
+    for (i=1; i <= create_enum_files; i +=32) {
+        if (FPEnumerateFull(Conn, vol,  i, 32, DSI_DATASIZ, dir , "", 
+                            (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO)|
+                            (1<<FILPBIT_CDATE) | (1<<FILPBIT_BDATE) | (1<<FILPBIT_MDATE) |
+                            (1<<FILPBIT_DFLEN) | (1<<FILPBIT_RFLEN)
+                            ,
+                            (1<< DIRPBIT_ATTR) |  (1<<DIRPBIT_ATTR) | (1<<DIRPBIT_FINFO) |
+                            (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE) |
+                            (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
+                )) {
+            fatal_failed();
+        }
+    }
     stoptimer();
     addresult("Enumerate dir with %u files: ", create_enum_files);
 
