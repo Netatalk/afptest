@@ -104,8 +104,27 @@ static void addresult(int test, int iteration)
 
 static void displayresults(void)
 {
-    int i, test;
-    unsigned long sum;
+    int i, test, maxindex, minindex, divsub = 0;
+    unsigned long sum, max = 0, min = 18446744073709551615UL;
+
+    /* Eleminate runaways */
+    if (Iterations_save > 5) {
+        divsub = 2;
+        for (test=0; test != NUMTESTS; test++) {
+            for (i=0, sum=0; i < Iterations_save; i++) {
+                if ((*results)[i][test] < min) {
+                    min = (*results)[i][test];
+                    minindex = i;
+                }
+                if ((*results)[i][test] > max) {
+                    max = (*results)[i][test];
+                    maxindex = i;
+                }
+            }
+            (*results)[minindex][test] = 0;
+            (*results)[maxindex][test] = 0;
+        }
+    }
 
     printf("\nNetatalk Lantest Results (averages)\n");
     printf("===================================\n\n");
@@ -113,7 +132,7 @@ static void displayresults(void)
     for (test=0; test != NUMTESTS; test++) {
         for (i=0, sum=0; i < Iterations_save; i++)
             sum += (*results)[i][test];
-        printf("%s%6lu ms\n", resultstrings[test], sum / Iterations_save);
+        printf("%s%6lu ms\n", resultstrings[test], sum / (Iterations_save - divsub));
     }
 
 }
