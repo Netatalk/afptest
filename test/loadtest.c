@@ -39,14 +39,36 @@ char    *Path;
 int     Version = 21;
 int     Mac = 0;
 int     Iterations = 1;
+int     Iterations_save;
 
 extern  int     Throttle;
 
 struct timeval tv_start;
 struct timeval tv_end;
 struct timeval tv_dif;
-#define RESBUF 64000
-char results[RESBUF+1];
+
+#define TEST_OPENSTATREAD    0
+#define TEST_WRITE100MB      1
+#define TEST_READ100MB       2
+#define TEST_LOCKUNLOCK      3
+#define TEST_CREATE2000FILES 4
+#define TEST_ENUM2000FILES   5
+#define TEST_DIRTREE         6
+#define LASTTEST TEST_DIRTREE
+#define NUMTESTS (LASTTEST+1)
+
+char *resultstrings[] = {
+    "Opening, stating and reading 512 bytes from 1000 files: ",
+    "Writing 100 MB to one file:                             ",
+    "Reading 100 MB from one file:                           ",
+    "Locking/Unlocking 10000 times each:                     ",
+    "Creating dir with 2000 files:                           ",
+    "Enumerate dir with 2000 files:                          ",
+    "Created directory tree with 10^3 dirs:                  "
+};
+
+
+unsigned long (*results)[][NUMTESTS];
 
 static void starttimer(void)
 {
@@ -58,10 +80,8 @@ static void stoptimer(void)
     gettimeofday(&tv_end, NULL);
 }
 
-static char *timerstr(void)
+static unsigned long timediff(void)
 {
-    static char buf[100];
-
     if (tv_end.tv_usec < tv_start.tv_usec) {
         tv_end.tv_usec += 1000000;
         tv_end.tv_sec -= 1;
@@ -69,37 +89,33 @@ static char *timerstr(void)
     tv_dif.tv_sec = tv_end.tv_sec - tv_start.tv_sec;
     tv_dif.tv_usec = tv_end.tv_usec - tv_start.tv_usec;
 
-    snprintf(buf, 99, "%u.%03u s", tv_dif.tv_sec, tv_dif.tv_usec / 1000);
-    return buf;
+    return (tv_dif.tv_sec * 1000) + (tv_dif.tv_usec / 1000);
 }
 
-static void addemptyline(void)
+static void addresult(int test, int iteration)
 {
-    strncat(results, "\n", RESBUF);
-}
+    unsigned long t;
 
-static void addresult(const char *msg, ...)
-{
-    int i;
-    va_list args;
-    char buf[256];
+    t = timediff();
+    printf("Run %u => %s%6lu ms\n", iteration, resultstrings[test], t);
 
-    va_start(args, msg);
-    vsnprintf(buf, 255, msg, args);
-    va_end(args);
-
-    strncat(results, buf, RESBUF);
-    for (i = 60 - strlen(buf); i > 0; i--)
-        strncat(results, " ", RESBUF);
-    strncat(results, timerstr(), RESBUF);
-    strncat(results, "\n", RESBUF);
+    (*results)[iteration][test] = t;
 }
 
 static void displayresults(void)
 {
-    printf("Netatalk Lantest Results\n");
-    printf("========================\n\n");
-    printf("%s", results);
+    int i, test;
+    unsigned long sum;
+
+    printf("\nNetatalk Lantest Results (averages)\n");
+    printf("===================================\n\n");
+
+    for (test=0; test != NUMTESTS; test++) {
+        for (i=0, sum=0; i < Iterations_save; i++)
+            sum += (*results)[i][test];
+        printf("%s%6lu ms\n", resultstrings[test], sum / Iterations_save);
+    }
+
 }
 
 /* ------------------------- */
@@ -285,7 +301,7 @@ void test143()
 		}
 	}
     stoptimer();
-    addresult("Opening, stating and reading 512 bytes from %u files: ", maxi);
+    addresult(TEST_OPENSTATREAD, Iterations);
 
 	/* ---------------- */
 	for (i=0; i <= maxi; i++) {
@@ -331,7 +347,7 @@ void test143()
 		}
 		if (FPCloseFork(Conn,fork)) {fatal_failed();}
         stoptimer();
-        addresult("Writing %u MB to one file: ", numread * 64 / 1024 );
+        addresult(TEST_WRITE100MB, Iterations);
 	}
 
 	if (is_there(Conn, dir, temp)) {fatal_failed();}
@@ -368,7 +384,7 @@ void test143()
 			}
 			if (FPCloseFork(Conn,fork)) {fatal_failed();}
             stoptimer();
-            addresult("Reading %u MB from one file: ", numread * 64 / 1024);
+            addresult(TEST_READ100MB, Iterations);
 		}
 	}
 
@@ -450,7 +466,7 @@ void test143()
 				}
 			}	
             stoptimer();
-            addresult("Locking/Unlocking %u times each: ", locking * 40);
+            addresult(TEST_LOCKUNLOCK, Iterations);
 
 			if (is_there(Conn, dir, temp)) {fatal_failed();}
 			if (FPCloseFork(Conn,fork)) {fatal_failed();}
@@ -477,7 +493,7 @@ void test143()
 		maxi = i;
 	}
     stoptimer();
-    addresult("Creating dir with %u files: ", create_enum_files);
+    addresult(TEST_CREATE2000FILES, Iterations);
 
     starttimer();
     for (i=1; i <= create_enum_files; i +=32) {
@@ -494,7 +510,7 @@ void test143()
         }
     }
     stoptimer();
-    addresult("Enumerate dir with %u files: ", create_enum_files);
+    addresult(TEST_ENUM2000FILES, Iterations);
 
 	/* ---------------- */
 	for (i=1; i <= maxi; i++) {
@@ -533,7 +549,7 @@ void test143()
         }
     }
     stoptimer();
-    addresult("Created directory tree with 10^3 dirs: ");
+    addresult(TEST_DIRTREE, Iterations);
     
     for (i=0; i < DIRNUM; i++) {
         for (j=0; j < DIRNUM; j++) {
@@ -551,8 +567,6 @@ fin1:
 fin:
 	free(ndir);
 	free(data);
-
-    addemptyline();
 }
 
 /* ------------------ */
@@ -658,6 +672,9 @@ int main(int ac, char **av)
         freopen("/dev/null", "w", stderr);
     }
 
+    Iterations_save = Iterations;
+    results = calloc(Iterations * NUMTESTS, sizeof(unsigned long));
+    
 	/************************************
 	 *                                  *
 	 * Connection user 1                *
