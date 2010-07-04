@@ -484,14 +484,15 @@ void test143()
         starttimer();
         for (i=1; i <= create_enum_files; i++) {
             sprintf(temp, "File.0k%d", i);
-            if (ntohl(AFPERR_NOOBJ) != is_there(Conn, dir, temp))
-                fatal_failed();
-            if (FPGetFileDirParams(Conn, vol,  dir, "", 0, (1<< DIRPBIT_DID)))
-                fatal_failed();
             if (FPCreateFile(Conn, vol,  0, dir , temp)){
                 fatal_failed();
                 break;
             }
+            if (FPGetFileDirParams(Conn, vol,  dir, temp,
+                                   (1<<FILPBIT_FNUM )|(1<<FILPBIT_PDID)|(1<<FILPBIT_FINFO)|
+                                   (1<<FILPBIT_CDATE)|(1<<FILPBIT_DFLEN)|(1<<FILPBIT_RFLEN)
+                                   , 0) != AFP_OK)
+                fatal_failed();
         }
         maxi = i;
 
