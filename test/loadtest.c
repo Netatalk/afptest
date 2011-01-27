@@ -42,6 +42,8 @@ struct timeval tv_start;
 struct timeval tv_end;
 struct timeval tv_dif;
 
+#define READ_WRITE_SIZE 100
+
 #define TEST_OPENSTATREAD    0
 #define TEST_WRITE100MB      1
 #define TEST_READ100MB       2
@@ -90,10 +92,15 @@ static unsigned long timediff(void)
 static void addresult(int test, int iteration)
 {
     unsigned long t;
+    unsigned long long avg;
 
     t = timediff();
-    printf("Run %u => %s%6lu ms\n", iteration, resultstrings[test], t);
-
+    printf("Run %u => %s%6lu ms", iteration, resultstrings[test], t);
+    if ((test == TEST_WRITE100MB) || (test == TEST_READ100MB)) {
+        avg = (READ_WRITE_SIZE * 1000) / t;
+        printf(" (avg. %llu MB/s)", avg);
+    }
+    printf("\n");
     (*results)[iteration][test] = t;
 }
 
@@ -126,12 +133,21 @@ static void displayresults(void)
     printf("\nNetatalk Lantest Results (averages)\n");
     printf("===================================\n\n");
 
+    unsigned long long avg, thrput;
+
     for (test=0; test != NUMTESTS; test++) {
         if (! teststorun[test])
             continue;
         for (i=0, sum=0; i < Iterations_save; i++)
             sum += (*results)[i][test];
-        printf("%s%6lu ms\n", resultstrings[test], sum / (Iterations_save - divsub));
+        avg = sum / (Iterations_save - divsub);
+        printf("%s%6llu ms", resultstrings[test], avg);
+        if ((test == TEST_WRITE100MB) || (test == TEST_READ100MB)) {
+            thrput = (READ_WRITE_SIZE * 1000) / avg;
+            printf(" (avg. %llu MB/s)", thrput);
+        }
+
+        printf("\n");
     }
 
 }
