@@ -200,7 +200,7 @@ void test143()
 
     /* Configure the tests */
     int smallfiles = 1000;                     /* 1000 files */
-    int numread = (100*1024*1024) / (64*1024); /* 100 MB in blocks of 64k */
+    int numread = (READ_WRITE_SIZE*1024*1024) / (64*1024); /* 100 MB in blocks of 64k */
     int locking = 10000 / 40;                  /* 10000 times */
     int create_enum_files = 2000;              /* 2000 files */
 #define DIRNUM 10                              /* 10^3 nested dirs. This is a define because we
@@ -481,8 +481,6 @@ void test143()
         for (j = 0; j < locking; j++) {
             for (i = 0;i <= 390; i += 10) {
                 if (FPByteLock(Conn, fork, 0, 0 , i , 10)) {fatal_failed();}
-            }
-            for (i = 390;i >= 0; i -= 10) {
                 if (FPByteLock(Conn, fork, 0, 1 , i , 10)) {fatal_failed();}
             }
         }
