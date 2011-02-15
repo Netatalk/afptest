@@ -175,8 +175,7 @@ u_int32_t time= 12345;
 
 	enter_test();
     fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPDisconnectOldSession :test338: AFP 3.x disconnect old session BROKEN\n");
-	goto test_exit;
+    fprintf(stderr,"FPDisconnectOldSession :test338: AFP 3.x disconnect old session\n");
     
 	if (Conn->afp_version < 30 || Conn2) {
     	test_skipped(T_AFP3_CONN2);
@@ -186,13 +185,14 @@ u_int32_t time= 12345;
     	test_skipped(T_LOCKING);
 		goto test_exit;
 	}
+
     /* setup 2 new connections for testing */
 
+    /* connection 1 */
     if ((loc_conn1 = (CONN *)calloc(1, sizeof(CONN))) == NULL) {
         nottested();
 		goto test_exit;
     }
-
     loc_conn1->type = 0;
     loc_dsi1 = &loc_conn1->dsi;
     sock1 = OpenClientSocket(Server, Port);
@@ -200,7 +200,6 @@ u_int32_t time= 12345;
         nottested();
 		goto test_exit;
     }
-
     loc_dsi1->protocol = DSI_TCPIP;
     loc_dsi1->socket = sock1;
     ret = FPopenLoginExt(loc_conn1, vers, uam, User, Password);
@@ -209,6 +208,7 @@ u_int32_t time= 12345;
 		goto test_exit;
     }
     loc_conn1->afp_version = Conn->afp_version;
+
 
     ret = FPGetSessionToken(loc_conn1, 3, time, strlen(id0), id0);
     if (ret) {
@@ -222,7 +222,7 @@ u_int32_t time= 12345;
         failed();
         goto fin;
     }
-    if (!(token = malloc(len +4))) {
+    if (!(token = malloc(len + 4))) {
         fprintf(stderr, "\tFAILED malloc(%x) %s\n", len, strerror(errno));
         failed_nomsg();
         goto fin;
@@ -234,7 +234,14 @@ u_int32_t time= 12345;
 		goto test_exit;
     }
     FAIL(FPCreateFile(loc_conn1, vol,  0, DIRDID_ROOT , name));
+    fork = FPOpenFork(loc_conn1, vol, OPENFORK_DATA , 0, DIRDID_ROOT, name, OPENACC_WR |OPENACC_RD);
+    if (!fork)
+        failed();
+
+    /* done connection 1 */
+
     /* --------------------------------- */
+    /* connection 2 */
     if ((loc_conn2 = (CONN *)calloc(1, sizeof(CONN))) == NULL) {
         nottested();
 		goto test_exit;
@@ -263,10 +270,8 @@ u_int32_t time= 12345;
     ret = FPGetSessionToken(loc_conn2, 4, time, strlen(id1), id1);
     sleep(1);
 
-    ret = FPCreateFile(loc_conn1, vol,  0, DIRDID_ROOT , name);
-    if (ret) {
-    	failed();
-    }
+
+    FAIL (FPCloseFork(loc_conn2, fork))
 
 fin:
     FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
