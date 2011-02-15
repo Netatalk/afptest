@@ -270,9 +270,8 @@ u_int32_t time= 12345;
     ret = FPGetSessionToken(loc_conn2, 4, time, strlen(id1), id1);
     sleep(1);
 
-
     FAIL (FPCloseFork(loc_conn2, fork))
-
+    FAIL (FPLogOut(loc_conn2))
 fin:
     FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
 test_exit:
