@@ -40,7 +40,7 @@ int sock;
 		nottested();
 		goto test_exit;
     }
-	FAIL (FPzzz(Conn)) 
+	FAIL (FPzzz(Conn, 0)) 
 	fprintf(stderr,"sleep more than 2 mn\n");
 	sleep(60 *3);
 	ret = FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name);
@@ -83,6 +83,49 @@ fin:
     }
 test_exit:
 	exit_test("test223");
+}
+
+/* ------------------------- */
+STATIC void test239()
+{
+char *name = "t239 file";
+u_int16_t vol = VolID;
+unsigned int ret;
+struct sigaction action;    
+DSI *dsi;
+int sock;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPzzz:test239: AFP 3.x enter extended sleep\n");
+	if (Conn->afp_version < 30 || Conn2) {
+		test_skipped(T_AFP3_CONN2);
+		goto test_exit;
+	}
+
+    action.sa_handler = pipe_handler;
+    sigemptyset(&action.sa_mask);
+    action.sa_flags = SA_RESTART;
+    if ((sigaction(SIGPIPE, &action, NULL) < 0)) {
+		nottested();
+		goto test_exit;
+    }
+	FAIL (FPzzz(Conn, 1))
+	fprintf(stderr,"sleep more than 2 mn\n");
+	sleep(60 *3);
+	FAIL (FPzzz(Conn, 2))
+    FAIL (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name))
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+
+fin:
+    action.sa_handler = SIG_DFL;
+    sigemptyset(&action.sa_mask);
+    action.sa_flags = SA_RESTART;
+    if ((sigaction(SIGPIPE, &action, NULL) < 0)) {
+		nottested();
+    }
+test_exit:
+	exit_test("test239");
 }
 
 /* ------------------------- */
@@ -164,8 +207,9 @@ test_exit:
 void FPzzz_test()
 {
     fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPzzz undocumented\n");
+    fprintf(stderr,"FPzzz\n");
     test223();
     test224();
+    test239();
 }
 

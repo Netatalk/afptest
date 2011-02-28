@@ -295,7 +295,7 @@ DSI *dsi;
 }
 
 /* ------------------------------- */
-unsigned int FPzzz(CONN *conn)
+unsigned int FPzzz(CONN *conn, int flag)
 {
 int ret;
 DSI *dsi;
@@ -303,9 +303,9 @@ DSI *dsi;
 	dsi = &conn->dsi;
 	if (!Quiet) {
 		fprintf(stderr,"---------------------\n");
-		fprintf(stderr,"FPzzz enter sleep mode\n\n");
+		fprintf(stderr,"FPzzz enter sleep mode (flag: %i)\n\n", flag);
 	}
-	ret = AFPzzz(conn);
+	ret = AFPzzz(conn, flag);
 	dump_header(dsi);
 	return ret;
 }

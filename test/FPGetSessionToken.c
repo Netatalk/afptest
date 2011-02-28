@@ -80,7 +80,7 @@ STATIC void test221()
 	}
 
 	FAIL (FPGetSessionToken(Conn, 3, 0, 5, "token"))
-	FAIL (FPzzz(Conn))
+        FAIL (FPzzz(Conn, 0))
 test_exit:
 	exit_test("test221");
 }

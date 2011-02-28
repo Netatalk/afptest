@@ -638,20 +638,20 @@ int ret;
 }
 
 /* ------------------------------- */
-int AFPzzz(CONN *conn)
+int AFPzzz(CONN *conn, int flag)
 {
-int 		ofs;
-DSI			*dsi;
-u_int32_t   temp = 0;
-
-	dsi = &conn->dsi;
+    int 		ofs = 0;
+    DSI			*dsi = &conn->dsi;
+    u_int32_t   temp;
 
 	SendInit(dsi);
-	ofs = 0;
+
 	dsi->commands[ofs++] = AFP_ZZZ;
 	dsi->commands[ofs++] = 0;
 
-	memcpy(dsi->commands +ofs, &temp, sizeof(temp));	/* parameter unknown */
+    temp = flag;
+    temp = htonl(temp);
+	memcpy(dsi->commands + ofs, &temp, sizeof(temp));
 	ofs += sizeof(temp);
 
 	SetLen(dsi, ofs);

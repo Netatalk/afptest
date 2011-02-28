@@ -301,7 +301,7 @@ int AFPopenLoginExt(CONN *conn, char *vers, char *uam, char *usr, char *pwd);
 int AFPLogOut(CONN *conn);
 int AFPChangePW(CONN *conn, char *uam, char *usr, char *opwd, char *pwd);
 
-int AFPzzz(CONN *conn);
+int AFPzzz(CONN *conn, int);
 
 int AFPGetSrvrInfo(CONN *conn);
 int AFPGetSrvrParms(CONN *conn);
