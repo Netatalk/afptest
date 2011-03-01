@@ -15,6 +15,32 @@ AFP_WRITE,
 };
 #endif
 
+/*!
+ * Helper for FPGetSessionToken, extracts token from reply buffer
+ * @args buf    (r)  pointer to reply buffer
+ * @args token  (w)  return allocated buffer with token here
+ * @returns length of token, -1 on error
+ */
+ssize_t get_sessiontoken(const char *buf, char **token)
+{
+    uint32_t tmp;
+    ssize_t len = -1;
+
+    memcpy(&tmp, buf, sizeof(uint32_t));
+    tmp = ntohl(tmp);
+    len = tmp;
+    if (len <= 0 || len > 200)
+        return -1;
+
+    if (!(*token = malloc(len))) {
+        fprintf(stderr, "\tFAILED malloc(%x) %s\n", len, strerror(errno));
+        return -1;
+    }
+    memcpy(*token, buf + sizeof(uint32_t), len);
+
+    return len;
+}
+
 void illegal_fork(DSI * dsi, char cmd, char *name)
 {
 u_int16_t vol = VolID;

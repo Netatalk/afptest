@@ -32,6 +32,7 @@ extern int delete_folder_with_file(u_int16_t vol, int did, char *name, char *fil
 extern int get_vol_attrib(u_int16_t vol) ;
 extern int group_folder(u_int16_t vol, int did, char *name);
 extern unsigned int get_vol_free(u_int16_t vol) ;
+extern ssize_t get_sessiontoken(const char *buf, char **token);
 
 extern void failed_nomsg(void);
 extern void skipped_nomsg(void);
