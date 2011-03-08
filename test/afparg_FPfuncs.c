@@ -56,3 +56,45 @@ void FPResolveID_arg(char **argv)
 
     fprintf(stderr,"Resolved ID %d to: '%s'\n", id, filedir.utf8_name);
 }
+
+static void handler()
+{
+    return;
+}
+
+void FPLock_arg(char **argv)
+{
+    u_int16_t vol = VolID;
+    int fork;
+    struct sigaction action;    
+
+    fprintf(stderr,"======================\n");
+    fprintf(stderr,"FPOpen with read/write lock\n");
+
+    fprintf(stderr,"source: \"%s\"\n", argv[0]);    
+
+    action.sa_handler = handler;
+    sigemptyset(&action.sa_mask);
+    if ((sigaction(SIGINT, &action, NULL) < 0)) {
+		nottested();
+		goto test_exit;
+    }
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA, 0, DIRDID_ROOT, argv[0],
+                      OPENACC_RD | OPENACC_WR | OPENACC_DRD | OPENACC_DWR);
+	if (!fork) {
+		nottested();
+		goto fin;
+	}
+
+    pause();
+
+	FAIL (FPCloseFork(Conn,fork))
+
+fin:
+test_exit:
+    action.sa_handler = SIG_DFL;
+    (void)sigaction(SIGINT, &action, NULL);
+
+	exit_test("test14");
+}
