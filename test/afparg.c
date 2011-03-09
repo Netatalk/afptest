@@ -10,7 +10,8 @@
 
 EXT_FN(FPResolveID);
 EXT_FN(FPCopyFile);
-EXT_FN(FPLock);
+EXT_FN(FPLockrw);
+EXT_FN(FPLockw);
 #if 0
 EXT_FN(FPAddAPPL);
 EXT_FN(FPAddComment);
@@ -83,7 +84,8 @@ static struct test_fn Test_list[] =
 {
 FN_N(FPResolveID, <file CNID>)
 FN_N(FPCopyFile, <source> <dest>)
-FN_N(FPLock, <file>)
+FN_N(FPLockrw, <file>)
+FN_N(FPLockw, <file>)
 
 #if 0
 FN_N(FPAddAPPL)
