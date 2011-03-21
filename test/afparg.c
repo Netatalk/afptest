@@ -84,8 +84,8 @@ static struct test_fn Test_list[] =
 {
 FN_N(FPResolveID, <file CNID>)
 FN_N(FPCopyFile, <source> <dest>)
-FN_N(FPLockrw, <file>)
-FN_N(FPLockw, <file>)
+FN_N(FPLockrw, d|r <file>)
+FN_N(FPLockw, d|r <file>)
 
 #if 0
 FN_N(FPAddAPPL)

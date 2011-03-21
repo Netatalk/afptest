@@ -67,11 +67,17 @@ void FPLockrw_arg(char **argv)
     u_int16_t vol = VolID;
     int fork;
     struct sigaction action;    
+    int toopen;
+
+    if (argv[0][0] == 'd')
+        toopen = OPENFORK_DATA;
+    else
+        toopen = OPENFORK_RSCS;
 
     fprintf(stderr,"======================\n");
     fprintf(stderr,"FPOpen with read/write lock\n");
 
-    fprintf(stderr,"source: \"%s\"\n", argv[0]);    
+    fprintf(stderr,"source: \"%s\"\n", argv[1]);
 
     action.sa_handler = handler;
     sigemptyset(&action.sa_mask);
@@ -80,7 +86,7 @@ void FPLockrw_arg(char **argv)
 		goto test_exit;
     }
 
-	fork = FPOpenFork(Conn, vol, OPENFORK_DATA, 0, DIRDID_ROOT, argv[0],
+	fork = FPOpenFork(Conn, vol, toopen, 0, DIRDID_ROOT, argv[1],
                       OPENACC_RD | OPENACC_WR | OPENACC_DRD | OPENACC_DWR);
 	if (!fork) {
 		nottested();
@@ -104,11 +110,18 @@ void FPLockw_arg(char **argv)
     u_int16_t vol = VolID;
     int fork;
     struct sigaction action;    
+    int toopen;
+
+    if (argv[0][0] == 'd')
+        toopen = OPENFORK_DATA;
+    else
+        toopen = OPENFORK_RSCS;
+
 
     fprintf(stderr,"======================\n");
     fprintf(stderr,"FPOpen with write lock\n");
 
-    fprintf(stderr,"source: \"%s\"\n", argv[0]);    
+    fprintf(stderr,"source: \"%s\"\n", argv[1]);    
 
     action.sa_handler = handler;
     sigemptyset(&action.sa_mask);
@@ -117,7 +130,7 @@ void FPLockw_arg(char **argv)
 		goto test_exit;
     }
 
-	fork = FPOpenFork(Conn, vol, OPENFORK_DATA, 0, DIRDID_ROOT, argv[0],
+	fork = FPOpenFork(Conn, vol, toopen, 0, DIRDID_ROOT, argv[1],
                       OPENACC_RD | OPENACC_DWR);
 	if (!fork) {
 		nottested();
