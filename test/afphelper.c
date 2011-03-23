@@ -818,8 +818,7 @@ char *s;
 /* ------------------------- */
 void failed_nomsg(void)
 {
-	if (!ExitCode)
-		ExitCode = 1;
+    ExitCode = 1;
 	CurTestResult = 1;
 }
 
