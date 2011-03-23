@@ -105,15 +105,16 @@ DSI *dsi;
 		failed();
 	}
 
-	FAIL (FPCreateID(Conn,vol, dir, name)) 
+//	FAIL (FPCreateID(Conn,vol, dir, name)) 
+
 	if (FPGetFileDirParams(Conn, vol,  dir , name, bitmap,0)) {
 		failed();
-	}
-	else {
+	} else {
 		filedir.isdir = 0;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 		FAIL (FPDeleteID(Conn, vol, filedir.did)) 
 	}	
+
 	ret = FPCreateID(Conn,vol, dir, name);
 	if (not_valid(ret, /* MAC */AFPERR_EXISTID, 0)) {
 		failed();
