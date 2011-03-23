@@ -67,7 +67,7 @@ char *usr = NULL;
 		failed();
 	}
 
-	FAIL ((htonl(AFPERR_PARAM) != FPMapID(Conn, 5, filedir.gid))) 
+	FAIL ((htonl(AFPERR_NOITEM) != FPMapID(Conn, 5, filedir.gid))) 
 	/* --------------------- 
 		MapName subfunction
 		1 Unicode to User ID
@@ -76,7 +76,7 @@ char *usr = NULL;
 		4 Mac roman to GID
 	*/
 
-	FAIL (htonl(AFPERR_PARAM) != FPMapName(Conn, 5, "toto")) 
+	FAIL (htonl(AFPERR_NOITEM) != FPMapName(Conn, 5, "toto")) 
 
 	if (!Exclude) {
 		/* fail with OSX and new netatalk */
