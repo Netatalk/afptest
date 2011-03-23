@@ -58,7 +58,7 @@ DSI *dsi = &Conn->dsi;
 		failed();
 	}
 
-	FAIL ((htonl(AFPERR_PARAM) != FPMapID(Conn, 5, filedir.gid))) 
+	FAIL ((htonl(AFPERR_NOITEM) != FPMapID(Conn, 5, filedir.gid))) 
 	/* --------------------- */
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name)) 
 test_exit:
