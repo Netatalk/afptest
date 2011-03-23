@@ -663,7 +663,7 @@ char *name1 = "t235 file";
 char *name2 = "t235 file1";
 int  dir;
 u_int16_t vol = VolID;
-int id,id1;
+uint32_t id,id1;
 int fd;
 
 	enter_test();
@@ -687,6 +687,7 @@ int fd;
 
 	if (!Mac) {
 	    /* so it doesn't reuse the same inode */
+//        sleep(2); /* FIXME: Ensure ctimes differ, this circumvents dircache caching which only has second granularity */
 		sprintf(temp,"%s/%s/%s", Path, name, name2);
 		fd = open(temp, O_RDWR | O_CREAT, 0666);
 		if (fd < 0) {
@@ -710,7 +711,7 @@ int fd;
 	}
 	id1 = get_fid(Conn, vol, dir , name1);     
 	if (id == id1) {
-		fprintf(stderr,"\tFAILED id are the same  %d %d\n", id, id1);
+		fprintf(stderr,"\tFAILED id are the same  %u %u\n", id, id1);
 		failed_nomsg();
 	}
 fin:
