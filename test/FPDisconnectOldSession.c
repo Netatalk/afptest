@@ -271,6 +271,7 @@ u_int32_t time= 12345;
     sleep(1);
 
     FAIL (FPCloseFork(loc_conn2, fork))
+
     FAIL (FPLogOut(loc_conn2))
 fin:
     FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))

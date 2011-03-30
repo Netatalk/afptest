@@ -629,12 +629,15 @@ DSI *dsi;
 /* ------------------------------- */
 int AFPLogOut(CONN *conn)
 {
-DSI *dsi;
-int ret;
+    DSI *dsi;
+    int ret;
+
 	dsi = &conn->dsi;
 	SendCmd(dsi,AFP_LOGOUT);
 	ret = my_dsi_full_receive(dsi, dsi->commands, DSI_CMDSIZ);
-	return(ret != DSIFUNC_CLOSE?-1: dsi->header.dsi_code);
+    DSICloseSession(conn);
+
+    return (dsi->header.dsi_code);
 }
 
 /* ------------------------------- */
