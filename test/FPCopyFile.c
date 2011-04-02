@@ -61,7 +61,6 @@ DSI *dsi;
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
 	if (fork) {
-	
 		FAIL (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, "", name1))
 		FAIL (FPCloseFork(Conn,fork))
 		FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name1))
@@ -69,6 +68,17 @@ DSI *dsi;
 	else {
 		failed();
 	}
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD | OPENACC_DRD | OPENACC_DWR);
+	if (fork) {	
+		FAIL (ntohl(AFPERR_DENYCONF) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, "", name1))
+		FAIL (FPCloseFork(Conn,fork))
+	}	
+	else {
+		failed();
+	}
+
+
 	/* dvol bad */
 	FAIL (ntohl(AFPERR_PARAM) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol +1, dir, name, "", name1)) 
 
