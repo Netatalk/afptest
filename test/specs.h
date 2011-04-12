@@ -12,6 +12,7 @@ extern int Exclude;
 #include <signal.h>  
 
 #define FAIL(a) if ((a)) { failed();}
+#define FAILED
 #define FAILEXIT(a, label) if ((a)) { failed(); goto label;}
 #define STATIC 
 

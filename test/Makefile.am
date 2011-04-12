@@ -59,6 +59,6 @@ fail_spectest_LDADD = libafptest.la
 T2_spectest_SOURCES = T2_spectest.c T2_FPByteRangeLock.c\
         T2_FPDelete.c T2_FPGetFileDirParms.c T2_FPOpenFork.c T2_FPSetDirParms.c T2_FPSetFileParms.c \
 	T2_FPMoveAndRename.c T2_FPResolveID.c T2_FPGetSrvrParms.c T2_FPCreateFile.c \
-	T2_FPCopyFile.c
+	T2_FPCopyFile.c T2_Dircache_attack.c
 T2_spectest_LDADD = libafptest.la
 
