@@ -36,7 +36,7 @@ STATIC void test500()
         FAILED;
 
     /* Move and rename dir with second connection */
-    FAIL( FPMoveAndRename(Conn, vol1, dir_id, subdir2_id, subdir1, renamedsubdir1) );
+    FAIL( FPMoveAndRename(Conn2, vol2, dir_id, subdir2_id, subdir1, renamedsubdir1) );
 
     /* Enumerate with first connection, does it crash or similar ? */
 	if (FPEnumerate(Conn, vol1, subdir2_id, "", (1<<FILPBIT_FNUM), (1<< DIRPBIT_PDID)))
