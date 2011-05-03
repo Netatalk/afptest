@@ -1,5 +1,6 @@
 /* ----------------------------------------------
 */
+
 #include "specs.h"
 #include "adoublehelper.h"
 
@@ -711,8 +712,8 @@ int fd;
 	}
 	id1 = get_fid(Conn, vol, dir , name1);     
 	if (id == id1) {
-		fprintf(stderr,"\tFAILED ids are the same: %u/%u\n", ntohl(id), ntohlid1);
-		failed_nomsg();
+		fprintf(stderr,"\tFAILED ids are the same: %u/%u\n", ntohl(id), ntohl(id1));
+        failed_nomsg();
 	}
 fin:
 	FAIL (FPDelete(Conn, vol,  dir , name1))
