@@ -434,4 +434,5 @@ void Dircache_attack_test()
     test501();
     test502();
     test503();
+    test504();
 }
