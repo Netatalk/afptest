@@ -29,7 +29,7 @@ int     Proto = 0;
 int     Port = 548;
 char    *Password = "";
 char    *Vol = "";
-char    *User;
+char    *User = "";
 char    *Path;
 int     Version = 21;
 int     Mac = 0;
@@ -693,6 +693,9 @@ int main(int ac, char **av)
         freopen("/dev/null", "w", stderr);
     }
 
+    if ((User[0] == 0) || (Password[0] == 0))
+        uam = "No User Authent";
+
     Iterations_save = Iterations;
     results = calloc(Iterations * NUMTESTS, sizeof(unsigned long));
 
@@ -734,7 +737,10 @@ int main(int ac, char **av)
     }
 
     /* login */
-    ExitCode = ntohs(FPopenLogin(Conn, vers, uam, User, Password));
+    if (Version >= 30)
+      	ExitCode = ntohs(FPopenLoginExt(Conn, vers, uam, User, Password));
+    else
+      	ExitCode = ntohs(FPopenLogin(Conn, vers, uam, User, Password));
 
     if (ExitCode == AFP_OK) {
         Conn->afp_version = Version;
