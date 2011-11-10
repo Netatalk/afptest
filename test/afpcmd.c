@@ -1330,6 +1330,91 @@ DSI *dsi;
 	return(dsi->header.dsi_code);
 }
 
+/* ------------------------------- */
+unsigned int FPEnumerateExt2Full(CONN *conn,
+                                 uint16_t vol,
+                                 uint32_t did,
+                                 char *name,
+                                 uint16_t f_bitmap,
+                                 uint16_t d_bitmap,
+                                 uint32_t startindex,
+                                 uint16_t reqcount)
+{
+    int ofs;
+    uint16_t bitmap;
+    uint16_t len;
+    uint16_t tp;
+    uint32_t hint;
+    uint32_t int32;
+    DSI *dsi;
+
+	dsi = &conn->dsi;
+
+	if (!Quiet) {
+		fprintf(stderr,"---------------------\n");
+		fprintf(stderr,"Enumerate_ext2_idx: Vol: %d, did: 0x%x, name: \"%s\", sindex: %u, reqcount: %u\n\n",
+                vol, ntohl(did), name, startindex, reqcount);
+	}
+
+	memset(dsi->commands, 0, DSI_CMDSIZ);
+	dsi->header.dsi_flags = DSIFL_REQUEST;     
+	dsi->header.dsi_command = DSIFUNC_CMD;
+	dsi->header.dsi_requestID = htons(dsi_clientID(dsi));
+	ofs = 0;
+	dsi->commands[ofs++] = AFP_ENUMERATE_EXT2;
+	dsi->commands[ofs++] = 0;
+
+	memcpy(dsi->commands +ofs, &vol, sizeof(vol));
+	ofs += sizeof(vol);
+	
+	memcpy(dsi->commands +ofs, &did, sizeof(did));
+	ofs += sizeof(did);
+
+	bitmap = htons(f_bitmap);
+	memcpy(dsi->commands +ofs, &bitmap, sizeof(bitmap));
+	ofs += sizeof(bitmap);
+	
+	bitmap = htons(d_bitmap);
+	memcpy(dsi->commands +ofs, &bitmap, sizeof(bitmap));
+	ofs += sizeof(bitmap);
+
+	bitmap = htons(reqcount);		/* reqcnt */
+	memcpy(dsi->commands +ofs, &bitmap, sizeof(bitmap));
+	ofs += sizeof(bitmap);
+	
+	int32 = htonl(startindex);		/* sindex  */
+	memcpy(dsi->commands +ofs, &int32, sizeof(int32));
+	ofs += sizeof(int32);
+
+	int32 = htonl(DSI_DATASIZ);		/* maxsize  */
+	memcpy(dsi->commands +ofs, &int32, sizeof(int32));
+	ofs += sizeof(int32);
+
+	dsi->commands[ofs++] = 3;		/* UTF8 name */
+	hint = htonl(0x08000103);
+	memcpy(dsi->commands +ofs, &hint, sizeof(hint));
+	ofs += sizeof(hint);
+
+	len = strlen(name);
+	tp = htons(len);
+	memcpy(dsi->commands +ofs, &tp, sizeof(tp));
+	ofs += sizeof(tp);
+
+	memcpy(&dsi->commands[ofs], name, len);
+	ofs += len;
+		
+	dsi->datalen = ofs;
+	dsi->header.dsi_len = htonl(dsi->datalen);
+	dsi->header.dsi_code = 0; 
+ 
+   	my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
+	/* ------------------ */
+	my_dsi_data_receive(dsi);
+
+	dump_header(dsi);
+	return(dsi->header.dsi_code);
+}
+
 
 /* ------------------------------- 
 */

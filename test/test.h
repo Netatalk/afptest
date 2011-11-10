@@ -34,6 +34,7 @@ extern unsigned int FPEnumerateFull(CONN *conn, u_int16_t vol, u_int16_t sindex,
 extern unsigned int FPGetFileDirParams(CONN *conn, u_int16_t vol, int did , char *name, u_int16_t f_bitmap, u_int16_t d_bitmap);
 extern unsigned int FPEnumerate_ext(CONN *conn, u_int16_t vol, int did , char *name, u_int16_t f_bitmap, u_int16_t d_bitmap);
 extern unsigned int FPEnumerate_ext2(CONN *conn, u_int16_t vol, int did , char *name, u_int16_t f_bitmap, u_int16_t d_bitmap);
+extern unsigned int FPEnumerateExt2Full(CONN *conn, uint16_t vol, uint32_t did, char *name, uint16_t f_bitmap, uint16_t d_bitmap, uint32_t startindex, uint16_t reqcount);
 extern unsigned int FPDelete(CONN *conn, u_int16_t vol, int did , char *name);
 extern unsigned int FPOpenDir(CONN *conn, u_int16_t vol, int did , char *name);
 extern unsigned int FPCreateDir(CONN *conn, u_int16_t vol, int did , char *name);

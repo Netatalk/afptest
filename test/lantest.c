@@ -9,38 +9,31 @@
 #include "test.h"
 #include "specs.h"
 
+extern  int     Throttle;
+
 int Verbose = 0;
 int Quirk = 0;
-
-static u_int16_t vol;
-static DSI *dsi;
 CONN *Conn;
-
+CONN *Conn2;
 int ExitCode = 0;
-
-/* =============================== */
-
-DSI *Dsi;
-
 char Data[300000] = "";
-/* ------------------------------- */
-char    *Server = NULL;
-int     Proto = 0;
-int     Port = 548;
-char    *Password = "";
 char    *Vol = "";
 char    *User = "";
 char    *Path;
 int     Version = 21;
 int     Mac = 0;
-int     Iterations = 1;
-int     Iterations_save;
 
-extern  int     Throttle;
-
-struct timeval tv_start;
-struct timeval tv_end;
-struct timeval tv_dif;
+static u_int16_t vol, vol2;
+static DSI *dsi;
+static char    *Server = NULL;
+static int     Proto = 0;
+static int     Port = 548;
+static char    *Password = "";
+static int     Iterations = 1;
+static int     Iterations_save;
+static struct timeval tv_start;
+static struct timeval tv_end;
+static struct timeval tv_dif;
 
 #define READ_WRITE_SIZE 100
 
@@ -54,7 +47,7 @@ struct timeval tv_dif;
 #define LASTTEST TEST_DIRTREE
 #define NUMTESTS (LASTTEST+1)
 
-char *resultstrings[] = {
+static char *resultstrings[] = {
     "Opening, stating and reading 512 bytes from 1000 files ",
     "Writing 100 MB to one file                             ",
     "Reading 100 MB from one file                           ",
@@ -64,8 +57,8 @@ char *resultstrings[] = {
     "Create directory tree with 10^3 dirs                   "
 };
 
-char teststorun[NUMTESTS];
-unsigned long (*results)[][NUMTESTS];
+static char teststorun[NUMTESTS];
+static unsigned long (*results)[][NUMTESTS];
 
 static void starttimer(void)
 {
@@ -498,11 +491,11 @@ void test143()
         starttimer();
         for (i=1; i <= create_enum_files; i++) {
             sprintf(temp, "File.0k%d", i);
-            if (FPCreateFile(Conn, vol,  0, dir , temp)){
+            if (FPCreateFile(Conn2, vol2,  0, dir , temp)){
                 fatal_failed();
                 break;
             }
-            if (FPGetFileDirParams(Conn, vol,  dir, temp,
+            if (FPGetFileDirParams(Conn2, vol2,  dir, temp,
                                    (1<<FILPBIT_FNUM )|(1<<FILPBIT_PDID)|(1<<FILPBIT_FINFO)|
                                    (1<<FILPBIT_CDATE)|(1<<FILPBIT_DFLEN)|(1<<FILPBIT_RFLEN)
                                    , 0) != AFP_OK)
@@ -518,8 +511,18 @@ void test143()
     /* Test (6) */
     if (teststorun[TEST_ENUM2000FILES]) {
         starttimer();
-        for (i=1; i <= create_enum_files; i +=32) {
-            if (FPEnumerateFull(Conn, vol,  i, 32, DSI_DATASIZ, dir , "",
+        for (i=1; i <= create_enum_files; i +=80) {
+            if (FPEnumerateFull(Conn, vol,  i + 40, 40, DSI_DATASIZ, dir , "",
+                                (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_ATTR) |
+                                (1<<FILPBIT_FINFO) | (1<<FILPBIT_CDATE) | (1<<FILPBIT_BDATE)|
+                                (1<<FILPBIT_MDATE) | (1<<FILPBIT_DFLEN) | (1<<FILPBIT_RFLEN)
+                                ,
+                                (1<< DIRPBIT_ATTR) |  (1<<DIRPBIT_ATTR) | (1<<DIRPBIT_FINFO)|
+                                (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE)|
+                                (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|
+                                (1<< DIRPBIT_ACCESS)))
+                fatal_failed();
+            if (FPEnumerateFull(Conn, vol,  i, 40, DSI_DATASIZ, dir , "",
                                 (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_ATTR) |
                                 (1<<FILPBIT_FINFO) | (1<<FILPBIT_CDATE) | (1<<FILPBIT_BDATE)|
                                 (1<<FILPBIT_MDATE) | (1<<FILPBIT_DFLEN) | (1<<FILPBIT_RFLEN)
@@ -538,7 +541,7 @@ void test143()
     if (teststorun[TEST_CREATE2000FILES]) {
         for (i=1; i < maxi; i++) {
             sprintf(temp, "File.0k%d", i);
-            if (FPDelete(Conn, vol,  dir, temp))
+            if (FPDelete(Conn2, vol2, dir, temp))
                 fatal_failed();
         }
     }
@@ -716,25 +719,25 @@ int main(int ac, char **av)
 
     /************************************
      *                                  *
-     * Connection user 1                *
+     * Connection 1                     *
      *                                  *
      ************************************/
 
-    if ((Conn = (CONN *)calloc(1, sizeof(CONN))) == NULL) {
+    if ((Conn = (CONN *)calloc(1, sizeof(CONN))) == NULL)
         return 1;
-    }
+
     Conn->type = Proto;
     if (!Proto) {
         int sock;
-        Dsi = &Conn->dsi;
-        dsi = Dsi;
+        dsi = &Conn->dsi;
         sock = OpenClientSocket(Server, Port);
         if ( sock < 0) {
             return 2;
         }
-        Dsi->protocol = DSI_TCPIP;
-        Dsi->socket = sock;
+        dsi->protocol = DSI_TCPIP;
+        dsi->socket = sock;
     }
+    Conn->afp_version = Version;
 
     /* login */
     if (Version >= 30)
@@ -742,17 +745,50 @@ int main(int ac, char **av)
     else
       	ExitCode = ntohs(FPopenLogin(Conn, vers, uam, User, Password));
 
-    if (ExitCode == AFP_OK) {
-        Conn->afp_version = Version;
-        run_one();
-        FPLogOut(Conn);
+    /************************************
+     *                                  *
+     * Connection 2                     *
+     *                                  *
+     ************************************/
+
+    if ((Conn2 = (CONN *)calloc(1, sizeof(CONN))) == NULL)
+        goto exit;
+
+    Conn2->type = Proto;
+    if (!Proto) {
+        int sock;
+        dsi = &Conn2->dsi;
+        sock = OpenClientSocket(Server, Port);
+        if ( sock < 0) {
+            return 2;
+        }
+        dsi->protocol = DSI_TCPIP;
+        dsi->socket = sock;
+    }
+    Conn2->afp_version = Version;
+
+    /* login */
+    if (Version >= 30)
+      	ExitCode = ntohs(FPopenLoginExt(Conn2, vers, uam, User, Password));
+    else
+      	ExitCode = ntohs(FPopenLogin(Conn2, vers, uam, User, Password));
+    if ((vol2  = FPOpenVol(Conn2, Vol)) == 0xffff)
+        goto exit;
+
+    /* ----------------------------------- */
+    run_one();
+
+    if (ExitCode != AFP_OK && ! Debug) {
+        if (!Debug)
+            printf("Error, ExitCode: %u. Run with -v to see what went wrong.\n", ExitCode);
+        goto exit;
     }
 
-    if (ExitCode) {
-        if (! Debug)
-            printf("Error, ExitCode: %u. Run with -v to see what went wrong.\n", ExitCode);
-    } else
-        displayresults();
+    displayresults();
+
+exit:
+    if (Conn) FPLogOut(Conn);
+    if (Conn2) FPLogOut(Conn2);
 
     return ExitCode;
 }
