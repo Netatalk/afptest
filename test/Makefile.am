@@ -19,7 +19,7 @@ postmark_SOURCES = postmark-1_5.c
 postmark_LDFLAGS = -export-dynamic
 postmark_LDADD = libafptest.la
 
-lantest_SOURCES = loadtest.c
+lantest_SOURCES = lantest.c
 lantest_LDADD = libafptest.la
 
 afp_ls_SOURCES = afp_ls.c
