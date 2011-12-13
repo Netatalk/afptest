@@ -495,6 +495,91 @@ test_exit:
 	exit_test("test329");
 }
 
+/* --------------- */
+STATIC void test410()
+{
+    char *name = "t410 DF FPByteLock 2 users";
+    int fork;
+    int fork1 = 0;
+    int fork2 = 0;
+    u_int16_t vol = VolID;
+    u_int16_t bitmap = 0;
+    u_int16_t vol2;
+    DSI *dsi2;
+    int type = OPENFORK_DATA;
+
+	enter_test();
+    fprintf(stderr,"===================\n");
+    fprintf(stderr,"FPByteRangeLock:test410: FPByteLock 2users DATA FORK\n");
+    
+	if (!Conn2) {
+		test_skipped(T_CONN2);
+		goto test_exit;
+	}
+	if (Locking) {
+		test_skipped(T_LOCKING);
+		goto test_exit;
+	}
+	
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
+		nottested();
+		goto test_exit;
+	}
+
+	fork = FPOpenFork(Conn, vol, type , bitmap ,DIRDID_ROOT, name,OPENACC_WR |OPENACC_RD);
+	if (!fork) {
+		nottested();
+		goto fin;
+	}
+
+	if (FPByteLock(Conn, fork, 0, 0 /* set */, 0, 100)) {
+		failed();
+        FAIL (FPCloseFork(Conn,fork))
+        goto fin;
+    }
+
+	fork1 = FPOpenFork(Conn, vol, type , bitmap ,DIRDID_ROOT, name,OPENACC_WR |OPENACC_RD);
+	if (!fork1) {
+		failed();
+		FPCloseFork(Conn,fork);
+		goto fin;
+	}
+
+	if (FPCloseFork(Conn,fork1)) { /* this should drop the byterange lock! */
+		failed();
+		FPCloseFork(Conn,fork);
+		goto fin;
+    }
+
+	dsi2 = &Conn2->dsi;
+	vol2  = FPOpenVol(Conn2, Vol);
+	if (vol2 == 0xffff) {
+		nottested();
+		FPCloseFork(Conn,fork);
+		goto fin;
+	}
+
+	fork1 = FPOpenFork(Conn2, vol2, type , bitmap ,DIRDID_ROOT, name, OPENACC_WR |OPENACC_RD);
+	if (!fork1) {
+		failed();
+		FPCloseFork(Conn,fork);
+        goto fin2;
+	}
+	
+	if (FPByteLock(Conn2, fork1, 0, 0 /* set */, 0, 100)) {
+		failed();
+    }
+
+	FAIL (FPCloseFork(Conn,fork))
+    FAIL (FPCloseFork(Conn2,fork1))
+fin2:
+	FAIL (FPCloseVol(Conn2,vol2))
+fin:
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test410");
+}
+
 /* ------------------- */
 static int create_trash(CONN *conn, u_int16_t vol)
 {
@@ -874,6 +959,7 @@ void FPByteRangeLock_test()
 	test80();
 	test329();
 	test330();
+    test410();
 	/* must be the last one */
 	test366();
 }
