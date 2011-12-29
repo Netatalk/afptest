@@ -96,7 +96,14 @@ int ret;
 		if (!fork) {
 			failed();
 		}
-	}
+	} else {
+        if (!Mac) {
+            if (chmod(temp, 0666) <0) {
+                fprintf(stderr,"\tFAILED chmod(%s) %s\n", temp, strerror(errno));
+                failed_nomsg();
+            }
+        }
+    }
 
 	FAIL (FPCloseFork(Conn,fork))
 	fork1 = FPOpenFork(Conn2, vol2, OPENFORK_DATA , 0 ,dir , name,OPENACC_WR |OPENACC_RD);
