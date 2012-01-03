@@ -40,9 +40,6 @@ unsigned ret;
 		if (not_valid(ret, 0, AFPERR_ACCESS)) {
 			failed();
 		}
-		if (!Mac && ret != htonl(AFPERR_ACCESS)) {
-			failed();
-		}
 	}
 	bitmap = (1<<FILPBIT_MDATE);
 	if (FPGetFileDirParams(Conn, vol,  dir, file, bitmap,0)) {
