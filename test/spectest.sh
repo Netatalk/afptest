@@ -33,7 +33,7 @@ EOF
     exit 0
 fi
 
-. spectest.conf
+. ./spectest.conf
 rm -f spectest.log
 
 ##
