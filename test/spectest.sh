@@ -58,4 +58,10 @@ if [ $ret -ne 0 ] ; then
     echo =====================================
 fi
 
+echo
+echo The following tests were skipped
+echo =====================================
+grep "NOT TESTED" spectest.log | sed s/test//g | sort -n | uniq
+echo =====================================
+
 exit $ret
