@@ -33,21 +33,21 @@ EOF
     exit 0
 fi
 
-. spectest.conf
+. ./spectest.conf
 rm -f spectest.log
 
 ##
-echo -n "Running spectest with one user ..."
+printf "Running spectest with one user ..."
 ./spectest -"$AFPVERSION" -h "$AFPSERVER" -p "$AFPPORT" -u "$USER1" -w "$PASSWD" -s "$VOLUME" > spectest.log 2>&1
 check_return
 
 ##
-echo -n "Running spectest with two user ..."
+printf "Running spectest with two user ..."
 ./spectest -"$AFPVERSION" -h "$AFPSERVER" -p "$AFPPORT" -u "$USER1" -d "$USER2" -w "$PASSWD" -s "$VOLUME" >> spectest.log 2>&1
 check_return
 
 ##
-echo -n "Running spectest with local filesystem modifications..."
+printf "Running spectest with local filesystem modifications..."
 ./T2_spectest -"$AFPVERSION" -h "$AFPSERVER" -p "$AFPPORT" -u "$USER1" -d "$USER2" -w "$PASSWD" -s "$VOLUME" -c "$LOCALVOLPATH" >> spectest.log 2>&1
 check_return
 
