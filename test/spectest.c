@@ -3,6 +3,7 @@
  * MANIFEST
  */
 #include "specs.h"
+#include "volinfo.h"
 #include <dlfcn.h>
 
 int Verbose = 0;
@@ -344,6 +345,7 @@ int cc;
 			break;
 		case 'c':
 			Path = strdup(optarg);
+            loadvolinfo(Path);
 			break;
 		case 'L':
 			Locking = 1;

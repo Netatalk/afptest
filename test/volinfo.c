@@ -251,7 +251,6 @@ static int parseline ( char *buf, struct volinfo *vol)
     }
 
     switch (option) {
-      case MAC_CHARSET:
       case CNIDBACKEND:
         if ((vol->v_cnidscheme = strdup(value)) == NULL) {
 	    fprintf (stderr, "strdup: %s", strerror(errno));
@@ -307,9 +306,7 @@ static int parseline ( char *buf, struct volinfo *vol)
             vol->v_vfs_ea = AFPVOL_EA_SYS;
         break;
       default:
-	fprintf (stderr, "unknown volume information: %s, %s", buf, value);
-	return (-1);
-        break;
+          return (-1);
     }
         
     return 0;
@@ -378,6 +375,7 @@ int loadvolinfo (char *path)
     fcntl(fd, F_SETLK, &lock);
 
     fclose(fp);
+    volinfo.valid = 1;
     return 0;
 }
 

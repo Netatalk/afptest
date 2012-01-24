@@ -2,6 +2,7 @@
 */
 #include "specs.h"
 #include "adoublehelper.h"
+#include "volinfo.h"
 
 static char temp[MAXPATHLEN];   
 
@@ -10,12 +11,17 @@ static char temp[MAXPATHLEN];
 */
 int delete_unix_rf(char *path, char *name, char *file)
 {
-	if (!*file) {
-		sprintf(temp, "%s/%s/.AppleDouble/.Parent", path, name);
-	}
-	else {
-		sprintf(temp, "%s/%s/.AppleDouble/%s", path, name, file);
-	}
+    if (!(volinfo.valid && volinfo.v_adouble == AD_VERSION_EA)) {
+        if (!*file) {
+            sprintf(temp, "%s/%s/.AppleDouble/.Parent", path, name);
+        }
+        else {
+            sprintf(temp, "%s/%s/.AppleDouble/%s", path, name, file);
+        }
+    } else {
+        sprintf(temp, "%s/%s/._%s", path, name, file);
+    }
+
 	fprintf(stderr,"unlink(%s)\n", temp);
 	if (unlink(temp) <0) {
 		fprintf(stderr,"\tFAILED unlink(%s) %s\n", temp, strerror(errno));
@@ -30,7 +36,7 @@ int delete_unix_rf(char *path, char *name, char *file)
 */
 int delete_unix_file(char *path, char *name, char *file)
 {
-        if (delete_unix_rf(path, name, file))
+    if (delete_unix_rf(path, name, file))
 		return -1;
 		
 	sprintf(temp, "%s/%s/%s", path, name, file);
@@ -72,6 +78,9 @@ int symlink_unix_file(char *target, char *path, char *source)
 /* ----------------------------- */
 int delete_unix_adouble(char *path, char *name)
 {
+    if (volinfo.valid && volinfo.v_adouble == AD_VERSION_EA)
+        return 0;
+
 	fprintf(stderr,"rmdir(%s/.AppleDouble) \n", name);
 	sprintf(temp, "%s/%s/.AppleDouble/.Parent", path, name);
 	if (unlink(temp) <0) {
@@ -93,6 +102,9 @@ int delete_unix_adouble(char *path, char *name)
 */
 int chmod_unix_adouble(char *path,char *name, int mode)
 {
+    if (volinfo.valid && volinfo.v_adouble == AD_VERSION_EA)
+        return 0;
+
 	sprintf(temp, "%s/%s/.AppleDouble", path, name);
 	fprintf(stderr, "chmod (%s, %o)\n", temp, mode);
 	if (chmod(temp, mode)) {
@@ -109,9 +121,11 @@ int chmod_unix_adouble(char *path,char *name, int mode)
 int delete_unix_dir(char *path, char *name)
 {
 	fprintf(stderr,"rmdir(%s)\n", name);
-	if (delete_unix_adouble(path, name)) {
-		return -1;
-	}
+
+    if (!(volinfo.valid && volinfo.v_adouble == AD_VERSION_EA))
+        if (delete_unix_adouble(path, name)) {
+            return -1;
+        }
 	sprintf(temp, "%s/%s", path, name);
 	if (rmdir(temp) <0) {
 		fprintf(stderr,"\tFAILED rmdir %s %s\n", temp, strerror(errno));
@@ -146,7 +160,7 @@ u_int16_t bitmap =  (1 << DIRPBIT_ACCESS);
 		nottested();
 		goto fin;
 	}
-	if (!Mac) {
+	if (!Mac && !(volinfo.valid && volinfo.v_adouble == AD_VERSION_EA)) {
 		if (delete_unix_rf(Path, name, "")) {
 			nottested();
 		}

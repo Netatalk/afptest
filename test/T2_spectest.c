@@ -4,6 +4,7 @@
  */
 #include "afpclient.h"
 #include "test.h"
+#include "volinfo.h"
 #include <dlfcn.h>
 
 int Verbose = 0;
@@ -319,6 +320,7 @@ static char *uam = "Cleartxt Passwrd";
 			break;
 		case 'c':
 			Path = strdup(optarg);
+            loadvolinfo(Path);
 			break;
 		case 'm':
 			Mac = 1;

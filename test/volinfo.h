@@ -21,6 +21,7 @@ typedef struct {
 } vol_opt_name_t;
 
 struct volinfo {
+    int                 valid;
     char                *v_name;
     char                *v_path;
     int                 v_flags;
