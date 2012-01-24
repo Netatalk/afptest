@@ -229,46 +229,41 @@ void test143()
             if (ntohl(AFPERR_NOOBJ) != is_there(Conn, dir, temp)) {
                 fatal_failed();
             }
-            else {
-                if (FPGetFileDirParams(Conn, vol,  dir, "", 0, (1<< DIRPBIT_DID) )) {
-                    fatal_failed();
-                }
-                if (FPCreateFile(Conn, vol,  0, dir , temp)){
-                    fatal_failed();
-                }
-                if (is_there(Conn, dir, temp)) {
-                    fatal_failed();
-                }
-                if (FPGetFileDirParams(Conn, vol,  dir, temp,
-                                       (1<<FILPBIT_FNUM )|(1<<FILPBIT_PDID)|(1<<FILPBIT_FINFO)|
-                                       (1<<FILPBIT_CDATE)|(1<<FILPBIT_MDATE)|(1<<FILPBIT_DFLEN)|(1<<FILPBIT_RFLEN)
-                                       , 0)) {
-                    fatal_failed();
-                }
-                if (FPGetFileDirParams(Conn, vol,  dir, temp,
-                                       (1<<FILPBIT_FNUM )|(1<<FILPBIT_PDID)|(1<<FILPBIT_FINFO)|
-                                       (1<< DIRPBIT_ATTR)|(1<<DIRPBIT_BDATE)|
-                                       (1<<FILPBIT_CDATE)|(1<<FILPBIT_MDATE)|(1<<FILPBIT_DFLEN)|(1<<FILPBIT_RFLEN)
-                                       , 0)) {
-                    fatal_failed();
-                }
-                fork = FPOpenFork(Conn, vol, OPENFORK_DATA ,
-                                  (1<<FILPBIT_PDID)|(1<< DIRPBIT_LNAME)|(1<<FILPBIT_FNUM)|(1<<FILPBIT_DFLEN)
-                                  , dir, temp, OPENACC_WR |OPENACC_RD| OPENACC_DWR| OPENACC_DRD);
-                if (!fork) {
-                    fatal_failed();
-                }
-                else {
-                    if (FPGetForkParam(Conn, fork, (1<<FILPBIT_PDID)|(1<< DIRPBIT_LNAME)|(1<<FILPBIT_DFLEN))
-                        ) {
-                        fatal_failed();
-                    }
-                    if (FPWrite(Conn, fork, 0, 20480, data, 0 )) {
-                        fatal_failed();
-                    }
-                    if (FPCloseFork(Conn,fork)) {fatal_failed();}
-                }
+            if (FPGetFileDirParams(Conn, vol,  dir, "", 0, (1<< DIRPBIT_DID) )) {
+                fatal_failed();
             }
+            if (FPCreateFile(Conn, vol,  0, dir , temp)){
+                fatal_failed();
+            }
+            if (is_there(Conn, dir, temp)) {
+                fatal_failed();
+            }
+            if (FPGetFileDirParams(Conn, vol,  dir, temp,
+                                   (1<<FILPBIT_FNUM )|(1<<FILPBIT_PDID)|(1<<FILPBIT_FINFO)|
+                                   (1<<FILPBIT_CDATE)|(1<<FILPBIT_MDATE)|(1<<FILPBIT_DFLEN)|(1<<FILPBIT_RFLEN)
+                                   , 0)) {
+                fatal_failed();
+            }
+            if (FPGetFileDirParams(Conn, vol,  dir, temp,
+                                   (1<<FILPBIT_FNUM )|(1<<FILPBIT_PDID)|(1<<FILPBIT_FINFO)|
+                                   (1<< DIRPBIT_ATTR)|(1<<DIRPBIT_BDATE)|
+                                   (1<<FILPBIT_CDATE)|(1<<FILPBIT_MDATE)|(1<<FILPBIT_DFLEN)|(1<<FILPBIT_RFLEN)
+                                   , 0)) {
+                fatal_failed();
+            }
+            fork = FPOpenFork(Conn, vol, OPENFORK_DATA ,
+                              (1<<FILPBIT_PDID)|(1<< DIRPBIT_LNAME)|(1<<FILPBIT_FNUM)|(1<<FILPBIT_DFLEN)
+                              , dir, temp, OPENACC_WR |OPENACC_RD| OPENACC_DWR| OPENACC_DRD);
+            if (!fork) {
+                fatal_failed();
+            }
+            if (FPGetForkParam(Conn, fork, (1<<FILPBIT_PDID)|(1<< DIRPBIT_LNAME)|(1<<FILPBIT_DFLEN))) {
+                fatal_failed();
+            }
+            if (FPWrite(Conn, fork, 0, 20480, data, 0 )) {
+                fatal_failed();
+            }
+            if (FPCloseFork(Conn,fork)) {fatal_failed();}
             maxi = i;
         }
 
@@ -300,23 +295,21 @@ void test143()
             if (!fork) {
                 fatal_failed();
             }
-            else {
-                if (FPGetForkParam(Conn, fork, (1<<FILPBIT_DFLEN))) {fatal_failed();}
-                if (FPRead(Conn, fork, 0, 512, data)) {fatal_failed();}
-                if (FPCloseFork(Conn,fork)) {fatal_failed();}
-            }
+            if (FPGetForkParam(Conn, fork, (1<<FILPBIT_DFLEN))) {fatal_failed();}
+            if (FPRead(Conn, fork, 0, 512, data)) {fatal_failed();}
+            if (FPCloseFork(Conn,fork)) {fatal_failed();}
+
             fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0x342 , dir, temp,OPENACC_RD| OPENACC_DWR);
             if (!fork) {
                 fatal_failed();
             }
-            else {
-                if (FPGetForkParam(Conn, fork, 0x242)) {fatal_failed();}
-                if (FPGetFileDirParams(Conn, vol,  dir, temp, 0x72d,0)) {
-                    fatal_failed();
-                }
-                if (FPCloseFork(Conn,fork)) {fatal_failed();}
+            if (FPGetForkParam(Conn, fork, 0x242)) {fatal_failed();}
+            if (FPGetFileDirParams(Conn, vol,  dir, temp, 0x72d,0)) {
+                fatal_failed();
             }
+            if (FPCloseFork(Conn,fork)) {fatal_failed();}
         }
+
         stoptimer();
         addresult(TEST_OPENSTATREAD, Iterations);
 
@@ -329,7 +322,6 @@ void test143()
             if (FPGetFileDirParams(Conn, vol,  dir, temp, 0, (1<< FILPBIT_FNUM) )) {
                 fatal_failed();
             }
-
             if (FPDelete(Conn, vol,  dir, temp)) {fatal_failed();}
         }
 
