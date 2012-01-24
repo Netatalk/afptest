@@ -18,6 +18,9 @@ AC_CHECK_LIB(dl, dlopen)
 AC_CHECK_LIB(nsl, main)
 AC_CHECK_LIB(socket, socket)
 
+AC_CHECK_FUNC(attropen, AC_DEFINE(HAVE_EAFD, 1, [Platform has seekable extended attributes fds]))
+AC_CHECK_FUNCS(strlcpy strlcat)
+
 AC_MSG_CHECKING(for bswap_64)
 AC_TRY_LINK([#if HAVE_BYTESWAP_H
 		 #include <byteswap.h>

@@ -51,9 +51,6 @@ be use for testing afpd speed against local or others protocols.
 Misc
 ----
 
-./afpclient
-First try for a test suite and is obsolete.
-
 Helpers and benchmarks:
 ./afparg
 The beginning of an AFP CLI client, cf ./afparg -l
@@ -62,8 +59,6 @@ FPCopyFile <source> <dest>
 
 ./afp_ls
 'minimal' ls using AFP commands. Should be migrated to afparg.
-
-
 
 Compilation 
 ===========
