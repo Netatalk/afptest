@@ -778,8 +778,8 @@ DSI *dsi;
 
 	if (!Quiet) {
 		fprintf(stderr,"---------------------\n");
-		fprintf(stderr,"Byte lock fork %d end %d %s offset %d size %d\n\n", 
-	                         fork, end, mode?"unlock":"lock", offset, size);
+		fprintf(stderr,"Byte lock,fork %d, %s, %s, offset: %d, size: %d\n\n", 
+                fork, end ? "end" : "start", mode ? "unlock" : "lock", offset, size);
 	}
 	ret = AFPByteLock(conn,fork, end, mode, offset, size);
 	dump_header(dsi);
