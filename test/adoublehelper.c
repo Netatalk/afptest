@@ -3,6 +3,7 @@
 #include "specs.h"
 #include "adoublehelper.h"
 #include "volinfo.h"
+#include "ea.h"
 
 static char temp[MAXPATHLEN];   
 
@@ -18,16 +19,22 @@ int delete_unix_rf(char *path, char *name, char *file)
         else {
             sprintf(temp, "%s/%s/.AppleDouble/%s", path, name, file);
         }
+        fprintf(stderr,"unlink(%s)\n", temp);
+        if (unlink(temp) <0) {
+            fprintf(stderr,"\tFAILED unlink(%s) %s\n", temp, strerror(errno));
+            failed_nomsg();
+            return -1;
+        }
     } else {
-        sprintf(temp, "%s/%s/._%s", path, name, file);
+        if (file) {
+            sprintf(temp, "%s/%s/._%s", path, name, file);
+            fprintf(stderr,"unlink(%s)\n", temp);
+            unlink(temp);
+        }
+        sprintf(temp, "%s/%s", path, name);
+        sys_lremovexattr(temp, AD_EA_META);
     }
 
-	fprintf(stderr,"unlink(%s)\n", temp);
-	if (unlink(temp) <0) {
-		fprintf(stderr,"\tFAILED unlink(%s) %s\n", temp, strerror(errno));
-		failed_nomsg();
-		return -1;
-	}
 	return 0;
 }
 

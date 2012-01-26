@@ -1,12 +1,12 @@
 dist_check_SCRIPTS = spectest.sh
-noinst_HEADERS = adoublehelper.h afp.h afpclient.h cdefs.h dsi.h specs.h test.h volinfo.h
+noinst_HEADERS = adoublehelper.h afp.h afpclient.h cdefs.h dsi.h specs.h test.h volinfo.h ea.h compat.h
 bin_PROGRAMS = afparg afp_ls lantest spectest postmark fail_spectest T2_spectest logintest rotest \
                encoding_test speedtest
 noinst_LTLIBRARIES = libafptest.la
 TESTS = spectest.sh
 CLEANFILES = spectest.conf
 
-libafptest_la_SOURCES = afpcli.c afpcmd.c afphelper.c adoublehelper.c volinfo.c
+libafptest_la_SOURCES = afpcli.c afpcmd.c afphelper.c adoublehelper.c volinfo.c extattr.c compat.c
 
 afparg_SOURCES = afparg.c afparg_FPfuncs.c
 afparg_LDADD = libafptest.la
