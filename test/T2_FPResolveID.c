@@ -2,6 +2,7 @@
 */
 #include "specs.h"
 #include "adoublehelper.h"
+#include "volinfo.h"
 
 static char temp[MAXPATHLEN];   
 static char temp1[MAXPATHLEN];   
@@ -43,11 +44,13 @@ DSI *dsi = &Conn->dsi;
 		FAIL ((FPResolveID(Conn, vol, filedir.did, bitmap)))
 	}
 
-	sprintf(temp1, "%s/%s/.AppleDouble/%s", Path, name1, name);
-	if (unlink(temp1) <0) {
-		fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
-		failed_nomsg();
-	}
+    if (volinfo.v_adouble == AD_VERSION2) {
+        sprintf(temp1, "%s/%s/.AppleDouble/%s", Path, name1, name);
+        if (unlink(temp1) <0) {
+            fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
+            failed_nomsg();
+        }
+    }
 	sprintf(temp1, "%s/%s/%s", Path, name1, name);
 	if (unlink(temp1) <0) {
 		fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
@@ -106,11 +109,13 @@ int ret;
 		FAIL (FPResolveID(Conn, vol, filedir.did, bitmap)) 
 	}
 
-	sprintf(temp1, "%s/%s/.AppleDouble/%s", Path, name1, name);
-	if (unlink(temp1) <0) {
-		fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
-		failed_nomsg();
-	}
+    if (volinfo.v_adouble == AD_VERSION2) {
+        sprintf(temp1, "%s/%s/.AppleDouble/%s", Path, name1, name);
+        if (unlink(temp1) <0) {
+            fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
+            failed_nomsg();
+        }
+    }
 	sprintf(temp1, "%s/%s/%s", Path, name1, name);
 	if (unlink(temp1) <0) {
 		fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
@@ -169,12 +174,13 @@ DSI *dsi = &Conn->dsi;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 		FAIL (FPResolveID(Conn, vol, filedir.did, bitmap)) 
 	}
-
-	sprintf(temp1, "%s/%s/.AppleDouble/%s", Path, name1, name);
-	if (unlink(temp1) <0) {
-		fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
-		failed_nomsg();
-	}
+    if (volinfo.v_adouble == AD_VERSION2) {
+        sprintf(temp1, "%s/%s/.AppleDouble/%s", Path, name1, name);
+        if (unlink(temp1) <0) {
+            fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
+            failed_nomsg();
+        }
+    }
 	sprintf(temp1, "%s/%s/%s", Path, name1, name);
 	if (unlink(temp1) <0) {
 		fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
