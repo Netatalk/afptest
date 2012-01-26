@@ -406,7 +406,7 @@ int fd;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPOpenFork:test321: Bogus (empty) resource fork\n");
 
-	if (!Mac && !Path) {
+	if ((!Mac && !Path) || (volinfo.v_adouble == AD_VERSION_EA)) {
 		test_skipped(T_MAC_PATH);
 		goto test_exit;
 	}
