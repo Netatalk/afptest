@@ -2,6 +2,7 @@
 */
 #include "specs.h"
 #include "adoublehelper.h"
+#include "volinfo.h"
 
 static char temp[MAXPATHLEN];   
 
@@ -276,7 +277,7 @@ unsigned int ret;
     fprintf(stderr,"===================\n");
     fprintf(stderr,"FPOpenFork:test152: Error when no write access to .AppleDouble\n");
 
-	if (!Mac && !Path) {
+	if ((!Mac && !Path) || (volinfo.v_adouble == AD_VERSION_EA)) {
 		test_skipped(T_MAC_PATH);
 		goto test_exit;
 	}
