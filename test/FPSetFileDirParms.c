@@ -1,6 +1,7 @@
 /* ----------------------------------------------
 */
 #include "specs.h"
+#include "volinfo.h"
 
 /* ------------------------- */
 STATIC void test98()
@@ -143,6 +144,7 @@ DSI *dsi;
         filedir.access[0] = 0;
         filedir.access[1] = filedir.access[2] = filedir.access[3] = 3;
  		FAIL (FPSetFilDirParam(Conn, vol, dir , "", bitmap, &filedir)) 
+
  		FAIL (FPGetFileDirParams(Conn, vol, dir, "", 0, bitmap))
 		
  		if (!FPDelete(Conn, vol,  dir , name)) {
@@ -163,7 +165,8 @@ DSI *dsi;
 
 		fork = FPOpenFork(Conn, vol, OPENFORK_RSCS , 0 ,dir, name,OPENACC_WR | OPENACC_RD);
 		if (!fork) {
-			failed();
+            if (volinfo.v_adouble == AD_VERSION2)
+                failed();
 		}
 		else {
 			FPCloseFork(Conn, fork);
