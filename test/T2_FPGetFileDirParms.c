@@ -3,6 +3,7 @@
 
 #include "specs.h"
 #include "adoublehelper.h"
+#include "volinfo.h"
 
 static char temp[MAXPATHLEN];   
 static char temp1[MAXPATHLEN];   
@@ -1017,15 +1018,16 @@ DSI *dsi = &Conn->dsi;
 			fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
 			failed_nomsg();
 		}
-		
-		sprintf(temp, "%s/%s/.AppleDouble/%s", Path, name1, name);
-		sprintf(temp1,"%s/%s/.AppleDouble/%s", Path, name1, name2);
-		fprintf(stderr,"rename %s %s\n", temp, temp1);
-		if (rename(temp, temp1) < 0) {
-			fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
-			failed_nomsg();
-		}
 
+        if (volinfo.v_adouble == AD_VERSION2) {
+            sprintf(temp, "%s/%s/.AppleDouble/%s", Path, name1, name);
+            sprintf(temp1,"%s/%s/.AppleDouble/%s", Path, name1, name2);
+            fprintf(stderr,"rename %s %s\n", temp, temp1);
+            if (rename(temp, temp1) < 0) {
+                fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+                failed_nomsg();
+            }
+        }
 	}
 	else {
 		FAIL (FPMoveAndRename(Conn, vol, DIRDID_ROOT, dir, name, name2))

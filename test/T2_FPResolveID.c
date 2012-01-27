@@ -655,14 +655,15 @@ DSI *dsi = &Conn->dsi;
 			failed_nomsg();
 		}
 		
-		sprintf(temp, "%s/%s/.AppleDouble/%s", Path, name1, name);
-		sprintf(temp1,"%s/%s/.AppleDouble/%s", Path, name2, name);
-		fprintf(stderr,"rename %s %s\n", temp, temp1);
-		if (rename(temp, temp1) < 0) {
-			fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
-			failed_nomsg();
-		}
-
+        if (volinfo.v_adouble == AD_VERSION2) {
+            sprintf(temp, "%s/%s/.AppleDouble/%s", Path, name1, name);
+            sprintf(temp1,"%s/%s/.AppleDouble/%s", Path, name2, name);
+            fprintf(stderr,"rename %s %s\n", temp, temp1);
+            if (rename(temp, temp1) < 0) {
+                fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+                failed_nomsg();
+            }
+        }
 	}
 	else {
 		/* FIXME */

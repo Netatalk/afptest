@@ -488,7 +488,7 @@ int id;
 		filedir.isdir = 0;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 		if (!filedir.did || filedir.did != id) {
-		    fprintf(stderr,"\tFAILED cnids differ %x %x\n", filedir.did, id);
+		    fprintf(stderr,"\tFAILED cnids are not the same %x %x\n", filedir.did, id);
 			failed_nomsg();
 		}
 	}
