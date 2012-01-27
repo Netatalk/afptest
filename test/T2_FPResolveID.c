@@ -252,15 +252,16 @@ DSI *dsi = &Conn->dsi;
 			fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
 			failed_nomsg();
 		}
-		
-		sprintf(temp, "%s/%s/.AppleDouble/%s", Path, name1, name);
-		sprintf(temp1,"%s/%s/.AppleDouble/%s", Path, name1, name2);
-		fprintf(stderr,"rename %s %s\n", temp, temp1);
-		if (rename(temp, temp1) < 0) {
-			fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
-			failed_nomsg();
-		}
 
+        if (volinfo.v_adouble == AD_VERSION2) {
+            sprintf(temp, "%s/%s/.AppleDouble/%s", Path, name1, name);
+            sprintf(temp1,"%s/%s/.AppleDouble/%s", Path, name1, name2);
+            fprintf(stderr,"rename %s %s\n", temp, temp1);
+            if (rename(temp, temp1) < 0) {
+                fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+                failed_nomsg();
+            }
+        }
 	}
 	else {
 		FAIL (FPMoveAndRename(Conn, vol, DIRDID_ROOT, dir, name, name2))
@@ -293,11 +294,15 @@ test_exit:
 /* -------------------------- */
 static int get_fs_lock(char *folder, char *file)
 {
-int fd;
-struct flock lock;
-int ret;
+    int fd;
+    struct flock lock;
+    int ret;
 
-	sprintf(temp, "%s/%s/.AppleDouble/%s", Path, folder, file);
+    if (volinfo.v_adouble == AD_VERSION2)
+        sprintf(temp, "%s/%s/.AppleDouble/%s", Path, folder, file);
+    else
+        sprintf(temp, "%s/%s/%s", Path, folder, file);
+
 	fprintf(stderr," \n---------------------\n");
 	fprintf(stderr, "open(\"%s\", O_RDWR)\n", temp);
 	fd = open(temp, O_RDWR, 0);	
@@ -305,7 +310,7 @@ int ret;
 		lock.l_start = 0;		/* after meta data */
     	lock.l_type = F_WRLCK;
 	    lock.l_whence = SEEK_SET;
-    	lock.l_len = 1024;
+    	lock.l_len = 0;
          
 		fprintf(stderr, "fcntl(1024)\n");
     	if ((ret = fcntl(fd, F_SETLK, &lock)) >= 0 || (errno != EACCES && errno != EAGAIN)) {
@@ -397,18 +402,19 @@ DSI *dsi = &Conn->dsi;
 			fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
 			failed_nomsg();
 		}
-		
-		sprintf(temp, "%s/%s/.AppleDouble/%s", Path, name1, name);
-		sprintf(temp1,"%s/%s/.AppleDouble/%s", Path, name1, name2);
-		fprintf(stderr,"rename %s %s\n", temp, temp1);
-		if (rename(temp, temp1) < 0) {
-			fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
-			failed_nomsg();
-		}
-		if (get_fs_lock(name1, name3) < 0) {
-			goto fin;
-		}
 
+        if (volinfo.v_adouble == AD_VERSION2) {
+            sprintf(temp, "%s/%s/.AppleDouble/%s", Path, name1, name);
+            sprintf(temp1,"%s/%s/.AppleDouble/%s", Path, name1, name2);
+            fprintf(stderr,"rename %s %s\n", temp, temp1);
+            if (rename(temp, temp1) < 0) {
+                fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+                failed_nomsg();
+            }
+            if (get_fs_lock(name1, name3) < 0) {
+                goto fin;
+            }
+        }
 	}
 	else {
 		FAIL (FPMoveAndRename(Conn, vol, DIRDID_ROOT, dir, name, name2))
