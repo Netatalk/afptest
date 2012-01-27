@@ -158,11 +158,13 @@ DSI *dsi = &Conn->dsi;
 		FAIL ((FPResolveID(Conn, vol, filedir.did, bitmap)))
 	}
 
-	sprintf(temp1, "%s/%s/.AppleDouble/%s", Path, name1, name);
-	if (unlink(temp1) <0) {
-		fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
-		failed_nomsg();
-	}
+    if (volinfo.v_adouble == AD_VERSION2) {
+        sprintf(temp1, "%s/%s/.AppleDouble/%s", Path, name1, name);
+        if (unlink(temp1) <0) {
+            fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
+            failed_nomsg();
+        }
+    }
 	sprintf(temp1, "%s/%s/%s", Path, name1, name);
 	if (unlink(temp1) <0) {
 		fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
