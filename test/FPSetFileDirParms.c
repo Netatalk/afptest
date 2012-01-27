@@ -61,7 +61,14 @@ DSI *dsi;
 		filedir.isdir = 1;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
 		bitmap = (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE);
- 		FAIL (FPSetFilDirParam(Conn, vol, DIRDID_ROOT , rodir, bitmap, &filedir)) 
+ 		ret = FPSetFilDirParam(Conn, vol, DIRDID_ROOT , rodir, bitmap, &filedir);
+        if (volinfo.v_adouble == AD_VERSION_EA) {
+            if (not_valid(ret, /* MAC */0, AFPERR_ACCESS))
+                failed();
+        } else {
+            if (ret)
+                failed();
+        }    
  		ret = FPSetFilDirParam(Conn, vol, DIRDID_ROOT , ndir, bitmap, &filedir);
 		if (not_valid(ret, /* MAC */0, AFPERR_ACCESS)) {
 			failed();
