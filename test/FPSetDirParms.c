@@ -163,7 +163,10 @@ unsigned int ret;
 			failed();
 		}
  		bitmap = (1<<DIRPBIT_CDATE) |  (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE);
- 		FAIL (FPSetDirParms(Conn, vol, DIRDID_ROOT , rodir, bitmap, &filedir))
+ 		ret = FPSetDirParms(Conn, vol, DIRDID_ROOT , rodir, bitmap, &filedir);
+		if (not_valid(ret, AFPERR_ACCESS, 0)) {
+			failed();
+		}
 
  		bitmap = (1<<DIRPBIT_UID) | (1 << DIRPBIT_GID) |(1 << DIRPBIT_ACCESS);
  		FAIL (ntohl(AFPERR_ACCESS) != FPSetDirParms(Conn, vol, DIRDID_ROOT , ndir, bitmap, &filedir)) 
