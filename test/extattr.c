@@ -47,8 +47,11 @@
 #endif
 
 #ifdef HAVE_ATTROPEN
-
+#include <stdarg.h>
 #include <dirent.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #endif
 
 #ifdef HAVE_SYS_EXTATTR_H
@@ -91,13 +94,13 @@ int sys_getxattrfd(const char *path, const char *uname, int oflag, ...)
     va_list args;
     mode_t mode;
 
-    if (oflags & O_CREAT) {
+    if (oflag & O_CREAT) {
         va_start(args, oflag);
         mode = va_arg(args, mode_t);
         va_end(args);
     }
 
-    if (oflags & O_CREAT)
+    if (oflag & O_CREAT)
         eafd = attropen(path, uname, oflag, mode);
     else
         eafd = attropen(path, uname, oflag);
@@ -822,7 +825,6 @@ static ssize_t solaris_list_xattr(int attrdirfd, char *list, size_t size)
 		     !strcmp(de->d_name, "SUNWattr_ro") || !strcmp(de->d_name, "SUNWattr_rw")) 
 		{
 			/* we don't want "." and ".." here: */
-			LOG(log_maxdebug, logtype_default, "skipped EA %s\n",de->d_name);
 			continue;
 		}
 
@@ -846,7 +848,6 @@ static ssize_t solaris_list_xattr(int attrdirfd, char *list, size_t size)
 	}
 
 	if (closedir(dirp) == -1) {
-		LOG(log_error, logtype_default, "closedir dirp: %s",strerror(errno));
 		return -1;
 	}
 	return len;
@@ -865,8 +866,6 @@ static int solaris_attropen(const char *path, const char *attrpath, int oflag, m
 	int filedes = attropen(path, attrpath, oflag, mode);
 	if (filedes == -1) {
         if (errno != ENOENT)
-            LOG(log_error, logtype_default, "attropen(\"%s\", ea:'%s'): %s",
-                path, attrpath, strerror(errno));
         errno = ENOATTR;
 	}
 	return filedes;
@@ -877,8 +876,6 @@ static int solaris_openat(int fildes, const char *path, int oflag, mode_t mode)
 	int filedes = openat(fildes, path, oflag, mode);
 	if (filedes == -1) {
         if (errno != ENOENT)
-            LOG(log_error, logtype_default, "openat(\"%s\"): %s",
-                path, strerror(errno));
         errno = ENOATTR;
 	}
 	return filedes;
@@ -889,8 +886,6 @@ static int solaris_write_xattr(int attrfd, const char *value, size_t size)
 	if ((ftruncate(attrfd, 0) == 0) && (write(attrfd, value, size) == size)) {
 		return 0;
 	} else {
-		LOG(log_error, logtype_default, "solaris_write_xattr: %s",
-            strerror(errno));
 		return -1;
 	}
 }

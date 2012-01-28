@@ -31,33 +31,40 @@ int i;
 		goto test_exit;
 	}
 
+#if 0
 	if (FPEnumerate_ext(Conn, vol,  DIRDID_ROOT , "", 
 		                    (1 << FILPBIT_PDINFO )|(1 << FILPBIT_EXTDFLEN) | (1 << FILPBIT_EXTRFLEN)
 		                    |(1 << FILPBIT_DFLEN) |(1 << FILPBIT_RFLEN), 0)) {
 		failed();
 	}
+#endif
 #if 0	                        
 	FAIL (FPEnumerate_ext(Conn, vol,  DIRDID_ROOT , "", 0, (1 << DIRPBIT_PDINFO )))
 #endif
     /* > 2 Gb */
+#if 0
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
 	if (!fork) {
 		failed();
 		goto fin2g;
 	}
+#endif
 
 	fork1 = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
 	if (!fork1) {
 		failed();
 		goto fin2g;
 	}
+#if 0
 	if (Conn2) {
 		FPGetSrvrMsg(Conn2, 0, 0);
 	}
-
+#endif
 	memset(w_buf, 'b', BUF_S);
-	FAIL (FPWrite_ext(Conn, fork, ((off_t)1 << 31) +20, 2000, w_buf, 0 )) 
-	FAIL (FPWrite_ext(Conn, fork1, ((off_t)1 << 31) +20, 1000, w_buf, 0 )) 
+//	FAIL (FPWrite_ext(Conn, fork, ((off_t)1 << 31) +20, 2000, w_buf, 0 )) 
+	FAIL (FPWrite_ext(Conn, fork1, ((off_t)1 << 29) +20, 1000, w_buf, 0 )) 
+	FAIL (FPCloseFork(Conn, fork1))
+        exit(1);
 	FAIL (FPWrite_ext(Conn, fork, ((off_t)1 << 31) +1000 , 3000, w_buf, 0 )) 
 	FAIL (FPWrite_ext(Conn, fork, 0 , 200, w_buf, 0x80 )) 
 	FAIL (FPWrite_ext(Conn, fork1, 0 , 200, w_buf, 0x80 )) 
