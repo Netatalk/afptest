@@ -33,7 +33,7 @@ ssize_t get_sessiontoken(const char *buf, char **token)
         return -1;
 
     if (!(*token = malloc(len))) {
-        fprintf(stderr, "\tFAILED malloc(%x) %s\n", len, strerror(errno));
+        fprintf(stdout, "\tFAILED malloc(%x) %s\n", len, strerror(errno));
         return -1;
     }
     memcpy(*token, buf + sizeof(uint32_t), len);
@@ -83,14 +83,14 @@ u_int16_t bitmap = 0;
 	dsi->header.dsi_len = htonl(dsi->datalen);
 	dsi->header.dsi_code = 0; 
  
-	fprintf(stderr,"---------------------\n");
-	fprintf(stderr,"AFP call  %d\n\n", cmd);
+	fprintf(stdout,"---------------------\n");
+	fprintf(stdout,"AFP call  %d\n\n", cmd);
    	my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
 	my_dsi_cmd_receive(dsi);
 	dump_header(dsi);
 		
     if (ntohl(AFPERR_PARAM) != dsi->header.dsi_code) {
-		fprintf(stderr,"\tFAILED command %i\n", cmd);
+		fprintf(stdout,"\tFAILED command %i\n", cmd);
 		failed();
     }
 }
@@ -209,7 +209,7 @@ u_int32_t uid;
     if (!Conn2) {
     	return 0;
     }
-	fprintf(stderr,"\t>>>>>>>> Create no access folder <<<<<<<<<< \n");
+	fprintf(stdout,"\t>>>>>>>> Create no access folder <<<<<<<<<< \n");
 	dsi2 = &Conn2->dsi;
 	dsi = &Conn->dsi;
 	vol2  = FPOpenVol(Conn2, Vol);
@@ -295,7 +295,7 @@ fin:
 		}
 	}
 	FPCloseVol(Conn2,vol2);
-	fprintf(stderr,"\t>>>>>>>> done <<<<<<<<<< \n");
+	fprintf(stdout,"\t>>>>>>>> done <<<<<<<<<< \n");
 	return ret;
 }
 
@@ -313,7 +313,7 @@ DSI *dsi, *dsi2;
     if (!Conn2) {
     	return 0;
     }
-	fprintf(stderr,"\t>>>>>>>> Create ---rwx--- folder <<<<<<<<<< \n");
+	fprintf(stdout,"\t>>>>>>>> Create ---rwx--- folder <<<<<<<<<< \n");
 	dsi2 = &Conn2->dsi;
 	dsi = &Conn->dsi;
 	vol2  = FPOpenVol(Conn2, Vol);
@@ -362,7 +362,7 @@ fin:
 		}
 	}
 	FPCloseVol(Conn2,vol2);
-	fprintf(stderr,"\t>>>>>>>> done <<<<<<<<<< \n");
+	fprintf(stdout,"\t>>>>>>>> done <<<<<<<<<< \n");
 	return ret;
 }
 
@@ -383,7 +383,7 @@ DSI *dsi2;
     if (!Conn2) {
     	return 0;
     }
-	fprintf(stderr,"\t>>>>>>>> Create read only folder <<<<<<<<<< \n");
+	fprintf(stdout,"\t>>>>>>>> Create read only folder <<<<<<<<<< \n");
 	dsi2 = &Conn2->dsi;
 	vol2  = FPOpenVol(Conn2, Vol);
 	if (vol2 == 0xffff) {
@@ -424,7 +424,7 @@ fin:
 		}
 	}
 	FPCloseVol(Conn2,vol2);
-	fprintf(stderr,"\t>>>>>>>> done <<<<<<<<<< \n");
+	fprintf(stdout,"\t>>>>>>>> done <<<<<<<<<< \n");
 	return ret;
 }
 
@@ -445,7 +445,7 @@ DSI *dsi2;
     if (!Conn2) {
     	return 0;
     }
-	fprintf(stderr,"\t>>>>>>>> Create folder <<<<<<<<<< \n");
+	fprintf(stdout,"\t>>>>>>>> Create folder <<<<<<<<<< \n");
 	dsi2 = &Conn2->dsi;
 	vol2  = FPOpenVol(Conn2, Vol);
 	if (vol2 == 0xffff) {
@@ -492,7 +492,7 @@ fin:
 		}
 	}
 	FPCloseVol(Conn2,vol2);
-	fprintf(stderr,"\t>>>>>>>> done <<<<<<<<<< \n");
+	fprintf(stdout,"\t>>>>>>>> done <<<<<<<<<< \n");
 	return ret;
 }
 
@@ -510,7 +510,7 @@ DSI *dsi2;
     if (!Conn2) {
     	return 0;
     }
-	fprintf(stderr,"\t>>>>>>>> Delete folder <<<<<<<<<< \n");
+	fprintf(stdout,"\t>>>>>>>> Delete folder <<<<<<<<<< \n");
 	dsi2 = &Conn2->dsi;
 	vol2  = FPOpenVol(Conn2, Vol);
 	if (vol2 == 0xffff) {
@@ -539,7 +539,7 @@ DSI *dsi2;
 		return 0;
 	}
 	FPCloseVol(Conn2,vol2);
-	fprintf(stderr,"\t>>>>>>>> done <<<<<<<<<< \n");
+	fprintf(stdout,"\t>>>>>>>> done <<<<<<<<<< \n");
 	return 1;
 }
 
@@ -557,7 +557,7 @@ DSI *dsi2;
     if (!Conn2) {
     	return 0;
     }
-	fprintf(stderr,"\t>>>>>>>> Delete folder <<<<<<<<<< \n");
+	fprintf(stdout,"\t>>>>>>>> Delete folder <<<<<<<<<< \n");
 	dsi2 = &Conn2->dsi;
 	vol2  = FPOpenVol(Conn2, Vol);
 	if (vol2 == 0xffff) {
@@ -590,7 +590,7 @@ DSI *dsi2;
 		return 0;
 	}
 	FPCloseVol(Conn2,vol2);
-	fprintf(stderr,"\t>>>>>>>> done <<<<<<<<<< \n");
+	fprintf(stdout,"\t>>>>>>>> done <<<<<<<<<< \n");
 	return 1;
 }
 
@@ -631,20 +631,20 @@ int not_valid(unsigned int ret, int mac_error, int netatalk_error)
 {
 	if (htonl(mac_error) != ret) {
 		if (!Mac) {
-    		fprintf(stderr,"MAC RESULT: %d %s\n", mac_error, afp_error(htonl(mac_error)));
+    		fprintf(stdout,"MAC RESULT: %d %s\n", mac_error, afp_error(htonl(mac_error)));
 			if (htonl(netatalk_error) != ret) {
 				return 1;
 			}
     	}
     	else if (htonl(netatalk_error) == ret) {
-    	    fprintf(stderr,"Warning MAC and Netatalk now same RESULT!\n");
+    	    fprintf(stdout,"Warning MAC and Netatalk now same RESULT!\n");
     		return 0;
     	}
     	else 
     		return 1;
 	}
 	else if (!Mac) {
-    	fprintf(stderr,"Warning MAC and Netatalk now same RESULT!\n");
+    	fprintf(stdout,"Warning MAC and Netatalk now same RESULT!\n");
 	}
 	return 0;
 }
@@ -743,7 +743,7 @@ static char temp1[4096];
 int not_valid_bitmap(unsigned int ret, unsigned int bitmap, int netatalk_error)
 {
 	if (!Mac) {
-    	fprintf(stderr,"MAC RESULT: %s\n", bitmap2text(bitmap));
+    	fprintf(stdout,"MAC RESULT: %s\n", bitmap2text(bitmap));
     }
 	if (!error_in_list(bitmap,ret)) {
 		if (htonl(netatalk_error) == ret) {
@@ -811,7 +811,7 @@ char *s;
 		s = "volume with extendend attribute support";
 		break;
 	}
-	fprintf(stderr,"\tSKIPPED (need %s)\n",s);
+	fprintf(stdout,"\tSKIPPED (need %s)\n",s);
 	CurTestResult = 3;
 }
 
@@ -833,14 +833,14 @@ void skipped_nomsg(void)
 /* ------------------------- */
 void failed(void)
 {
-	fprintf(stderr,"\tFAILED\n");
+	fprintf(stdout,"\tFAILED\n");
 	failed_nomsg();
 }
 
 /* ------------------------- */
 void nottested(void)
 {
-	fprintf(stderr,"\tNOT TESTED\n");
+	fprintf(stdout,"\tNOT TESTED\n");
 	if (!ExitCode)
 		ExitCode = 2;
 	CurTestResult = 2;
@@ -849,7 +849,7 @@ void nottested(void)
 /* ------------------------- */
 void known_failure(char *why)
 {
-	fprintf(stderr,"\tFAILED (known)\n");
+	fprintf(stdout,"\tFAILED (known)\n");
 	CurTestResult = 4;
 	Why = why;
 }
@@ -865,9 +865,8 @@ void enter_test(void)
 /* ------------------------- */
 void exit_test(char *name)
 {
-char *s;
+    char *s;
 
-	fprintf(stderr, "%s - summary - ", name);
 	switch (CurTestResult) {
 	case 0:
 		s = "PASSED";
@@ -875,7 +874,9 @@ char *s;
 	case 4:
 	case 1:
 		s = "FAILED";
-		break;
+        fprintf(stderr, "%s - summary - ", name);
+        fprintf(stderr, "%s%s\n", s, Why);
+		return;
 	case 2:
 		s = "NOT TESTED";
 		break;
@@ -883,5 +884,6 @@ char *s;
 		s = "SKIPPED";
 		break;
 	}
-	fprintf(stderr, "%s%s\n", s, Why);
+	fprintf(stdout, "%s - summary - ", name);
+	fprintf(stdout, "%s%s\n", s, Why);
 }

@@ -21,8 +21,8 @@ int ret;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-	fprintf(stderr, "FPCreateFile:test51:  Create file with errors\n");
+    fprintf(stdout,"===================\n");
+	fprintf(stdout, "FPCreateFile:test51:  Create file with errors\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
 		goto test_exit;
@@ -122,8 +122,8 @@ DSI *dsi;
 
 getchar();
 	enter_test();
-    fprintf(stderr,"===================\n");
-	fprintf(stderr, "FPCreateFile:test393:  Create file with Japanese name, illegal char\n");
+    fprintf(stdout,"===================\n");
+	fprintf(stdout, "FPCreateFile:test393:  Create file with Japanese name, illegal char\n");
 	if (Conn->afp_version >= 30) {
 		test_skipped(T_AFP2);
 		goto test_exit;
@@ -154,8 +154,8 @@ test_exit:
 /* ----------- */
 void FPCreateFile_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCreateFile page 138\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCreateFile page 138\n");
     test51();
 }
 

@@ -19,16 +19,16 @@ int delete_unix_rf(char *path, char *name, char *file)
         else {
             sprintf(temp, "%s/%s/.AppleDouble/%s", path, name, file);
         }
-        fprintf(stderr,"unlink(%s)\n", temp);
+        fprintf(stdout,"unlink(%s)\n", temp);
         if (unlink(temp) <0) {
-            fprintf(stderr,"\tFAILED unlink(%s) %s\n", temp, strerror(errno));
+            fprintf(stdout,"\tFAILED unlink(%s) %s\n", temp, strerror(errno));
             failed_nomsg();
             return -1;
         }
     } else {
         if (file) {
             sprintf(temp, "%s/%s/._%s", path, name, file);
-            fprintf(stderr,"unlink(%s)\n", temp);
+            fprintf(stdout,"unlink(%s)\n", temp);
             unlink(temp);
         }
         sprintf(temp, "%s/%s", path, name);
@@ -47,9 +47,9 @@ int delete_unix_file(char *path, char *name, char *file)
 		return -1;
 		
 	sprintf(temp, "%s/%s/%s", path, name, file);
-	fprintf(stderr,"unlink(%s)\n", temp);
+	fprintf(stdout,"unlink(%s)\n", temp);
 	if (unlink(temp) <0) {
-		fprintf(stderr,"\tFAILED unlink(%s) %s\n", temp, strerror(errno));
+		fprintf(stdout,"\tFAILED unlink(%s) %s\n", temp, strerror(errno));
 		failed_nomsg();
 		return -1;
 	}
@@ -60,9 +60,9 @@ int delete_unix_file(char *path, char *name, char *file)
 int unlink_unix_file(char *path, char *name, char *file)
 {
 	sprintf(temp, "%s/%s/%s", path, name, file);
-	fprintf(stderr,"unlink(%s)\n", temp);
+	fprintf(stdout,"unlink(%s)\n", temp);
 	if (unlink(temp) <0) {
-		fprintf(stderr,"\tFAILED unlink(%s) %s\n", temp, strerror(errno));
+		fprintf(stdout,"\tFAILED unlink(%s) %s\n", temp, strerror(errno));
 		failed_nomsg();
 		return -1;
 	}
@@ -73,9 +73,9 @@ int unlink_unix_file(char *path, char *name, char *file)
 int symlink_unix_file(char *target, char *path, char *source)
 {
 	sprintf(temp, "%s/%s", path, source);
-	fprintf(stderr,"symlink(%s -> %s)\n", temp, target);
+	fprintf(stdout,"symlink(%s -> %s)\n", temp, target);
 	if (symlink(target, temp) <0) {
-		fprintf(stderr,"\tFAILED symlink(%s -> %s) %s\n", temp, target, strerror(errno));
+		fprintf(stdout,"\tFAILED symlink(%s -> %s) %s\n", temp, target, strerror(errno));
 		failed_nomsg();
 		return -1;
 	}
@@ -88,17 +88,17 @@ int delete_unix_adouble(char *path, char *name)
     if (volinfo.valid && volinfo.v_adouble == AD_VERSION_EA)
         return 0;
 
-	fprintf(stderr,"rmdir(%s/.AppleDouble) \n", name);
+	fprintf(stdout,"rmdir(%s/.AppleDouble) \n", name);
 	sprintf(temp, "%s/%s/.AppleDouble/.Parent", path, name);
 	if (unlink(temp) <0) {
-		fprintf(stderr,"\tFAILED unlink(%s) %s\n", temp, strerror(errno));
+		fprintf(stdout,"\tFAILED unlink(%s) %s\n", temp, strerror(errno));
 		failed_nomsg();
 		return -1;
 	}
 
 	sprintf(temp, "%s/%s/.AppleDouble", path, name);
 	if (rmdir(temp) <0) {
-		fprintf(stderr,"\tFAILED rmdir(%s) %s\n", temp, strerror(errno));
+		fprintf(stdout,"\tFAILED rmdir(%s) %s\n", temp, strerror(errno));
 		failed_nomsg();
 		return -1;
 	}
@@ -113,9 +113,9 @@ int chmod_unix_adouble(char *path,char *name, int mode)
         return 0;
 
 	sprintf(temp, "%s/%s/.AppleDouble", path, name);
-	fprintf(stderr, "chmod (%s, %o)\n", temp, mode);
+	fprintf(stdout, "chmod (%s, %o)\n", temp, mode);
 	if (chmod(temp, mode)) {
-		fprintf(stderr,"\tFAILED %s\n", strerror(errno));
+		fprintf(stdout,"\tFAILED %s\n", strerror(errno));
 		failed_nomsg();
 		return -1;
 	}
@@ -127,7 +127,7 @@ int chmod_unix_adouble(char *path,char *name, int mode)
 */
 int delete_unix_dir(char *path, char *name)
 {
-	fprintf(stderr,"rmdir(%s)\n", name);
+	fprintf(stdout,"rmdir(%s)\n", name);
 
     if (!(volinfo.valid && volinfo.v_adouble == AD_VERSION_EA))
         if (delete_unix_adouble(path, name)) {
@@ -135,7 +135,7 @@ int delete_unix_dir(char *path, char *name)
         }
 	sprintf(temp, "%s/%s", path, name);
 	if (rmdir(temp) <0) {
-		fprintf(stderr,"\tFAILED rmdir %s %s\n", temp, strerror(errno));
+		fprintf(stdout,"\tFAILED rmdir %s %s\n", temp, strerror(errno));
 		failed_nomsg();
 		return -1;
 	}
@@ -151,7 +151,7 @@ int ret = 0;
 int dir = 0;
 u_int16_t bitmap =  (1 << DIRPBIT_ACCESS);
 
-	fprintf(stderr,"\t>>>>>>>> Create folder with ro adouble <<<<<<<<<< \n");
+	fprintf(stdout,"\t>>>>>>>> Create folder with ro adouble <<<<<<<<<< \n");
 
 	if (!(dir = FPCreateDir(Conn,vol, did , name))) {
 		nottested();
@@ -189,7 +189,7 @@ fin:
 			nottested();
 		}
 	}
-	fprintf(stderr,"\t>>>>>>>> done <<<<<<<<<< \n");
+	fprintf(stdout,"\t>>>>>>>> done <<<<<<<<<< \n");
 	return ret;
 }
 
@@ -197,7 +197,7 @@ fin:
 int delete_ro_adouble(u_int16_t vol, int did, char *file)
 {
 
-	fprintf(stderr,"\t>>>>>>>> delete folder with ro adouble <<<<<<<<<< \n");
+	fprintf(stdout,"\t>>>>>>>> delete folder with ro adouble <<<<<<<<<< \n");
 	FAIL (FPDelete(Conn, vol, did, file))
 	FAIL (FPDelete(Conn, vol, did, ""))
 	return 0;	

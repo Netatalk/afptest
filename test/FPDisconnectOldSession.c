@@ -31,8 +31,8 @@ int fork = 0, fork1;
 struct sigaction action;    
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPDisconnectOldSession :test222: AFP 3.x disconnect old session\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPDisconnectOldSession :test222: AFP 3.x disconnect old session\n");
 
 	if (Conn->afp_version < 30 || Conn2) {
 		test_skipped(T_AFP3_CONN2);
@@ -42,7 +42,7 @@ struct sigaction action;
 		test_skipped(T_LOCKING);
 		goto test_exit;
 	}
-	fprintf(stderr,"\tSKIPPED, FIXME need to recheck GetSessionToken 0\n");
+	fprintf(stdout,"\tSKIPPED, FIXME need to recheck GetSessionToken 0\n");
 	skipped_nomsg();
 	goto test_exit;
 	
@@ -104,7 +104,7 @@ struct sigaction action;
 		goto fin;
 	}
 	if (!(token = malloc(len +4))) {
-		fprintf(stderr, "\tFAILED malloc(%x) %s\n", len, strerror(errno));
+		fprintf(stdout, "\tFAILED malloc(%x) %s\n", len, strerror(errno));
 		failed_nomsg();
 		goto fin;
 	}
@@ -174,8 +174,8 @@ u_int32_t time= 12345;
 
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPDisconnectOldSession :test338: AFP 3.x disconnect old session\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPDisconnectOldSession :test338: AFP 3.x disconnect old session\n");
     
 	if (Conn->afp_version < 30 || Conn2) {
     	test_skipped(T_AFP3_CONN2);
@@ -223,7 +223,7 @@ u_int32_t time= 12345;
         goto fin;
     }
     if (!(token = malloc(len + 4))) {
-        fprintf(stderr, "\tFAILED malloc(%x) %s\n", len, strerror(errno));
+        fprintf(stdout, "\tFAILED malloc(%x) %s\n", len, strerror(errno));
         failed_nomsg();
         goto fin;
     }
@@ -308,8 +308,8 @@ struct afp_filedir_parms filedir;
 
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPDisconnectOldSession :test339: AFP 3.x No auth disconnect old session\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPDisconnectOldSession :test339: AFP 3.x No auth disconnect old session\n");
 
 	if (Conn->afp_version < 30 || Conn2) {
     	test_skipped(T_AFP3_CONN2);
@@ -357,7 +357,7 @@ struct afp_filedir_parms filedir;
 		goto test_exit;
     }
     if (!(token = malloc(len +4))) {
-        fprintf(stderr, "\tNOT TESTED malloc(%x) %s\n", len, strerror(errno));
+        fprintf(stdout, "\tNOT TESTED malloc(%x) %s\n", len, strerror(errno));
         nottested();
 		goto test_exit;
     }
@@ -469,8 +469,8 @@ struct afp_filedir_parms filedir;
 
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPDisconnectOldSession :test370: AFP 3.x disconnect different user\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPDisconnectOldSession :test370: AFP 3.x disconnect different user\n");
 
 	if (Conn->afp_version < 30 || Conn2) {
     	test_skipped(T_AFP3_CONN2);
@@ -481,7 +481,7 @@ struct afp_filedir_parms filedir;
 		goto test_exit;
 	}
 
-	fprintf(stderr,"\tSKIPPED, FIXME need to recheck GetSessionToken 0\n");
+	fprintf(stdout,"\tSKIPPED, FIXME need to recheck GetSessionToken 0\n");
 	skipped_nomsg();
 	goto test_exit;
     /* setup 2 new connections for testing */
@@ -522,7 +522,7 @@ struct afp_filedir_parms filedir;
 		goto test_exit;
     }
     if (!(token = malloc(len +4))) {
-        fprintf(stderr, "\tNOT TESTED malloc(%x) %s\n", len, strerror(errno));
+        fprintf(stdout, "\tNOT TESTED malloc(%x) %s\n", len, strerror(errno));
         nottested();
 		goto test_exit;
     }
@@ -610,8 +610,8 @@ test_exit:
 /* ----------- */
 void FPDisconnectOldSession_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPDisconnectOldSession page 148\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPDisconnectOldSession page 148\n");
     test222();
     test338();
     test339();

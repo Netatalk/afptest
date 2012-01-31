@@ -20,8 +20,8 @@ struct afp_filedir_parms filedir;
 DSI *dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPResolveID:test129: Resolve ID \n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPResolveID:test129: Resolve ID \n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -47,13 +47,13 @@ DSI *dsi = &Conn->dsi;
     if (volinfo.v_adouble == AD_VERSION2) {
         sprintf(temp1, "%s/%s/.AppleDouble/%s", Path, name1, name);
         if (unlink(temp1) <0) {
-            fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
+            fprintf(stdout,"\tFAILED unlink %s %s\n", temp, strerror(errno));
             failed_nomsg();
         }
     }
 	sprintf(temp1, "%s/%s/%s", Path, name1, name);
 	if (unlink(temp1) <0) {
-		fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
+		fprintf(stdout,"\tFAILED unlink %s %s\n", temp, strerror(errno));
 		failed_nomsg();
 	}
 
@@ -83,8 +83,8 @@ DSI *dsi = &Conn->dsi;
 int ret;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPResolveID:test130: Delete ID \n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPResolveID:test130: Delete ID \n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -112,13 +112,13 @@ int ret;
     if (volinfo.v_adouble == AD_VERSION2) {
         sprintf(temp1, "%s/%s/.AppleDouble/%s", Path, name1, name);
         if (unlink(temp1) <0) {
-            fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
+            fprintf(stdout,"\tFAILED unlink %s %s\n", temp, strerror(errno));
             failed_nomsg();
         }
     }
 	sprintf(temp1, "%s/%s/%s", Path, name1, name);
 	if (unlink(temp1) <0) {
-		fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
+		fprintf(stdout,"\tFAILED unlink %s %s\n", temp, strerror(errno));
 		failed_nomsg();
 	}
 
@@ -151,8 +151,8 @@ struct afp_filedir_parms filedir;
 DSI *dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPResolveID:test131: Resolve ID \n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPResolveID:test131: Resolve ID \n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -177,13 +177,13 @@ DSI *dsi = &Conn->dsi;
     if (volinfo.v_adouble == AD_VERSION2) {
         sprintf(temp1, "%s/%s/.AppleDouble/%s", Path, name1, name);
         if (unlink(temp1) <0) {
-            fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
+            fprintf(stdout,"\tFAILED unlink %s %s\n", temp, strerror(errno));
             failed_nomsg();
         }
     }
 	sprintf(temp1, "%s/%s/%s", Path, name1, name);
 	if (unlink(temp1) <0) {
-		fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
+		fprintf(stdout,"\tFAILED unlink %s %s\n", temp, strerror(errno));
 		failed_nomsg();
 	}
 
@@ -215,8 +215,8 @@ int fid = 0;
 DSI *dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPResolveID:test331: Resolve ID file modified with local fs\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPResolveID:test331: Resolve ID file modified with local fs\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -247,18 +247,18 @@ DSI *dsi = &Conn->dsi;
 	if (!Mac) {
 		sprintf(temp, "%s/%s/%s", Path, name1, name);
 		sprintf(temp1,"%s/%s/%s", Path, name1, name2);
-		fprintf(stderr,"rename %s %s\n", temp, temp1);
+		fprintf(stdout,"rename %s %s\n", temp, temp1);
 		if (rename(temp, temp1) < 0) {
-			fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+			fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
 			failed_nomsg();
 		}
 
         if (volinfo.v_adouble == AD_VERSION2) {
             sprintf(temp, "%s/%s/.AppleDouble/%s", Path, name1, name);
             sprintf(temp1,"%s/%s/.AppleDouble/%s", Path, name1, name2);
-            fprintf(stderr,"rename %s %s\n", temp, temp1);
+            fprintf(stdout,"rename %s %s\n", temp, temp1);
             if (rename(temp, temp1) < 0) {
-                fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+                fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
                 failed_nomsg();
             }
         }
@@ -273,7 +273,7 @@ DSI *dsi = &Conn->dsi;
 		filedir.isdir = 0;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 		if (fid != filedir.did) {
-			fprintf(stderr,"\tFAILED FPGetFileDirParams id differ %x %x\n", fid, filedir.did);
+			fprintf(stdout,"\tFAILED FPGetFileDirParams id differ %x %x\n", fid, filedir.did);
 			failed_nomsg();
 		
 		}
@@ -303,8 +303,8 @@ static int get_fs_lock(char *folder, char *file)
     else
         sprintf(temp, "%s/%s/%s", Path, folder, file);
 
-	fprintf(stderr," \n---------------------\n");
-	fprintf(stderr, "open(\"%s\", O_RDWR)\n", temp);
+	fprintf(stdout," \n---------------------\n");
+	fprintf(stdout, "open(\"%s\", O_RDWR)\n", temp);
 	fd = open(temp, O_RDWR, 0);	
 	if (fd >= 0) {
 		lock.l_start = 0;		/* after meta data */
@@ -312,12 +312,12 @@ static int get_fs_lock(char *folder, char *file)
 	    lock.l_whence = SEEK_SET;
     	lock.l_len = 0;
          
-		fprintf(stderr, "fcntl(1024)\n");
+		fprintf(stdout, "fcntl(1024)\n");
     	if ((ret = fcntl(fd, F_SETLK, &lock)) >= 0 || (errno != EACCES && errno != EAGAIN)) {
     		if (!ret >= 0) 
     	    	errno = 0;
     		perror("fcntl ");
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 			failed_nomsg();
     	}
     	fcntl(fd, F_UNLCK, &lock);
@@ -326,7 +326,7 @@ static int get_fs_lock(char *folder, char *file)
     }
     else {
     	perror("open ");
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		failed_nomsg();
     }
     return -1;
@@ -349,8 +349,8 @@ int fork = 0;
 DSI *dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPResolveID:test360: Resolve ID file modified with local fs and a file is opened\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPResolveID:test360: Resolve ID file modified with local fs and a file is opened\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -397,18 +397,18 @@ DSI *dsi = &Conn->dsi;
 	if (!Mac) {
 		sprintf(temp, "%s/%s/%s", Path, name1, name);
 		sprintf(temp1,"%s/%s/%s", Path, name1, name2);
-		fprintf(stderr,"rename %s %s\n", temp, temp1);
+		fprintf(stdout,"rename %s %s\n", temp, temp1);
 		if (rename(temp, temp1) < 0) {
-			fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+			fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
 			failed_nomsg();
 		}
 
         if (volinfo.v_adouble == AD_VERSION2) {
             sprintf(temp, "%s/%s/.AppleDouble/%s", Path, name1, name);
             sprintf(temp1,"%s/%s/.AppleDouble/%s", Path, name1, name2);
-            fprintf(stderr,"rename %s %s\n", temp, temp1);
+            fprintf(stdout,"rename %s %s\n", temp, temp1);
             if (rename(temp, temp1) < 0) {
-                fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+                fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
                 failed_nomsg();
             }
             if (get_fs_lock(name1, name3) < 0) {
@@ -426,7 +426,7 @@ DSI *dsi = &Conn->dsi;
 		filedir.isdir = 0;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 		if (fid != filedir.did) {
-			fprintf(stderr,"\tFAILED FPGetFileDirParams id differ %x %x\n", fid, filedir.did);
+			fprintf(stdout,"\tFAILED FPGetFileDirParams id differ %x %x\n", fid, filedir.did);
 			failed_nomsg();
 		
 		}
@@ -462,8 +462,8 @@ struct afp_filedir_parms filedir;
 DSI *dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPResolveID:test397: Resolve ID file deleted local fs \n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPResolveID:test397: Resolve ID file deleted local fs \n");
 
 	if (!Path) {
 		test_skipped(T_MAC_PATH);
@@ -484,13 +484,13 @@ DSI *dsi = &Conn->dsi;
     if (volinfo.v_adouble == AD_VERSION2) {
         sprintf(temp1, "%s/.AppleDouble/%s", Path, name);
         if (unlink(temp1) <0) {
-            fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
+            fprintf(stdout,"\tFAILED unlink %s %s\n", temp, strerror(errno));
             failed_nomsg();
         }
     }
 	sprintf(temp1, "%s/%s", Path, name);
 	if (unlink(temp1) <0) {
-		fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
+		fprintf(stdout,"\tFAILED unlink %s %s\n", temp, strerror(errno));
 		failed_nomsg();
 	}
 	FAIL (ntohl(AFPERR_NOID ) != FPResolveID(Conn, vol, filedir.did, bitmap))
@@ -515,8 +515,8 @@ int fid = 0;
 DSI *dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPResolveID:test412: Resolve ID file modified with local fs\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPResolveID:test412: Resolve ID file modified with local fs\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -548,9 +548,9 @@ DSI *dsi = &Conn->dsi;
 	if (!Mac) {
 		sprintf(temp, "%s/%s", Path, ndir1);
 		sprintf(temp1,"%s/%s/%s", Path, ndir2, ndir1);
-		fprintf(stderr,"rename %s %s\n", temp, temp1);
+		fprintf(stdout,"rename %s %s\n", temp, temp1);
 		if (rename(temp, temp1) < 0) {
-			fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+			fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
 			failed_nomsg();
 		}
 	}
@@ -579,7 +579,7 @@ DSI *dsi = &Conn->dsi;
 		filedir.isdir = 0;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 		if (fid != filedir.did) {
-			fprintf(stderr,"\tFAILED FPGetFileDirParams id differ %x %x\n", fid, filedir.did);
+			fprintf(stdout,"\tFAILED FPGetFileDirParams id differ %x %x\n", fid, filedir.did);
 			failed_nomsg();
 		
 		}
@@ -612,8 +612,8 @@ int fid = 0;
 DSI *dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPResolveID:test413: Resolve ID file modified with local fs\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPResolveID:test413: Resolve ID file modified with local fs\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -649,18 +649,18 @@ DSI *dsi = &Conn->dsi;
 	if (!Mac) {
 		sprintf(temp, "%s/%s/%s", Path, name1, name);
 		sprintf(temp1,"%s/%s/%s", Path, name2, name);
-		fprintf(stderr,"rename %s %s\n", temp, temp1);
+		fprintf(stdout,"rename %s %s\n", temp, temp1);
 		if (rename(temp, temp1) < 0) {
-			fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+			fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
 			failed_nomsg();
 		}
 		
         if (volinfo.v_adouble == AD_VERSION2) {
             sprintf(temp, "%s/%s/.AppleDouble/%s", Path, name1, name);
             sprintf(temp1,"%s/%s/.AppleDouble/%s", Path, name2, name);
-            fprintf(stderr,"rename %s %s\n", temp, temp1);
+            fprintf(stdout,"rename %s %s\n", temp, temp1);
             if (rename(temp, temp1) < 0) {
-                fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+                fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
                 failed_nomsg();
             }
         }
@@ -676,7 +676,7 @@ DSI *dsi = &Conn->dsi;
 		filedir.isdir = 0;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 		if (fid != filedir.did) {
-			fprintf(stderr,"\tFAILED FPGetFileDirParams id differ %x %x\n", fid, filedir.did);
+			fprintf(stdout,"\tFAILED FPGetFileDirParams id differ %x %x\n", fid, filedir.did);
 			failed_nomsg();
 		
 		}
@@ -713,8 +713,8 @@ int nfid1 = 0, nfid2 = 0;
 DSI *dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPResolveID:test417: Resolve ID files swapped by local fs\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPResolveID:test417: Resolve ID files swapped by local fs\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -740,7 +740,7 @@ DSI *dsi = &Conn->dsi;
 	FAIL (FPResolveID(Conn, vol, fid1, bitmap)) 
 	afp_filedir_unpack(&filedir, dsi->data +ofs_res, bitmap, 0);
 	if (fid1 != filedir.did) {
-		fprintf(stderr,"\tFAILED FPGetFileDirParams, FPResolveID id differ %x %x\n", fid1, filedir.did);
+		fprintf(stdout,"\tFAILED FPGetFileDirParams, FPResolveID id differ %x %x\n", fid1, filedir.did);
 		failed_nomsg();
 	}
 
@@ -758,58 +758,58 @@ DSI *dsi = &Conn->dsi;
 	FAIL (FPResolveID(Conn, vol, fid2, bitmap)) 
 	afp_filedir_unpack(&filedir, dsi->data +ofs_res, bitmap, 0);
 	if (fid2 != filedir.did) {
-		fprintf(stderr,"\tFAILED FPGetFileDirParams, FPResolveID id differ %x %x\n", fid2, filedir.did);
+		fprintf(stdout,"\tFAILED FPGetFileDirParams, FPResolveID id differ %x %x\n", fid2, filedir.did);
 		failed_nomsg();
 	}
 
 	/* rename name1 --> tmp */
 	sprintf(temp, "%s/%s/%s", Path, dir1, name1);
 	sprintf(temp1,"%s/%s/tmp", Path, dir1);
-	fprintf(stderr,"rename %s %s\n", temp, temp1);
+	fprintf(stdout,"rename %s %s\n", temp, temp1);
 	if (rename(temp, temp1) < 0) {
-		fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+		fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
 		failed_nomsg();
 	}
 		
 	sprintf(temp, "%s/%s/.AppleDouble/%s", Path, dir1, name1);
 	sprintf(temp1,"%s/%s/.AppleDouble/tmp", Path, dir1);
-	fprintf(stderr,"rename %s %s\n", temp, temp1);
+	fprintf(stdout,"rename %s %s\n", temp, temp1);
 	if (rename(temp, temp1) < 0) {
-		fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+		fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
 		failed_nomsg();
 	}
 
 	/* rename file2 to file1 */
 	sprintf(temp, "%s/%s/%s", Path, dir1, name2);
 	sprintf(temp1,"%s/%s/%s", Path, dir1, name1);
-	fprintf(stderr,"rename %s %s\n", temp, temp1);
+	fprintf(stdout,"rename %s %s\n", temp, temp1);
 	if (rename(temp, temp1) < 0) {
-		fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+		fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
 		failed_nomsg();
 	}
 		
 	sprintf(temp, "%s/%s/.AppleDouble/%s", Path, dir1, name2);
 	sprintf(temp1,"%s/%s/.AppleDouble/%s", Path, dir1, name1);
-	fprintf(stderr,"rename %s %s\n", temp, temp1);
+	fprintf(stdout,"rename %s %s\n", temp, temp1);
 	if (rename(temp, temp1) < 0) {
-		fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+		fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
 		failed_nomsg();
 	}
 
 	/* rename tmp to file2 */
 	sprintf(temp, "%s/%s/%s", Path, dir1, name2);
 	sprintf(temp1,"%s/%s/tmp", Path, dir1);
-	fprintf(stderr,"rename %s %s\n", temp1, temp);
+	fprintf(stdout,"rename %s %s\n", temp1, temp);
 	if (rename(temp1, temp) < 0) {
-		fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp1, temp, strerror(errno));
+		fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp1, temp, strerror(errno));
 		failed_nomsg();
 	}
 		
 	sprintf(temp, "%s/%s/.AppleDouble/%s", Path, dir1, name2);
 	sprintf(temp1,"%s/%s/.AppleDouble/tmp", Path, dir1);
-	fprintf(stderr,"rename %s %s\n", temp1, temp);
+	fprintf(stdout,"rename %s %s\n", temp1, temp);
 	if (rename(temp1, temp) < 0) {
-		fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp1, temp, strerror(errno));
+		fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp1, temp, strerror(errno));
 		failed_nomsg();
 	}
 
@@ -822,14 +822,14 @@ DSI *dsi = &Conn->dsi;
 	afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 	nfid1 = filedir.did;
 	if (fid2 != filedir.did) {
-		fprintf(stderr,"\tFAILED FPGetFileDirParams id differ %x %x\n", fid2, filedir.did);
+		fprintf(stdout,"\tFAILED FPGetFileDirParams id differ %x %x\n", fid2, filedir.did);
 		failed_nomsg();
 	}
 
 	FAIL (FPResolveID(Conn, vol, filedir.did, bitmap)) 
 	afp_filedir_unpack(&filedir, dsi->data +ofs_res, bitmap, 0);
 	if (nfid1 != filedir.did) {
-		fprintf(stderr,"\tFAILED FPGetFileDirParams, FPResolveID id differ %x %x\n", nfid1, filedir.did);
+		fprintf(stdout,"\tFAILED FPGetFileDirParams, FPResolveID id differ %x %x\n", nfid1, filedir.did);
 		failed_nomsg();
 	}
 
@@ -842,19 +842,19 @@ DSI *dsi = &Conn->dsi;
 	afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 	nfid2 = filedir.did;
 	if (fid1 != filedir.did) {
-		fprintf(stderr,"\tFAILED FPGetFileDirParams id differ %x %x\n", fid1, filedir.did);
+		fprintf(stdout,"\tFAILED FPGetFileDirParams id differ %x %x\n", fid1, filedir.did);
 		failed_nomsg();
 	}
 
 	FAIL (FPResolveID(Conn, vol, filedir.did, bitmap)) 
 	afp_filedir_unpack(&filedir, dsi->data +ofs_res, bitmap, 0);
 	if (nfid2 != filedir.did) {
-		fprintf(stderr,"\tFAILED FPGetFileDirParams, FPResolveID id differ %x %x\n", nfid2, filedir.did);
+		fprintf(stdout,"\tFAILED FPGetFileDirParams, FPResolveID id differ %x %x\n", nfid2, filedir.did);
 		failed_nomsg();
 	}
 
-	fprintf(stderr,"file %s old %x  new %x\n", name1, fid1, nfid1);
-	fprintf(stderr,"file %s old %x  new %x\n", name2, fid2, nfid2);
+	fprintf(stdout,"file %s old %x  new %x\n", name1, fid1, nfid1);
+	fprintf(stdout,"file %s old %x  new %x\n", name2, fid2, nfid2);
 
 fin:
 	FAIL (FPDelete(Conn, vol,  dir, name1))
@@ -881,8 +881,8 @@ int fid1 = 0, fid2;
 DSI *dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPResolveID:test418: Resolve ID files name swapped with AFP rename\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPResolveID:test418: Resolve ID files name swapped with AFP rename\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -935,7 +935,7 @@ DSI *dsi = &Conn->dsi;
 	filedir.isdir = 0;
 	afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 	if (fid2 != filedir.did) {
-		fprintf(stderr,"\tFAILED FPGetFileDirParams id differ %x %x\n", fid2, filedir.did);
+		fprintf(stdout,"\tFAILED FPGetFileDirParams id differ %x %x\n", fid2, filedir.did);
 		failed_nomsg();
 	}
 	FAIL (FPResolveID(Conn, vol, filedir.did, bitmap)) 
@@ -948,7 +948,7 @@ DSI *dsi = &Conn->dsi;
 	filedir.isdir = 0;
 	afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 	if (fid1 != filedir.did) {
-		fprintf(stderr,"\tFAILED FPGetFileDirParams id differ %x %x\n", fid1, filedir.did);
+		fprintf(stdout,"\tFAILED FPGetFileDirParams id differ %x %x\n", fid1, filedir.did);
 		failed_nomsg();
 	}
 	FAIL (FPResolveID(Conn, vol, filedir.did, bitmap)) 
@@ -977,8 +977,8 @@ int nfid1 = 0, nfid2 = 0;
 DSI *dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPResolveID:test419: Resolve ID files swapped by local fs but not their resource forks\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPResolveID:test419: Resolve ID files swapped by local fs but not their resource forks\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -1017,27 +1017,27 @@ DSI *dsi = &Conn->dsi;
 	/* rename name1 --> tmp */
 	sprintf(temp, "%s/%s/%s", Path, dir1, name1);
 	sprintf(temp1,"%s/%s/tmp", Path, dir1);
-	fprintf(stderr,"rename %s %s\n", temp, temp1);
+	fprintf(stdout,"rename %s %s\n", temp, temp1);
 	if (rename(temp, temp1) < 0) {
-		fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+		fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
 		failed_nomsg();
 	}
 		
 	/* rename file2 to file1 */
 	sprintf(temp, "%s/%s/%s", Path, dir1, name2);
 	sprintf(temp1,"%s/%s/%s", Path, dir1, name1);
-	fprintf(stderr,"rename %s %s\n", temp, temp1);
+	fprintf(stdout,"rename %s %s\n", temp, temp1);
 	if (rename(temp, temp1) < 0) {
-		fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+		fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
 		failed_nomsg();
 	}
 		
 	/* rename tmp to file2 */
 	sprintf(temp, "%s/%s/%s", Path, dir1, name2);
 	sprintf(temp1,"%s/%s/tmp", Path, dir1);
-	fprintf(stderr,"rename %s %s\n", temp1, temp);
+	fprintf(stdout,"rename %s %s\n", temp1, temp);
 	if (rename(temp1, temp) < 0) {
-		fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp1, temp, strerror(errno));
+		fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp1, temp, strerror(errno));
 		failed_nomsg();
 	}
 		
@@ -1050,7 +1050,7 @@ DSI *dsi = &Conn->dsi;
 	afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 	nfid1 = filedir.did;
 	if (fid2 != filedir.did) {
-		fprintf(stderr,"\tFAILED FPGetFileDirParams id differ %x %x\n", fid2, filedir.did);
+		fprintf(stdout,"\tFAILED FPGetFileDirParams id differ %x %x\n", fid2, filedir.did);
 		failed_nomsg();
 	}
 	FAIL (FPResolveID(Conn, vol, filedir.did, bitmap)) 
@@ -1064,13 +1064,13 @@ DSI *dsi = &Conn->dsi;
 	afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 	nfid2 = filedir.did;
 	if (fid1 != filedir.did) {
-		fprintf(stderr,"\tFAILED FPGetFileDirParams id differ %x %x\n", fid1, filedir.did);
+		fprintf(stdout,"\tFAILED FPGetFileDirParams id differ %x %x\n", fid1, filedir.did);
 		failed_nomsg();
 	}
 	FAIL (FPResolveID(Conn, vol, filedir.did, bitmap)) 
 
-	fprintf(stderr,"file %s old %x  new %x\n", name1, fid1, nfid1);
-	fprintf(stderr,"file %s old %x  new %x\n", name2, fid2, nfid2);
+	fprintf(stdout,"file %s old %x  new %x\n", name1, fid1, nfid1);
+	fprintf(stdout,"file %s old %x  new %x\n", name2, fid2, nfid2);
 
 fin:
 	FAIL (FPDelete(Conn, vol,  dir, name1))
@@ -1085,8 +1085,8 @@ test_exit:
 /* ----------- */
 void FPResolveID_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPResolveID page 252\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPResolveID page 252\n");
 	test129();
 	test130();
 	test131();

@@ -14,8 +14,8 @@ int  dir;
 int  dir1;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPEnumerate:test28: test search by ID\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPEnumerate:test28: test search by ID\n");
 
 	/* we need to empty the server cashe */
 	FPCloseVol(Conn, vol);
@@ -58,7 +58,7 @@ int  dir1;
 		)
 	) {
 #ifdef QUIRK	
-		fprintf(stderr,"\tFAILED (IGNORED)\n");
+		fprintf(stdout,"\tFAILED (IGNORED)\n");
 #else
 		failed();
 #endif
@@ -90,8 +90,8 @@ test_exit:
 /* ----------- */
 void FPEnumerate_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPEnumerate page 150\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPEnumerate page 150\n");
     test28();
 }
 

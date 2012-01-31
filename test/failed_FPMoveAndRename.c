@@ -16,8 +16,8 @@ u_int16_t vol = VolID;
 int ret;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPMoveAndRename:test73: Move and rename\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPMoveAndRename:test73: Move and rename\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name2))) {
 		nottested();
@@ -100,8 +100,8 @@ u_int16_t vol = VolID;
 int id,id1;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPMoveAndRename:test302: file renamed by someone else, cnid not updated\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPMoveAndRename:test302: file renamed by someone else, cnid not updated\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -122,7 +122,7 @@ int id,id1;
 		sprintf(temp,"%s/%s/%s", Path, name, name1);
 		sprintf(temp1,"%s/%s/%s", Path, name, name2);
 		if (rename(temp, temp1) < 0) {
-			fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+			fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
 			failed_nomsg();
 		}
 	}
@@ -131,7 +131,7 @@ int id,id1;
 	}
 	id1 = get_fid(Conn, vol, dir , name2);
 	if (id != id1) {
-		fprintf(stderr,"\tFAILED id are not the same %d %d\n", ntohl(id), ntohl(id1));
+		fprintf(stdout,"\tFAILED id are not the same %d %d\n", ntohl(id), ntohl(id1));
 		failed_nomsg();
 	}
 	FAIL (FPDelete(Conn, vol,  dir , name2))
@@ -144,8 +144,8 @@ test_exit:
 /* ----------- */
 void FPMoveAndRename_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPMoveAndRename page 223\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPMoveAndRename page 223\n");
     test73();
     test302();
 }

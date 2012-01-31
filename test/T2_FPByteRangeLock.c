@@ -28,10 +28,10 @@ u_int16_t vol = VolID;
 		return;
 	}
 
-	if (FPSetForkParam(Conn, fork, len , 50)) {fprintf(stderr,"\tFAILED\n");}
-	if (FPByteLock(Conn, fork, 0, 0 , 0 , 100)) {fprintf(stderr,"\tFAILED\n");}
-	if (FPRead(Conn, fork, 0, 40, Data)) {fprintf(stderr,"\tFAILED\n");}
-	if (FPWrite(Conn, fork, 10, 40, Data, 0)) {fprintf(stderr,"\tFAILED\n");}
+	if (FPSetForkParam(Conn, fork, len , 50)) {fprintf(stdout,"\tFAILED\n");}
+	if (FPByteLock(Conn, fork, 0, 0 , 0 , 100)) {fprintf(stdout,"\tFAILED\n");}
+	if (FPRead(Conn, fork, 0, 40, Data)) {fprintf(stdout,"\tFAILED\n");}
+	if (FPWrite(Conn, fork, 10, 40, Data, 0)) {fprintf(stdout,"\tFAILED\n");}
 	fork1 = FPOpenFork(Conn, vol, type , bitmap ,DIRDID_ROOT, name,OPENACC_WR |OPENACC_RD);
 	if (fork1) {
 		failed();
@@ -42,8 +42,8 @@ u_int16_t vol = VolID;
 	strcat(temp,(type == OPENFORK_RSCS)?"/.AppleDouble/":"/");
 	strcat(temp, name);
 	
-	fprintf(stderr," \n---------------------\n");
-	fprintf(stderr, "open(\"%s\", O_RDWR)\n", temp);
+	fprintf(stdout," \n---------------------\n");
+	fprintf(stdout, "open(\"%s\", O_RDWR)\n", temp);
 	fd = open(temp, O_RDWR, 0);	
 	if (fd >= 0) {
 	  	lock.l_start = 0;		/* after meta data */
@@ -55,18 +55,18 @@ u_int16_t vol = VolID;
     	    if (!ret >= 0) 
     	    	errno = 0;
     		perror("fcntl ");
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
     	}
     	fcntl(fd, F_UNLCK, &lock);
     	close(fd);
 	}
 	else {
     	perror("open ");
-		fprintf(stderr,"\tFAILED \n");
+		fprintf(stdout,"\tFAILED \n");
 	}
 	fork1 = FPOpenFork(Conn2, vol2, type , bitmap ,DIRDID_ROOT, name,OPENACC_WR |OPENACC_RD);
 	if (fork1) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		FPCloseFork(Conn2,fork1);		
 	}
 
@@ -74,7 +74,7 @@ u_int16_t vol = VolID;
 	fork1 = FPOpenFork(Conn2, vol2, type , bitmap ,DIRDID_ROOT, name,OPENACC_WR |OPENACC_RD);
 	if (!fork1) {
 		failed();
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	else {
 		FAIL (FPCloseFork(Conn2,fork1))
@@ -89,8 +89,8 @@ char *name = "t117 exclusive open DF";
 u_int16_t vol2;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPByteRangeLock:test117: test open excl mode\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPByteRangeLock:test117: test open excl mode\n");
 
 	if (!Path) {
 		test_skipped(T_MAC_PATH);                                                             
@@ -119,8 +119,8 @@ test_exit:
 /* ----------- */
 void FPByteRangeLock_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPByteRangeLock page 101\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPByteRangeLock page 101\n");
     test117();
 }
 

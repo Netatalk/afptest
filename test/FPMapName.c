@@ -17,8 +17,8 @@ char *grp = NULL;
 char *usr = NULL;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPMapName:test180: test Map Name\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPMapName:test180: test Map Name\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
 		nottested();
@@ -140,8 +140,8 @@ test_exit:
 /* ----------- */
 void FPMapName_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPMapName page 222\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPMapName page 222\n");
 	test180();
 }
 

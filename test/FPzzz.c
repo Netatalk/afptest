@@ -27,8 +27,8 @@ int sock;
 uint32_t time= 12345;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPzzz:test223: AFP 3.x enter sleep mode\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPzzz:test223: AFP 3.x enter sleep mode\n");
 	if (Conn->afp_version < 30 || Conn2) {
 		test_skipped(T_AFP3_CONN2);
 		goto test_exit;
@@ -47,12 +47,12 @@ uint32_t time= 12345;
 
 	FAIL (FPzzz(Conn, 0)) 
 
-	fprintf(stderr,"sleep more than 2 mn\n");
+	fprintf(stdout,"sleep more than 2 mn\n");
 	sleep(60 * 3);
 
 	ret = FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name);
 	if (sigp || ret == (unsigned)-1) {
-		fprintf(stderr,"\tFAILED disconnected %d\n", sigp);
+		fprintf(stdout,"\tFAILED disconnected %d\n", sigp);
 		failed_nomsg();
         /* try to reconnect */
         Conn->dsi.socket = OpenClientSocket(Server, Port);
@@ -109,8 +109,8 @@ int sock;
 uint32_t time= 12345;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPzzz:test224: disconnected after 2 mn\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPzzz:test224: disconnected after 2 mn\n");
 
 	if (Conn->afp_version < 30 || Conn2) {
 		test_skipped(T_AFP3_CONN2);
@@ -129,12 +129,12 @@ uint32_t time= 12345;
     /* Get session token */
     FAIL( FPGetSessionToken(Conn, 3, time, strlen("test224"), "test224"))
 
-	fprintf(stderr,"sleep more than 2 mn\n");
+	fprintf(stdout,"sleep more than 2 mn\n");
 	sleep(60 *3);
 
 	ret = FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name);
 	if (!sigp && ret != (unsigned)-1) {
-		fprintf(stderr,"\tFAILED not disconnected \n");
+		fprintf(stdout,"\tFAILED not disconnected \n");
 		failed_nomsg();
 	} else {
         /* try to reconnect */
@@ -191,8 +191,8 @@ DSI *dsi;
 int sock;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPzzz:test239: AFP 3.x enter extended sleep\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPzzz:test239: AFP 3.x enter extended sleep\n");
 
 	if (Conn->afp_version < 30 || Conn2) {
 		test_skipped(T_AFP3_CONN2);
@@ -207,7 +207,7 @@ int sock;
 		goto test_exit;
     }
 	FAIL (FPzzz(Conn, 1))
-	fprintf(stderr,"sleep more than 2 mn\n");
+	fprintf(stdout,"sleep more than 2 mn\n");
 	sleep(60 *3);
 	FAIL (FPzzz(Conn, 2))
     FAIL (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name))
@@ -227,8 +227,8 @@ test_exit:
 /* ----------- */
 void FPzzz_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPzzz\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPzzz\n");
     test223();
     test224();
     test239();

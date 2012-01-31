@@ -155,7 +155,7 @@ static void list_tests(void)
 {
 int i = 0;
 	while (Test_list[i].name != NULL) {
-		fprintf(stderr, "%s\n", Test_list[i].name);
+		fprintf(stdout, "%s\n", Test_list[i].name);
 		i++;
 	}
 }
@@ -181,11 +181,11 @@ char *token;
         if (handle) {
 			fn = dlsym(handle, token);
 			if ((error = dlerror()) != NULL)  {
-			    fprintf (stderr, "%s\n", error);
+			    fprintf (stdout, "%s\n", error);
 			}
         }
         else {
-        	fprintf (stderr, "%s\n", dlerror());
+        	fprintf (stdout, "%s\n", dlerror());
         }
         if (!handle || !fn) {
 			nottested();
@@ -209,7 +209,7 @@ char *token;
 	    if (token && handle) {
 			fn = dlsym(handle, token);
 			if ((error = dlerror()) != NULL)  {
-			    fprintf (stderr, "%s\n", error);
+			    fprintf (stdout, "%s\n", error);
 			}
 	    }
 	}
@@ -261,26 +261,26 @@ int     Exclude = 0;
 /* =============================== */
 void usage( char * av0 )
 {
-    fprintf( stderr, "usage:\t%s [-m] [-n] [-t] [-h host] [-p port] [-s vol] [-u user] [-w password] -f [call]\n", av0 );
-    fprintf( stderr,"\t-m\tserver is a Mac\n");
-    fprintf( stderr,"\t-h\tserver host name (default localhost)\n");
-    fprintf( stderr,"\t-p\tserver port (default 548)\n");
-    fprintf( stderr,"\t-s\tvolume to mount (default home)\n");
-    fprintf( stderr,"\t-c\tvolume path on the server\n");
-    fprintf( stderr,"\t-u\tuser name (default uid)\n");
-    fprintf( stderr,"\t-d\tsecond user for two connections (same password!)\n");
-    fprintf( stderr,"\t-H\tsecond server for two connections (default use only one server)\n");
+    fprintf( stdout, "usage:\t%s [-m] [-n] [-t] [-h host] [-p port] [-s vol] [-u user] [-w password] -f [call]\n", av0 );
+    fprintf( stdout,"\t-m\tserver is a Mac\n");
+    fprintf( stdout,"\t-h\tserver host name (default localhost)\n");
+    fprintf( stdout,"\t-p\tserver port (default 548)\n");
+    fprintf( stdout,"\t-s\tvolume to mount (default home)\n");
+    fprintf( stdout,"\t-c\tvolume path on the server\n");
+    fprintf( stdout,"\t-u\tuser name (default uid)\n");
+    fprintf( stdout,"\t-d\tsecond user for two connections (same password!)\n");
+    fprintf( stdout,"\t-H\tsecond server for two connections (default use only one server)\n");
     
-    fprintf( stderr,"\t-w\tpassword (default none)\n");
-    fprintf( stderr,"\t-2\tAFP 2.2 version (default 2.1)\n");
-    fprintf( stderr,"\t-3\tAFP 3.0 version\n");
-    fprintf( stderr,"\t-4\tAFP 3.1 version\n");
-    fprintf( stderr,"\t-5\tAFP 3.2 version\n");
-    fprintf( stderr,"\t-v\tverbose\n");
+    fprintf( stdout,"\t-w\tpassword (default none)\n");
+    fprintf( stdout,"\t-2\tAFP 2.2 version (default 2.1)\n");
+    fprintf( stdout,"\t-3\tAFP 3.0 version\n");
+    fprintf( stdout,"\t-4\tAFP 3.1 version\n");
+    fprintf( stdout,"\t-5\tAFP 3.2 version\n");
+    fprintf( stdout,"\t-v\tverbose\n");
 
-    fprintf( stderr,"\t-x\tdon't run tests known to kill some afpd versions\n");
-    fprintf( stderr,"\t-f\ttest to run\n");
-    fprintf( stderr,"\t-l\tlist tests\n");
+    fprintf( stdout,"\t-x\tdon't run tests known to kill some afpd versions\n");
+    fprintf( stdout,"\t-f\ttest to run\n");
+    fprintf( stdout,"\t-l\tlist tests\n");
     exit (1);
 }
 
@@ -350,7 +350,7 @@ int cc;
         case 'p' :
             Port = atoi( optarg );
             if (Port <= 0) {
-                fprintf(stderr, "Bad port.\n");
+                fprintf(stdout, "Bad port.\n");
                 exit(1);
             }
             break;

@@ -210,19 +210,19 @@ static int parseline ( char *buf, struct volinfo *vol)
     switch (option) {
       case CNIDBACKEND:
         if ((vol->v_cnidscheme = strdup(value)) == NULL) {
-	    fprintf (stderr, "strdup: %s", strerror(errno));
+	    fprintf (stdout, "strdup: %s", strerror(errno));
             return -1;
         }
         break;
       case CNIDDBDHOST:
         if ((vol->v_dbd_host = strdup(value)) == NULL) {
-	    fprintf (stderr, "strdup: %s", strerror(errno));
+	    fprintf (stdout, "strdup: %s", strerror(errno));
             return -1;
         }
         break;
       case CNIDDBDPORT:
         if ((vol->v_dbd_port = strdup(value)) == NULL) {
-	    fprintf (stderr, "strdup: %s", strerror(errno));
+	    fprintf (stdout, "strdup: %s", strerror(errno));
             return -1;            
         }
         break;
@@ -244,7 +244,7 @@ static int parseline ( char *buf, struct volinfo *vol)
             vol->v_adouble = AD_VERSION_EA;
         } else {
 
-	    fprintf (stderr, "unknown adouble version: %s, %s", buf, value);
+	    fprintf (stdout, "unknown adouble version: %s, %s", buf, value);
 	    return -1;
         }
         break;
@@ -290,7 +290,7 @@ int loadvolinfo (char *path)
         return -1;
 
     if ((vol->v_path = strdup(volinfofile)) == NULL ) {
-        fprintf (stderr, "strdup: %s", strerror(errno));
+        fprintf (stdout, "strdup: %s", strerror(errno));
         return (-1);
     }
     /* Remove trailing slashes */
@@ -305,7 +305,7 @@ int loadvolinfo (char *path)
 
     /* open the file read only */
     if ( NULL == (fp = fopen( volinfofile, "r")) )  {
-	fprintf (stderr, "error opening volinfo (%s): %s", volinfofile, strerror(errno));
+	fprintf (stdout, "error opening volinfo (%s): %s", volinfofile, strerror(errno));
         return (-1);
     }
     fd = fileno(fp); 

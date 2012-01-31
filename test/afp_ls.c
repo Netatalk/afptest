@@ -60,7 +60,7 @@ int size = 1000;
 	}
 
 	if (!Quiet) {
-		fprintf(stderr,"%lx\n", time(NULL));
+		fprintf(stdout,"%lx\n", time(NULL));
 	}
 	
 	dir = get_did(Conn, vol, DIRDID_ROOT, Dir);
@@ -112,12 +112,12 @@ int size = 1000;
 	        		    afp_filedir_unpack(&filedir, b + 2, f_bitmap, 0);
 			        }
 			        if (Quiet) {
-			        	fprintf(stderr, "0x%08x %s%s\n", ntohl(filedir.did), 
+			        	fprintf(stdout, "0x%08x %s%s\n", ntohl(filedir.did), 
 			        	      (Conn->afp_version >= 30)?filedir.utf8_name:filedir.lname,
 			        	      filedir.isdir?"/":"");
 			        	if (!filedir.isdir) {
 			        		if (FPResolveID(Conn, vol, filedir.did, f_bitmap)) {
-			        			fprintf(stderr, " Can't resolve ID!");
+			        			fprintf(stdout, " Can't resolve ID!");
 			        		}
 			        	}
 			        	
@@ -132,7 +132,7 @@ int size = 1000;
 	}
 
 	if (!Quiet) {
-		fprintf(stderr,"%lx\n", time(NULL));
+		fprintf(stdout,"%lx\n", time(NULL));
 	}
 	FPEnumerateFull(Conn, vol, 1, 150, 8000,  DIRDID_ROOT , "", f_bitmap, d_bitmap);
 }
@@ -141,8 +141,8 @@ int size = 1000;
 /* ------------------------- */
 void test300()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPEnumerate:test300: enumerate recursively a folder\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPEnumerate:test300: enumerate recursively a folder\n");
     test300_enumerate();
     if (Twice)
         test300_enumerate();
@@ -178,20 +178,20 @@ int     Mac = 0;
 /* =============================== */
 void usage( char * av0 )
 {
-    fprintf( stderr, "usage:\t%s [-m] [-n] [-t] [-h host] [-p port] [-s vol] [-u user] [-w password]\n", av0 );
-    fprintf( stderr,"\t-m\tserver is a Mac\n");
-    fprintf( stderr,"\t-h\tserver host name (default localhost)\n");
-    fprintf( stderr,"\t-p\tserver port (default 548)\n");
-    fprintf( stderr,"\t-s\tvolume to mount (default home)\n");
-    fprintf( stderr,"\t-d\tdiretory to enumerate\n");
-    fprintf( stderr,"\t-u\tuser name (default uid)\n");
-    fprintf( stderr,"\t-w\tpassword (default none)\n");
-    fprintf( stderr,"\t-i\tprint ID and name\n");
-    fprintf( stderr,"\t-3\tAFP 3.0 version\n");
-    fprintf( stderr,"\t-4\tAFP 3.1 version\n");
-    fprintf( stderr,"\t-5\tAFP 3.2 version\n");
-    fprintf( stderr,"\t-v\tverbose\n");
-    fprintf( stderr,"\t-t\trun it twice (ie one with the cache warm)\n");
+    fprintf( stdout, "usage:\t%s [-m] [-n] [-t] [-h host] [-p port] [-s vol] [-u user] [-w password]\n", av0 );
+    fprintf( stdout,"\t-m\tserver is a Mac\n");
+    fprintf( stdout,"\t-h\tserver host name (default localhost)\n");
+    fprintf( stdout,"\t-p\tserver port (default 548)\n");
+    fprintf( stdout,"\t-s\tvolume to mount (default home)\n");
+    fprintf( stdout,"\t-d\tdiretory to enumerate\n");
+    fprintf( stdout,"\t-u\tuser name (default uid)\n");
+    fprintf( stdout,"\t-w\tpassword (default none)\n");
+    fprintf( stdout,"\t-i\tprint ID and name\n");
+    fprintf( stdout,"\t-3\tAFP 3.0 version\n");
+    fprintf( stdout,"\t-4\tAFP 3.1 version\n");
+    fprintf( stdout,"\t-5\tAFP 3.2 version\n");
+    fprintf( stdout,"\t-v\tverbose\n");
+    fprintf( stdout,"\t-t\trun it twice (ie one with the cache warm)\n");
 
     exit (1);
 }
@@ -250,7 +250,7 @@ static char *uam = "Cleartxt Passwrd";
         case 'p' :
             Port = atoi( optarg );
             if (Port <= 0) {
-                fprintf(stderr, "Bad port.\n");
+                fprintf(stdout, "Bad port.\n");
                 exit(1);
             }
             break;

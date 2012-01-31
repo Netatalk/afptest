@@ -17,8 +17,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetDirParms:test82: test set dir parameters\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetDirParms:test82: test set dir parameters\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
 		nottested();
@@ -70,8 +70,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetDirParms:test84: test dir set no delete attribute\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetDirParms:test84: test dir set no delete attribute\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
 		nottested();
@@ -120,8 +120,8 @@ unsigned int ret;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetDirParms:test88: test error setdirparam\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetDirParms:test88: test error setdirparam\n");
     
 	if (!Conn2) {
 		test_skipped(T_CONN2);
@@ -210,8 +210,8 @@ DSI *dsi2;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetDirParms:t107: test dir\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetDirParms:t107: test dir\n");
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
@@ -311,8 +311,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetDirParms:test189: test error setdirparam\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetDirParms:test189: test error setdirparam\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
 		nottested();
@@ -355,8 +355,8 @@ int ret;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetDirParms:test193: user permission set\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetDirParms:test193: user permission set\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
 		nottested();
@@ -398,8 +398,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetDirParms:t351: change root folder unix perm\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetDirParms:t351: change root folder unix perm\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
 		nottested();
@@ -466,8 +466,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetDirParms:t352: Change Mac perm to no perm in root folder\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetDirParms:t352: Change Mac perm to no perm in root folder\n");
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
 		nottested();
 		goto test_exit;
@@ -530,11 +530,11 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetDirParms:t353: no unix access privilege \n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetDirParms:t353: no unix access privilege \n");
 
 	if ((get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
-		fprintf(stderr,"\tSKIPPED (need %s)\n","a no unix priv vol");
+		fprintf(stdout,"\tSKIPPED (need %s)\n","a no unix priv vol");
 		skipped_nomsg();
 		goto test_exit;
 	}
@@ -624,8 +624,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetDirParms:t354: change a folder perm in root folder\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetDirParms:t354: change a folder perm in root folder\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
@@ -696,8 +696,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetDirParms:t355: change a folder perm in a folder\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetDirParms:t355: change a folder perm in a folder\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
@@ -773,8 +773,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetDirParms:t356: change root folder unix perm\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetDirParms:t356: change root folder unix perm\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
@@ -893,8 +893,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetDirParms:t405: change a folder group owner in the root folder\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetDirParms:t405: change a folder group owner in the root folder\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
@@ -940,8 +940,8 @@ test_exit:
 /* ----------- */
 void FPSetDirParms_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetDirParms page 255\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetDirParms page 255\n");
     test82();
     test84();
     test88();

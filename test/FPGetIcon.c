@@ -13,8 +13,8 @@ unsigned int ret;
 char   u_null[] = { 0, 0, 0, 0 };
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-	fprintf(stderr, "FPGetIcon:test115: get Icon call\n");
+    fprintf(stdout,"===================\n");
+	fprintf(stdout, "FPGetIcon:test115: get Icon call\n");
 
 	dt = FPOpenDT(Conn,vol);
 
@@ -46,8 +46,8 @@ char   u_null[] = { 0, 0, 0, 0 };
 /* ----------- */
 void FPGetIcon_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetIcon page 186\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetIcon page 186\n");
 	test115();
 }
 

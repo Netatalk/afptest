@@ -12,8 +12,8 @@ char *file1 = "t215 file1";
 unsigned int ret;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPRemoveAPPL:t215: remove appl\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPRemoveAPPL:t215: remove appl\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , file)) {
 		nottested();
@@ -51,8 +51,8 @@ test_exit:
 /* ----------- */
 void FPRemoveAPPL_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPRemoveAPPL page 245\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPRemoveAPPL page 245\n");
 	test215();
 }
 

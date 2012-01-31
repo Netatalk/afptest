@@ -11,8 +11,8 @@ char *file = "t169 file";
 int dir;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetAPPL:t169: test appl\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetAPPL:t169: test appl\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , file)) {
 		nottested();
@@ -45,8 +45,8 @@ test_exit:
 /* ----------- */
 void FPGetAPPL_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetAPPL page 172\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetAPPL page 172\n");
 	test169();
 }
 

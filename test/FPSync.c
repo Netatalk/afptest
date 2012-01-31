@@ -14,8 +14,8 @@ STATIC void test2()
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSyncDir(test2): sync dir\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSyncDir(test2): sync dir\n");
 
  	if (FPSyncDir(Conn, vol, DIRDID_ROOT))
 		failed();

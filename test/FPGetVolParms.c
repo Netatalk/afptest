@@ -9,8 +9,8 @@ u_int16_t bitmap;
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-	fprintf(stderr, "FPGetVolParms:test56: Volume parameters\n");
+    fprintf(stdout,"===================\n");
+	fprintf(stdout, "FPGetVolParms:test56: Volume parameters\n");
     bitmap = (1 << VOLPBIT_ATTR  )
 	    |(1 << VOLPBIT_SIG   )
     	|(1 << VOLPBIT_CDATE )
@@ -35,8 +35,8 @@ u_int16_t vol = VolID;
 /* ----------- */
 void FPGetVolParms_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetVolParms page 207\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetVolParms page 207\n");
 	test56();
 }
 

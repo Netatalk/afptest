@@ -19,8 +19,8 @@ int tdir;
 DSI *dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPWriteExt:test148: AFP 3.0 FPWriteExt\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPWriteExt:test148: AFP 3.0 FPWriteExt\n");
  	if (Conn->afp_version < 30) { 
 		test_skipped(T_AFP3);
 		goto test_exit;
@@ -64,12 +64,12 @@ DSI *dsi = &Conn->dsi;
 	else {
 		memcpy(&rep, dsi->commands, sizeof(rep));
 		if (rep) {
-			fprintf(stderr,"\tFAILED size %d\n", rep);
+			fprintf(stdout,"\tFAILED size %d\n", rep);
 			failed_nomsg();
 		}	
 		memcpy(&rep, dsi->commands +sizeof(rep), sizeof(rep));
 		if (ntohl(rep) != 1714) {
-			fprintf(stderr,"\tFAILED size %d\n", ntohl(rep));
+			fprintf(stdout,"\tFAILED size %d\n", ntohl(rep));
 			failed_nomsg();
 		}	
 	}
@@ -80,12 +80,12 @@ DSI *dsi = &Conn->dsi;
 	else {
 		memcpy(&rep, dsi->commands, sizeof(rep));
 		if (rep) {
-			fprintf(stderr,"\tFAILED size %d\n", rep);
+			fprintf(stdout,"\tFAILED size %d\n", rep);
 			failed_nomsg();
 		}	
 		memcpy(&rep, dsi->commands +sizeof(rep), sizeof(rep));
 		if (ntohl(rep) != 1714) {
-			fprintf(stderr,"\tFAILED size %d\n", ntohl(rep));
+			fprintf(stdout,"\tFAILED size %d\n", ntohl(rep));
 			failed_nomsg();
 		}	
 	}
@@ -122,8 +122,8 @@ u_int16_t vol = VolID;
 int i;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPWriteExt:test207: AFP 3.0 read/Write\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPWriteExt:test207: AFP 3.0 read/Write\n");
  	if (Conn->afp_version < 30) { 
 		test_skipped(T_AFP3);
 		goto test_exit;
@@ -231,7 +231,7 @@ int i;
 	}
 	else for (i = 0; i < 10000; i++) {
 		if (Data[i] != 0) {
-			fprintf(stderr,"\tFAILED Data != 0\n");
+			fprintf(stdout,"\tFAILED Data != 0\n");
 			failed_nomsg();
 			break;
 		}
@@ -271,8 +271,8 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPWriteExt:test304: Write 0 byte to data fork\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPWriteExt:test304: Write 0 byte to data fork\n");
  	if (Conn->afp_version < 30) { 
 		test_skipped(T_AFP3);
 		goto test_exit;
@@ -306,8 +306,8 @@ test_exit:
 /* ----------- */
 void FPWriteExt_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPWriteExt page 273\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPWriteExt page 273\n");
     test148();
 	test207();
 	test304();

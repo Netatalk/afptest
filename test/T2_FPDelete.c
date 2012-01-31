@@ -24,8 +24,8 @@ DSI *dsi2;
 int ret;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-	fprintf(stderr, "FPDelete:test146: delete read only open file\n");
+    fprintf(stdout,"===================\n");
+	fprintf(stdout, "FPDelete:test146: delete read only open file\n");
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
@@ -82,12 +82,12 @@ int ret;
 	if (!Mac && volinfo.v_adouble == AD_VERSION2) {
 		sprintf(temp,"%s/%s/.AppleDouble/%s", Path, name1, name);
 		if (chmod(temp, 0644) <0) {
-			fprintf(stderr,"\tFAILED chmod(%s) %s\n", temp, strerror(errno));
+			fprintf(stdout,"\tFAILED chmod(%s) %s\n", temp, strerror(errno));
 			failed_nomsg();
 		}
 	}
 	if (ntohl(AFPERR_BUSY) != FPDelete(Conn2, vol2,  dir , name)) { 
-		fprintf(stderr,"\tFIXME FAILED open but deleted\n");
+		fprintf(stdout,"\tFIXME FAILED open but deleted\n");
 #if 0		
 		failed_nomsg();
 #endif		
@@ -100,7 +100,7 @@ int ret;
 	} else {
         if (!Mac && volinfo.v_adouble == AD_VERSION2) {
             if (chmod(temp, 0666) <0) {
-                fprintf(stderr,"\tFAILED chmod(%s) %s\n", temp, strerror(errno));
+                fprintf(stdout,"\tFAILED chmod(%s) %s\n", temp, strerror(errno));
                 failed_nomsg();
             }
         }
@@ -134,8 +134,8 @@ struct afp_filedir_parms filedir;
 DSI *dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPDelete:test362: Resolve ID in a deleted folder\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPDelete:test362: Resolve ID in a deleted folder\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -161,13 +161,13 @@ DSI *dsi = &Conn->dsi;
     if (volinfo.v_adouble == AD_VERSION2) {
         sprintf(temp1, "%s/%s/.AppleDouble/%s", Path, name1, name);
         if (unlink(temp1) <0) {
-            fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
+            fprintf(stdout,"\tFAILED unlink %s %s\n", temp, strerror(errno));
             failed_nomsg();
         }
     }
 	sprintf(temp1, "%s/%s/%s", Path, name1, name);
 	if (unlink(temp1) <0) {
-		fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
+		fprintf(stdout,"\tFAILED unlink %s %s\n", temp, strerror(errno));
 		failed_nomsg();
 	}
 
@@ -197,8 +197,8 @@ DSI *dsi = &Conn->dsi;
 int fork;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPDelete:test363: Get fork param in a deleted folder\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPDelete:test363: Get fork param in a deleted folder\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -229,12 +229,12 @@ int fork;
 		sprintf(temp1, "%s/%s/.AppleDouble/%s", Path, name1, name);
 		
 		if (unlink(temp1) <0) {
-			fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
+			fprintf(stdout,"\tFAILED unlink %s %s\n", temp, strerror(errno));
 			failed_nomsg();
 		}
 		sprintf(temp1, "%s/%s/%s", Path, name1, name);
 		if (unlink(temp1) <0) {
-			fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
+			fprintf(stdout,"\tFAILED unlink %s %s\n", temp, strerror(errno));
 			failed_nomsg();
 		}
 		if (delete_unix_dir(Path, name1)) {
@@ -266,8 +266,8 @@ struct afp_filedir_parms filedir;
 DSI *dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPDelete:test364: Delete ID in a deleted folder\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPDelete:test364: Delete ID in a deleted folder\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -294,13 +294,13 @@ DSI *dsi = &Conn->dsi;
     if (volinfo.v_adouble == AD_VERSION2) {
         sprintf(temp1, "%s/%s/.AppleDouble/%s", Path, name1, name);
         if (unlink(temp1) <0) {
-            fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
+            fprintf(stdout,"\tFAILED unlink %s %s\n", temp, strerror(errno));
             failed_nomsg();
         }
     }
 	sprintf(temp1, "%s/%s/%s", Path, name1, name);
 	if (unlink(temp1) <0) {
-		fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
+		fprintf(stdout,"\tFAILED unlink %s %s\n", temp, strerror(errno));
 		failed_nomsg();
 	}
 
@@ -320,8 +320,8 @@ test_exit:
 /* ----------- */
 void FPDelete_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPDelete page 143\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPDelete page 143\n");
     test146();
     test362();
 #if 0    

@@ -18,8 +18,8 @@ u_int16_t vol = VolID;
 unsigned int ret;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPMoveAndRename:test136: move and rename in a dir without .AppleDouble\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPMoveAndRename:test136: move and rename in a dir without .AppleDouble\n");
 
 	if (!Path && !Mac) {
 		test_skipped(T_MAC_PATH);
@@ -29,9 +29,9 @@ unsigned int ret;
 	FAIL (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name))
 	if (!Mac) {
 		sprintf(temp, "%s/%s", Path, ndir);
-		fprintf(stderr, "mkdir(%s)\n", temp);
+		fprintf(stdout, "mkdir(%s)\n", temp);
 		if (mkdir(temp, 0777)) {
-			fprintf(stderr,"\tFAILED mkdir %s %s\n", temp, strerror(errno));
+			fprintf(stdout,"\tFAILED mkdir %s %s\n", temp, strerror(errno));
 			failed_nomsg();
 		}
 	}
@@ -72,8 +72,8 @@ u_int16_t vol = VolID;
 unsigned int ret;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPMoveAndRename:test137: move and rename open file in dir without .AppleDouble\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPMoveAndRename:test137: move and rename open file in dir without .AppleDouble\n");
 
 	if (!Path && !Mac) {
 		test_skipped(T_MAC_PATH);
@@ -83,9 +83,9 @@ unsigned int ret;
 	FAIL (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name))
 	if (!Mac) {
 		sprintf(temp, "%s/%s", Path, ndir);
-		fprintf(stderr, "mkdir(%s)\n", temp);
+		fprintf(stdout, "mkdir(%s)\n", temp);
 		if (mkdir(temp, 0777)) {
-			fprintf(stderr,"\tFAILED mkdir %s %s\n", temp, strerror(errno));
+			fprintf(stdout,"\tFAILED mkdir %s %s\n", temp, strerror(errno));
 			failed_nomsg();
 		}
 	}
@@ -127,8 +127,8 @@ char *name1 = "t139 dir";
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPMoveAndRename:test139: Move And Rename \n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPMoveAndRename:test139: Move And Rename \n");
 
 	if (!Path && !Mac) {
 		test_skipped(T_MAC_PATH);
@@ -164,9 +164,9 @@ u_int16_t vol = VolID, vol2;
 int id,id1;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPMoveAndRename:test322: file across multiple device\n");
-    fprintf(stderr,"Names and devices differ but inodes are the same\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPMoveAndRename:test322: file across multiple device\n");
+    fprintf(stdout,"Names and devices differ but inodes are the same\n");
 
 	if (!Mac && (!Path || !Vol2 || !Conn2)) {
 		test_skipped(T_MAC_PATH);
@@ -182,14 +182,14 @@ int id,id1;
 	FAIL (FPCreateFile(Conn, vol,  0, dir , name1))
 
 	id = get_fid(Conn, vol, dir , name1);     
-	fprintf (stderr, "ID for %s --> %x\n", name1, ntohl(id));
+	fprintf (stdout, "ID for %s --> %x\n", name1, ntohl(id));
 
 	if (!Mac) {
 		sprintf(temp, "%s/%s", Path, name1);
 		sprintf(temp1,"%s/%s", Path, name2);
-		fprintf (stderr, "rename %s --> %s\n", temp, temp1);
+		fprintf (stdout, "rename %s --> %s\n", temp, temp1);
 		if (rename(temp, temp1) < 0) {
-			fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+			fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
 			failed_nomsg();
 		}
 	}
@@ -198,7 +198,7 @@ int id,id1;
 	}
 	id1 = get_fid(Conn2, vol2, dir , name2);
 	if (id != id1) {
-		fprintf(stderr,"\tFAILED id are not the same %x %x\n", ntohl(id), ntohl(id1));
+		fprintf(stdout,"\tFAILED id are not the same %x %x\n", ntohl(id), ntohl(id1));
 		failed_nomsg();
 	}
 	id1 = get_fid(Conn, vol, dir , name2);
@@ -223,8 +223,8 @@ u_int16_t bitmap = (1<<FILPBIT_FNUM );
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetFileDirParms:test323: file moved with cnid not updated\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetFileDirParms:test323: file moved with cnid not updated\n");
 
 	if (!Path && !Mac) {
 		test_skipped(T_MAC_PATH);
@@ -248,9 +248,9 @@ u_int16_t vol = VolID;
 	if (!Mac) {
 		sprintf(temp,"%s/%s/%s", Path, name, file);
 		sprintf(temp1,"%s/%s/%s", Path, name1, file);
-		fprintf (stderr, "rename %s --> %s\n", temp, temp1);
+		fprintf (stdout, "rename %s --> %s\n", temp, temp1);
 		if (rename(temp, temp1) < 0) {
-			fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+			fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
 			failed_nomsg();
 		}
 		
@@ -284,8 +284,8 @@ u_int16_t bitmap = (1<<FILPBIT_FNUM );
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetFileDirParms:test365: file moved with cnid not updated\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetFileDirParms:test365: file moved with cnid not updated\n");
 
 	if (!Path && !Mac) {
 		test_skipped(T_MAC_PATH);
@@ -307,18 +307,18 @@ u_int16_t vol = VolID;
 	if (!Mac) {
 		sprintf(temp,"%s/%s/%s", Path, name, file);
 		sprintf(temp1,"%s/%s/%s", Path, name1, file);
-		fprintf (stderr, "rename %s --> %s\n", temp, temp1);
+		fprintf (stdout, "rename %s --> %s\n", temp, temp1);
 		if (rename(temp, temp1) < 0) {
-			fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+			fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
 			failed_nomsg();
 		}
 
         if (volinfo.v_adouble == AD_VERSION2) {
             sprintf(temp,"%s/%s/.AppleDouble/%s", Path, name, file);
             sprintf(temp1,"%s/%s/.AppleDouble/%s", Path, name1, file);
-            fprintf (stderr, "rename %s --> %s\n", temp, temp1);
+            fprintf (stdout, "rename %s --> %s\n", temp, temp1);
             if (rename(temp, temp1) < 0) {
-                fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+                fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
                 failed_nomsg();
             }
         }
@@ -343,8 +343,8 @@ test_exit:
 /* ----------- */
 void FPMoveAndRename_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPMoveAndRename page 223\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPMoveAndRename page 223\n");
     test136();
     test137();
     test139();

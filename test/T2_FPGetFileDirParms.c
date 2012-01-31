@@ -17,8 +17,8 @@ int  ret;
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetFileDirParms:test32: dir deleted by someone else, access with ID\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetFileDirParms:test32: dir deleted by someone else, access with ID\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -129,8 +129,8 @@ u_int16_t vol = VolID;
 int ret;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetFileDirParms:test33: dir deleted by someone else, access with name\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetFileDirParms:test33: dir deleted by someone else, access with name\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -235,8 +235,8 @@ int  dir,dir1;
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetFileDirParms:test42: dir deleted by someone else, access with ID from another dir\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetFileDirParms:test42: dir deleted by someone else, access with ID from another dir\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -313,8 +313,8 @@ STATIC void test52()
 char name ".t52 invisible";
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-	fprintf(stderr, "FPGetFileDirParms:test52: test .file without AppleDouble\n");
+    fprintf(stdout,"===================\n");
+	fprintf(stdout, "FPGetFileDirParms:test52: test .file without AppleDouble\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -351,8 +351,8 @@ struct afp_filedir_parms filedir;
 u_int16_t bitmap = (1<< DIRPBIT_DID)|(1<< DIRPBIT_LNAME);
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetFileDirParms:t106: cname with trailing 0 and chdir\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetFileDirParms:t106: cname with trailing 0 and chdir\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -392,20 +392,20 @@ u_int16_t bitmap = (1<< DIRPBIT_DID)|(1<< DIRPBIT_LNAME);
 	afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
 
 	if (filedir.did != dir3) {
-		fprintf(stderr,"\tFAILED %x should be %x\n",filedir.did, dir3 );
+		fprintf(stdout,"\tFAILED %x should be %x\n",filedir.did, dir3 );
 		failed_nomsg();
 	}
 	if (strcmp(filedir.lname, name3)) {
-		fprintf(stderr,"\tFAILED %s should be %s\n",filedir.lname, name3);
+		fprintf(stdout,"\tFAILED %s should be %s\n",filedir.lname, name3);
 		failed_nomsg();
 	}
 
     sleep(1);
     if (!Mac) {
 		sprintf(temp, "%s/t104 dir1/t104 dir2/t104 dir2_1", Path);
-		fprintf(stderr, "mkdir(%s)\n", temp);
+		fprintf(stdout, "mkdir(%s)\n", temp);
 		if (mkdir(temp, 0777)) {
-		    fprintf(stderr,"\tFAILED mkdir %s %s\n", temp, strerror(errno));
+		    fprintf(stdout,"\tFAILED mkdir %s %s\n", temp, strerror(errno));
 			failed_nomsg();
 		}
 	}
@@ -420,15 +420,15 @@ u_int16_t bitmap = (1<< DIRPBIT_DID)|(1<< DIRPBIT_LNAME);
 	else {
 		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
 		if (filedir.did != dir2) {
-			fprintf(stderr,"\tFAILED %x should be %x\n",filedir.did, dir2 );
+			fprintf(stdout,"\tFAILED %x should be %x\n",filedir.did, dir2 );
 			failed_nomsg();
 		}
 		if (strcmp(filedir.lname, name2)) {
-			fprintf(stderr,"\tFAILED %s should be %s\n",filedir.lname, name2);
+			fprintf(stdout,"\tFAILED %s should be %s\n",filedir.lname, name2);
 			failed_nomsg();
 		}
 		if (filedir.offcnt != 3) {
-			fprintf(stderr,"\tFAILED %d\n",filedir.offcnt);
+			fprintf(stdout,"\tFAILED %d\n",filedir.offcnt);
 			failed_nomsg();
 		}
 	}
@@ -439,11 +439,11 @@ u_int16_t bitmap = (1<< DIRPBIT_DID)|(1<< DIRPBIT_LNAME);
 	else {
 		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
 		if (filedir.did != dir4) {
-			fprintf(stderr,"\tFAILED %x should be %x\n",filedir.did, dir4 );
+			fprintf(stdout,"\tFAILED %x should be %x\n",filedir.did, dir4 );
 			failed_nomsg();
 		}
 		if (strcmp(filedir.lname, name4)) {
-			fprintf(stderr,"\tFAILED %s should be %s\n",filedir.lname, name4);
+			fprintf(stdout,"\tFAILED %s should be %s\n",filedir.lname, name4);
 			failed_nomsg();
 		}
 	}
@@ -470,8 +470,8 @@ u_int16_t bitmap = (1<<FILPBIT_FNUM );
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetFileDirParms:test127: dir removed with cnid not updated\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetFileDirParms:test127: dir removed with cnid not updated\n");
 
 	if (!Path && !Mac) {
 		test_skipped(T_MAC_PATH);
@@ -523,8 +523,8 @@ u_int16_t bitmap = (1<<FILPBIT_FNUM );
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetFileDirParms:test128: dir removed with cnid not updated\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetFileDirParms:test128: dir removed with cnid not updated\n");
 
 	if (!Path && !Mac) {
 		test_skipped(T_MAC_PATH);
@@ -572,8 +572,8 @@ int  dir2;
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetFileDirParms:test182: dir deleted by someone else, access with ID (dirlookup)\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetFileDirParms:test182: dir deleted by someone else, access with ID (dirlookup)\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -669,8 +669,8 @@ uint32_t id,id1;
 int fd;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetFileDirParms:test235: file deleted and recreated by someone else, cnid not updated\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetFileDirParms:test235: file deleted and recreated by someone else, cnid not updated\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -693,7 +693,7 @@ int fd;
 		sprintf(temp,"%s/%s/%s", Path, name, name2);
 		fd = open(temp, O_RDWR | O_CREAT, 0666);
 		if (fd < 0) {
-			fprintf(stderr,"\tFAILED unable to create %s :%s\n", temp, strerror(errno));
+			fprintf(stdout,"\tFAILED unable to create %s :%s\n", temp, strerror(errno));
 			failed_nomsg();
 			goto fin;
 		}
@@ -703,7 +703,7 @@ int fd;
 		}
 		sprintf(temp1,"%s/%s/%s", Path, name, name1);
 		if (rename(temp, temp1) < 0) {
-			fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+			fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
 			failed_nomsg();
 		}
 	}
@@ -713,7 +713,7 @@ int fd;
 	}
 	id1 = get_fid(Conn, vol, dir , name1);     
 	if (id == id1) {
-		fprintf(stderr,"\tFAILED ids are the same: %u/%u\n", ntohl(id), ntohl(id1));
+		fprintf(stdout,"\tFAILED ids are the same: %u/%u\n", ntohl(id), ntohl(id1));
         failed_nomsg();
 	}
 fin:
@@ -742,8 +742,8 @@ struct afp_filedir_parms filedir;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetFileDirParms::test336: long dirname >31 bytes\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetFileDirParms::test336: long dirname >31 bytes\n");
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
@@ -808,7 +808,7 @@ struct afp_filedir_parms filedir;
 
 		sprintf(temp1, "%s/%s/%s", Path, ndir, temp);
 		if (stat(temp1, &st)) {
-			fprintf(stderr,"\tFAILED stat( %s ) %s\n", temp1, strerror(errno));
+			fprintf(stdout,"\tFAILED stat( %s ) %s\n", temp1, strerror(errno));
 			failed_nomsg();
 		}
 	}
@@ -824,7 +824,7 @@ struct afp_filedir_parms filedir;
 		filedir.isdir = 1;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
 		if (filedir.pdid != ntohl(dir)) {
-		    fprintf(stderr,"\tFAILED %x should be %x\n", filedir.pdid, ntohl(dir) );
+		    fprintf(stdout,"\tFAILED %x should be %x\n", filedir.pdid, ntohl(dir) );
 			failed_nomsg();
 		}
 	}
@@ -847,8 +847,8 @@ int  ret;
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetFileDirParms:test340: dir deleted by someone else, access with ID\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetFileDirParms:test340: dir deleted by someone else, access with ID\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -975,8 +975,8 @@ int fork = 0;
 DSI *dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetFileDirParms:test420: FPGetFileDirParms an open file is renamed with local fs\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetFileDirParms:test420: FPGetFileDirParms an open file is renamed with local fs\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -1013,18 +1013,18 @@ DSI *dsi = &Conn->dsi;
 	if (!Mac) {
 		sprintf(temp, "%s/%s/%s", Path, name1, name);
 		sprintf(temp1,"%s/%s/%s", Path, name1, name2);
-		fprintf(stderr,"rename %s %s\n", temp, temp1);
+		fprintf(stdout,"rename %s %s\n", temp, temp1);
 		if (rename(temp, temp1) < 0) {
-			fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+			fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
 			failed_nomsg();
 		}
 
         if (volinfo.v_adouble == AD_VERSION2) {
             sprintf(temp, "%s/%s/.AppleDouble/%s", Path, name1, name);
             sprintf(temp1,"%s/%s/.AppleDouble/%s", Path, name1, name2);
-            fprintf(stderr,"rename %s %s\n", temp, temp1);
+            fprintf(stdout,"rename %s %s\n", temp, temp1);
             if (rename(temp, temp1) < 0) {
-                fprintf(stderr,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+                fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
                 failed_nomsg();
             }
         }
@@ -1039,7 +1039,7 @@ DSI *dsi = &Conn->dsi;
 		filedir.isdir = 0;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 		if (fid != filedir.did) {
-			fprintf(stderr,"\tFAILED FPGetFileDirParams id differ %x %x\n", fid, filedir.did);
+			fprintf(stdout,"\tFAILED FPGetFileDirParams id differ %x %x\n", fid, filedir.did);
 			failed_nomsg();
 		
 		}
@@ -1062,8 +1062,8 @@ test_exit:
 /* ----------- */
 void FPGetFileDirParms_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetFileDirParms page 179\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetFileDirParms page 179\n");
 	test32();
 	test33();
 	test42();

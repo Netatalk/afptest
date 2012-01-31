@@ -21,8 +21,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCopyFile:test71: Copy file\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCopyFile:test71: Copy file\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
 		goto test_exit;
@@ -105,8 +105,8 @@ char *name1 = "t158 new file name";
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCopyFile:test158: copyFile dest exist\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCopyFile:test158: copyFile dest exist\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -133,8 +133,8 @@ u_int16_t vol = VolID;
 int fork;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCopyFile:test315: copyFile\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCopyFile:test315: copyFile\n");
 
 	if (get_vol_free(vol) < 130*1024*1024) {
 	    /* assume sparse file for setforkparam, not for copyfile */
@@ -230,7 +230,7 @@ char finder_info[32];
 		filedir.isdir = 0;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 		if (memcmp(finder_info, filedir.finder_info, 32)) {
-	        fprintf(stderr,"\tFAILED finder info differ\n");  
+	        fprintf(stdout,"\tFAILED finder info differ\n");  
 	        failed_nomsg();
 	        goto fin;
 		}
@@ -242,7 +242,7 @@ char finder_info[32];
 		goto fin;
 	}
 	if (tp == tp1) {
-	    fprintf(stderr,"\tFAILED both files have same ID\n");  
+	    fprintf(stdout,"\tFAILED both files have same ID\n");  
 	    failed_nomsg();
 	}
 
@@ -259,8 +259,8 @@ char *name  = "t317 old file name";
 char *name1 = "t317 new file name";
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCopyFile:test317: copyFile check meta data\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCopyFile:test317: copyFile check meta data\n");
     test_meta(name, name1, VolID);
 
 	exit_test("test317");
@@ -280,14 +280,14 @@ u_int16_t bitmap;
 u_int32_t mdate = 0;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCopyFile:test332: copyFile check meta data\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCopyFile:test332: copyFile check meta data\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
 		goto fin;
 	}
-	fprintf(stderr,"sleep(2)\n");  
+	fprintf(stdout,"sleep(2)\n");  
 	sleep(2);
 	tp = get_fid(Conn, vol, DIRDID_ROOT, name);
 	if (!tp) {
@@ -313,7 +313,7 @@ u_int32_t mdate = 0;
 		filedir.isdir = 0;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 		if (mdate != filedir.mdate)  {
-	        fprintf(stderr,"\tFAILED modification date differ\n");  
+	        fprintf(stdout,"\tFAILED modification date differ\n");  
 	        failed_nomsg();
 	        goto fin;
 		}
@@ -325,7 +325,7 @@ u_int32_t mdate = 0;
 		goto fin;
 	}
 	if (tp == tp1) {
-	    fprintf(stderr,"\tFAILED both files have same ID\n");  
+	    fprintf(stdout,"\tFAILED both files have same ID\n");  
 	    failed_nomsg();
 	}
 
@@ -350,8 +350,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCopyFile:test374: Copy open file (deny read), two clients\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCopyFile:test374: Copy open file (deny read), two clients\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
 		goto test_exit;
@@ -402,8 +402,8 @@ char *name1 = "t375 new file name";
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCopyFile:test158: copyFile dest exist and is open\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCopyFile:test158: copyFile dest exist and is open\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -458,8 +458,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCopyFile:t401: unix access privilege, read only file\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCopyFile:t401: unix access privilege, read only file\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
@@ -560,8 +560,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCopyFile:t401: unix access privilege, read only file\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCopyFile:t401: unix access privilege, read only file\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
@@ -651,8 +651,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCopyFile:t403: unix access privilege, same priv\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCopyFile:t403: unix access privilege, same priv\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
@@ -712,7 +712,7 @@ DSI *dsi;
 	filedir.isdir = 0;
 	afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 	if ((filedir.unix_priv & 0444) != 0444) {
-		fprintf(stderr,"\tFAILED unix priv differ\n");
+		fprintf(stdout,"\tFAILED unix priv differ\n");
 	    failed_nomsg();
 	}
 
@@ -743,8 +743,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCopyFile:t406: unix access privilege, read only file\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCopyFile:t406: unix access privilege, read only file\n");
 
 	bitmap = (1 <<  FILPBIT_PDINFO) | (1<< FILPBIT_PDID) | (1<< FILPBIT_FNUM) | (1<<FILPBIT_ATTR);
 
@@ -827,7 +827,7 @@ char data[20];
 	filedir.isdir = 0;
 	afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 	if (filedir.dflen != 400 || filedir.rflen != 300 ) {
-		fprintf(stderr, "\tFAILED after copy wrong size (data %d, resource %d) \n",
+		fprintf(stdout, "\tFAILED after copy wrong size (data %d, resource %d) \n",
 			filedir.dflen, filedir.rflen);
 		failed_nomsg();
 		goto fin2;
@@ -848,7 +848,7 @@ char data[20];
 	FPCloseFork(Conn,fork);
 
 	if (memcmp(data, "Data fork", 9)) {
-		fprintf(stderr, "\tFAILED not \"Data fork\" read\n");
+		fprintf(stdout, "\tFAILED not \"Data fork\" read\n");
 		failed_nomsg();
 		goto fin2;
 	}
@@ -867,7 +867,7 @@ char data[20];
 	FPCloseFork(Conn,fork);
 
 	if (memcmp(data, "Resource fork", 13)) {
-		fprintf(stderr, "\tFAILED not \"Resource fork\" read\n");
+		fprintf(stdout, "\tFAILED not \"Resource fork\" read\n");
 		failed_nomsg();
 		goto fin2;
 	}
@@ -883,7 +883,7 @@ char data[20];
 	filedir.isdir = 0;
 	afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 	if (filedir.dflen != 400 || filedir.rflen != 300 ) {
-		fprintf(stderr, "\tFAILED after copy wrong size\n");
+		fprintf(stdout, "\tFAILED after copy wrong size\n");
 		failed_nomsg();
 		goto fin2;
 	}
@@ -904,7 +904,7 @@ char data[20];
 	FPCloseFork(Conn,fork);
 
 	if (memcmp(data, "Data fork", 9)) {
-		fprintf(stderr, "\tFAILED not \"Data fork\" read\n");
+		fprintf(stdout, "\tFAILED not \"Data fork\" read\n");
 		failed_nomsg();
 		goto fin2;
 	}
@@ -923,7 +923,7 @@ char data[20];
 	FPCloseFork(Conn,fork);
 
 	if (memcmp(data, "Resource fork", 13)) {
-		fprintf(stderr, "\tFAILED not \"Resource fork\" read\n");
+		fprintf(stdout, "\tFAILED not \"Resource fork\" read\n");
 		failed_nomsg();
 		goto fin2;
 	}
@@ -944,8 +944,8 @@ char *name1= "new t407 file.pdf";
 u_int16_t vol2;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCopyFile:t407: copy file between two volumes\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCopyFile:t407: copy file between two volumes\n");
 	if (!*Vol2) {
 		test_skipped(T_VOL2);
 		goto test_exit;
@@ -970,8 +970,8 @@ char *name1 = "t408 new file name";
 u_int16_t vol2;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCopyFile:test408: copyFile check meta data, two volumes\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCopyFile:test408: copyFile check meta data, two volumes\n");
 	if (!*Vol2) {
 		test_skipped(T_VOL2);
 		goto test_exit;
@@ -997,8 +997,8 @@ char *name  = "t409 old file name";
 char *name1 = "t409 new file name";
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCopyFile:test409: copyFile check meta data, one volume\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCopyFile:test409: copyFile check meta data, one volume\n");
 
     test_data(name, name1, VolID);
 
@@ -1018,8 +1018,8 @@ char *attr_name="test416_attribute";
     dsi = &Conn->dsi;
 
 	enter_test();
-	fprintf(stderr,"===================\n");
-	fprintf(stderr,"FPCopyFile:test416: copy xattr\n");
+	fprintf(stdout,"===================\n");
+	fprintf(stdout,"FPCopyFile:test416: copy xattr\n");
 
     if (Conn->afp_version < 32) {
         test_skipped(T_AFP3);
@@ -1067,8 +1067,8 @@ char *name2 = "t414 dir";
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCopyFile:test414: copyFile with bad dest directory\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCopyFile:test414: copyFile with bad dest directory\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -1111,8 +1111,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCopyFile:test424: Copy file with dest directory\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCopyFile:test424: Copy file with dest directory\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
 		goto test_exit;
@@ -1151,8 +1151,8 @@ test_exit:
 /* ----------- */
 void FPCopyFile_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCopyFile page 131\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCopyFile page 131\n");
     test71();
 	test158();
 	test315();

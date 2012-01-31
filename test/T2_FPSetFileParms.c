@@ -18,8 +18,8 @@ DSI *dsi = &Conn->dsi;
 unsigned ret;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetFileParms:test89: test set file setfilparam\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileParms:test89: test set file setfilparam\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -67,8 +67,8 @@ u_int16_t vol = VolID;
 DSI *dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetFileParms:t120: test set file setfilparam (create .AppleDouble)\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileParms:t120: test set file setfilparam (create .AppleDouble)\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -100,8 +100,8 @@ test_exit:
 /* ----------- */
 void FPSetFileParms_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetFileParms page 262\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileParms page 262\n");
     test89();
     test120();
 }

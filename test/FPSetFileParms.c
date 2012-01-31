@@ -18,8 +18,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"t83: test set file setfilparam\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"t83: test set file setfilparam\n");
 
 	if (!(dir =FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
 		nottested();
@@ -62,8 +62,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetFileParms:t96: test file's invisible bit\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileParms:t96: test file's invisible bit\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -76,7 +76,7 @@ DSI *dsi;
 	}
 	filedir.isdir = 1;
 	afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
-	fprintf(stderr,"Modif date parent %x\n", filedir.mdate);
+	fprintf(stdout,"Modif date parent %x\n", filedir.mdate);
 	sleep(4);
 	
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name,bitmap, 0 )) {
@@ -85,7 +85,7 @@ DSI *dsi;
 	}
 	filedir.isdir = 0;
 	afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
-	fprintf(stderr,"Modif date file %x\n", filedir.mdate);
+	fprintf(stdout,"Modif date file %x\n", filedir.mdate);
 	sleep(5);
 			
 	filedir.attr = ATTRBIT_INVISIBLE | ATTRBIT_SETCLR ;
@@ -99,7 +99,7 @@ DSI *dsi;
 	}
 	filedir.isdir = 0;
 	afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
-	fprintf(stderr,"Modif date file %x\n", filedir.mdate);
+	fprintf(stdout,"Modif date file %x\n", filedir.mdate);
 
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , "", 0,bitmap )) {
 		failed();
@@ -107,7 +107,7 @@ DSI *dsi;
 	}
 	filedir.isdir = 1;
 	afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
-	fprintf(stderr,"Modif date parent %x\n", filedir.mdate);
+	fprintf(stdout,"Modif date parent %x\n", filedir.mdate);
 end:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
 test_exit:
@@ -127,8 +127,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetFileParms:t118: test file no delete attribute\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileParms:t118: test file no delete attribute\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -170,8 +170,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"t122: test setfilparam open fork\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"t122: test setfilparam open fork\n");
 
 	memset(&filedir, 0, sizeof(filedir));
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
@@ -226,8 +226,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetFileParms:t318: set UTF8 name(error)\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileParms:t318: set UTF8 name(error)\n");
 
  	if (Conn->afp_version < 30) { 
 		test_skipped(T_AFP3);
@@ -314,8 +314,8 @@ STATIC void test426()
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetFileParms:t426: Create a dangling symlink\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileParms:t426: Create a dangling symlink\n");
     
     if (afp_symlink("t426 dest", name)) {
 		nottested();
@@ -363,8 +363,8 @@ int fork = 0;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetFileParms:t427: Create a symlink\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileParms:t427: Create a symlink\n");
     
     if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , dest)) {
 		nottested();
@@ -401,8 +401,8 @@ u_int16_t vol = VolID;
 u_int16_t vol2 = 0xffff;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetFileParms:t428: Delete symlinks, two users\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileParms:t428: Delete symlinks, two users\n");
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
@@ -458,8 +458,8 @@ int id;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetFileParms:t429: symlink File ID\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileParms:t429: symlink File ID\n");
     
     if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , dest)) {
 		nottested();
@@ -488,7 +488,7 @@ int id;
 		filedir.isdir = 0;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 		if (!filedir.did || filedir.did != id) {
-		    fprintf(stderr,"\tFAILED cnids are not the same %x %x\n", filedir.did, id);
+		    fprintf(stdout,"\tFAILED cnids are not the same %x %x\n", filedir.did, id);
 			failed_nomsg();
 		}
 	}
@@ -506,8 +506,8 @@ test_exit:
 /* ----------- */
 void FPSetFileParms_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetFileParms page 262\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileParms page 262\n");
     test83();
     test96();
     test118();

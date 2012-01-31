@@ -7,8 +7,8 @@ STATIC void test209(void)
 {
 int ret;
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetSrvrParms:test209: GetSrvrParms call\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetSrvrParms:test209: GetSrvrParms call\n");
 
 	ret = FPGetSrvrParms(Conn);
 	if (ret) {
@@ -29,8 +29,8 @@ unsigned char len;
 unsigned char *b;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetSrvrParms:test316: GetSrvrParms for a volume with option nostat set\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetSrvrParms:test316: GetSrvrParms for a volume with option nostat set\n");
 
 	FPCloseVol(Conn,VolID);
 
@@ -62,8 +62,8 @@ unsigned char *b;
 /* ----------- */
 void FPGetSrvrParms_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetSrvrParms page 203\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetSrvrParms page 203\n");
 	test209();
 	test316();
 }

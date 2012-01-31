@@ -57,8 +57,8 @@ int ret;
 DSI *dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-	fprintf(stderr, "FPAddIcon:test212: Add Icon call\n");
+    fprintf(stdout,"===================\n");
+	fprintf(stdout, "FPAddIcon:test212: Add Icon call\n");
 
 	dt = FPOpenDT(Conn,vol);
 	FAIL (FPAddIcon(Conn,  dt, "ttxt", "3DMF", 1, 0, 256, icon0_256 ))
@@ -69,7 +69,7 @@ DSI *dsi = &Conn->dsi;
 		failed();
 	}
 	else if (memcmp(dsi->commands, icon0_256, 256)) {
-		fprintf(stderr,"\tFAILED AddIcon and GetIcon data differ\n");
+		fprintf(stdout,"\tFAILED AddIcon and GetIcon data differ\n");
 		failed_nomsg();
 	}
 
@@ -80,7 +80,7 @@ DSI *dsi = &Conn->dsi;
 		failed();
 	}
 	else if (memcmp(dsi->commands, icon0_256, 256)) {
-		fprintf(stderr,"\tFAILED AddIcon and GetIcon data differ\n");
+		fprintf(stdout,"\tFAILED AddIcon and GetIcon data differ\n");
 		failed_nomsg();
 	}
 
@@ -92,7 +92,7 @@ DSI *dsi = &Conn->dsi;
 		failed();
 	}
 	else if (memcmp(dsi->commands, icon0_64, 64)) {
-		fprintf(stderr,"\tFAILED AddIcon and GetIcon data differ\n");
+		fprintf(stdout,"\tFAILED AddIcon and GetIcon data differ\n");
 		failed_nomsg();
 	}
 
@@ -105,8 +105,8 @@ DSI *dsi = &Conn->dsi;
 /* ----------- */
 void FPAddIcon_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPAddIcon page 99\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPAddIcon page 99\n");
 	test212();
 }
 

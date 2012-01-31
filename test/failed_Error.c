@@ -54,8 +54,8 @@ unsigned char cmd;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Error:test35: illegal volume (-5019 AFP_ERRPARAM)\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Error:test35: illegal volume (-5019 AFP_ERRPARAM)\n");
 
 	for (i = 0 ;i < sizeof(afp_cmd_with_vol);i++) {
 		memset(dsi->commands, 0, DSI_CMDSIZ);
@@ -80,7 +80,7 @@ unsigned char cmd;
 		ret = dsi->header.dsi_code;
 		
     	if (ntohl(AFPERR_PARAM) != ret) {
-			fprintf(stderr,"\tFAILED command %3i %s\t result %d %s\n", cmd, AfpNum2name(cmd),ntohl(ret), afp_error(ret));
+			fprintf(stdout,"\tFAILED command %3i %s\t result %d %s\n", cmd, AfpNum2name(cmd),ntohl(ret), afp_error(ret));
 			failed_nomsg();
     	}
     }
@@ -110,8 +110,8 @@ unsigned char cmd;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Errror:test37: no folder error ==> ERR_NOOBJ\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Errror:test37: no folder error ==> ERR_NOOBJ\n");
 
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!dir) {
@@ -145,7 +145,7 @@ unsigned char cmd;
 		my_dsi_cmd_receive(dsi);
 		ret = dsi->header.dsi_code;
     	if (ntohl(AFPERR_NOOBJ) != ret) {
-			fprintf(stderr,"\tFAILED command %3i %s\t result %d %s\n", cmd, AfpNum2name(cmd),ntohl(ret), afp_error(ret));
+			fprintf(stdout,"\tFAILED command %3i %s\t result %d %s\n", cmd, AfpNum2name(cmd),ntohl(ret), afp_error(ret));
 			failed_nomsg();
     	}
     }
@@ -158,8 +158,8 @@ fin:
 /* ----------- */
 void Error_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Various errors\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Various errors\n");
 	test35();
 	test37();
 }

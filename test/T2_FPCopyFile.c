@@ -17,8 +17,8 @@ u_int16_t bitmap;
 u_int32_t mdate = 0;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCopyFile:test373: copyFile check meta data, file without resource fork\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCopyFile:test373: copyFile check meta data, file without resource fork\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -35,7 +35,7 @@ u_int32_t mdate = 0;
 		goto fin;	
 	}
 
-	fprintf(stderr,"sleep(2)\n");  
+	fprintf(stdout,"sleep(2)\n");  
 	sleep(2);
 	tp = get_fid(Conn, vol, DIRDID_ROOT, name);
 	if (!tp) {
@@ -61,7 +61,7 @@ u_int32_t mdate = 0;
 		filedir.isdir = 0;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 		if (mdate != filedir.mdate)  {
-	        fprintf(stderr,"\tFAILED modification date differ\n");  
+	        fprintf(stdout,"\tFAILED modification date differ\n");  
 	        failed_nomsg();
 	        goto fin;
 		}
@@ -73,7 +73,7 @@ u_int32_t mdate = 0;
 		goto fin;
 	}
 	if (tp == tp1) {
-	    fprintf(stderr,"\tFAILED both files have same ID\n");  
+	    fprintf(stdout,"\tFAILED both files have same ID\n");  
 	    failed_nomsg();
 	}
 
@@ -88,8 +88,8 @@ test_exit:
 /* ----------- */
 void FPCopyFile_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCopyFile page 131\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCopyFile page 131\n");
 	test373();
 }
 

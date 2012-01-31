@@ -236,7 +236,7 @@ char *param; /* remainder of command line */
          file_size_high=file_size_low;
       }
    else
-      fprintf(stderr,"Error: no file size low or high bounds specified\n");
+      fprintf(stdout,"Error: no file size low or high bounds specified\n");
 
    return(1);
 }
@@ -250,7 +250,7 @@ char *param; /* remainder of command line */
    if (param && (size=atoi(param))>0)
       simultaneous=size;
    else
-      fprintf(stderr,"Error: no file number specified\n");
+      fprintf(stdout,"Error: no file number specified\n");
 
    return(1);
 }
@@ -264,7 +264,7 @@ char *param; /* remainder of command line */
    if (param && (size=atoi(param))>0)
       seed=size;
    else
-      fprintf(stderr,"Error: no random number seed specified\n");
+      fprintf(stdout,"Error: no random number seed specified\n");
 
    return(1);
 }
@@ -278,7 +278,7 @@ char *param; /* remainder of command line */
    if (param && (size=atoi(param))>0)
       transactions=size;
    else
-      fprintf(stderr,"Error: no transactions specified\n");
+      fprintf(stdout,"Error: no transactions specified\n");
 
    return(1);
 }
@@ -294,7 +294,7 @@ char *params;
       *split='\0';
       if ((weight=atoi(split+1))<=0)
          {
-         fprintf(stderr,"Error: ignoring invalid weight '%s'\n",split+1); 
+         fprintf(stdout,"Error: ignoring invalid weight '%s'\n",split+1); 
          weight=1;
          }
       }
@@ -366,7 +366,7 @@ char *loc_name;
          }
 
    if (!traverse)
-      fprintf(stderr,"Error: cannot find location '%s'\n",loc_name);
+      fprintf(stdout,"Error: cannot find location '%s'\n",loc_name);
 }
 
 void delete_locations()
@@ -406,7 +406,7 @@ char *param; /* remainder of command line */
          }
       }
    else
-      fprintf(stderr,"Error: no directory name specified\n");
+      fprintf(stdout,"Error: no directory name specified\n");
 
    return(1);
 }
@@ -420,7 +420,7 @@ char *param; /* remainder of command line */
    if (param && (subdirs=atoi(param))>=0)
       subdirectories=subdirs;
    else
-      fprintf(stderr,"Error: invalid number of subdirectories specified\n");
+      fprintf(stdout,"Error: invalid number of subdirectories specified\n");
 
    return(1);
 }
@@ -434,7 +434,7 @@ char *param; /* remainder of command line */
    if (param && (size=atoi(param))>0)
       read_block_size=size;
    else
-      fprintf(stderr,"Error: no block size specified\n");
+      fprintf(stdout,"Error: no block size specified\n");
 
    return(1);
 }
@@ -448,7 +448,7 @@ char *param; /* remainder of command line */
    if (param && (size=atoi(param))>0)
       write_block_size=size;
    else
-      fprintf(stderr,"Error: no block size specified\n");
+      fprintf(stdout,"Error: no block size specified\n");
 
    return(1);
 }
@@ -461,7 +461,7 @@ char *param; /* remainder of command line */
    if (param && (!strcmp(param,"true") || !strcmp(param,"false")))
       buffered_io=(!strcmp(param,"true"))?1:0;
    else
-      fprintf(stderr,"Error: no buffering mode (true/false) specified\n");
+      fprintf(stdout,"Error: no buffering mode (true/false) specified\n");
       
    return(1);
 }
@@ -475,7 +475,7 @@ char *param; /* remainder of command line */
    if (param && (value=atoi(param))>=-1  && value<=10)
       bias_read=value;
    else
-      fprintf(stderr,
+      fprintf(stdout,
         "Error: no bias specified (0-10 for greater chance,-1 to disable)\n");
 
    return(1);
@@ -490,7 +490,7 @@ char *param; /* remainder of command line */
    if (param && (value=atoi(param))>=-1  && value<=10)
       bias_create=value;
    else
-      fprintf(stderr,
+      fprintf(stdout,
          "Error: no bias specified (0-10 for greater chance,-1 to disable)\n");
 
    return(1);
@@ -514,7 +514,7 @@ char *param; /* remainder of command line */
       }
 
    if (!param || match==-1)
-      fprintf(stderr,"Error: either 'verbose' or 'terse' required\n");
+      fprintf(stdout,"Error: either 'verbose' or 'terse' required\n");
 
    return(1);
 }
@@ -527,7 +527,7 @@ int size; /* number of bytes of junk to create */
    int i;
 
    if ((new_source=(char *)malloc(size))==NULL) /* allocate buffer */
-      fprintf(stderr,"Error: failed to allocate source file of size %d\n",size);
+      fprintf(stdout,"Error: failed to allocate source file of size %d\n",size);
    else
       for (i=0; i<size; i++) /* file buffer with junk */
          new_source[i]=32+RND(95);
@@ -740,7 +740,7 @@ int buffered; /* 1=buffered I/O (default), 0=unbuffered I/O */
             }
          }
       else
-         fprintf(stderr,"Error: cannot open '%s' for writing\n",
+         fprintf(stdout,"Error: cannot open '%s' for writing\n",
             file_table[free_file].name);
       }
 }
@@ -753,7 +753,7 @@ int number;
       {
 //    if (remove(file_table[number].name))
 		if (AFPDelete(Conn, Vol, DIRDID_ROOT , file_table[number].name))
-         fprintf(stderr,"Error: Cannot delete '%s'\n",file_table[number].name);
+         fprintf(stdout,"Error: Cannot delete '%s'\n",file_table[number].name);
       else
          { /* reset entry in file_table and update counter */
          file_table[number].size=0;
@@ -811,7 +811,7 @@ int buffered; /* 1=buffered I/O (default), 0=unbuffered I/O */
       files_read++;
       }
    else
-      fprintf(stderr,"Error: cannot open '%s' for reading\n",
+      fprintf(stdout,"Error: cannot open '%s' for reading\n",
          file_table[number].name);
 }
 
@@ -856,7 +856,7 @@ int buffered; /* 1=buffered I/O (default), 0=unbuffered I/O */
          files_appended++;
          }
       else
-         fprintf(stderr,"Error: cannot open '%s' for append\n",
+         fprintf(stdout,"Error: cannot open '%s' for append\n",
             file_table[number].name);
       }
 }
@@ -938,7 +938,7 @@ int weight;
    int i=0;
 
    if ((index=(char **)calloc(1,weight*sizeof(char *)))==NULL)
-      fprintf(stderr,"Error: cannot build weighted index of locations\n");
+      fprintf(stdout,"Error: cannot build weighted index of locations\n");
    else
       for (; list; list=list->next)
          for (count=0; count<list->system.size; count++)
@@ -1047,7 +1047,7 @@ int  dir;
    file_allocated=0;
    if ((file_table=(file_entry *)calloc(simultaneous<<1,sizeof(file_entry)))==
       NULL)
-      fprintf(stderr,"Error: Failed to allocate table for %d files\n",
+      fprintf(stdout,"Error: Failed to allocate table for %d files\n",
          simultaneous<<1);
 
    if (file_system_count>0)
@@ -1126,7 +1126,7 @@ int  dir;
 
    if (param)
       if ((fp=fopen(param,"a"))==NULL)
-         fprintf(stderr,"Error: Cannot direct output to file '%s'\n",param);
+         fprintf(stdout,"Error: Cannot direct output to file '%s'\n",param);
 
    if (!fp)
       fp=stdout;
@@ -1160,7 +1160,7 @@ char *param; /* optional: name of output file */
 
    if (param)
       if ((fp=fopen(param,"a"))==NULL)
-         fprintf(stderr,"Error: Cannot direct output to file '%s'\n",param);
+         fprintf(stdout,"Error: Cannot direct output to file '%s'\n",param);
 
    if (!fp)
       fp=stdout;

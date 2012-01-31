@@ -19,8 +19,8 @@ unsigned int ret;
 
 	enter_test();
 	dsi = &Conn->dsi;
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCatSearch:test225: Catalog search\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCatSearch:test225: Catalog search\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -41,7 +41,7 @@ unsigned int ret;
 	memcpy(&temp, dsi->data + 20, sizeof(temp));
 	temp = ntohl(temp);
 	if (temp) {
-		fprintf(stderr,"\tFAILED want 0 get %d\n", temp);
+		fprintf(stdout,"\tFAILED want 0 get %d\n", temp);
 		failed_nomsg();
 	}
 
@@ -60,7 +60,7 @@ unsigned int ret;
 	memcpy(&temp, dsi->data + 20, sizeof(temp));
 	temp = ntohl(temp);
 	if (temp != 1) {
-		fprintf(stderr,"\tFAILED want 1 get %d\n", temp);
+		fprintf(stdout,"\tFAILED want 1 get %d\n", temp);
 		failed_nomsg();
 	}
 
@@ -73,7 +73,7 @@ unsigned int ret;
 	memcpy(&temp, dsi->data + 20, sizeof(temp));
 	temp = ntohl(temp);
 	if (temp != 1) {
-		fprintf(stderr,"\tFAILED want 1 get %d\n", temp);
+		fprintf(stdout,"\tFAILED want 1 get %d\n", temp);
 		failed_nomsg();
 	}
 	/* -------------------- */
@@ -101,8 +101,8 @@ test_exit:
 /* ----------- */
 void FPCatSearch_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCatSearch page 110\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCatSearch page 110\n");
 	test225();
 }
 

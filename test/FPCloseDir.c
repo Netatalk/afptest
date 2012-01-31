@@ -13,8 +13,8 @@ DSI *dsi;
 
 		
 	enter_test();
-    fprintf(stderr,"===================\n");
-	fprintf(stderr, "FPCloseDir:test199: FPCloseDir call\n");
+    fprintf(stdout,"===================\n");
+	fprintf(stdout, "FPCloseDir:test199: FPCloseDir call\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
 		goto test_exit;
@@ -49,8 +49,8 @@ test_exit:
 /* ----------- */
 void FPCloseDir_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCloseDir page 127\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCloseDir page 127\n");
 	test199();
 }
 

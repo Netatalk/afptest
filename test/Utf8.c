@@ -14,8 +14,8 @@ u_int16_t vol = VolID;
 DSI *dsi = &Conn->dsi;
 	
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Utf8:test162: illegal UTF8 name\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Utf8:test162: illegal UTF8 name\n");
 
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
@@ -52,8 +52,8 @@ struct afp_filedir_parms filedir;
 DSI *dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Utf8:test166: utf8 precompose decompose\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Utf8:test166: utf8 precompose decompose\n");
 
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
@@ -83,7 +83,7 @@ DSI *dsi = &Conn->dsi;
 		filedir.isdir = 0;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap,0);
 	    if (strcmp(filedir.lname, "\216.rtf")) {
-		    fprintf(stderr,"\tFAILED %s should be \\216.rtf\n",filedir.lname);
+		    fprintf(stdout,"\tFAILED %s should be \\216.rtf\n",filedir.lname);
 		    failed_nomsg();
 	    }
 	}
@@ -110,8 +110,8 @@ struct afp_filedir_parms filedir;
 DSI *dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Utf8:test167: utf8 precompose decompose\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Utf8:test167: utf8 precompose decompose\n");
 
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
@@ -141,7 +141,7 @@ DSI *dsi = &Conn->dsi;
 		filedir.isdir = 0;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap,0);
 	    if (strcmp(filedir.lname, "l\210")) {
-		    fprintf(stderr,"\tFAILED %s should be l\\210\n",filedir.lname);
+		    fprintf(stdout,"\tFAILED %s should be l\\210\n",filedir.lname);
 		    failed_nomsg();
 	    }
 	}
@@ -168,8 +168,8 @@ int  dir;
 int  dir1;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Utf8:test181: test search by ID UTF8\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Utf8:test181: test search by ID UTF8\n");
 
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
@@ -242,8 +242,8 @@ char *name1 = "t185 donne\314"; /* decomposed données */
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Utf8:test185: rename utf8 name\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Utf8:test185: rename utf8 name\n");
 
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
@@ -283,8 +283,8 @@ u_int16_t bitmap = 0;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Utf8:test233: false mangled UTF8 dirname\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Utf8:test233: false mangled UTF8 dirname\n");
 
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
@@ -334,8 +334,8 @@ u_int16_t bitmap = 0;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Utf8:test234: false mangled UTF8 filename\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Utf8:test234: false mangled UTF8 filename\n");
 
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
@@ -384,8 +384,8 @@ u_int16_t bitmap = 0;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Utf8:test312: mangled UTF8 filename\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Utf8:test312: mangled UTF8 filename\n");
 
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
@@ -421,7 +421,7 @@ u_int16_t bitmap = 0;
 		    filedir.isdir = 0;
 		    afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap,0);
 		    if (strcmp(filedir.utf8_name, name)) {
-				fprintf(stderr,"\tFAILED %s should be %s\n",filedir.utf8_name, name); 		    
+				fprintf(stdout,"\tFAILED %s should be %s\n",filedir.utf8_name, name); 		    
 		    }
 		}
         sprintf(temp,"t3-#%X.mp3", ntohl(filedir.did));
@@ -446,8 +446,8 @@ u_int16_t bitmap = 0;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Utf8:test313: mangled UTF8 dirname\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Utf8:test313: mangled UTF8 dirname\n");
 
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
@@ -488,8 +488,8 @@ u_int16_t bitmap = 0;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Utf8:test314: invalid mangled UTF8 name\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Utf8:test314: invalid mangled UTF8 name\n");
 
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
@@ -528,8 +528,8 @@ u_int16_t bitmap = 0;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Utf8:test337: mangled UTF8 filename\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Utf8:test337: mangled UTF8 filename\n");
 
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
@@ -566,7 +566,7 @@ u_int16_t bitmap = 0;
 		    filedir.isdir = 0;
 		    afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap,0);
 		    if (strcmp(filedir.utf8_name, name)) {
-				fprintf(stderr,"\tFAILED %s should be %s\n",filedir.utf8_name, name); 		    
+				fprintf(stdout,"\tFAILED %s should be %s\n",filedir.utf8_name, name); 		    
 		    }
 		}
         sprintf(temp,"t#%X.mp3", ntohl(filedir.did));
@@ -593,8 +593,8 @@ struct afp_filedir_parms filedir;
 DSI *dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Utf8:test381: utf8 use type 2 name with AFP3 connection\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Utf8:test381: utf8 use type 2 name with AFP3 connection\n");
 
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
@@ -624,7 +624,7 @@ DSI *dsi = &Conn->dsi;
 		filedir.isdir = 0;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap,0);
 	    if (strcmp(filedir.lname, "l\210")) {
-		    fprintf(stderr,"\tFAILED %s should be l\\210\n",filedir.lname);
+		    fprintf(stdout,"\tFAILED %s should be l\\210\n",filedir.lname);
 		    failed_nomsg();
 	    }
 	}
@@ -648,8 +648,8 @@ struct afp_filedir_parms filedir;
 DSI *dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Utf8:test382: utf8 use type 2 name with AFP3 connection\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Utf8:test382: utf8 use type 2 name with AFP3 connection\n");
 
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
@@ -679,7 +679,7 @@ DSI *dsi = &Conn->dsi;
 		filedir.isdir = 1;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
 	    if (strcmp(filedir.lname, "l\210")) {
-		    fprintf(stderr,"\tFAILED %s should be l\\210\n",filedir.lname);
+		    fprintf(stdout,"\tFAILED %s should be l\\210\n",filedir.lname);
 		    failed_nomsg();
 	    }
 	}
@@ -703,8 +703,8 @@ u_int16_t bitmap;
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Utf8:test383: utf8 rename type 2 name, AFP3 connection\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Utf8:test383: utf8 rename type 2 name, AFP3 connection\n");
 
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
@@ -743,8 +743,8 @@ u_int16_t bitmap;
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Utf8:test384: utf8 rename type 2 name, AFP3 connection wrong parameter\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Utf8:test384: utf8 rename type 2 name, AFP3 connection wrong parameter\n");
 
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
@@ -783,8 +783,8 @@ u_int16_t bitmap;
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Utf8:test385: utf8 copyfile type 2 name, AFP3 connection\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Utf8:test385: utf8 copyfile type 2 name, AFP3 connection\n");
 
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
@@ -823,8 +823,8 @@ u_int16_t bitmap;
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Utf8:test386: utf8 moveandrename type 2 name, AFP3 connection\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Utf8:test386: utf8 moveandrename type 2 name, AFP3 connection\n");
 
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
@@ -858,8 +858,8 @@ STATIC void test395()
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Utf8:test395: utf8 bit set if AFP < 3.0\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Utf8:test395: utf8 bit set if AFP < 3.0\n");
 
 	if (Conn->afp_version >= 30) {
 		test_skipped(T_AFP2);
@@ -878,8 +878,8 @@ test_exit:
 /* ----------- */
 void Utf8_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"UTF8 tests\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"UTF8 tests\n");
     test162();
     test166();
     test167();

@@ -37,8 +37,8 @@ unsigned int ret;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Error:test36: no folder error (ERR_NOOBJ)\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Error:test36: no folder error (ERR_NOOBJ)\n");
 	memset(dsi->commands, 0, sizeof(dsi->commands));
 	did  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!did) {
@@ -75,7 +75,7 @@ unsigned int ret;
 		my_dsi_cmd_receive(dsi);
 		ret = dsi->header.dsi_code;
     	if (ntohl(AFPERR_NOOBJ) != ret) {
-			fprintf(stderr,"\tFAILED command %3i %s\t result %d %s\n", cmd, AfpNum2name(cmd),ntohl(ret), afp_error(ret));
+			fprintf(stdout,"\tFAILED command %3i %s\t result %d %s\n", cmd, AfpNum2name(cmd),ntohl(ret), afp_error(ret));
 			failed_nomsg();
     	}
     }
@@ -120,11 +120,11 @@ DSI *dsi;
 	afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
 
 	if (filedir.pdid != 2) {
-		fprintf(stderr,"\tFAILED %x should be %x\n",filedir.pdid, 2 );
+		fprintf(stdout,"\tFAILED %x should be %x\n",filedir.pdid, 2 );
 		failed_nomsg();
 	}
 	if (strcmp(filedir.lname, name)) {
-		fprintf(stderr,"\tFAILED %s should be %s\n",filedir.lname, name );
+		fprintf(stdout,"\tFAILED %s should be %s\n",filedir.lname, name );
 		failed_nomsg();
 	}
 	FAIL (FPEnumerate(Conn, vol,  DIRDID_ROOT , "", 0, bitmap)) 
@@ -136,11 +136,11 @@ DSI *dsi;
 	afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
 
 	if (filedir.pdid != 2) {
-		fprintf(stderr,"\tFAILED %x should be %x\n",filedir.pdid, 2 );
+		fprintf(stdout,"\tFAILED %x should be %x\n",filedir.pdid, 2 );
 		failed_nomsg();
 	}
 	if (strcmp(filedir.lname, name)) {
-		fprintf(stderr,"\tFAILED %s should be %s\n",filedir.lname, name );
+		fprintf(stdout,"\tFAILED %s should be %s\n",filedir.lname, name );
 		failed_nomsg();
 	}
 
@@ -174,8 +174,8 @@ int ret;
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test95: exchange files\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test95: exchange files\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
 		goto test_exit;
@@ -217,12 +217,12 @@ u_int16_t vol = VolID;
 
 	FAIL (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name))
 #if 0
-	if (!(dir1 = FPCreateDir(Conn,vol, DIRDID_ROOT , name2))) {fprintf(stderr,"\tFAILED\n");}
+	if (!(dir1 = FPCreateDir(Conn,vol, DIRDID_ROOT , name2))) {fprintf(stdout,"\tFAILED\n");}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
 	if (fork) {
 		if (ntohl(AFPERR_DENYCONF) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, "", name1)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 		}
 		FPCloseFork(Conn,fork);
 	}	
@@ -261,8 +261,8 @@ char *name = "t99 dir no access";
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Error:t99: test folder without access right\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Error:t99: test folder without access right\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
 		goto test_exit;
@@ -297,8 +297,8 @@ int dt;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Error:t100: no obj cname error (AFPERR_NOOBJ)\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Error:t100: no obj cname error (AFPERR_NOOBJ)\n");
 
 	dt = FPOpenDT(Conn,vol);
 	FAIL (ntohl(AFPERR_NOOBJ) != FPAddComment(Conn, vol,  DIRDID_ROOT , name1,"essai")) 
@@ -377,8 +377,8 @@ int  dt;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Error:t101: access error cname \n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Error:t101: access error cname \n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
 		goto test_exit;
@@ -486,8 +486,8 @@ int  dt;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Error:t102: access error but not cname \n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Error:t102: access error but not cname \n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
 		goto test_exit;
@@ -590,8 +590,8 @@ int  dt;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"t103: did access error \n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"t103: did access error \n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
 		goto test_exit;
@@ -696,8 +696,8 @@ int  dt;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Error:t105: bad DID in call \n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Error:t105: bad DID in call \n");
 
     dir = 0;
     err = ntohl(AFPERR_PARAM);
@@ -772,8 +772,8 @@ int  dt;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Error:test170: cname error did=1 name=\"\"\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Error:test170: cname error did=1 name=\"\"\n");
 
     /* ---- fork.c ---- */
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT_PARENT, "",OPENACC_WR | OPENACC_RD);
@@ -914,8 +914,8 @@ int  dt;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Error:test171: cname error did=1 name=bad name\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Error:test171: cname error did=1 name=bad name\n");
 
     /* ---- fork.c ---- */
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap , tdir, tname,OPENACC_WR | OPENACC_RD);
@@ -1044,8 +1044,8 @@ int  dt;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Error:test173: did error did=0 name=test173 name\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Error:test173: did error did=0 name=test173 name\n");
 
     /* ---- fork.c ---- */
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap , tdir, tname,OPENACC_WR | OPENACC_RD);
@@ -1178,8 +1178,8 @@ DSI *dsi2;
 int  dt;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Error:test174: did error two users from parent folder did=<deleted> name=test174 name\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Error:test174: did error two users from parent folder did=<deleted> name=test174 name\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
 		goto test_exit;
@@ -1258,9 +1258,9 @@ int  dt;
 	ret = FPExchangeFile(Conn, vol, tdir,dir, tname, name1);
 	if (ntohl(AFPERR_NOOBJ) != ret) {
 		if (Quirk && ret == htonl(AFPERR_PARAM)) 
-			fprintf(stderr,"\tFAILED (IGNORED) not always the same error code!\n");
+			fprintf(stdout,"\tFAILED (IGNORED) not always the same error code!\n");
 		else 
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 	}
 	FAIL (ntohl(AFPERR_NOOBJ) != FPExchangeFile(Conn, vol, DIRDID_ROOT, tdir, name, tname)) 
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
@@ -1331,8 +1331,8 @@ test_exit:
 /* ----------- */
 void Error_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Various errors\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Various errors\n");
 	test36();
 	test95();
 	test99();

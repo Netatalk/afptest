@@ -7,8 +7,8 @@ STATIC void test1(void)
 {
 int ret;
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetSrvrInfo:test1: GetSrvInfo\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetSrvrInfo:test1: GetSrvInfo\n");
 
 	ret = FPGetSrvrInfo(Conn);
 	if (ret) {
@@ -21,8 +21,8 @@ int ret;
 /* ----------- */
 void FPGetSrvrInfo_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetSrvInfo page 194\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetSrvInfo page 194\n");
 	test1();
 }
 

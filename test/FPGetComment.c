@@ -18,8 +18,8 @@ u_int16_t vol2;
 DSI *dsi2;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-	fprintf(stderr, "FPGetComment:test53: get comment\n");
+    fprintf(stdout,"===================\n");
+	fprintf(stdout, "FPGetComment:test53: get comment\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
 		goto test_exit;
@@ -87,8 +87,8 @@ int ret;
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-	fprintf(stderr, "FPGetComment:test394: no comment\n");
+    fprintf(stdout,"===================\n");
+	fprintf(stdout, "FPGetComment:test394: no comment\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
 		nottested();
@@ -110,8 +110,8 @@ test_exit:
 /* ----------- */
 void FPGetComment_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetComment page 176\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetComment page 176\n");
 	test53();
 	test394();
 }

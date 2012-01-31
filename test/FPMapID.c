@@ -15,8 +15,8 @@ u_int16_t vol = VolID;
 DSI *dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPMapID:test208: test Map ID call\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPMapID:test208: test Map ID call\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
 		nottested();
@@ -68,8 +68,8 @@ test_exit:
 /* ----------- */
 void FPMapID_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPMapID page 220\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPMapID page 220\n");
 	test208();
 }
 

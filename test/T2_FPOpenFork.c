@@ -17,9 +17,9 @@ int fork = 0, fork1 = 0;
 int dir;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenFork:test47: open read only file read only then read write\n");
-    fprintf(stderr,"FPOpenFork:test47: in a read only folder\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:test47: open read only file read only then read write\n");
+    fprintf(stdout,"FPOpenFork:test47: in a read only folder\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -90,8 +90,8 @@ int dir;
 	FAIL (FPCloseFork(Conn,fork))
 	fork = 0;
 #if 0	
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test47: in a read/write folder\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test47: in a read/write folder\n");
 
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, "test folder/toto.txt", OPENACC_RD);
@@ -114,7 +114,7 @@ int dir;
 	strcpy(temp, Path);
 	strcat(temp,"/test folder/.AppleDouble/toto.txt");
 	if (unlink(temp)) {
-		fprintf(stderr,"\tFAILED Ressource fork not there\n");
+		fprintf(stdout,"\tFAILED Ressource fork not there\n");
 		failed_nomsg();
 	}
 
@@ -137,7 +137,7 @@ int dir;
 
 	strcpy(temp, Path);strcat(temp,"/test folder/.AppleDouble/toto.txt");
 	if (unlink(temp)) {
-		fprintf(stderr,"\tFAILED Ressource fork not there\n");
+		fprintf(stdout,"\tFAILED Ressource fork not there\n");
 		failed_nomsg();
 		goto fin1;
 	}
@@ -203,9 +203,9 @@ u_int16_t vol = VolID;
 int dir;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenFork:test49: open read-write file without ressource fork\n");
-    fprintf(stderr,"FPOpenFork:test49: in a read-write folder\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:test49: open read-write file without ressource fork\n");
+    fprintf(stdout,"FPOpenFork:test49: in a read-write folder\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -240,7 +240,7 @@ int dir;
 	FAIL (FPCloseFork(Conn,fork1))
 
 	if (!unlink(temp)) {
-		fprintf(stderr,"\tRessource fork there!\n");
+		fprintf(stdout,"\tRessource fork there!\n");
 	}
 
 	fork1 = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,dir, file,OPENACC_WR | OPENACC_RD);
@@ -251,7 +251,7 @@ int dir;
 	FAIL (FPCloseFork(Conn,fork1))
 
 	if (!unlink(temp)) {
-		fprintf(stderr,"\tRessource fork there!\n");
+		fprintf(stdout,"\tRessource fork there!\n");
 	}
 fin:
 	FAIL (FPDelete(Conn, vol,  dir , file))
@@ -274,8 +274,8 @@ DSI *dsi = &Conn->dsi;
 unsigned int ret;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenFork:test152: Error when no write access to .AppleDouble\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:test152: Error when no write access to .AppleDouble\n");
 
 	if ((!Mac && !Path) || (volinfo.v_adouble == AD_VERSION_EA)) {
 		test_skipped(T_MAC_PATH);
@@ -314,8 +314,8 @@ int fork;
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenFork:test153: open data fork without ressource fork\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:test153: open data fork without ressource fork\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -358,8 +358,8 @@ char *file  = "t156 test.pdf";
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenFork:test156: Open data fork with no write access to .AppleDouble\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:test156: Open data fork with no write access to .AppleDouble\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -403,8 +403,8 @@ u_int16_t vol = VolID;
 int fd;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenFork:test321: Bogus (empty) resource fork\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:test321: Bogus (empty) resource fork\n");
 
 	if ((!Mac && !Path) || (volinfo.v_adouble == AD_VERSION_EA)) {
 		test_skipped(T_MAC_PATH);
@@ -419,22 +419,22 @@ int fd;
 	if (!Mac) {
 		sprintf(temp,"%s/%s", Path, file);
 		if (chmod(temp, 0444) < 0) {
-			fprintf(stderr,"\tFAILED unable to chmod %s :%s\n", temp, strerror(errno));
+			fprintf(stdout,"\tFAILED unable to chmod %s :%s\n", temp, strerror(errno));
 			failed_nomsg();
 			goto fin;
 		}
 		sprintf(temp,"%s/.AppleDouble/%s", Path, file);
-		fprintf(stderr,"unlink %s \n", temp);
+		fprintf(stdout,"unlink %s \n", temp);
 		unlink(temp);
 		fd = open(temp, O_RDWR | O_CREAT, 0666);
 		if (fd < 0) {
-			fprintf(stderr,"\tFAILED unable to create %s :%s\n", temp, strerror(errno));
+			fprintf(stdout,"\tFAILED unable to create %s :%s\n", temp, strerror(errno));
 			failed_nomsg();
 			goto fin;
 		}
 		close(fd);
 		if (chmod(temp, 0444) < 0) {
-			fprintf(stderr,"\tFAILED unable to chmod %s :%s\n", temp, strerror(errno));
+			fprintf(stdout,"\tFAILED unable to chmod %s :%s\n", temp, strerror(errno));
 			failed_nomsg();
 			goto fin;
 		}
@@ -477,8 +477,8 @@ u_int16_t bitmap;
 int fd;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPRead:test372: no crlf convertion for TEXT file\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPRead:test372: no crlf convertion for TEXT file\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -520,23 +520,23 @@ int fd;
 		goto fin1;
 	}
 	if (memcmp(data, "test\r", 5)) {
-		fprintf(stderr, "\tFAILED wrote \"test\\r\" get \"%s\"\n", data);
+		fprintf(stdout, "\tFAILED wrote \"test\\r\" get \"%s\"\n", data);
 	    failed_nomsg();
 	}
 	if (!Mac) {
 		sprintf(temp,"%s/%s", Path, name);
 		fd = open(temp, O_RDWR , 0666);
 		if (fd < 0) {
-			fprintf(stderr,"\tFAILED unable to open %s :%s\n", temp, strerror(errno));
+			fprintf(stdout,"\tFAILED unable to open %s :%s\n", temp, strerror(errno));
 			failed_nomsg();
 			goto fin1;
 		}
 		if (read(fd, data, 5) != 5) {
-			fprintf(stderr,"\tFAILED unable to read data:%s\n", strerror(errno));
+			fprintf(stdout,"\tFAILED unable to read data:%s\n", strerror(errno));
 			failed_nomsg();
 		}
 		if (memcmp(data, "test\r", 5)) {
-		    fprintf(stderr, "\tFAILED not \"test\\r\" get 0x%x 0x%x 0x%x 0x%x 0x%x\n",
+		    fprintf(stdout, "\tFAILED not \"test\\r\" get 0x%x 0x%x 0x%x 0x%x 0x%x\n",
 		    data[0],data[1],data[2],data[3],data[4]);
 		    failed_nomsg();
 		}
@@ -572,8 +572,8 @@ u_int16_t bitmap;
 int fd;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPRead:test387: crlf convertion for TEXT file\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPRead:test387: crlf convertion for TEXT file\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -615,23 +615,23 @@ int fd;
 		goto fin1;
 	}
 	if (memcmp(data, "test\r", 5)) {
-		fprintf(stderr, "\tFAILED wrote \"test\\r\" get \"%s\"\n", data);
+		fprintf(stdout, "\tFAILED wrote \"test\\r\" get \"%s\"\n", data);
 	    failed_nomsg();
 	}
 	if (!Mac) {
 		sprintf(temp,"%s/%s", Path, name);
 		fd = open(temp, O_RDWR , 0666);
 		if (fd < 0) {
-			fprintf(stderr,"\tFAILED unable to open %s :%s\n", temp, strerror(errno));
+			fprintf(stdout,"\tFAILED unable to open %s :%s\n", temp, strerror(errno));
 			failed_nomsg();
 			goto fin1;
 		}
 		if (read(fd, data, 5) != 5) {
-			fprintf(stderr,"\tFAILED unable to read data:%s\n", strerror(errno));
+			fprintf(stdout,"\tFAILED unable to read data:%s\n", strerror(errno));
 			failed_nomsg();
 		}
 		if (memcmp(data, "test\n", 5)) {
-		    fprintf(stderr, "\tFAILED not \"test\\n\" get 0x%x 0x%x 0x%x 0x%x 0x%x\n",
+		    fprintf(stdout, "\tFAILED not \"test\\n\" get 0x%x 0x%x 0x%x 0x%x 0x%x\n",
 		    data[0],data[1],data[2],data[3],data[4]);
 		    failed_nomsg();
 		}
@@ -660,8 +660,8 @@ u_int16_t bitmap;
 int fd;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPRead:test388: crlf convertion for TEXT file (not default type)\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPRead:test388: crlf convertion for TEXT file (not default type)\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -703,23 +703,23 @@ int fd;
 		goto fin1;
 	}
 	if (memcmp(data, "test\r", 5)) {
-		fprintf(stderr, "\tFAILED wrote \"test\\r\" get \"%s\"\n", data);
+		fprintf(stdout, "\tFAILED wrote \"test\\r\" get \"%s\"\n", data);
 	    failed_nomsg();
 	}
 	if (!Mac) {
 		sprintf(temp,"%s/%s", Path, name);
 		fd = open(temp, O_RDWR , 0666);
 		if (fd < 0) {
-			fprintf(stderr,"\tFAILED unable to open %s :%s\n", temp, strerror(errno));
+			fprintf(stdout,"\tFAILED unable to open %s :%s\n", temp, strerror(errno));
 			failed_nomsg();
 			goto fin1;
 		}
 		if (read(fd, data, 5) != 5) {
-			fprintf(stderr,"\tFAILED unable to read data:%s\n", strerror(errno));
+			fprintf(stdout,"\tFAILED unable to read data:%s\n", strerror(errno));
 			failed_nomsg();
 		}
 		if (memcmp(data, "test\n", 5)) {
-		    fprintf(stderr, "\tFAILED not \"test\\n\" get 0x%x 0x%x 0x%x 0x%x 0x%x\n",
+		    fprintf(stdout, "\tFAILED not \"test\\n\" get 0x%x 0x%x 0x%x 0x%x 0x%x\n",
 		    data[0],data[1],data[2],data[3],data[4]);
 		    failed_nomsg();
 		}
@@ -748,8 +748,8 @@ u_int16_t bitmap;
 int fd;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPRead:test392: no crlf convertion for no TEXT file\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPRead:test392: no crlf convertion for no TEXT file\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -791,23 +791,23 @@ int fd;
 		goto fin1;
 	}
 	if (memcmp(data, "test\r", 5)) {
-		fprintf(stderr, "\tFAILED wrote \"test\\r\" get \"%s\"\n", data);
+		fprintf(stdout, "\tFAILED wrote \"test\\r\" get \"%s\"\n", data);
 	    failed_nomsg();
 	}
 	if (!Mac) {
 		sprintf(temp,"%s/%s", Path, name);
 		fd = open(temp, O_RDWR , 0666);
 		if (fd < 0) {
-			fprintf(stderr,"\tFAILED unable to open %s :%s\n", temp, strerror(errno));
+			fprintf(stdout,"\tFAILED unable to open %s :%s\n", temp, strerror(errno));
 			failed_nomsg();
 			goto fin1;
 		}
 		if (read(fd, data, 5) != 5) {
-			fprintf(stderr,"\tFAILED unable to read data:%s\n", strerror(errno));
+			fprintf(stdout,"\tFAILED unable to read data:%s\n", strerror(errno));
 			failed_nomsg();
 		}
 		if (memcmp(data, "test\r", 5)) {
-		    fprintf(stderr, "\tFAILED not \"test\\r\" get 0x%x 0x%x 0x%x 0x%x 0x%x\n",
+		    fprintf(stdout, "\tFAILED not \"test\\r\" get 0x%x 0x%x 0x%x 0x%x 0x%x\n",
 		    data[0],data[1],data[2],data[3],data[4]);
 		    failed_nomsg();
 		}
@@ -833,8 +833,8 @@ u_int16_t vol = VolID;
 int dir;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenFork:test411: open read-only a file without ressource fork\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:test411: open read-only a file without ressource fork\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -868,7 +868,7 @@ int dir;
 	FAIL (FPCloseFork(Conn,fork))
 
 	if (!Mac && !unlink(temp)) {
-		fprintf(stderr,"\tFAILED Ressource fork there!\n");
+		fprintf(stdout,"\tFAILED Ressource fork there!\n");
 		failed_nomsg();
 	}
 
@@ -894,8 +894,8 @@ u_int16_t vol = VolID;
 int dir;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenFork:test430: don't set the name again in the resource fork if file open twice\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:test430: don't set the name again in the resource fork if file open twice\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -957,8 +957,8 @@ STATIC void test236()
     u_int16_t vol = VolID, bitmap;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenFork:test236: symlink attack: try reading /etc/passwd\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:test236: symlink attack: try reading /etc/passwd\n");
 
 	if (!Path) {
 		test_skipped(T_MAC_PATH);
@@ -1033,8 +1033,8 @@ STATIC void test237()
     u_int16_t vol = VolID, bitmap;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenFork:test237: symlink reading and attack: try reading /etc/passwd\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:test237: symlink reading and attack: try reading /etc/passwd\n");
 
 	if (!Path) {
 		test_skipped(T_MAC_PATH);
@@ -1071,7 +1071,7 @@ STATIC void test237()
 	}
     
     Data[11] = 0;
-    fprintf(stderr, "readlink: %s\n", Data);
+    fprintf(stdout, "readlink: %s\n", Data);
 
     if (strcmp(Data, name4) != 0) {
 		failed();
@@ -1098,8 +1098,8 @@ STATIC void test238()
     u_int16_t vol = VolID, bitmap;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenFork:test238: symlink reading with short reqcount\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:test238: symlink reading with short reqcount\n");
 
 	if (!Path) {
 		test_skipped(T_MAC_PATH);
@@ -1140,7 +1140,7 @@ STATIC void test238()
 	}
 
     Data[strlen(verylonglinkname)] = 0;
-    fprintf(stderr, "readlink: %s\n", Data);
+    fprintf(stdout, "readlink: %s\n", Data);
 
     if (strcmp(Data, verylonglinkname) != 0) {
 		failed();
@@ -1158,8 +1158,8 @@ test_exit:
 /* ----------- */
 void FPOpenFork_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenFork page 230\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork page 230\n");
 #if 0
     test47();
 #endif    

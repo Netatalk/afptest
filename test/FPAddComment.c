@@ -21,8 +21,8 @@ char *cmt;
 int  dt;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-	fprintf(stderr, "FPAddComment:test55: add comment\n");
+    fprintf(stdout,"===================\n");
+	fprintf(stdout, "FPAddComment:test55: add comment\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
 		goto test_exit;
@@ -32,7 +32,7 @@ int  dt;
 		goto test_exit;
 	}
 	if (!(pdir = no_access_folder(vol, DIRDID_ROOT, name))) {
-		fprintf(stderr,"\tWARNING folder without access failed\n");
+		fprintf(stdout,"\tWARNING folder without access failed\n");
 	}
 	dsi2 = &Conn2->dsi;
 	vol2  = FPOpenVol(Conn2, Vol);
@@ -86,7 +86,7 @@ int  dt;
 	FAIL (FPCloseFork(Conn,fork))
 #if 0
 	if (ntohl(AFPERR_ACCESS) != FPAddComment(Conn, vol,  DIRDID_ROOT , "bogus folder","essai")) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 #endif	
@@ -107,8 +107,8 @@ test_exit:
 /* ----------- */
 void FPAddComment_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPAddComment page 96\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPAddComment page 96\n");
 	test55();
 }
 

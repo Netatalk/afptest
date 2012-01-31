@@ -43,8 +43,8 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Delete all files\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Delete all files\n");
     f_bitmap = (1<<FILPBIT_FNUM ) | (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO)|
 	         (1<<FILPBIT_CDATE) | (1<<FILPBIT_BDATE) | (1<<FILPBIT_MDATE);
 
@@ -163,7 +163,7 @@ DSI *dsi;
 		sprintf(temp,"%s/:test", Path);
 		fd = open(temp, O_RDWR | O_CREAT, 0666);
 		if (fd < 0) {
-			fprintf(stderr,"\tFAILED unable to create %s :%s\n", temp, strerror(errno));
+			fprintf(stdout,"\tFAILED unable to create %s :%s\n", temp, strerror(errno));
 			failed_nomsg();
 		}
 		else {
@@ -210,18 +210,18 @@ int     Mac = 0;
 /* =============================== */
 void usage( char * av0 )
 {
-    fprintf( stderr, "usage:\t%s [-m] [-e encoding] [-h host] [-p port] [-s vol] [-u user] [-w password]\n", av0 );
-    fprintf( stderr,"\t-m\tserver is a Mac\n");
-    fprintf( stderr,"\t-e\tclient encoding western|utf8|hebrew|\n");
-    fprintf( stderr,"\t-h\tserver host name (default localhost)\n");
-    fprintf( stderr,"\t-p\tserver port (default 548)\n");
-    fprintf( stderr,"\t-s\tvolume to mount (default home)\n");
-    fprintf( stderr,"\t-u\tuser name (default uid)\n");
-    fprintf( stderr,"\t-w\tpassword (default none)\n");
-    fprintf( stderr,"\t-3\tAFP 3.0 version\n");
-    fprintf( stderr,"\t-4\tAFP 3.1 version\n");
-    fprintf( stderr,"\t-5\tAFP 3.2 version\n");
-    fprintf( stderr,"\t-v\tverbose\n");
+    fprintf( stdout, "usage:\t%s [-m] [-e encoding] [-h host] [-p port] [-s vol] [-u user] [-w password]\n", av0 );
+    fprintf( stdout,"\t-m\tserver is a Mac\n");
+    fprintf( stdout,"\t-e\tclient encoding western|utf8|hebrew|\n");
+    fprintf( stdout,"\t-h\tserver host name (default localhost)\n");
+    fprintf( stdout,"\t-p\tserver port (default 548)\n");
+    fprintf( stdout,"\t-s\tvolume to mount (default home)\n");
+    fprintf( stdout,"\t-u\tuser name (default uid)\n");
+    fprintf( stdout,"\t-w\tpassword (default none)\n");
+    fprintf( stdout,"\t-3\tAFP 3.0 version\n");
+    fprintf( stdout,"\t-4\tAFP 3.1 version\n");
+    fprintf( stdout,"\t-5\tAFP 3.2 version\n");
+    fprintf( stdout,"\t-v\tverbose\n");
 
     exit (1);
 }
@@ -280,7 +280,7 @@ static char *uam = "Cleartxt Passwrd";
         case 'p' :
             Port = atoi( optarg );
             if (Port <= 0) {
-                fprintf(stderr, "Bad port.\n");
+                fprintf(stdout, "Bad port.\n");
                 exit(1);
             }
             break;

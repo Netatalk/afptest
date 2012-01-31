@@ -19,8 +19,8 @@ char utf8name[20];
 int i;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPReadExt:test22: AFP 3.0 read/Write\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPReadExt:test22: AFP 3.0 read/Write\n");
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
 		goto test_exit;
@@ -123,7 +123,7 @@ fin2g:
 	}
 	else for (i = 0; i < 10000; i++) {
 		if (Data[i] != 0) {
-			fprintf(stderr,"\tFAILED Data != 0\n");
+			fprintf(stdout,"\tFAILED Data != 0\n");
 			failed_nomsg();
 			break;
 		}
@@ -174,8 +174,8 @@ test_exit:
 /* ----------- */
 void FPReadExt_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPReadExt page 241\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPReadExt page 241\n");
 	test22();
 }
 

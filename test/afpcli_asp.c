@@ -18,7 +18,7 @@ int attr;
        		hp=gethostbyaddr((char*)addr,sizeof(addr),AF_INET);
  
     	if(!hp) {
-       		fprintf(stderr,"Unknown host '%s' for server [%s]\n.",host);
+       		fprintf(stdout,"Unknown host '%s' for server [%s]\n.",host);
        		return(-1);
       	}
    	}
@@ -27,7 +27,7 @@ int attr;
  
  	sock=socket(PF_INET,SOCK_STREAM,0);
  	if(sock==-1) {
-    	fprintf(stderr,"Failed to create client sockets.\n");
+    	fprintf(stdout,"Failed to create client sockets.\n");
     	return(-1);
    	}
     attr = 1;
@@ -36,7 +36,7 @@ int attr;
  	if(connect(sock ,(struct sockaddr*)&server,sizeof(server))==-1) {
     	close(sock);
     	sock=-1;
-    	fprintf(stderr,"Failed to connect socket.\n");
+    	fprintf(stdout,"Failed to connect socket.\n");
    	}
  
 	 return(sock);
@@ -58,7 +58,7 @@ size_t my_asp_stream_read(ASP *asp, void *data, const size_t length)
     if (len > 0)
       stored += len;
     else {/* eof or error */
-      fprintf(stderr, "asp_stream_read(%d): %s\n", len, (len < 0)?strerror(errno):"EOF");
+      fprintf(stdout, "asp_stream_read(%d): %s\n", len, (len < 0)?strerror(errno):"EOF");
       break;
     }
   }
@@ -110,7 +110,7 @@ ssize_t len;
       continue;
 
     if (len < 0) {
-      fprintf(stderr, "asp_stream_write: %s\n", strerror(errno));
+      fprintf(stdout, "asp_stream_write: %s\n", strerror(errno));
       break;
     }
     
@@ -713,7 +713,7 @@ int dir = 0;
 		ofs = 0;
 		memcpy(&dir, asp->commands, sizeof(dir));			/* did */
 		ofs += sizeof(dir);
-		fprintf(stderr,"directory ID %d\n", ntohl(dir));
+		fprintf(stdout,"directory ID %d\n", ntohl(dir));
 	}
 	return(dir);
 }

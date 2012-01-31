@@ -8,8 +8,8 @@ STATIC void test202()
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-	fprintf(stderr, "FPFlush:test202: flush volume call\n");
+    fprintf(stdout,"===================\n");
+	fprintf(stdout, "FPFlush:test202: flush volume call\n");
 
 	FAIL (FPFlush(Conn, vol))
 	
@@ -20,8 +20,8 @@ u_int16_t vol = VolID;
 /* ----------- */
 void FPFlush_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPFlush page 169\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPFlush page 169\n");
 	test202();
 }
 

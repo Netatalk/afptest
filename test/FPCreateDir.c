@@ -10,8 +10,8 @@ char *name = "test6 dir";
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCreateDir:test6: create dir\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCreateDir:test6: create dir\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
 		failed();
@@ -38,8 +38,8 @@ int pdir;
 u_int16_t vol = VolID;
 		
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCreateDir:test26: folder without right access\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCreateDir:test26: folder without right access\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
 		goto test_exit;
@@ -89,8 +89,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCreateDir:test45: Folder Creation\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCreateDir:test45: Folder Creation\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
 		goto test_exit;
@@ -178,8 +178,8 @@ unsigned int ret;
 
 	
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCreateDir:test175: did error two users in  folder did=<deleted> name=test175\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCreateDir:test175: did error two users in  folder did=<deleted> name=test175\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
 		goto test_exit;
@@ -252,8 +252,8 @@ DSI *dsi2;
 unsigned int ret;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCreateDir:test198: second user delete folder\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCreateDir:test198: second user delete folder\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
 		goto test_exit;
@@ -318,8 +318,8 @@ DSI *dsi2;
 unsigned int ret;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCreateDir:test357: admin user \n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCreateDir:test357: admin user \n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
 		goto test_exit;
@@ -372,8 +372,8 @@ test_exit:
 /* ----------- */
 void FPCreateDir_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCreateDir page 136\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCreateDir page 136\n");
 	test6();
 	test26();
 	test45();

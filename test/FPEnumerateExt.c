@@ -13,8 +13,8 @@ u_int16_t vol = VolID;
 
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPEnumerateExt:test23: AFP 3.0 FPEnumerate ext\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPEnumerateExt:test23: AFP 3.0 FPEnumerate ext\n");
 
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!dir) {
@@ -72,8 +72,8 @@ test_exit:
 /* ----------- */
 void FPEnumerateExt_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPEnumerateExt page 155\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPEnumerateExt page 155\n");
     test23();
 }
 

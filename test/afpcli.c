@@ -26,7 +26,7 @@ int attr;
        		hp=gethostbyaddr((char*)addr,sizeof(addr),AF_INET);
  
     	if(!hp) {
-       		fprintf(stderr,"Unknown host '%s' for server \n.",host);
+       		fprintf(stdout,"Unknown host '%s' for server \n.",host);
        		return(-1);
       	}
    	}
@@ -35,7 +35,7 @@ int attr;
  
  	sock=socket(PF_INET,SOCK_STREAM,0);
  	if(sock==-1) {
-    	fprintf(stderr,"Failed to create client sockets.\n");
+    	fprintf(stdout,"Failed to create client sockets.\n");
     	return(-1);
    	}
     attr = 1;
@@ -44,7 +44,7 @@ int attr;
  	if(connect(sock ,(struct sockaddr*)&server,sizeof(server))==-1) {
     	close(sock);
     	sock=-1;
-    	fprintf(stderr,"Failed to connect socket.\n");
+    	fprintf(stdout,"Failed to connect socket.\n");
    	}
  
 	 return(sock);
@@ -72,7 +72,7 @@ size_t my_dsi_stream_read(DSI *dsi, void *data, const size_t length)
     if (len > 0)
       stored += len;
     else {/* eof or error */
-      fprintf(stderr, "dsi_stream_read(%d): %s\n", len, (len < 0)?strerror(errno):"EOF");
+      fprintf(stdout, "dsi_stream_read(%d): %s\n", len, (len < 0)?strerror(errno):"EOF");
       if (!len) 
           dsi->header.dsi_code = 0xffffffff;
       break;
@@ -136,7 +136,7 @@ ssize_t len;
       continue;
 
     if (len < 0) {
-      fprintf(stderr, "dsi_stream_write: %s\n", strerror(errno));
+      fprintf(stdout, "dsi_stream_write: %s\n", strerror(errno));
       break;
     }
     
@@ -188,7 +188,7 @@ int my_dsi_stream_send(DSI *dsi, void *buf, size_t length)
 	    	if (len == towrite) /* wrote everything out */
       			break;
 	    	else if (len < 0) { /* error */
-      			fprintf(stderr, "my_dsi_stream_send: %s", strerror(errno));
+      			fprintf(stdout, "my_dsi_stream_send: %s", strerror(errno));
       			return 0;
 	    	}
  
@@ -987,7 +987,7 @@ void *fp_malloc(size_t size)
 {
     void *ret = malloc(size);
     if (ret == NULL) {
-        fprintf(stderr, "fp_malloc: out of memory !\n");
+        fprintf(stdout, "fp_malloc: out of memory !\n");
         abort();
     }
     memset(ret, 0, size);
@@ -1008,7 +1008,7 @@ void *fp_realloc(void *ptr, size_t size)
 {
     void *ret = realloc(ptr, size);
     if (ret == NULL) {
-        fprintf(stderr, "fp_realloc: out of memory !\n");
+        fprintf(stdout, "fp_realloc: out of memory !\n");
         abort();
     }
     return ret;
@@ -2093,7 +2093,7 @@ DSI *dsi;
 		memcpy(&dir, dsi->commands, sizeof(dir));			/* did */
 		ofs += sizeof(dir);
 		if (!Quiet) {
-			fprintf(stderr,"directory ID 0x%x\n", ntohl(dir));
+			fprintf(stdout,"directory ID 0x%x\n", ntohl(dir));
 		}
 	}
 	return(dir);

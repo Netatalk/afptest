@@ -16,8 +16,8 @@ unsigned int pdir;
 int dir;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPAddAPPL:test214: test appl\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPAddAPPL:test214: test appl\n");
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
@@ -85,8 +85,8 @@ struct afp_filedir_parms filedir;
 int dir;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPAddAPPL:test301: test appl\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPAddAPPL:test301: test appl\n");
     if (!Conn2) {
 	 	dir = get_did(Conn, vol, did, name);
 	 	if (!dir) {
@@ -102,12 +102,12 @@ int dir;
 		     (1<< DIRPBIT_ATTR) |  (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
 		     | (1<<DIRPBIT_UID) | (1 << DIRPBIT_GID));
 		if (ret) {
-			fprintf(stderr, "OK can't create a file\n");
+			fprintf(stdout, "OK can't create a file\n");
 			goto fin;
 		}
 		fork = FPOpenFork(Conn, vol, OPENFORK_DATA  , 0 ,dir, file,OPENACC_RD| OPENACC_WR );
 		if (fork) {
-			fprintf(stderr, "Ouch now we have a fork open then read/write in a folder we no access\n");
+			fprintf(stdout, "Ouch now we have a fork open then read/write in a folder we no access\n");
 			FPCloseFork(Conn,fork);
 		}
 	}
@@ -148,8 +148,8 @@ fin:
 /* ----------- */
 void FPAddAPPL_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPAddAPPL page 94\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPAddAPPL page 94\n");
 	test214();
 /*	
 	test301();

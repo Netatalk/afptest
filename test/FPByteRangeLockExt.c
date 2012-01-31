@@ -79,8 +79,8 @@ STATIC void test66()
 char *name = "t66 FPByteLock_ext DF";
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPByteRangeLockExt:test66: FPByteLock Data Fork\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPByteRangeLockExt:test66: FPByteLock Data Fork\n");
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
 		goto test_exit;
@@ -96,8 +96,8 @@ STATIC void test67()
 char *name = "t67 FPByteLock_ext RF";
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPByteRangeLockExt:test67: FPByteLock Ressource Fork\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPByteRangeLockExt:test67: FPByteLock Ressource Fork\n");
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
 		goto test_exit;
@@ -117,8 +117,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPByteRangeLockExt:test195: illegal fork\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPByteRangeLockExt:test195: illegal fork\n");
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
 		goto test_exit;
@@ -132,8 +132,8 @@ test_exit:
 /* ----------- */
 void FPByteRangeLockExt_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPByteRangeLockExt page 105\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPByteRangeLockExt page 105\n");
     test66();
     test67();
     test195();

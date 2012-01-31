@@ -13,8 +13,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPByteRangeLock:test60: illegal fork\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPByteRangeLock:test60: illegal fork\n");
 
 	illegal_fork(dsi, AFP_BYTELOCK, name);
 	exit_test("test60");
@@ -109,8 +109,8 @@ STATIC void test63()
 char *name = "test63 FPByteLock DF";
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPByteRangeLock:test63: FPByteLock Data Fork\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPByteRangeLock:test63: FPByteLock Data Fork\n");
 	test_bytelock(VolID, name, OPENFORK_DATA);
 	exit_test("test63");
 }
@@ -121,8 +121,8 @@ STATIC void test64()
 char *name = "test64 FPByteLock RF";
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPByteRangeLock:test64: FPByteLock Resource Fork\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPByteRangeLock:test64: FPByteLock Resource Fork\n");
 	test_bytelock(VolID, name, OPENFORK_RSCS);
 	exit_test("test64");
 }
@@ -190,8 +190,8 @@ STATIC void test65()
 char *name = "t65 DF FPByteLock 2 users";
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPByteRangeLock:test65: FPByteLock 2users DATA FORK\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPByteRangeLock:test65: FPByteLock 2users DATA FORK\n");
     
 	if (!Conn2) {
 		test_skipped(T_CONN2);
@@ -204,8 +204,8 @@ char *name = "t65 DF FPByteLock 2 users";
     test_bytelock3(name, OPENFORK_DATA);
 
 	name = "t65 RF FPByteLock 2 users";
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPByteRangeLock:test65: FPByteLock 2users Resource FORK\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPByteRangeLock:test65: FPByteLock 2users Resource FORK\n");
     test_bytelock3(name, OPENFORK_RSCS);
 test_exit:
 	exit_test("test65");
@@ -288,16 +288,16 @@ void test78()
 char *name = "t78 FPByteLock RF size -1";
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPByteRangeLock:test78: test Byte Lock size -1 with no large file support\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPByteRangeLock:test78: test Byte Lock size -1 with no large file support\n");
 	if (Locking) {
 		test_skipped(T_LOCKING);
 		goto test_exit;
 	}		
 	test_bytelock2(name, OPENFORK_RSCS);
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPByteRangeLock:test78: test Byte Lock size -1 with no large file support, DATA fork\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPByteRangeLock:test78: test Byte Lock size -1 with no large file support, DATA fork\n");
 	name = "t78 FPByteLock DF size -1";
 	test_bytelock2(name, OPENFORK_DATA);
 test_exit:
@@ -316,8 +316,8 @@ char *name = "t79 FPByteLock Read";
 int len = (type == OPENFORK_RSCS)?(1<<FILPBIT_RFLEN):(1<<FILPBIT_DFLEN);
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPByteRangeLock:test79: test Byte Lock and read conflict\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPByteRangeLock:test79: test Byte Lock and read conflict\n");
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
 		goto test_exit;
@@ -389,12 +389,12 @@ STATIC void test80()
 char *name = "t80 RF FPByteLock Read write";
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPByteRangeLock:test80: Resource Fork test Byte Lock and read write same user(file)\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPByteRangeLock:test80: Resource Fork test Byte Lock and read write same user(file)\n");
 	test_bytelock5(VolID, name, OPENFORK_RSCS);
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPByteRangeLock:test80: Data Fork test Byte Lock and read write same user(file)\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPByteRangeLock:test80: Data Fork test Byte Lock and read write same user(file)\n");
 	name = "t80 DF FPByteLock Read write";
 	test_bytelock5(VolID, name, OPENFORK_DATA);
 
@@ -415,8 +415,8 @@ DSI *dsi2;
 int type = OPENFORK_DATA;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPByteRangeLock:test329: FPByteLock 2users DATA FORK\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPByteRangeLock:test329: FPByteLock 2users DATA FORK\n");
     
 	if (!Conn2) {
 		test_skipped(T_CONN2);
@@ -507,8 +507,8 @@ STATIC void test410()
     int type = OPENFORK_DATA;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPByteRangeLock:test410: FPByteLock 2users DATA FORK\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPByteRangeLock:test410: FPByteLock 2users DATA FORK\n");
     
 	if (!Conn2) {
 		test_skipped(T_CONN2);
@@ -803,8 +803,8 @@ DSI *dsi2;
 int dir, dir2;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPByteRangeLock:test330: pre OSX trash folder\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPByteRangeLock:test330: pre OSX trash folder\n");
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
@@ -824,7 +824,7 @@ int dir, dir2;
 	if (!fork2)
 		goto fin;
 	if (dir2 == dir) {
-		fprintf(stderr,"\tFAILED both client are using the same folder for trash\n"); 
+		fprintf(stdout,"\tFAILED both client are using the same folder for trash\n"); 
 		failed_nomsg();
 	}
 
@@ -858,8 +858,8 @@ DSI *dsi2;
 int type = OPENFORK_DATA;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPByteRangeLock:test366: Locks released on exit\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPByteRangeLock:test366: Locks released on exit\n");
     
 	if (!Conn2) {
 		test_skipped(T_CONN2);
@@ -871,7 +871,7 @@ int type = OPENFORK_DATA;
 	}
 	/* hack, it closes a connection */
 	if (!Test) {
-		fprintf(stderr,"\tSKIPPED (only with -f option)\n");
+		fprintf(stdout,"\tSKIPPED (only with -f option)\n");
 		goto test_exit;
 	}
 	
@@ -946,8 +946,8 @@ test_exit:
 /* ----------- */
 void FPByteRangeLock_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPByteRangeLock page 101\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPByteRangeLock page 101\n");
     test60();
 	test63();
 	test64();

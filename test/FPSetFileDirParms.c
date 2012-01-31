@@ -25,8 +25,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetFileDirParms:t98: test error setfildirparam\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileDirParms:t98: test error setfildirparam\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
 		goto test_exit;
@@ -106,8 +106,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetFileDirParms:t230: set unix access privilege\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileDirParms:t230: set unix access privilege\n");
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
 		goto test_exit;
@@ -137,7 +137,7 @@ DSI *dsi;
 		filedir.isdir = 1;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
 		if (!(S_ISDIR(filedir.unix_priv))) {
-			fprintf(stderr, "\tFAILED %o not a dir\n", filedir.unix_priv);
+			fprintf(stdout, "\tFAILED %o not a dir\n", filedir.unix_priv);
 			failed_nomsg();
 		}
 		bitmap = (1<< DIRPBIT_UNIXPR);
@@ -246,8 +246,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetFileDirParms:t231: set unix access privilege two users\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileDirParms:t231: set unix access privilege two users\n");
 
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
@@ -372,8 +372,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetFileDirParms:t232: unix access privilege delete ro file in a rw folder\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileDirParms:t232: unix access privilege delete ro file in a rw folder\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
 		goto test_exit;
@@ -446,8 +446,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetFileDirParms:t345: no unix access privilege \n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileDirParms:t345: no unix access privilege \n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
@@ -538,8 +538,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetFileDirParms:t346: delete a file with no unix access privilege \n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileDirParms:t346: delete a file with no unix access privilege \n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
@@ -603,11 +603,11 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetFileDirParms:t347: no unix access privilege \n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileDirParms:t347: no unix access privilege \n");
 
 	if ((get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
-		fprintf(stderr,"\tSKIPPED (need %s)\n","a no unix priv vol");
+		fprintf(stdout,"\tSKIPPED (need %s)\n","a no unix priv vol");
 		skipped_nomsg();
 		goto test_exit;
 	}
@@ -698,8 +698,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetFileDirParms:t348: change a folder perm in root folder\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileDirParms:t348: change a folder perm in root folder\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
@@ -770,8 +770,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetFileDirParms:t349: change a folder perm in a folder\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileDirParms:t349: change a folder perm in a folder\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
@@ -847,8 +847,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetFileDirParms:t350: change root folder perm\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileDirParms:t350: change root folder perm\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
@@ -924,8 +924,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetFileDirParms:t358: set unix access privilege two users\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileDirParms:t358: set unix access privilege two users\n");
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
@@ -999,8 +999,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetFileDirParms:t359: no unix access privilege with finder info \n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileDirParms:t359: no unix access privilege with finder info \n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
@@ -1046,7 +1046,7 @@ DSI *dsi;
 	}
 	afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap,0);
 	if ((filedir.attr & ATTRBIT_NODELETE) != ATTRBIT_NODELETE) {
-		fprintf(stderr,"\tFAILED attribute not set\n");
+		fprintf(stdout,"\tFAILED attribute not set\n");
 		failed_nomsg();
 	}
 	ret = FPDelete(Conn, vol,  dir , name);
@@ -1090,8 +1090,8 @@ u_int16_t vol2;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetFileDirParms:t361: no unix access privilege two users with finder info \n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileDirParms:t361: no unix access privilege two users with finder info \n");
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
@@ -1148,7 +1148,7 @@ u_int16_t vol2;
 	}
 	afp_filedir_unpack(&filedir, dsi2->data +ofs, bitmap,0);
 	if ((filedir.attr & ATTRBIT_NODELETE) != ATTRBIT_NODELETE) {
-		fprintf(stderr,"\tFAILED attribute not set\n");
+		fprintf(stdout,"\tFAILED attribute not set\n");
 		failed_nomsg();
 	}
 	ret = FPDelete(Conn2, vol2,  dir , name);
@@ -1189,8 +1189,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetFileDirParms:t400: set file owner\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileDirParms:t400: set file owner\n");
 
 	if ( !(get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
 		test_skipped(T_UNIX_PREV);
@@ -1236,8 +1236,8 @@ test_exit:
 /* ----------- */
 void FPSetFileDirParms_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetFileDirParms page 258\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileDirParms page 258\n");
     test98();
     test230();
     test231();

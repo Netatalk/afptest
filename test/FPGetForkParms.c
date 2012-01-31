@@ -11,7 +11,7 @@ static void check_forklen(DSI *dsi, int type, u_int32_t  len)
 u_int32_t flen;
 	flen = get_forklen(dsi, type);
 	if (flen != len) {
-		fprintf(stderr,"\tFAILED got %d but %d expected\n", flen, len);
+		fprintf(stdout,"\tFAILED got %d but %d expected\n", flen, len);
 		failed_nomsg();
 	}
 }
@@ -84,8 +84,8 @@ u_int16_t vol = VolID;
 char *name = "t21 file";
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetForkParms:test21: setting/reading fork len\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetForkParms:test21: setting/reading fork len\n");
 
     
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
@@ -117,8 +117,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-	fprintf(stderr, "FPGetForkParms:test50: deny mode & move file\n");
+    fprintf(stdout,"===================\n");
+	fprintf(stdout, "FPGetForkParms:test50: deny mode & move file\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -193,8 +193,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetForkParms:test188: illegal fork\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetForkParms:test188: illegal fork\n");
 
 	illegal_fork(dsi, AFP_GETFORKPARAM, name);
 	exit_test("test188");
@@ -210,8 +210,8 @@ int ret;
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-	fprintf(stderr, "FPGetForkParms:test192: open write only\n");
+    fprintf(stdout,"===================\n");
+	fprintf(stdout, "FPGetForkParms:test192: open write only\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -258,8 +258,8 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetForkParms:test305: fork len after a 0 byte write\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetForkParms:test305: fork len after a 0 byte write\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -292,8 +292,8 @@ test_exit:
 /* ----------- */
 void FPGetForkParms_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPGetForkParms page 184\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPGetForkParms page 184\n");
     test21();
     test50();
 	test188();

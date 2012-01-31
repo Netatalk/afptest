@@ -136,8 +136,8 @@ STATIC void test500()
     uint16_t bitmap = (1<< DIRPBIT_DID)|(1<< DIRPBIT_LNAME);
 
 	enter_test();
-    fprintf(stderr, "===================\n");
-    fprintf(stderr, "Dircache:test500: move and rename dir, enumerate new parent, stat renamed dir\n");
+    fprintf(stdout, "===================\n");
+    fprintf(stdout, "Dircache:test500: move and rename dir, enumerate new parent, stat renamed dir\n");
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
@@ -169,11 +169,11 @@ STATIC void test500()
 	afp_filedir_unpack(&filedir, dsi->data + ofs, 0, bitmap);
 
 	if (filedir.did != subdir1_id) {
-		fprintf(stderr,"\tFAILED %x should be %x\n",filedir.did, subdir1_id);
+		fprintf(stdout,"\tFAILED %x should be %x\n",filedir.did, subdir1_id);
         failed();
 	}
 	if (strcmp(filedir.lname, renamedsubdir1)) {
-		fprintf(stderr,"\tFAILED %s should be %s\n",filedir.lname, renamedsubdir1);
+		fprintf(stdout,"\tFAILED %s should be %s\n",filedir.lname, renamedsubdir1);
         failed();
 	}
 
@@ -204,8 +204,8 @@ STATIC void test501()
     uint16_t bitmap = (1<< DIRPBIT_DID)|(1<< DIRPBIT_LNAME);
 
 	enter_test();
-    fprintf(stderr, "===================\n");
-    fprintf(stderr, "Dircache:test501: move and rename dir, then stat it\n");
+    fprintf(stdout, "===================\n");
+    fprintf(stdout, "Dircache:test501: move and rename dir, then stat it\n");
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
@@ -234,11 +234,11 @@ STATIC void test501()
 	afp_filedir_unpack(&filedir, dsi->data + ofs, 0, bitmap);
 
 	if (filedir.did != subdir1_id) {
-		fprintf(stderr,"\tFAILED %x should be %x\n",filedir.did, subdir1_id);
+		fprintf(stdout,"\tFAILED %x should be %x\n",filedir.did, subdir1_id);
         failed();
 	}
 	if (strcmp(filedir.lname, renamedsubdir1)) {
-		fprintf(stderr,"\tFAILED %s should be %s\n",filedir.lname, renamedsubdir1);
+		fprintf(stdout,"\tFAILED %s should be %s\n",filedir.lname, renamedsubdir1);
         failed();
 	}
 
@@ -269,8 +269,8 @@ STATIC void test502()
     uint16_t bitmap = (1<< DIRPBIT_DID)|(1<< DIRPBIT_LNAME);
 
 	enter_test();
-    fprintf(stderr, "===================\n");
-    fprintf(stderr, "Dircache:test502: move and rename dir, enumerate renamed dir\n");
+    fprintf(stdout, "===================\n");
+    fprintf(stdout, "Dircache:test502: move and rename dir, enumerate renamed dir\n");
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
@@ -303,11 +303,11 @@ STATIC void test502()
 	afp_filedir_unpack(&filedir, dsi->data + ofs, 0, bitmap);
 
 	if (filedir.did != subdir1_id) {
-		fprintf(stderr,"\tFAILED %x should be %x\n",filedir.did, subdir1_id);
+		fprintf(stdout,"\tFAILED %x should be %x\n",filedir.did, subdir1_id);
         failed();
 	}
 	if (strcmp(filedir.lname, renamedsubdir1)) {
-		fprintf(stderr,"\tFAILED %s should be %s\n",filedir.lname, renamedsubdir1);
+		fprintf(stdout,"\tFAILED %s should be %s\n",filedir.lname, renamedsubdir1);
         failed();
 	}
 
@@ -339,8 +339,8 @@ STATIC void test503()
     uint16_t bitmap = (1<< DIRPBIT_DID)|(1<< DIRPBIT_LNAME);
 
 	enter_test();
-    fprintf(stderr, "===================\n");
-    fprintf(stderr, "Dircache:test503: move and rename dir, enumerate renamed dir\n");
+    fprintf(stdout, "===================\n");
+    fprintf(stdout, "Dircache:test503: move and rename dir, enumerate renamed dir\n");
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
@@ -369,11 +369,11 @@ STATIC void test503()
 	afp_filedir_unpack(&filedir, dsi->data + ofs, 0, bitmap);
 
 	if (filedir.did != subdir1_id) {
-		fprintf(stderr,"\tFAILED %x should be %x\n",filedir.did, subdir1_id);
+		fprintf(stdout,"\tFAILED %x should be %x\n",filedir.did, subdir1_id);
         failed();
 	}
 	if (strcmp(filedir.lname, renamedsubdir1)) {
-		fprintf(stderr,"\tFAILED %s should be %s\n",filedir.lname, renamedsubdir1);
+		fprintf(stdout,"\tFAILED %s should be %s\n",filedir.lname, renamedsubdir1);
         failed();
 	}
 
@@ -404,8 +404,8 @@ STATIC void test504()
     uint16_t bitmap = (1<< DIRPBIT_DID)|(1<< DIRPBIT_LNAME);
 
 	enter_test();
-    fprintf(stderr, "===================\n");
-    fprintf(stderr, "Dircache:test504: rename topdir, stat file in subdir of renamed topdir\n");
+    fprintf(stdout, "===================\n");
+    fprintf(stdout, "Dircache:test504: rename topdir, stat file in subdir of renamed topdir\n");
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
@@ -440,7 +440,7 @@ STATIC void test504()
 	afp_filedir_unpack(&filedir, dsi->data + ofs, 0, bitmap);
 
 	if (filedir.did != file_id) {
-		fprintf(stderr,"\tFAILED %x should be %x\n",filedir.did, subdir1_id);
+		fprintf(stdout,"\tFAILED %x should be %x\n",filedir.did, subdir1_id);
         failed();
 	}
 
@@ -471,8 +471,8 @@ STATIC void test505()
     uint16_t bitmap = (1<< DIRPBIT_DID)|(1<< DIRPBIT_LNAME);
 
 	enter_test();
-    fprintf(stderr, "===================\n");
-    fprintf(stderr, "Dircache:test505: rename dir, stat subdir in renamed dir\n");
+    fprintf(stdout, "===================\n");
+    fprintf(stdout, "Dircache:test505: rename dir, stat subdir in renamed dir\n");
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
@@ -501,12 +501,12 @@ STATIC void test505()
 	afp_filedir_unpack(&filedir, dsi->data + ofs, 0, bitmap);
 
 	if (filedir.did != subdir2_id) {
-		fprintf(stderr,"\tFAILED %x should be %x\n",filedir.did, subdir2_id);
+		fprintf(stdout,"\tFAILED %x should be %x\n",filedir.did, subdir2_id);
         failed();
 	}
 	if (strcmp(filedir.lname, subdir2
 )) {
-		fprintf(stderr,"\tFAILED %s should be %s\n",filedir.lname, subdir2);
+		fprintf(stdout,"\tFAILED %s should be %s\n",filedir.lname, subdir2);
         failed();
 	}
 
@@ -537,8 +537,8 @@ STATIC void test506()
     uint16_t bitmap = (1<< DIRPBIT_DID)|(1<< DIRPBIT_LNAME);
 
 	enter_test();
-    fprintf(stderr, "===================\n");
-    fprintf(stderr, "Dircache:test506: stat subdir in poisened path\n");
+    fprintf(stdout, "===================\n");
+    fprintf(stdout, "Dircache:test506: stat subdir in poisened path\n");
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
@@ -570,12 +570,12 @@ STATIC void test506()
 	afp_filedir_unpack(&filedir, dsi->data + ofs, 0, bitmap);
 
 	if (filedir.did != subdir2_id) {
-		fprintf(stderr,"\tFAILED %x should be %x\n",filedir.did, subdir2_id);
+		fprintf(stdout,"\tFAILED %x should be %x\n",filedir.did, subdir2_id);
         failed();
 	}
 	if (strcmp(filedir.lname, subdir2
 )) {
-		fprintf(stderr,"\tFAILED %s should be %s\n",filedir.lname, subdir2);
+		fprintf(stdout,"\tFAILED %s should be %s\n",filedir.lname, subdir2);
         failed();
 	}
 
@@ -593,8 +593,8 @@ test_exit:
 
 void Dircache_attack_test()
 {
-    fprintf(stderr, "===================\n");
-    fprintf(stderr, "Dircache attack\n");
+    fprintf(stdout, "===================\n");
+    fprintf(stdout, "Dircache attack\n");
     test500();
     test501();
     test502();

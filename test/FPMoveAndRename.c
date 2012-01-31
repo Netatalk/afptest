@@ -11,8 +11,8 @@ u_int16_t vol = VolID;
 int  dir = 0,dir1 = 0,dir2 = 0;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPMoveAndRename:test43: move and rename folders\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPMoveAndRename:test43: move and rename folders\n");
 
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!dir) {
@@ -76,8 +76,8 @@ char *name1 = "t77 dir";
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-	fprintf(stderr, "FPMoveAndRename:t77: Move an open fork in a different folder\n");
+    fprintf(stdout,"===================\n");
+	fprintf(stdout, "FPMoveAndRename:t77: Move an open fork in a different folder\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
 		nottested();
@@ -121,8 +121,8 @@ char *dest1  = "t123 dest_1";
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPMoveAndRename:test123: Move And Rename dir with sibling\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPMoveAndRename:test123: Move And Rename dir with sibling\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
 		nottested();
@@ -179,8 +179,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPMoveAndRename:test138: Move And Rename \n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPMoveAndRename:test138: Move And Rename \n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
 		nottested();
@@ -230,8 +230,8 @@ u_int16_t vol = VolID;
 int ret;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPMoveAndRename:test378: dest file exist but diff only by case, is this one OK \n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPMoveAndRename:test378: dest file exist but diff only by case, is this one OK \n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		failed();
@@ -261,8 +261,8 @@ test_exit:
 /* ----------- */
 void FPMoveAndRename_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPMoveAndRename page 223\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPMoveAndRename page 223\n");
     test43();
     test77();
     test138();

@@ -10,8 +10,8 @@ u_int16_t vol = VolID;
 DSI *dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-	fprintf(stderr, "FPOpenDT:test200: OpenDT call\n");
+    fprintf(stdout,"===================\n");
+	fprintf(stdout, "FPOpenDT:test200: OpenDT call\n");
 
 	dsi = &Conn->dsi;
 
@@ -30,8 +30,8 @@ DSI *dsi;
 /* ----------- */
 void FPOpenDT_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenDT page 229\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenDT page 229\n");
 	test200();
 }
 

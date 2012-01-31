@@ -16,8 +16,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetForkParms:test62: SetForkParams errors\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetForkParms:test62: SetForkParams errors\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -92,8 +92,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetForkParms:test141: Setforkmode error\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetForkParms:test141: Setforkmode error\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){
 		nottested();
@@ -147,8 +147,8 @@ unsigned int ret;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetForkParms:test217: Setfork size 64 bits\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetForkParms:test217: Setfork size 64 bits\n");
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
 		goto test_exit;
@@ -194,8 +194,8 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetForkParms:test306: set fork size, new size > old size\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetForkParms:test306: set fork size, new size > old size\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -215,10 +215,10 @@ DSI *dsi;
 	}
 	if (data != 0) {
 		if (Mac) {
-			fprintf(stderr,"\tMac result 0x%x but 0 expected\n", data);
+			fprintf(stdout,"\tMac result 0x%x but 0 expected\n", data);
 		}
 		else {
-			fprintf(stderr,"\tFAILED got 0x%x but 0 expected\n", data);
+			fprintf(stdout,"\tFAILED got 0x%x but 0 expected\n", data);
 			failed_nomsg();
 			goto fin;
 		}
@@ -235,8 +235,8 @@ test_exit:
 /* ----------- */
 void FPSetForkParms_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPSetForkParms page 266\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetForkParms page 266\n");
     test62();
     test141();
     test217();

@@ -5,21 +5,21 @@ char *name   = "foo";
 char *name1  = "fo1";
 struct stat st, st1;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test29: test out of date cnid db, reused inode\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test29: test out of date cnid db, reused inode\n");
 
 	if (!Path) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 	strcpy(temp, Path);strcat(temp,"/");strcat(temp, name);
 	if (stat(temp, &st)) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
 
@@ -33,31 +33,31 @@ struct stat st, st1;
 		)
 	) {
 		FPCloseVol(Conn,vol);
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 	strcpy(temp, Path);strcat(temp,"/.AppleDouble/");strcat(temp, name);
 	if (unlink(temp)) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
 
 	strcpy(temp, Path);strcat(temp,"/");strcat(temp, name);
 	if (unlink(temp)) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 	strcpy(temp, Path);
 	strcat(temp,"/");
 	strcat(temp, name1);
 	if (stat(temp, &st1) || st.st_ino != st1.st_ino) {
-		fprintf(stderr,"Inode for %s: %d %d\n", Path, st.st_ino, st1.st_ino);
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"Inode for %s: %d %d\n", Path, st.st_ino, st1.st_ino);
+		fprintf(stdout,"\tNOT TESTED\n");
 		sleep(2);
 		FPDelete(Conn, vol,  DIRDID_ROOT, name1);
 		return;
@@ -73,7 +73,7 @@ struct stat st, st1;
 		)
 	) {
 		FPCloseVol(Conn,vol);
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 
@@ -84,12 +84,12 @@ struct stat st, st1;
 	         0
 		)
 	) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 
 	if (FPDelete(Conn, vol,  DIRDID_ROOT, name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 }
 
@@ -101,23 +101,23 @@ char *name1  = "foo1";
 struct stat st, st1;
 int f;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test30: test out of date cnid db, != inodes\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test30: test out of date cnid db, != inodes\n");
 
 	if (!Path) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 	strcpy(temp, Path);
 	strcat(temp,"/");
 	strcat(temp, name);
 	if (stat(temp, &st)) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
 
@@ -130,14 +130,14 @@ int f;
 		    (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
 		)
 	) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
     if ((f = open(temp, O_RDONLY)) < 0) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
     }    
 
 	if (unlink(temp)) {
-		fprintf(stderr,"\tFAILED unlink %s %s\n", temp, strerror(errno));
+		fprintf(stdout,"\tFAILED unlink %s %s\n", temp, strerror(errno));
 	}
 
 	if (FPEnumerate(Conn, vol,  DIRDID_ROOT , "", 
@@ -149,18 +149,18 @@ int f;
 		    (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
 		)
 	) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	if (stat(temp, &st1)) {
-		fprintf(stderr,"\tNOT TESTED stat %s %s\n", temp, strerror(errno));
+		fprintf(stdout,"\tNOT TESTED stat %s %s\n", temp, strerror(errno));
 	}
 	else if (st.st_ino == st1.st_ino) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 	}
 
 	if (FPEnumerate(Conn, vol,  DIRDID_ROOT , "", 
@@ -172,10 +172,10 @@ int f;
 		    (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
 		)
 	) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	if (FPDelete(Conn, vol,  DIRDID_ROOT, name)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	close(f);
 }

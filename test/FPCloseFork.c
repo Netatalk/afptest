@@ -12,8 +12,8 @@ int type = OPENFORK_DATA;
 char *name = "t186 FPCloseFork";
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCloseFork:test186: FPCloseFork\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCloseFork:test186: FPCloseFork\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -48,8 +48,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCloseFork:test187: illegal fork\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCloseFork:test187: illegal fork\n");
 
 	illegal_fork(dsi, AFP_CLOSEFORK, name);
 	exit_test("test187");
@@ -58,8 +58,8 @@ DSI *dsi;
 /* ----------- */
 void FPCloseFork_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCloseFork page 129\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCloseFork page 129\n");
 	test186();
 	test187();
 }

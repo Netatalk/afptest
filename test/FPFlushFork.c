@@ -14,8 +14,8 @@ u_int32_t mdate;
 DSI *dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-	fprintf(stderr, "FPFlushFork:test203: flush fork call\n");
+    fprintf(stdout,"===================\n");
+	fprintf(stdout, "FPFlushFork:test203: flush fork call\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -43,7 +43,7 @@ DSI *dsi = &Conn->dsi;
 	afp_filedir_unpack(&filedir, dsi->data +sizeof(u_int16_t), bitmap, 0);
 	/* is that always true? ie over nfs */
 	if (mdate != filedir.mdate) {
-		fprintf(stderr,"\tFAILED dates differ\n");
+		fprintf(stdout,"\tFAILED dates differ\n");
 		failed_nomsg();
 	}
 
@@ -60,7 +60,7 @@ DSI *dsi = &Conn->dsi;
 	afp_filedir_unpack(&filedir, dsi->data +sizeof(u_int16_t), bitmap, 0);
 	/* is that always true? ie over nfs */
 	if (mdate == filedir.mdate) {
-		fprintf(stderr,"\tFAILED dates equal\n");
+		fprintf(stdout,"\tFAILED dates equal\n");
 		failed_nomsg();
 	}
 
@@ -76,8 +76,8 @@ test_exit:
 /* ----------- */
 void FPFlushFork_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPFlushFork page 171\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPFlushFork page 171\n");
 	test203();
 }
 

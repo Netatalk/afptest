@@ -15,11 +15,11 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPWrite:test216: read/write data fork\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPWrite:test216: read/write data fork\n");
 	size = min(0x20000, dsi->server_quantum);
 	if (size < 0x20000) {
-		fprintf(stderr,"\t server quantum (%d) too small\n", size);
+		fprintf(stdout,"\t server quantum (%d) too small\n", size);
 		nottested();
 		goto test_exit;
 	}
@@ -73,11 +73,11 @@ int i,j;
 
 	dsi = &Conn->dsi;
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPWrite:test226: disk full error\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPWrite:test226: disk full error\n");
 	size = min(0x20000, dsi->server_quantum); /* 128 k */
 	if (size < 0x20000) {
-		fprintf(stderr,"\t server quantum (%d) too small\n", size);
+		fprintf(stdout,"\t server quantum (%d) too small\n", size);
 		nottested();
 		goto test_exit;
 	}
@@ -89,7 +89,7 @@ int i,j;
 	afp_volume_unpack(&parms, dsi->commands +sizeof( u_int16_t ), (1 << VOLPBIT_BFREE));
 
 	if (parms.bfree > 2*1024*1024) {
-		fprintf(stderr,"\t Volume too big, skipped\n");
+		fprintf(stdout,"\t Volume too big, skipped\n");
 		/* FIXME */
 		goto test_exit;
 	}
@@ -154,8 +154,8 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPWrite:test303: Write 0 byte to data fork \n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPWrite:test303: Write 0 byte to data fork \n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -183,8 +183,8 @@ test_exit:
 /* ----------- */
 void FPWrite_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPWrite page 270\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPWrite page 270\n");
 	test216();
 	test226();
 	test303();

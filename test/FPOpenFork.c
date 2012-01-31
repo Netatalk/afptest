@@ -13,8 +13,8 @@ u_int16_t vol = VolID;
 char *name = "t14 file";
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenFork:test14: get data fork open attribute same connection\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:test14: get data fork open attribute same connection\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -57,8 +57,8 @@ int fork;
 char *name = "t15 file";
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenFork:test15: get resource fork open attribute\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:test15: get resource fork open attribute\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -94,8 +94,8 @@ int fork2 = 0;
 char *name = "t16 file";
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-	fprintf(stderr, "FPOpenFork:test16: open deny mode/ fork attrib\n");
+    fprintf(stdout,"===================\n");
+	fprintf(stdout, "FPOpenFork:test16: open deny mode/ fork attrib\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -141,8 +141,8 @@ int fork3 = 0;
 char *name = "t17 file";
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-	fprintf(stderr, "FPOpenFork:test17: open deny mode/ fork attrib\n");
+    fprintf(stdout,"===================\n");
+	fprintf(stdout, "FPOpenFork:test17: open deny mode/ fork attrib\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -210,8 +210,8 @@ int fork3 = 0;
 char *name = "t18 file";
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-	fprintf(stderr, "FPOpenFork:test18: open deny mode/ fork attrib\n");
+    fprintf(stdout,"===================\n");
+	fprintf(stdout, "FPOpenFork:test18: open deny mode/ fork attrib\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -260,8 +260,8 @@ int fork3 = 0;
 char *name = "t19 file";
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-	fprintf(stderr, "FPOpenFork:test19: open deny mode/ fork attrib\n");
+    fprintf(stdout,"===================\n");
+	fprintf(stdout, "FPOpenFork:test19: open deny mode/ fork attrib\n");
 
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
@@ -330,8 +330,8 @@ int fork2 = 0;
 char *name = "t20 file";
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenFork:test20: open file read only and read write\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:test20: open file read only and read write\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -376,8 +376,8 @@ char *name2 = "t39 dir///t39 file.txt";
 int  fork;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenFork:test39: cname path folder + filename\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:test39: cname path folder + filename\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
 		nottested();
@@ -435,8 +435,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenFork:test48: open fork a folder\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:test48: open fork a folder\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
 		nottested();
@@ -485,11 +485,12 @@ DSI *dsi2;
 	if (!fork2) {
 		failed();
 	}
+
 	fork3 = FPOpenFork(Conn, vol, type , bitmap ,DIRDID_ROOT, name,OPENACC_RD | OPENACC_DWR);
 	if (!fork3) {
 		failed();
 	}
-	
+
 	fork1 = FPOpenFork(Conn, vol, type , bitmap ,DIRDID_ROOT, name,OPENACC_WR |OPENACC_RD);
 	if (fork1 || dsi->header.dsi_code != ntohl(AFPERR_DENYCONF)) {
 		failed();
@@ -497,10 +498,11 @@ DSI *dsi2;
 			FAIL (FPCloseFork(Conn,fork1))
 		}
 	}
+
 	if (fork3) {
 		FAIL (FPCloseFork(Conn,fork3))
 	}
-	
+
     if (Conn2) {
 		u_int16_t vol2;
 
@@ -515,6 +517,7 @@ DSI *dsi2;
 			failed();
 			if (fork1) FPCloseFork(Conn2,fork1);
 		}
+
 		fork1 = FPOpenFork(Conn2, vol2, type , bitmap ,DIRDID_ROOT, name,OPENACC_RD);
 		if (!fork1) {
 			failed();
@@ -547,8 +550,8 @@ STATIC void test81()
 char *name = "t81 Denymode RF 2users";
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenFork:test81: Deny mode 2 users RF\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:test81: Deny mode 2 users RF\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
 		goto test_exit;
@@ -561,10 +564,11 @@ char *name = "t81 Denymode RF 2users";
 
 	test_denymode(name, OPENFORK_RSCS);
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenFork:test81: Deny mode 2 users DF\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:test81: Deny mode 2 users DF\n");
 	name = "t81 Denymode DF 2users";
 	test_denymode(name, OPENFORK_DATA);
+
 test_exit:
 	exit_test("test81");
 }
@@ -584,8 +588,8 @@ DSI *dsi;
 
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenFork:t116: test file's no-write attribute\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:t116: test file's no-write attribute\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -625,7 +629,7 @@ DSI *dsi;
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0xffff ,DIRDID_ROOT, name, OPENACC_RD);
 
 	if (fork || dsi->header.dsi_code != ntohl( AFPERR_BITMAP)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	if (fork) {
 		FAIL (FPCloseFork(Conn,fork))
@@ -645,8 +649,8 @@ char *name = "t145 file.txt";
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-	fprintf(stderr, "FPOpenFork:test145: open RF mode 0\n");
+    fprintf(stdout,"===================\n");
+	fprintf(stdout, "FPOpenFork:test145: open RF mode 0\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){ 
 		nottested();
@@ -680,8 +684,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenFork:test151: too many open files\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:test151: too many open files\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name1)){ 
 		nottested();
@@ -742,8 +746,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-	fprintf(stderr, "FPOpenFork::test190: deny mode after file moved\n");
+    fprintf(stdout,"===================\n");
+	fprintf(stdout, "FPOpenFork::test190: deny mode after file moved\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -894,8 +898,8 @@ STATIC void test341()
 char *name = "t341 Attrib open mode RF";
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenFork:test341: Attrib open mode 2 users RF\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:test341: Attrib open mode 2 users RF\n");
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
@@ -909,8 +913,8 @@ char *name = "t341 Attrib open mode RF";
 
 	test_openmode(name, OPENFORK_RSCS);
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenFork:test341: Attrib open mode 2 users DF\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:test341: Attrib open mode 2 users DF\n");
     name = "t341 Attrib open mode RF";
 	test_openmode(name, OPENFORK_DATA);
 test_exit:
@@ -973,8 +977,8 @@ STATIC void test367()
 char *name = "t367 Denymode RF 2users";
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenFork:test367: Deny mode 2 users RF\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:test367: Deny mode 2 users RF\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
 		goto test_exit;
@@ -987,8 +991,8 @@ char *name = "t367 Denymode RF 2users";
 
 	test_denymode1(name, OPENFORK_RSCS);
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenFork:test367: Deny mode 2 users DF\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:test367: Deny mode 2 users DF\n");
 	name = "t367 Denymode DF 2users";
 	test_denymode1(name, OPENFORK_DATA);
 test_exit:
@@ -998,8 +1002,8 @@ test_exit:
 /* ----------- */
 void FPOpenFork_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenFork page 230\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork page 230\n");
     
     test14();
     test15();

@@ -148,7 +148,7 @@ static void displayresults(void)
 /* ------------------------- */
 void failed(void)
 {
-    fprintf(stderr,"\tFAILED\n");
+    fprintf(stdout,"\tFAILED\n");
     if (!ExitCode)
         ExitCode = 1;
 }
@@ -156,13 +156,13 @@ void failed(void)
 /* ------------------------- */
 void fatal_failed(void)
 {
-    fprintf(stderr,"\tFAILED\n");
+    fprintf(stdout,"\tFAILED\n");
     exit(1);
 }
 /* ------------------------- */
 void nottested(void)
 {
-    fprintf(stderr,"\tNOT TESTED\n");
+    fprintf(stdout,"\tNOT TESTED\n");
     if (!ExitCode)
         ExitCode = 2;
 }
@@ -609,23 +609,23 @@ static void run_one()
 void usage( char * av0 )
 {
     int i=0;
-    fprintf( stderr, "usage:\t%s -h host [-m|v|V] [-3|4|5] [-p port] [-s vol] [-u user] [-w password] [-n iterations] [-t tests to run]\n", av0 );
-    fprintf( stderr,"\t-m\tserver is a Mac (ignore this too!)\n");
-    fprintf( stderr,"\t-h\tserver host name (default localhost)\n");
-    fprintf( stderr,"\t-p\tserver port (default 548)\n");
-    fprintf( stderr,"\t-s\tvolume to mount (default home)\n");
-    fprintf( stderr,"\t-u\tuser name (default uid)\n");
-    fprintf( stderr,"\t-w\tpassword (default none)\n");
-    fprintf( stderr,"\t-3\tAFP 3.0 version\n");
-    fprintf( stderr,"\t-4\tAFP 3.1 version (default)\n");
-    fprintf( stderr,"\t-5\tAFP 3.2 version\n");
-    fprintf( stderr,"\t-n\thow often to run (default: 1)\n");
-    fprintf( stderr,"\t-v\tverbose\n");
-    fprintf( stderr,"\t-V\tvery verbose\n");
-    fprintf( stderr,"\t-t\ttests to run, eg 134 for tests 1, 3 and 4\n");
-    fprintf( stderr,"\tAvailable tests:\n");
+    fprintf( stdout, "usage:\t%s -h host [-m|v|V] [-3|4|5] [-p port] [-s vol] [-u user] [-w password] [-n iterations] [-t tests to run]\n", av0 );
+    fprintf( stdout,"\t-m\tserver is a Mac (ignore this too!)\n");
+    fprintf( stdout,"\t-h\tserver host name (default localhost)\n");
+    fprintf( stdout,"\t-p\tserver port (default 548)\n");
+    fprintf( stdout,"\t-s\tvolume to mount (default home)\n");
+    fprintf( stdout,"\t-u\tuser name (default uid)\n");
+    fprintf( stdout,"\t-w\tpassword (default none)\n");
+    fprintf( stdout,"\t-3\tAFP 3.0 version\n");
+    fprintf( stdout,"\t-4\tAFP 3.1 version (default)\n");
+    fprintf( stdout,"\t-5\tAFP 3.2 version\n");
+    fprintf( stdout,"\t-n\thow often to run (default: 1)\n");
+    fprintf( stdout,"\t-v\tverbose\n");
+    fprintf( stdout,"\t-V\tvery verbose\n");
+    fprintf( stdout,"\t-t\ttests to run, eg 134 for tests 1, 3 and 4\n");
+    fprintf( stdout,"\tAvailable tests:\n");
     for (i = 0; i < NUMTESTS; i++)
-        fprintf( stderr,"\t(%u) %s\n", i+1, resultstrings[i]);
+        fprintf( stdout,"\t(%u) %s\n", i+1, resultstrings[i]);
     exit (1);
 }
 
@@ -676,7 +676,7 @@ int main(int ac, char **av)
         case 'p' :
             Port = atoi( optarg );
             if (Port <= 0) {
-                fprintf(stderr, "Bad port.\n");
+                fprintf(stdout, "Bad port.\n");
                 exit(1);
             }
             break;
@@ -696,7 +696,7 @@ int main(int ac, char **av)
 
     if (! Debug) {
         Verbose = 0;
-        freopen("/dev/null", "w", stderr);
+        freopen("/dev/null", "w", stdout);
     }
 
     if ((User[0] == 0) || (Password[0] == 0))

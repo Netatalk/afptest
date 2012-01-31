@@ -11,7 +11,7 @@ DSI *dsi, *dsi2;
 
 static void alarm_handler()
 {
-	fprintf(stderr,"\tFAILED\n");
+	fprintf(stdout,"\tFAILED\n");
 	exit(1);
 }
 
@@ -24,19 +24,19 @@ int fork1;
 int fork2;
 u_int16_t vol = VolID;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPRead:test12: read/write\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPRead:test12: read/write\n");
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, 
 				"Network Trash Folder/Trash Can Usage Map",OPENACC_RD | OPENACC_DWR);
 	if (!fork) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 	fork2 = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, 
 				"Network Trash Folder/Trash Can Usage Map",OPENACC_WR | OPENACC_DWR);
 	if (fork2) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		FPCloseFork(Conn,fork2);
 		goto fin;
 	}
@@ -44,7 +44,7 @@ u_int16_t vol = VolID;
 	fork1 = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, 
 				"Network Trash Folder/Trash Can Usage Map",OPENACC_RD | OPENACC_DWR);
 	if (!fork1) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		goto fin;
 	}
 	FPCloseFork(Conn,fork1);
@@ -52,7 +52,7 @@ u_int16_t vol = VolID;
 	fork1 = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, 
 				"Network Trash Folder/Trash Can Usage Map",OPENACC_WR | OPENACC_DWR);
 	if (fork1) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		FPCloseFork(Conn,fork1);
 		goto fin;
 	}
@@ -60,7 +60,7 @@ u_int16_t vol = VolID;
 	fork1 = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, 
 				"Network Trash Folder/Trash Can Usage Map",OPENACC_RD | OPENACC_DRD);
 	if (fork1) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		FPCloseFork(Conn,fork1);
 		goto fin;
 	}
@@ -71,13 +71,13 @@ u_int16_t vol = VolID;
 				"Network Trash Folder/Trash Can Usage Map",OPENACC_RD | OPENACC_DRD);
 
 	if (!fork) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 	fork1 = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, 
 				"Network Trash Folder/Trash Can Usage Map",OPENACC_RD );
 	if (fork1) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		FPCloseFork(Conn,fork1);
 		goto fin;
 	}
@@ -85,7 +85,7 @@ u_int16_t vol = VolID;
 	fork1 = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, 
 				"Network Trash Folder/Trash Can Usage Map",OPENACC_WR );
 	if (!fork1) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		goto fin;
 	}
 	FPCloseFork(Conn,fork1);
@@ -104,17 +104,17 @@ char *name1 = "nouveau nom long 0123456789 0123456789 0123456789 0123456789";
 char *name2 = "Contents";
 int  dir;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test24: mangled name\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test24: mangled name\n");
 
 	FPDelete(Conn, vol,  DIRDID_ROOT , name);
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 	
-	if (FPRename(Conn, vol, DIRDID_ROOT, name, "test1")) {fprintf(stderr,"\tFAILED\n");}
-	if (FPRename(Conn, vol, DIRDID_ROOT, "test1", name)) {fprintf(stderr,"\tFAILED\n");}
+	if (FPRename(Conn, vol, DIRDID_ROOT, name, "test1")) {fprintf(stdout,"\tFAILED\n");}
+	if (FPRename(Conn, vol, DIRDID_ROOT, "test1", name)) {fprintf(stdout,"\tFAILED\n");}
 
 	FPEnumerate(Conn, vol,  DIRDID_ROOT , "", 
 	     (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO)|
@@ -127,13 +127,13 @@ int  dir;
 
 
 	if (FPRename(Conn, vol, DIRDID_ROOT, name, name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name1, "", name);
 	FPDelete(Conn, vol,  DIRDID_ROOT , name1);
 	dir  = FPCreateDir(Conn,vol, DIRDID_ROOT , name2);
 	if (!dir) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	FPMoveAndRename(Conn, vol, DIRDID_ROOT, dir, name, name1);
@@ -152,27 +152,27 @@ void test47()
 u_int16_t bitmap = 0;
 int fork, fork1;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test47: open read only file read only then read write\n");
-    fprintf(stderr,"test47: in a read only folder\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test47: open read only file read only then read write\n");
+    fprintf(stdout,"test47: in a read only folder\n");
 
 
 	if (!Path) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, "new/toto.txt", OPENACC_RD);
 
 	if (!fork) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}		
 
 	fork1 = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, "new/toto.txt",OPENACC_WR | OPENACC_RD);
 
 	if (fork1) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		FPCloseFork(Conn,fork1);
 		FPCloseFork(Conn,fork);
 		return;
@@ -183,12 +183,12 @@ int fork, fork1;
 	fork = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap ,DIRDID_ROOT, "new/toto.txt", OPENACC_RD);
 
 	if (!fork) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}		
 
 	if (ntohl(AFPERR_EOF) != FPRead(Conn, fork, 0, 100, Data)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		FPCloseFork(Conn,fork);
 		return;
 	}
@@ -196,14 +196,14 @@ int fork, fork1;
 	fork1 = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap ,DIRDID_ROOT, "new/toto.txt",OPENACC_WR | OPENACC_RD);
 
 	if (fork1) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		FPCloseFork(Conn,fork1);
 		FPCloseFork(Conn,fork);
 		return;
 	}
 
 	if (ntohl(AFPERR_EOF) != FPRead(Conn, fork, 0, 100, Data)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		FPCloseFork(Conn,fork);
 		return;
 	}
@@ -211,35 +211,35 @@ int fork, fork1;
 	fork1 = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap ,DIRDID_ROOT, "new/toto.txt", OPENACC_RD);
 
 	if (!fork1) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		FPCloseFork(Conn,fork);
 		return;
 	}
 	FPCloseFork(Conn,fork1);
 
 	if (ntohl(AFPERR_EOF) != FPRead(Conn, fork, 0, 100, Data)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		FPCloseFork(Conn,fork);
 		return;
 	}
 
 	FPCloseFork(Conn,fork);
 	
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test47: in a read/write folder\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test47: in a read/write folder\n");
 
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, "test folder/toto.txt", OPENACC_RD);
 
 	if (!fork) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}		
 
 	fork1 = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, "test folder/toto.txt",OPENACC_WR | OPENACC_RD);
 
 	if (fork1) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}		
 
@@ -247,20 +247,20 @@ int fork, fork1;
 
 	strcpy(temp, Path);strcat(temp,"/test folder/.AppleDouble/toto.txt");
 	if (unlink(temp)) {
-		fprintf(stderr,"\tRessource fork not there\n");
+		fprintf(stdout,"\tRessource fork not there\n");
 	}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, "test folder/toto.txt", OPENACC_RD);
 
 	if (!fork) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}		
 
 	fork1 = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, "test folder/toto.txt",OPENACC_WR | OPENACC_RD);
 
 	if (fork1) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}		
 
@@ -268,17 +268,17 @@ int fork, fork1;
 
 	strcpy(temp, Path);strcat(temp,"/test folder/.AppleDouble/toto.txt");
 	if (unlink(temp)) {
-		fprintf(stderr,"\tRessource fork not there\n");
+		fprintf(stdout,"\tRessource fork not there\n");
 	}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap ,DIRDID_ROOT, "test folder/toto.txt", OPENACC_RD);
 	if (!fork) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}		
 
 	if (ntohl(AFPERR_EOF) != FPRead(Conn, fork, 0, 100, Data)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		FPCloseFork(Conn,fork);
 		return;
 	}
@@ -288,19 +288,19 @@ int fork, fork1;
      * difficult to fix.
      */
 	if (!fork1) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 	
 	if (FPWrite(Conn, fork1, 0, 10, Data, 0 )) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		FPCloseFork(Conn,fork);
 		FPCloseFork(Conn,fork1);
 		return;
 	}
 
 	if (FPRead(Conn, fork, 0, 10, Data)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		FPCloseFork(Conn,fork);
 		FPCloseFork(Conn,fork1);
 		return;
@@ -308,13 +308,13 @@ int fork, fork1;
 
 	FPCloseFork(Conn,fork);
 	if (FPWrite(Conn, fork1, 0, 20, Data, 0x80 )) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		FPCloseFork(Conn,fork1);
 		return;
 	}
 	
 	if (ntohl(AFPERR_PARAM) != FPRead(Conn, fork, 0, 30, Data)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		FPCloseFork(Conn,fork1);
 		return;
 	}
@@ -350,11 +350,11 @@ char *name = "new/test.txt\0";
 	if (Conn->afp_version >= 30)
 		return;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test68: cname with a trailing 0??\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test68: cname with a trailing 0??\n");
 
-	fprintf(stderr,"---------------------\n");
-	fprintf(stderr,"GetFileDirParams Vol %d \n\n", vol);
+	fprintf(stdout,"---------------------\n");
+	fprintf(stdout,"GetFileDirParams Vol %d \n\n", vol);
 	memset(dsi->commands, 0, DSI_CMDSIZ);
 	dsi->header.dsi_flags = DSIFL_REQUEST;     
 	dsi->header.dsi_command = DSIFUNC_CMD;
@@ -393,7 +393,7 @@ char *name = "new/test.txt\0";
 
 	dump_header(dsi);
 	if (dsi->header.dsi_code != 0) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 }
 
@@ -430,8 +430,8 @@ void test85()
 struct sigaction action;    
 struct itimerval    it;     
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"t85: test bogus symlink\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"t85: test bogus symlink\n");
 
    	it.it_interval.tv_sec = 0;
     it.it_interval.tv_usec = 0;
@@ -439,7 +439,7 @@ struct itimerval    it;
     it.it_value.tv_usec = 0;
 
 	if (!Path) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
 
@@ -458,7 +458,7 @@ struct itimerval    it;
     action.sa_flags = SA_RESTART | SA_ONESHOT;
     if ((sigaction(SIGALRM, &action, NULL) < 0) ||
             (setitimer(ITIMER_REAL, &it, NULL) < 0)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
     }
 
@@ -469,7 +469,7 @@ struct itimerval    it;
 		 (1<< DIRPBIT_ATTR) |
 		 (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
 		)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
     }
 
 
@@ -480,7 +480,7 @@ struct itimerval    it;
 		 (1<< DIRPBIT_ATTR) |
 		 (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
 		)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
     }
 
 
@@ -491,7 +491,7 @@ struct itimerval    it;
 		 (1<< DIRPBIT_ATTR) |
 		 (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
 		)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
     }
 
 
@@ -502,7 +502,7 @@ struct itimerval    it;
 		 (1<< DIRPBIT_ATTR) |
 		 (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
 		)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
     }
 
 
@@ -527,64 +527,64 @@ struct afp_filedir_parms filedir;
 int  ofs =  3 * sizeof( u_int16_t );
 
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"t86: test file/dir created by admin\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"t86: test file/dir created by admin\n");
 
 	if (!Conn2) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 		
 	}
 
 	if (!Path) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
 
 	dsi2 = &Conn2->dsi;
 	vol2  = FPOpenVol(Conn2, Vol);
 	if (!(dir = FPCreateDir(Conn2,vol2, DIRDID_ROOT , name))) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 	if (FPGetFileDirParams(Conn2, vol2,  DIRDID_ROOT , name, 0, dbitmap )) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	else {
 		filedir.isdir = 1;
 		afp_filedir_unpack(&filedir, dsi2->data +ofs, 0, dbitmap);
         filedir.access[2] = 3; /* group read only */
  		if (FPSetDirParms(Conn2, vol2, DIRDID_ROOT , name, dbitmap, &filedir)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
  		}
 	}
 
 
 	if (FPCreateFile(Conn2, vol2,  0, dir , name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap , dir, name1, OPENACC_WR );
 	if (!fork) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
     else {
 		FPCloseFork(Conn,fork);
     }
 
 	if (FPDelete(Conn2, vol2,  dir , name1)) { 
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	if (FPCreateFile(Conn, vol,  0, dir , name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	if (FPDelete(Conn, vol,  dir , name1)) { 
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	if (FPDelete(Conn2, vol2,  DIRDID_ROOT , name)) { 
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	FPCloseVol(Conn2,vol2);
 
@@ -596,47 +596,47 @@ int  dir;
 char *name = "t87 dir without .Appledoube";
 char *name1 = "t87 file without .Appledoube";
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"t87: add comment file/dir without .Appledouble\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"t87: add comment file/dir without .Appledouble\n");
 
 	if (!Path) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 
 	strcpy(temp, Path);strcat(temp,"/");strcat(temp, name);strcat(temp,"/.AppleDouble/.Parent");
 	if (unlink(temp)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	if (FPAddComment(Conn, vol,  DIRDID_ROOT , name, "Comment for test folder")) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	if (FPCreateFile(Conn, vol,  0, dir , name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	strcpy(temp, Path);strcat(temp,"/");strcat(temp, name);
 	strcat(temp,"/.AppleDouble/");strcat(temp,name1);
 	if (unlink(temp)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	if (FPAddComment(Conn, vol,  dir , name1, "Comment for test folder")) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	if (FPDelete(Conn, vol,  dir , name1)) { 
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	if (FPDelete(Conn, vol,  DIRDID_ROOT , name)) { 
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 }
 
@@ -653,33 +653,33 @@ u_int16_t bitmap = (1<<FILPBIT_FINFO)| (1<<FILPBIT_CDATE) |
 
 
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"t89: test set file setfilparam\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"t89: test set file setfilparam\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name1))) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , "test/2.txt", bitmap,0)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	else {
 		filedir.isdir = 0;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
  		if (ntohl(AFPERR_BADTYPE) != FPSetFileParams(Conn, vol, DIRDID_ROOT , name1, bitmap, &filedir)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
  		}
  		if (ntohl(AFPERR_ACCESS) != FPSetFileParams(Conn, vol, DIRDID_ROOT , "test/2.txt", bitmap, &filedir)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
  		}
  		if (ntohl(AFPERR_ACCESS) != FPSetFileParams(Conn, vol, DIRDID_ROOT , "bar/2.txt", bitmap, &filedir)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
  		}
 	}
 
 	if (FPDelete(Conn, vol,  DIRDID_ROOT , name1)) { 
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 
@@ -692,8 +692,8 @@ void test92()
 struct sigaction action;    
 struct itimerval    it;     
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"t92: test bogus symlink 2\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"t92: test bogus symlink 2\n");
 
    	it.it_interval.tv_sec = 0;
     it.it_interval.tv_usec = 0;
@@ -701,7 +701,7 @@ struct itimerval    it;
     it.it_value.tv_usec = 0;
 
 	if (!Path) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
 
@@ -720,7 +720,7 @@ struct itimerval    it;
     action.sa_flags = SA_RESTART | SA_ONESHOT;
     if ((sigaction(SIGALRM, &action, NULL) < 0) ||
             (setitimer(ITIMER_REAL, &it, NULL) < 0)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
     }
 
@@ -731,7 +731,7 @@ struct itimerval    it;
 		 (1<< DIRPBIT_ATTR) |
 		 (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
 		)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
     }
 
 
@@ -742,7 +742,7 @@ struct itimerval    it;
 		 (1<< DIRPBIT_ATTR) |
 		 (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
 		)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
     }
 
 
@@ -753,7 +753,7 @@ struct itimerval    it;
 		 (1<< DIRPBIT_ATTR) |
 		 (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
 		)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
     }
 
 
@@ -781,11 +781,11 @@ int  vol1;
 
 	newv[1] = newv[1] +1;
 	
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test97: options mswindows\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test97: options mswindows\n");
 	vol1  = FPOpenVol(Conn, newv);
 	if (ntohl(AFPERR_PARAM) != dsi->header.dsi_code) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		if (!dsi->header.dsi_code)
 			FPCloseVol(Conn,vol1);
 		return;
@@ -794,7 +794,7 @@ int  vol1;
     newv[l -1] += 2;		/* was test5 open test7 */
 	vol1  = FPOpenVol(Conn, newv);
 	if (dsi->header.dsi_code) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 
@@ -805,10 +805,10 @@ int  vol1;
 		 (1<< DIRPBIT_ATTR) |
 		 (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
 		)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
     }
 	if (FPCreateFile(Conn, vol1,  0, DIRDID_ROOT , name)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	if (FPEnumerate(Conn, vol1,  DIRDID_ROOT , "", 
@@ -818,66 +818,66 @@ int  vol1;
 		 (1<< DIRPBIT_ATTR) |
 		 (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
 		)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
     }
 
-	if (FPDelete(Conn, vol1,  DIRDID_ROOT , name)) { fprintf(stderr,"\tFAILED\n");}
+	if (FPDelete(Conn, vol1,  DIRDID_ROOT , name)) { fprintf(stdout,"\tFAILED\n");}
 	goto end;
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name2))) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 
-	if (FPDelete(Conn, vol,  DIRDID_ROOT , name2)) { fprintf(stderr,"\tFAILED\n");}
+	if (FPDelete(Conn, vol,  DIRDID_ROOT , name2)) { fprintf(stdout,"\tFAILED\n");}
 
 	/* sdid bad */
 	if (ntohl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, dir, vol, DIRDID_ROOT, name, "", name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	FPCloseVol(Conn,vol);
 	vol  = FPOpenVol(Conn, Vol);
 	/* cname unchdirable */
 	if (ntohl(AFPERR_ACCESS) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, "bar", "", name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	/* second time once bar is in the cache */
 	if (ntohl(AFPERR_ACCESS) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, "bar", "", name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 
-	if (!(dir1 = FPCreateDir(Conn,vol, DIRDID_ROOT , name2))) {fprintf(stderr,"\tFAILED\n");}
+	if (!(dir1 = FPCreateDir(Conn,vol, DIRDID_ROOT , name2))) {fprintf(stdout,"\tFAILED\n");}
 
 	/* source is a dir */
 	if (ntohl(AFPERR_BADTYPE) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name2, "", name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
 	if (fork) {
 		if (ntohl(AFPERR_DENYCONF) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, "", name1)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 		}
 		FPCloseFork(Conn,fork);
 	}	
 	/* dvol bad */
 	if (ntohl(AFPERR_PARAM) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol +1, dir, name, "", name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	/* ddid bad */
 	if (ntohl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, DIRDID_ROOT , vol, dir,  name, "", name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	/* ok */
 	if (FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, "", name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	FPDelete(Conn, vol,  DIRDID_ROOT, name);
@@ -904,33 +904,33 @@ int fid_name1;
 int ret;
 struct stat st;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test109: exchange files cross dev\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test109: exchange files cross dev\n");
 
 	if (!Path) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
 	strcpy(temp, Path);strcat(temp,"/folder_symlink");
 	if (stat(temp, &st)) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
-	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){fprintf(stderr,"\tFAILED\n");}
-	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {fprintf(stderr,"\tFAILED\n");}
-	if (FPCreateFile(Conn, vol,  0, dir, name1)){fprintf(stderr,"\tFAILED\n");}
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){fprintf(stdout,"\tFAILED\n");}
+	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {fprintf(stdout,"\tFAILED\n");}
+	if (FPCreateFile(Conn, vol,  0, dir, name1)){fprintf(stdout,"\tFAILED\n");}
 	fid_name  = get_fid( DIRDID_ROOT , name);
 	fid_name1 = get_fid( dir , name1);
 	write_fork( DIRDID_ROOT , name, "blue");
 	write_fork( dir , name1, "red");
 	
 #if 0
-	if (!(dir1 = FPCreateDir(Conn,vol, DIRDID_ROOT , name2))) {fprintf(stderr,"\tFAILED\n");}
+	if (!(dir1 = FPCreateDir(Conn,vol, DIRDID_ROOT , name2))) {fprintf(stdout,"\tFAILED\n");}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR | OPENACC_RD);
 	if (fork) {
 		if (ntohl(AFPERR_DENYCONF) != FPCopyFile(Conn, vol, DIRDID_ROOT, vol, DIRDID_ROOT, name, "", name1)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 		}
 		FPCloseFork(Conn,fork);
 	}	
@@ -938,28 +938,28 @@ struct stat st;
 
 	/* ok */
 	if (FPExchangeFile(Conn, vol, DIRDID_ROOT, dir, name, name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	read_fork( DIRDID_ROOT , name, 3);
 	if (strcmp(Data,"red")) {
-		fprintf(stderr,"\tFAILED should be red\n");
+		fprintf(stdout,"\tFAILED should be red\n");
 		
 	}
 	read_fork( dir , name1, 4);
 	if (strcmp(Data,"blue")) {
-		fprintf(stderr,"\tFAILED should be blue\n");
+		fprintf(stdout,"\tFAILED should be blue\n");
 	}
 	if ((ret = get_fid(DIRDID_ROOT , name)) != fid_name) {
-		fprintf(stderr,"\tFAILED %x should be %x\n", ret, fid_name);
+		fprintf(stdout,"\tFAILED %x should be %x\n", ret, fid_name);
 	}
 
 	if ((ret = get_fid(dir , name1)) != fid_name1) {
-		fprintf(stderr,"\tFAILED %x should be %x\n", ret, fid_name1);
+		fprintf(stdout,"\tFAILED %x should be %x\n", ret, fid_name1);
 	}
 		
-	if (FPDelete(Conn, vol,  dir , name1)) { fprintf(stderr,"\tFAILED\n");}
+	if (FPDelete(Conn, vol,  dir , name1)) { fprintf(stdout,"\tFAILED\n");}
 
-	if (FPDelete(Conn, vol,  DIRDID_ROOT, name)) { fprintf(stderr,"\tFAILED\n");}
+	if (FPDelete(Conn, vol,  DIRDID_ROOT, name)) { fprintf(stdout,"\tFAILED\n");}
 	FPDelete(Conn, vol,  DIRDID_ROOT, ndir);
 	FPFlush(Conn, vol);
 }
@@ -979,21 +979,21 @@ int fid_name;
 int fid_name1;
 struct stat st;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test110: error exchange files cross dev\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test110: error exchange files cross dev\n");
 
 	if (!Path) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
 	strcpy(temp, Path);strcat(temp,"/folder_symlink");
 	if (stat(temp, &st)) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
-	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){fprintf(stderr,"\tFAILED\n");}
-	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {fprintf(stderr,"\tFAILED\n");}
-	if (FPCreateFile(Conn, vol,  0, dir, name1)){fprintf(stderr,"\tFAILED\n");}
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){fprintf(stdout,"\tFAILED\n");}
+	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {fprintf(stdout,"\tFAILED\n");}
+	if (FPCreateFile(Conn, vol,  0, dir, name1)){fprintf(stdout,"\tFAILED\n");}
 	fid_name  = get_fid( DIRDID_ROOT , name);
 	fid_name1 = get_fid( dir , name1);
 	write_fork( DIRDID_ROOT , name, "blue");
@@ -1001,33 +1001,33 @@ struct stat st;
 	
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name, OPENACC_WR | OPENACC_RD);
 	if (!fork) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}	
 
 	if (ntohl(AFPERR_MISC) != FPExchangeFile(Conn, vol, DIRDID_ROOT, dir, name, name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	fork1 = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,dir, name1, OPENACC_WR | OPENACC_RD);
 	if (!fork1) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}	
 
 	if (ntohl(AFPERR_MISC) != FPExchangeFile(Conn, vol, DIRDID_ROOT, dir, name, name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	if (fork) FPCloseFork(Conn,fork);
 
 	if (ntohl(AFPERR_MISC) != FPExchangeFile(Conn, vol, DIRDID_ROOT, dir, name, name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	
 	if (fork1) FPCloseFork(Conn,fork1);
 		
-	if (FPDelete(Conn, vol,  dir , name1)) { fprintf(stderr,"\tFAILED\n");}
+	if (FPDelete(Conn, vol,  dir , name1)) { fprintf(stdout,"\tFAILED\n");}
 
-	if (FPDelete(Conn, vol,  DIRDID_ROOT, name)) { fprintf(stderr,"\tFAILED\n");}
-	if (FPDelete(Conn, vol,  DIRDID_ROOT, ndir)) { fprintf(stderr,"\tFAILED\n");}
+	if (FPDelete(Conn, vol,  DIRDID_ROOT, name)) { fprintf(stdout,"\tFAILED\n");}
+	if (FPDelete(Conn, vol,  DIRDID_ROOT, ndir)) { fprintf(stdout,"\tFAILED\n");}
 	FPFlush(Conn, vol);
 }
 
@@ -1044,35 +1044,35 @@ int fid_name1;
 int ret;
 struct stat st;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test112: move and rename file across dev\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test112: move and rename file across dev\n");
 
 	if (!Path) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
 	strcpy(temp, Path);strcat(temp,"/folder_symlink");
 	if (stat(temp, &st)) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
-	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){fprintf(stderr,"\tFAILED\n");}
-	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {fprintf(stderr,"\tFAILED\n");}
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){fprintf(stdout,"\tFAILED\n");}
+	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {fprintf(stdout,"\tFAILED\n");}
 
 	fid_name  = get_fid( DIRDID_ROOT , name);
 
 	if (FPMoveAndRename(Conn, vol, DIRDID_ROOT, dir, name, name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	if ((ret = get_fid(dir , name1)) != fid_name) {
-		fprintf(stderr,"\tFAILED %x should be %x\n", ret, fid_name);
+		fprintf(stdout,"\tFAILED %x should be %x\n", ret, fid_name);
 	}
 
-	if (FPDelete(Conn, vol,  dir , name1)) { fprintf(stderr,"\tFAILED\n");}
+	if (FPDelete(Conn, vol,  dir , name1)) { fprintf(stdout,"\tFAILED\n");}
 
-	if (!FPDelete(Conn, vol,  DIRDID_ROOT, name)) { fprintf(stderr,"\tFAILED\n");}
-	if (FPDelete(Conn, vol,  DIRDID_ROOT, ndir)) { fprintf(stderr,"\tFAILED\n");}
+	if (!FPDelete(Conn, vol,  DIRDID_ROOT, name)) { fprintf(stdout,"\tFAILED\n");}
+	if (FPDelete(Conn, vol,  DIRDID_ROOT, ndir)) { fprintf(stdout,"\tFAILED\n");}
 	FPFlush(Conn, vol);
 }
 
@@ -1091,38 +1091,38 @@ int fid_name1;
 int ret; 
 struct stat st;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test113: move and rename file across dev\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test113: move and rename file across dev\n");
 
 	if (!Path) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
 	strcpy(temp, Path);strcat(temp,"/folder_symlink");
 	if (stat(temp, &st)) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
-	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , odir))) {fprintf(stderr,"\tFAILED\n");}
-	if (!(dir1 = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {fprintf(stderr,"\tFAILED\n");}
+	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , odir))) {fprintf(stdout,"\tFAILED\n");}
+	if (!(dir1 = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {fprintf(stdout,"\tFAILED\n");}
 
-	if (FPCreateFile(Conn, vol,  0, dir , name)){fprintf(stderr,"\tFAILED\n");}
+	if (FPCreateFile(Conn, vol,  0, dir , name)){fprintf(stdout,"\tFAILED\n");}
 
 	fid_name  = get_fid( dir , name);
 
 	if (FPMoveAndRename(Conn, vol, dir, dir1, "", name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	if ((ret = get_fid(dir , name)) != fid_name) {
-		fprintf(stderr,"\tFAILED %x should be %x\n", ret, fid_name);
+		fprintf(stdout,"\tFAILED %x should be %x\n", ret, fid_name);
 	}
 
-	if (FPDelete(Conn, vol,  dir , name)) { fprintf(stderr,"\tFAILED\n");}
+	if (FPDelete(Conn, vol,  dir , name)) { fprintf(stdout,"\tFAILED\n");}
 
-	if (FPDelete(Conn, vol,  dir, "")) { fprintf(stderr,"\tFAILED\n");}
-	if (FPDelete(Conn, vol,  dir1, "")) { fprintf(stderr,"\tFAILED\n");}
-	if (!FPDelete(Conn, vol,  DIRDID_ROOT, odir)) { fprintf(stderr,"\tFAILED\n");}
+	if (FPDelete(Conn, vol,  dir, "")) { fprintf(stdout,"\tFAILED\n");}
+	if (FPDelete(Conn, vol,  dir1, "")) { fprintf(stdout,"\tFAILED\n");}
+	if (!FPDelete(Conn, vol,  DIRDID_ROOT, odir)) { fprintf(stdout,"\tFAILED\n");}
 	FPFlush(Conn, vol);
 }
 
@@ -1142,41 +1142,41 @@ int temp;
 int  ofs =  3 * sizeof( u_int16_t );
 struct afp_filedir_parms filedir;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test114: Various errors\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test114: Various errors\n");
 
 	if (ntohl(AFPERR_ACCESS) != FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){ 
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	if (!FPDelete(Conn, vol,  DIRDID_ROOT, name)) { 
-		fprintf(stderr,"\tFAILED create returned an error but the file is there (DF only)\n");
+		fprintf(stdout,"\tFAILED create returned an error but the file is there (DF only)\n");
 	}
 	
 	if (ntohl(AFPERR_BITMAP) != FPEnumerate(Conn, vol,  DIRDID_ROOT , "", 
 		                    (1 << FILPBIT_PDINFO )|(1 << FILPBIT_EXTDFLEN) | (1 << FILPBIT_EXTRFLEN)
 		                    |(1 << FILPBIT_DFLEN) |(1 << FILPBIT_RFLEN), 0xffff)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	if (ntohl(AFPERR_BITMAP) != FPEnumerate(Conn, vol,  DIRDID_ROOT , "", 
 		                    0xffff,
 		        (1<< DIRPBIT_ATTR) |
 				(1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS))
 	) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
     bitmap = (1<< DIRPBIT_DID)|(1<< DIRPBIT_LNAME)|(1<< DIRPBIT_OFFCNT);
 	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, "new-rw", 0, bitmap)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 	}
 	else {
 		filedir.isdir = 1;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
 		if (filedir.offcnt != 0) {
-			fprintf(stderr,"\tFAILED %d\n",filedir.offcnt);
+			fprintf(stdout,"\tFAILED %d\n",filedir.offcnt);
 		}
 	}
 	if (ntohl(AFPERR_DIRNEMPT) != FPDelete(Conn, vol,  DIRDID_ROOT, "new-rw")) { 
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 }
 
@@ -1199,31 +1199,31 @@ u_int16_t dt;
 
 	dt = FPOpenDT(Conn,vol);
 	if (FPGetIcon(Conn,  dt, "SITx", "TEXT", 4, 64 )) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	
 	if (FPGetIcon(Conn,  dt, "SITx", "APPL", 1, 256 )) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	if (FPGetIconInfo(Conn,  dt, "SITx", 1 )) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	if (htonl(AFPERR_NOITEM) != FPGetIconInfo(Conn,  dt, "SITx", 256 )) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	if (FPGetIconInfo(Conn,  dt, "UNIX", 1 )) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	if (htonl(AFPERR_NOITEM) != FPGetIconInfo(Conn,  dt, "UNIX", 2 )) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	
 	if (FPGetIcon(Conn,  dt, "UNIX", "TEXT", 1, 256 )) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	
 	FPCloseDT(Conn,dt);
@@ -1242,24 +1242,24 @@ int fd;
 int ret;
   
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 
 	fork = FPOpenFork(Conn, vol, type , bitmap ,DIRDID_ROOT, name, OPENACC_WR |OPENACC_RD| OPENACC_DWR| OPENACC_DRD);
 	if (!fork) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		FPDelete(Conn, vol,  DIRDID_ROOT, name);
 		return;
 	}
 
-	if (FPSetForkParam(Conn, fork, len , 50)) {fprintf(stderr,"\tFAILED\n");}
-	if (FPByteLock(Conn, fork, 0, 0 , 0 , 100)) {fprintf(stderr,"\tFAILED\n");}
-	if (FPRead(Conn, fork, 0, 40, Data)) {fprintf(stderr,"\tFAILED\n");}
-	if (FPWrite(Conn, fork, 10, 40, Data, 0)) {fprintf(stderr,"\tFAILED\n");}
+	if (FPSetForkParam(Conn, fork, len , 50)) {fprintf(stdout,"\tFAILED\n");}
+	if (FPByteLock(Conn, fork, 0, 0 , 0 , 100)) {fprintf(stdout,"\tFAILED\n");}
+	if (FPRead(Conn, fork, 0, 40, Data)) {fprintf(stdout,"\tFAILED\n");}
+	if (FPWrite(Conn, fork, 10, 40, Data, 0)) {fprintf(stdout,"\tFAILED\n");}
 	fork1 = FPOpenFork(Conn, vol, type , bitmap ,DIRDID_ROOT, name,OPENACC_WR |OPENACC_RD);
 	if (fork1) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		FPCloseFork(Conn,fork);		
 	}
 
@@ -1278,25 +1278,25 @@ int ret;
     	    if (!ret >= 0) 
     	    	errno = 0;
     		perror("fcntl ");
-			fprintf(stderr,"\tFAILED \n");
+			fprintf(stdout,"\tFAILED \n");
     	}
     	fcntl(fd, F_UNLCK, &lock);
     	close(fd);
 	}
 	else {
     	perror("open ");
-		fprintf(stderr,"\tFAILED \n");
+		fprintf(stdout,"\tFAILED \n");
 	}
 	fork1 = FPOpenFork(Conn2, vol2, type , bitmap ,DIRDID_ROOT, name,OPENACC_WR |OPENACC_RD);
 	if (fork1) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		FPCloseFork(Conn2,fork1);		
 	}
 
 	FPCloseFork(Conn,fork);
 	fork1 = FPOpenFork(Conn2, vol2, type , bitmap ,DIRDID_ROOT, name,OPENACC_WR |OPENACC_RD);
 	if (!fork1) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	else {
 		FPCloseFork(Conn2,fork1);		
@@ -1310,15 +1310,15 @@ void test117()
 char *name = "t117 exclusive open DF";
 u_int16_t vol2;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"t117: test open excl mode, local access with fcntl()\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"t117: test open excl mode, local access with fcntl()\n");
 	if (!Path) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
 
 	if (!Conn2) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
 
@@ -1344,19 +1344,19 @@ struct flock lock;
 int fd;
 int err;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"t119: delete read only/local fcntl locked file\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"t119: delete read only/local fcntl locked file\n");
 	if (!Path || !Conn2) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 
-	if (FPCreateFile(Conn, vol,  0, dir , name)) {fprintf(stderr,"\tFAILED\n");}
+	if (FPCreateFile(Conn, vol,  0, dir , name)) {fprintf(stdout,"\tFAILED\n");}
 
 	sprintf(temp, "%s/%s/%s", Path, ndir, name);
 	fd = open(temp, O_RDWR, 0);	
@@ -1368,16 +1368,16 @@ int err;
          
     	if (fcntl(fd, F_SETLK, &lock) < 0) {
     		perror("fcntl ");
-			fprintf(stderr,"\tFAILED \n");
+			fprintf(stdout,"\tFAILED \n");
     	}
 	}
 	else {
     	perror("open ");
-		fprintf(stderr,"\tFAILED \n");
+		fprintf(stdout,"\tFAILED \n");
 	}
 	
 	if (htonl(AFPERR_BUSY) != (err = FPDelete(Conn, vol,  dir , name))) { 
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	if (fd >= 0) {
     	fcntl(fd, F_UNLCK, &lock);
@@ -1387,8 +1387,8 @@ int err;
 	dsi2 = &Conn2->dsi;
 	vol2  = FPOpenVol(Conn2, Vol);
 
-	if (FPDelete(Conn, vol,  dir , name)) { fprintf(stderr,"\tFAILED\n");}
-	if (FPDelete(Conn, vol,  DIRDID_ROOT , ndir)) { fprintf(stderr,"\tFAILED\n");}
+	if (FPDelete(Conn, vol,  dir , name)) { fprintf(stdout,"\tFAILED\n");}
+	if (FPDelete(Conn, vol,  DIRDID_ROOT , ndir)) { fprintf(stdout,"\tFAILED\n");}
 	FPCloseVol(Conn2,vol2);
 }
 
@@ -1402,31 +1402,31 @@ int  ofs =  3 * sizeof( u_int16_t );
 u_int16_t bitmap = (1<<FILPBIT_FNUM );
 struct afp_filedir_parms filedir;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test124: dangling symlink\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test124: dangling symlink\n");
 
 	if (!Path ) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
-	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {fprintf(stderr,"\tFAILED\n");}
+	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name))) {fprintf(stdout,"\tFAILED\n");}
 
 	sprintf(temp, "%s/%s/none", Path, name);
 	sprintf(temp1,"%s/%s/link", Path, name);
 	
 	if (symlink(temp, temp1) < 0) {
 		perror("symlink ");
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
     bitmap = (1<< DIRPBIT_DID)|(1<< DIRPBIT_LNAME)|(1<< DIRPBIT_OFFCNT);
 	if (FPGetFileDirParams(Conn, vol, dir, "", 0, bitmap)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 	}
 	else {
 		filedir.isdir = 1;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
 		if (filedir.offcnt != 1) {
-			fprintf(stderr,"\tFAILED %d\n",filedir.offcnt);
+			fprintf(stdout,"\tFAILED %d\n",filedir.offcnt);
 		}
 	}
 	if (htonl(AFPERR_NOOBJ) != FPEnumerate(Conn, vol,  dir , "", 
@@ -1436,20 +1436,20 @@ struct afp_filedir_parms filedir;
 		 (1<< DIRPBIT_ATTR) |
 		 (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
 		)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	if (FPGetFileDirParams(Conn, vol, dir, "", 0, bitmap)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 	}
 	else {
 		filedir.isdir = 1;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
 		if (filedir.offcnt != 0) {
-			fprintf(stderr,"\tFAILED %d\n",filedir.offcnt);
+			fprintf(stdout,"\tFAILED %d\n",filedir.offcnt);
 		}
 	}
 
-	if (FPDelete(Conn, vol,  dir , "")) { fprintf(stderr,"\tFAILED\n");}
+	if (FPDelete(Conn, vol,  dir , "")) { fprintf(stdout,"\tFAILED\n");}
 }
 
 /* ------------------------- */
@@ -1462,14 +1462,14 @@ int  ofs =  3 * sizeof( u_int16_t );
 u_int16_t bitmap = (1<<FILPBIT_FNUM );
 struct afp_filedir_parms filedir;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test125: mangled name\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test125: mangled name\n");
 
-		fprintf(stderr,"\tFIXME FAILED\n");
+		fprintf(stdout,"\tFIXME FAILED\n");
 		return;
 		
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 	if (FPEnumerate(Conn, vol,  DIRDID_ROOT , "", 
@@ -1478,18 +1478,18 @@ struct afp_filedir_parms filedir;
 		 ,
 		 0
 		)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
     bitmap = (1<< FILPBIT_PDID)|(1<< FILPBIT_LNAME);
 	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, name , bitmap,0)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 	}
 	filedir.isdir = 0;
 	afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
 
 	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, filedir.lname , bitmap,0)) {
-			fprintf(stderr,"\tFIXME FAILED\n");
+			fprintf(stdout,"\tFIXME FAILED\n");
 	}
 	FPDelete(Conn, vol,  DIRDID_ROOT, name);
 	FPFlush(Conn, vol);
@@ -1505,16 +1505,16 @@ int  ofs =  3 * sizeof( u_int16_t );
 u_int16_t bitmap = (1<<FILPBIT_FNUM );
 struct afp_filedir_parms filedir;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test126: mangled name\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test126: mangled name\n");
 
 	if (!Conn2) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
 
 	if (!(dir = FPCreateDir(Conn, vol, DIRDID_ROOT , name))) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 	if (FPEnumerate(Conn, vol,  DIRDID_ROOT , "", 
@@ -1523,18 +1523,18 @@ struct afp_filedir_parms filedir;
 		 ,
 		 0
 		)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
     bitmap = (1<< FILPBIT_PDID)|(1<< FILPBIT_LNAME)|(1<< DIRPBIT_OFFCNT);
 	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, name , bitmap,0)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 	}
 	filedir.isdir = 0;
 	afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
 
 	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, filedir.lname , bitmap,0)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 	}
 	FPDelete(Conn, vol,  DIRDID_ROOT, name);
 	FPFlush(Conn, vol);
@@ -1557,66 +1557,66 @@ int  err;
 char *buf = "essai\nsuite\n";
 int  len  = strlen(buf);
 	
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test133: options mswindows crlf\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test133: options mswindows crlf\n");
 
     newv[l -1] += 2;		/* was test5 open test7 */
 	vol1  = FPOpenVol(Conn, newv);
 	if (dsi->header.dsi_code) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 	if (!(dir = FPCreateDir(Conn,vol1 , DIRDID_ROOT , name))) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	else {
-		if (FPRename(Conn, vol1, dir, "", "")) {fprintf(stderr,"\tFAILED\n");}
+		if (FPRename(Conn, vol1, dir, "", "")) {fprintf(stdout,"\tFAILED\n");}
 	}
 
 	if (ntohl(AFPERR_PARAM) != FPCreateFile(Conn, vol1,  0, DIRDID_ROOT , " PRN")) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	if (ntohl(AFPERR_PARAM) != FPCreateFile(Conn, vol1,  0, DIRDID_ROOT , "P*RN")) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	if (ntohl(AFPERR_EXIST) != FPCreateFile(Conn, vol1,  0, DIRDID_ROOT , "icon")) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	if (FPCreateFile(Conn, vol1,  0, DIRDID_ROOT , "icone")) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
-	if (FPRename(Conn, vol1, DIRDID_ROOT, "icone", "icone")) {fprintf(stderr,"\tFAILED\n");}
+	if (FPRename(Conn, vol1, DIRDID_ROOT, "icone", "icone")) {fprintf(stdout,"\tFAILED\n");}
 
-	if (ntohl(AFPERR_PARAM) != FPRename(Conn, vol1, DIRDID_ROOT, "icone", " PRN")) {fprintf(stderr,"\tFAILED\n");}
+	if (ntohl(AFPERR_PARAM) != FPRename(Conn, vol1, DIRDID_ROOT, "icone", " PRN")) {fprintf(stdout,"\tFAILED\n");}
 
 	if (ntohl(AFPERR_PARAM) != FPMoveAndRename(Conn, vol1, DIRDID_ROOT, DIRDID_ROOT, "icone", " PRN")) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
-	if (FPDelete(Conn, vol1,  DIRDID_ROOT , "icone")) { fprintf(stderr,"\tFAILED\n");}
+	if (FPDelete(Conn, vol1,  DIRDID_ROOT , "icone")) { fprintf(stdout,"\tFAILED\n");}
 
 	/* -------------------- */
 	if (FPCreateFile(Conn, vol1,  0, DIRDID_ROOT , name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	fork = FPOpenFork(Conn, vol1, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name1, OPENACC_WR | OPENACC_RD);
 	if (!fork) {
 	}
 	else {
-		if (FPWrite(Conn, fork, 0, len, buf, 0 )) {fprintf(stderr,"\tFAILED\n");}
-		if (FPRead(Conn, fork, 0, len, Data)) {fprintf(stderr,"\tFAILED\n");}
+		if (FPWrite(Conn, fork, 0, len, buf, 0 )) {fprintf(stdout,"\tFAILED\n");}
+		if (FPRead(Conn, fork, 0, len, Data)) {fprintf(stdout,"\tFAILED\n");}
 
 		FPCloseFork(Conn, fork);
 	}
 		
-	if (FPDelete(Conn, vol1,  DIRDID_ROOT , name1)) { fprintf(stderr,"\tFAILED\n");}
+	if (FPDelete(Conn, vol1,  DIRDID_ROOT , name1)) { fprintf(stdout,"\tFAILED\n");}
 
 	if (dir) {
-		if (FPDelete(Conn, vol1,  dir , "")) { fprintf(stderr,"\tFAILED\n");}
+		if (FPDelete(Conn, vol1,  dir , "")) { fprintf(stdout,"\tFAILED\n");}
 	}
 
 end:
@@ -1638,46 +1638,46 @@ struct afp_filedir_parms filedir;
 int  ofs =  3 * sizeof( u_int16_t );
 int err;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test134: Copy file errors (right access)\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test134: Copy file errors (right access)\n");
 
 	bitmap = (1 <<  DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID) |(1 << DIRPBIT_ACCESS);
 	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, name2, 0, bitmap)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 	filedir.isdir = 1;
 	afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 	dir = filedir.did;
 	
 	if (htonl(AFPERR_ACCESS) != (err = FPCopyFile(Conn, vol, DIRDID_ROOT, vol , dir, name, "", name1))) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	if (ntohl(AFPERR_NOOBJ) !=  FPDelete(Conn, vol,  dir, name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	if (ntohl(AFPERR_ACCESS) != (err = FPMoveAndRename(Conn, vol, DIRDID_ROOT, dir, name, name1))) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	if (ntohl(AFPERR_NOOBJ) != FPDelete(Conn, vol,  dir, name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	
 	if (FPCopyFile(Conn, vol, dir, vol , DIRDID_ROOT, "test.pdf", "", name1) ) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	else if (FPDelete(Conn, vol,  DIRDID_ROOT, name1) ) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	
 	if (FPDelete(Conn, vol,  DIRDID_ROOT, name)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 }
 
@@ -1692,36 +1692,36 @@ char *name1 = "t135 new file name";
 char *ndir  = "folder_symlink/dir";
 struct stat st;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test135: move and rename file across dev\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test135: move and rename file across dev\n");
 
 	if (!Path) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
 	strcpy(temp, Path);strcat(temp,"/folder_symlink");
 	if (stat(temp, &st)) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
-	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){fprintf(stderr,"\tFAILED\n");}
-	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {fprintf(stderr,"\tFAILED\n");}
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){fprintf(stdout,"\tFAILED\n");}
+	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {fprintf(stdout,"\tFAILED\n");}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name, OPENACC_WR | OPENACC_RD);
 	if (!fork) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	if (htonl(AFPERR_OLOCK) != FPMoveAndRename(Conn, vol, DIRDID_ROOT, dir, name, name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	if (fork && FPCloseFork(Conn,fork)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
-	if (FPDelete(Conn, vol,  DIRDID_ROOT, name)) { fprintf(stderr,"\tFAILED\n");}
+	if (FPDelete(Conn, vol,  DIRDID_ROOT, name)) { fprintf(stdout,"\tFAILED\n");}
 	if (FPDelete(Conn, vol,  dir, "")) { 
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		FPDelete(Conn, vol,  dir, name);
 		FPDelete(Conn, vol,  dir, "");
 	}
@@ -1741,29 +1741,29 @@ struct afp_filedir_parms filedir;
 int  ofs =  3 * sizeof( u_int16_t );
 int err;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test140: Exchange file errors (right access)\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test140: Exchange file errors (right access)\n");
 
 	bitmap = (1 <<  DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID) |(1 << DIRPBIT_ACCESS);
 
 	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, name2, 0, bitmap)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 	filedir.isdir = 1;
 	afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 	dir = filedir.did;
 	if (ntohl(AFPERR_ACCESS) != FPExchangeFile(Conn, vol, DIRDID_ROOT,dir,  name, name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	
 	if (FPDelete(Conn, vol,  DIRDID_ROOT, name)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 }
 
@@ -1778,49 +1778,49 @@ int  ofs =  3 * sizeof( u_int16_t );
 u_int16_t vol2;
 int err;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test142: -wx folder\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test142: -wx folder\n");
 
 	if (!Conn2) {
-		fprintf(stderr,"\tNOT TESTED\n");
+		fprintf(stdout,"\tNOT TESTED\n");
 		return;
 	}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name ,OPENACC_WR | OPENACC_RD);
 	if (fork || dsi->header.dsi_code != ntohl(AFPERR_LOCK)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	if (fork) {
 		if (FPCloseFork(Conn, fork)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 		}
 	}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap ,DIRDID_ROOT, name ,OPENACC_WR | OPENACC_RD);
 	if (fork || dsi->header.dsi_code != ntohl(AFPERR_LOCK)) {
-		fprintf(stderr,"\tFIXME? FAILED\n");
+		fprintf(stdout,"\tFIXME? FAILED\n");
 	}
 	if (fork) {
 		if (FPCloseFork(Conn, fork)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 		}
 	}
 
 	/* ------------------ */
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name , OPENACC_WR );
 	if (!fork ) {
-		fprintf(stderr,"\tFIXME? FAILED\n");
+		fprintf(stdout,"\tFIXME? FAILED\n");
 	}
 	else if (FPCloseFork(Conn, fork)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap ,DIRDID_ROOT, name , OPENACC_WR );
 	if (!fork ) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	else if (FPCloseFork(Conn, fork)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	/* ------------------ */	
@@ -1828,58 +1828,58 @@ int err;
 	vol2  = FPOpenVol(Conn2, Vol);
 	fork = FPOpenFork(Conn2, vol2, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name ,OPENACC_WR | OPENACC_RD);
 	if (fork || dsi2->header.dsi_code != ntohl(AFPERR_ACCESS)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	if (fork) {
 		if (FPCloseFork(Conn2, fork)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 		}
 	}
 
 	fork = FPOpenFork(Conn2, vol2, OPENFORK_RSCS , bitmap ,DIRDID_ROOT, name ,OPENACC_WR | OPENACC_RD);
 	if (fork || dsi2->header.dsi_code != ntohl(AFPERR_ACCESS)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	if (fork) {
 		if (FPCloseFork(Conn2, fork)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 		}
 	}
 	/* ------------------ */
 	fork = FPOpenFork(Conn2, vol2, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name ,OPENACC_WR );
 	if (!fork) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	else if (FPCloseFork(Conn2, fork)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	fork = FPOpenFork(Conn2, vol2, OPENFORK_RSCS , bitmap ,DIRDID_ROOT, name ,OPENACC_WR );
 	if (!fork) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	else if (FPCloseFork(Conn2, fork)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	/* ------------------ */
 	fork = FPOpenFork(Conn2, vol2, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name ,OPENACC_RD );
 	if (fork || dsi2->header.dsi_code != ntohl(AFPERR_ACCESS)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	if (fork) {
 		if (FPCloseFork(Conn2, fork)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 		}
 	}
 
 	fork = FPOpenFork(Conn2, vol2, OPENFORK_RSCS , bitmap ,DIRDID_ROOT, name ,OPENACC_RD );
 	if (fork || dsi2->header.dsi_code != ntohl(AFPERR_ACCESS)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	if (fork) {
 		if (FPCloseFork(Conn2, fork)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 		}
 	}
 
@@ -1907,39 +1907,39 @@ int i;
 char *ndir = "test144";
 int dir;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test144: lot of open fork\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test144: lot of open fork\n");
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	/* --------------- */
 	for (i=0; i < 128; i++) {
 		sprintf(temp, "File.small%d", i);
 		if (FPCreateFile(Conn, vol,  0, dir , temp)){
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 		}
 		fork = forkd[i] = FPOpenFork(Conn, vol, OPENFORK_DATA , 
 			            (1<<FILPBIT_PDID)|(1<< DIRPBIT_LNAME)|(1<<FILPBIT_FNUM)|(1<<FILPBIT_DFLEN)
 			            , dir, temp, OPENACC_WR |OPENACC_RD| OPENACC_DWR| OPENACC_DRD);
-		if (!fork) {fprintf(stderr,"\tFAILED\n");}
+		if (!fork) {fprintf(stdout,"\tFAILED\n");}
 		if (FPGetForkParam(Conn, fork, (1<<FILPBIT_PDID)|(1<< DIRPBIT_LNAME)|(1<<FILPBIT_DFLEN))
 			) {
-				fprintf(stderr,"\tFAILED\n");
+				fprintf(stdout,"\tFAILED\n");
 		}
 		if (FPWrite(Conn, fork, 0, 20480, Data, 0 )) {
-				fprintf(stderr,"\tFAILED\n");
+				fprintf(stdout,"\tFAILED\n");
 		}
 	}
 	for (i=0; i < 128; i++) {
 		fork = forkd[i];
 		sprintf(temp, "File.small%d", i);
-		if (FPCloseFork(Conn,fork)) {fprintf(stderr,"\tFAILED\n");}
-		if (FPDelete(Conn, vol,  dir, temp)) {fprintf(stderr,"\tFAILED\n");}
+		if (FPCloseFork(Conn,fork)) {fprintf(stdout,"\tFAILED\n");}
+		if (FPDelete(Conn, vol,  dir, temp)) {fprintf(stdout,"\tFAILED\n");}
 	}
 
-	if (FPDelete(Conn, vol,  dir, "")) {fprintf(stderr,"\tFAILED\n");}
+	if (FPDelete(Conn, vol,  dir, "")) {fprintf(stdout,"\tFAILED\n");}
 }
 
 
@@ -1956,12 +1956,12 @@ char *newv = strdup(Vol);
 int  l = strlen(newv);
 int  vol1;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test147: options mswindows\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test147: options mswindows\n");
     newv[l -1] += 2;		/* was test5 open test7 */
 	vol1  = FPOpenVol(Conn, newv);
 	if (dsi->header.dsi_code) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 
@@ -1972,10 +1972,10 @@ int  vol1;
 		 (1<< DIRPBIT_ATTR) |
 		 (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
 		)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
     }
 	if (FPCreateFile(Conn, vol1,  0, DIRDID_ROOT , name)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 #if 0
 	if (FPEnumerate(Conn, vol1,  DIRDID_ROOT , "", 
@@ -1985,20 +1985,20 @@ int  vol1;
 		 (1<< DIRPBIT_ATTR) |
 		 (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
 		)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
     }
 
-	if (FPDelete(Conn, vol1,  DIRDID_ROOT , name)) { fprintf(stderr,"\tFAILED\n");}
+	if (FPDelete(Conn, vol1,  DIRDID_ROOT , name)) { fprintf(stdout,"\tFAILED\n");}
 	goto end;
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , name2))) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
-	if (FPDelete(Conn, vol,  DIRDID_ROOT , name2)) { fprintf(stderr,"\tFAILED\n");}
+	if (FPDelete(Conn, vol,  DIRDID_ROOT , name2)) { fprintf(stdout,"\tFAILED\n");}
 
 	/* sdid bad */
 	if (ntohl(AFPERR_NOOBJ) != FPCopyFile(Conn, vol, dir, vol, DIRDID_ROOT, name, "", name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 #endif
 
@@ -2019,47 +2019,47 @@ int fork, fork1, fork2, fork3;
 int  ofs =  3 * sizeof( u_int16_t );
 struct afp_filedir_parms filedir;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test149: Error when no write access to .AppleDouble\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test149: Error when no write access to .AppleDouble\n");
 
 	if (ntohl(AFPERR_ACCESS) != FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){ 
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name ,OPENACC_RD);
 	if (fork) {
-		fprintf(stderr,"\tFIXME FAILED create failed but it's there\n");
+		fprintf(stdout,"\tFIXME FAILED create failed but it's there\n");
 		fork1 = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap ,DIRDID_ROOT, name ,OPENACC_RD);
 		if (!fork1) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 		}
 		fork2 = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name ,OPENACC_RD|OPENACC_WR);
 		if (!fork2) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 		}
 
 		fork3 = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap ,DIRDID_ROOT, name ,OPENACC_RD|OPENACC_WR);
 		if (fork3) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 		}
 		else if (dsi->header.dsi_code != ntohl(AFPERR_LOCK)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 		}
 
 		if (fork && FPCloseFork(Conn, fork)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 		}
 		if (fork1 && FPCloseFork(Conn, fork1)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 		}
 		if (fork2 && FPCloseFork(Conn, fork2)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 		}
 		if (fork3 && FPCloseFork(Conn, fork3)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 		}
 
 		if (FPDelete(Conn, vol,  DIRDID_ROOT, name)) { 
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 		}
 	}
 }
@@ -2075,48 +2075,48 @@ int fork, fork1, fork2, fork3;
 int  ofs =  3 * sizeof( u_int16_t );
 struct afp_filedir_parms filedir;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test150: Error when no write access to .AppleDouble\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test150: Error when no write access to .AppleDouble\n");
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name ,OPENACC_RD|OPENACC_WR);
 	if (!fork) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 	if (FPSetForkParam(Conn, fork, (1<<FILPBIT_DFLEN), 0)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	bitmap = 1 << FILPBIT_DFLEN;
 	if (FPGetForkParam(Conn, fork, bitmap)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	if (FPWrite(Conn, fork, 0, 2000, Data, 0 )) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	if (FPRead(Conn, fork, 0, 2000, Data)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	
 	if (fork && FPCloseFork(Conn, fork)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name ,OPENACC_RD|OPENACC_WR);
 	if (!fork) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	else {
 		if (FPRead(Conn, fork, 0, 2000, Data)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 		}
 		if (FPSetForkParam(Conn, fork, (1<<FILPBIT_DFLEN), 0)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 		}
 	}
 	if (fork && FPCloseFork(Conn, fork)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 }
 
@@ -2130,11 +2130,11 @@ u_int16_t bitmap = 0;
 int fork = 0, fork1 = 0;
 int fork2, fork3;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test155: Word save NOT USED\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test155: Word save NOT USED\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){ 
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 	fork = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap ,DIRDID_ROOT, name, OPENACC_RD);
@@ -2149,7 +2149,7 @@ int fork2, fork3;
 		
 	
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name1)){ 
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	/* 2048 */
@@ -2159,10 +2159,10 @@ int fork2, fork3;
 	fork3 = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap ,DIRDID_ROOT, name, OPENACC_RD);
 	
 	if (FPDelete(Conn, vol,  DIRDID_ROOT, name)) { 
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	if (FPDelete(Conn, vol,  DIRDID_ROOT, name1)) { 
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 }
 
@@ -2170,8 +2170,8 @@ int fork2, fork3;
 /* ------------------------- */
 void test157()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test157: bad .AppleDouble ressource fork\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test157: bad .AppleDouble ressource fork\n");
 
 	if (FPEnumerate(Conn, vol,  DIRDID_ROOT , "", 
 	     (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO)|
@@ -2180,7 +2180,7 @@ void test157()
 		 (1<< DIRPBIT_ATTR) |
 		 (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
 		)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 }
@@ -2194,14 +2194,14 @@ int  ofs =  3 * sizeof( u_int16_t );
 struct afp_filedir_parms filedir;
 
 	
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test159: AppleDouble V1 to V2\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test159: AppleDouble V1 to V2\n");
     bitmap = (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO)|
 	         (1<<FILPBIT_CDATE) | (1<<FILPBIT_BDATE) | (1<<FILPBIT_MDATE) |
 	         (1<<FILPBIT_DFLEN) | (1<<FILPBIT_RFLEN);
 
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT, name, bitmap, 0)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 	filedir.isdir = 0;
@@ -2222,13 +2222,13 @@ int  ofs =  3 * sizeof( u_int16_t );
 int offcnt;
 struct afp_filedir_parms filedir;
 	
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test160: utf8 name with \\r and Mac Code\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test160: utf8 name with \\r and Mac Code\n");
     bitmap = (1<< FILPBIT_PDID) | (1<<FILPBIT_LNAME) | (1<<FILPBIT_FNUM ) | (1<<FILPBIT_RFLEN);
 
     fork = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap ,DIRDID_ROOT, name,0x33);
     if (fork || ntohl(AFPERR_NOOBJ) != dsi->header.dsi_code) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		if (fork) FPCloseFork(Conn, fork);
 	}
 	if (Conn->afp_version >= 30) {
@@ -2238,7 +2238,7 @@ struct afp_filedir_parms filedir;
 	
     bitmap = (1<< DIRPBIT_DID)|(1<< DIRPBIT_LNAME)|(1<< DIRPBIT_OFFCNT);
 	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, "", 0, bitmap)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 	}
 	else {
 		filedir.isdir = 1;
@@ -2251,17 +2251,17 @@ struct afp_filedir_parms filedir;
 	ndir[2] = 'e';
 	ndir[3] = 0;
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, "", 0, bitmap)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 	}
 	else {
 		filedir.isdir = 1;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
 		if (filedir.offcnt != offcnt +1) {
-			fprintf(stderr,"\tFAILED is %d want %d\n", filedir.offcnt, offcnt +1);
+			fprintf(stdout,"\tFAILED is %d want %d\n", filedir.offcnt, offcnt +1);
 		}
 	}
 	if (FPEnumerate(Conn, vol,  DIRDID_ROOT , "", 
@@ -2273,54 +2273,54 @@ struct afp_filedir_parms filedir;
 		    (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
 		)
 	) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, "", 0, bitmap)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 	}
 	else {
 		filedir.isdir = 1;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
 		if (filedir.offcnt != offcnt +1) {
-			fprintf(stderr,"\tFAILED is %d want %d\n", filedir.offcnt, offcnt +1);
+			fprintf(stdout,"\tFAILED is %d want %d\n", filedir.offcnt, offcnt +1);
 		}
 	}
 	if (FPGetFileDirParams(Conn, vol, dir, "", 0, bitmap)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 	}
 	else {
 		filedir.isdir = 1;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
 	    if (strcmp(filedir.lname, ndir)) {
-		    fprintf(stderr,"\tFAILED %s should be %s\n",filedir.lname, ndir );
+		    fprintf(stdout,"\tFAILED %s should be %s\n",filedir.lname, ndir );
 	    }
 	}
 
 	if (FPDelete(Conn, vol,  DIRDID_ROOT , ndir)) { 
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	/* ----------------- */
 	strcpy(nfile, "e.rtf");
 	nfile[0] = 0x8e;         /* é.rtf */
 	
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , nfile)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
     bitmap = (1<< FILPBIT_PDID)|(1<< FILPBIT_LNAME);
 
 	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, nfile, bitmap,0)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 	}
 	else {
 		filedir.isdir = 0;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap,0);
 	    if (strcmp(filedir.lname, nfile)) {
-		    fprintf(stderr,"\tFAILED %s should be %s\n",filedir.lname, nfile);
+		    fprintf(stdout,"\tFAILED %s should be %s\n",filedir.lname, nfile);
 	    }
 	}
 	if (FPDelete(Conn, vol,  DIRDID_ROOT , nfile)) { 
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 }
 
@@ -2337,12 +2337,12 @@ int  ofs =  3 * sizeof( u_int16_t );
 int offcnt;
 struct afp_filedir_parms filedir;
 	
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test161: leading . in name UTF8 and unix\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test161: leading . in name UTF8 and unix\n");
 
     bitmap = (1<< DIRPBIT_DID)|(1<< DIRPBIT_LNAME)|(1<< DIRPBIT_OFFCNT);
 	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, "", 0, bitmap)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 	}
 	else {
 		filedir.isdir = 1;
@@ -2351,17 +2351,17 @@ struct afp_filedir_parms filedir;
 	}
 
 	if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir))) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, "", 0, bitmap)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 	}
 	else {
 		filedir.isdir = 1;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
 		if (filedir.offcnt != offcnt +1) {
-			fprintf(stderr,"\tFAILED is %d want %d\n", filedir.offcnt, offcnt +1);
+			fprintf(stdout,"\tFAILED is %d want %d\n", filedir.offcnt, offcnt +1);
 		}
 	}
 	if (FPEnumerate(Conn, vol,  DIRDID_ROOT , "", 
@@ -2373,51 +2373,51 @@ struct afp_filedir_parms filedir;
 		    (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
 		)
 	) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, "", 0, bitmap)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 	}
 	else {
 		filedir.isdir = 1;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
 		if (filedir.offcnt != offcnt +1) {
-			fprintf(stderr,"\tFAILED is %d want %d\n", filedir.offcnt, offcnt +1);
+			fprintf(stdout,"\tFAILED is %d want %d\n", filedir.offcnt, offcnt +1);
 		}
 	}
 	if (FPGetFileDirParams(Conn, vol, dir, "", 0, bitmap)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 	}
 	else {
 		filedir.isdir = 1;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
 	    if (strcmp(filedir.lname, ndir)) {
-		    fprintf(stderr,"\tFAILED %s should be %s\n",filedir.lname, ndir );
+		    fprintf(stdout,"\tFAILED %s should be %s\n",filedir.lname, ndir );
 	    }
 	}
 
 	if (FPDelete(Conn, vol,  DIRDID_ROOT , ndir)) { 
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	/* ----------------- */
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , nfile)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
     bitmap = (1<< FILPBIT_PDID)|(1<< FILPBIT_LNAME);
 
 	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, nfile, bitmap,0)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 	}
 	else {
 		filedir.isdir = 0;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap,0);
 	    if (strcmp(filedir.lname, nfile)) {
-		    fprintf(stderr,"\tFAILED %s should be %s\n",filedir.lname, nfile);
+		    fprintf(stdout,"\tFAILED %s should be %s\n",filedir.lname, nfile);
 	    }
 	}
 	if (FPDelete(Conn, vol,  DIRDID_ROOT , nfile)) { 
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 }	
 
@@ -2429,16 +2429,16 @@ u_int16_t bitmap = 0;
 char *name  = "Un nom long 0123456789 0123456789 0123456789 0123456789.txt";
 char *name1 = "Un nom long 0123456789 0123456789 0123456789 0123456790.txt";
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test163: mangled names\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test163: mangled names\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 	
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	FPEnumerate(Conn, vol,  DIRDID_ROOT , "", 
@@ -2450,11 +2450,11 @@ char *name1 = "Un nom long 0123456789 0123456789 0123456789 0123456790.txt";
 		);
 
 	if (FPDelete(Conn, vol,  DIRDID_ROOT , name)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	if (FPDelete(Conn, vol,  DIRDID_ROOT , name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 }
 /* ------------------------- */
@@ -2468,11 +2468,11 @@ int  ofs =  3 * sizeof( u_int16_t );
 int offcnt;
 struct afp_filedir_parms filedir;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test164: mangled names\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test164: mangled names\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 	
@@ -2487,18 +2487,18 @@ struct afp_filedir_parms filedir;
     bitmap = (1<< FILPBIT_PDID)|(1<< FILPBIT_LNAME);
 
 	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, name, bitmap,0)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 		if (FPDelete(Conn, vol,  DIRDID_ROOT , name)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 		}
 	}
 	else {
 		filedir.isdir = 0;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap,0);
 		if (FPDelete(Conn, vol,  DIRDID_ROOT , filedir.lname)) {
-			fprintf(stderr,"\tFIXME FAILED lname\n");
+			fprintf(stdout,"\tFIXME FAILED lname\n");
 			if (FPDelete(Conn, vol, DIRDID_ROOT, name1)) {
-				fprintf(stderr,"\tFAILED mangle\n");
+				fprintf(stdout,"\tFAILED mangle\n");
 				FPDelete(Conn, vol,  DIRDID_ROOT , name);
 			}	
 		}
@@ -2515,33 +2515,33 @@ int  ofs =  3 * sizeof( u_int16_t );
 struct afp_filedir_parms filedir;
 u_int16_t bitmap;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"t177: tests nohex,usedots options\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"t177: tests nohex,usedots options\n");
 
 	dir = FPCreateDir(Conn, vol, DIRDID_ROOT , ".Apple");
 	if (dir || ntohl(AFPERR_EXIST) != dsi->header.dsi_code) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		if (dir) { FPDelete(Conn, vol, dir , "");}
 	}
 
 	dir = FPCreateDir(Conn, vol, DIRDID_ROOT , name);
 	if (!dir) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 	bitmap = (1<< DIRPBIT_ATTR) |(1<<DIRPBIT_FINFO)| (1<<FILPBIT_CDATE) | (1<<FILPBIT_BDATE);
 	if (FPGetFileDirParams(Conn, vol,  dir , "", 0, bitmap)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	else {
 		filedir.isdir = 1;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
 		if (!(filedir.attr & ATTRBIT_INVISIBLE)) {
-			fprintf(stderr,"\tFAILED visible\n");
+			fprintf(stdout,"\tFAILED visible\n");
 		}
 	}
 	if (FPCreateFile(Conn, vol,  0, dir , name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	
 	if (FPEnumerate(Conn, vol,  DIRDID_ROOT , name, 
@@ -2553,7 +2553,7 @@ u_int16_t bitmap;
 		    (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
 		)
 	) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 
 	if (FPEnumerate(Conn, vol,  DIRDID_ROOT , "", 
@@ -2565,10 +2565,10 @@ u_int16_t bitmap;
 		    (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID)|(1<< DIRPBIT_ACCESS)
 		)
 	) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
-	if (FPDelete(Conn, vol, dir , name1)) {fprintf(stderr,"\tFAILED\n");}
-	if (FPDelete(Conn, vol, dir , "")) {fprintf(stderr,"\tFAILED\n");}
+	if (FPDelete(Conn, vol, dir , name1)) {fprintf(stdout,"\tFAILED\n");}
+	if (FPDelete(Conn, vol, dir , "")) {fprintf(stdout,"\tFAILED\n");}
 }
 
 /* ------------------------- */
@@ -2581,28 +2581,28 @@ int  ofs =  3 * sizeof( u_int16_t );
 struct afp_filedir_parms filedir;
 u_int16_t bitmap;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"t178: tests nohex,usedots options\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"t178: tests nohex,usedots options\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		return;
 	}
 	bitmap = (1<< FILPBIT_ATTR) |(1<<FILPBIT_FINFO)| (1<<FILPBIT_CDATE) | (1<<FILPBIT_BDATE);
 	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, bitmap, 0)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	else {
 		filedir.isdir = 0;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 		if (!(filedir.attr & ATTRBIT_INVISIBLE)) {
-			fprintf(stderr,"\tFAILED\n");
+			fprintf(stdout,"\tFAILED\n");
 		}
 	}
 	FPDelete(Conn, vol, DIRDID_ROOT , name);
 
 	if (htonl(AFPERR_PARAM) != FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name1)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		FPDelete(Conn, vol, DIRDID_ROOT , name1);
 	}
 }
@@ -2615,22 +2615,22 @@ int ret;
 u_int32_t len;
 u_int32_t pid;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test997: send SIGHUP\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test997: send SIGHUP\n");
 
 	if (FPGetSessionToken(Conn,0 ,0 ,0 ,NULL)) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	memcpy(&len, dsi->data, sizeof(len));
 	len = ntohl(len);
 	if (len != 4) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 	else if (getuid() == 0) {
 		memcpy(&pid, dsi->data +4, sizeof(pid));
 		sleep(3);
 		if (kill(pid, 1) < 0) {
-			fprintf(stderr,"\tFAILED kill(%d,1) %s\n",pid, strerror(errno) );
+			fprintf(stdout,"\tFAILED kill(%d,1) %s\n",pid, strerror(errno) );
 		}
 	}
 }
@@ -2644,12 +2644,12 @@ u_int16_t vol2;
 	if (!Conn2) {
 		return;
 	}
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test998: bad packet disconnect\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test998: bad packet disconnect\n");
 	dsi2 = &Conn2->dsi;
 	vol2  = FPOpenVol(Conn2, Vol);
 	if (FPBadPacket(Conn2, 4, "staff")) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	} 
 	FPCloseVol(Conn2,vol2);
 }
@@ -2665,8 +2665,8 @@ int  ofs =  3 * sizeof( u_int16_t );
 u_int16_t vol2;
 int err;
 
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"test999: timeout disconnect \n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"test999: timeout disconnect \n");
     sleep(60*3);
 }
 

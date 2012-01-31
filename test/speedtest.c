@@ -116,8 +116,8 @@ u_int16_t i;
 struct stat st;
 
 	if (!Quiet) {
-		fprintf(stderr,"---------------------\n");
-		fprintf(stderr,"Open Vol %s \n\n", vol);
+		fprintf(stdout,"---------------------\n");
+		fprintf(stdout,"Open Vol %s \n\n", vol);
 	}
 
 	if (stat(vol, &st)) {
@@ -141,8 +141,8 @@ struct stat st;
 unsigned int local_closevol(CONN *conn, u_int16_t vol)
 {
 	if (!Quiet) {
-		fprintf(stderr,"---------------------\n");
-		fprintf(stderr,"Close Vol %d\n\n", vol);
+		fprintf(stdout,"---------------------\n");
+		fprintf(stdout,"Close Vol %d\n\n", vol);
 	}
 	return ntohl(AFP_OK);
 }
@@ -169,8 +169,8 @@ unsigned int local_createdir(CONN *conn, u_int16_t vol, int did , char *name)
 unsigned int i;
 
 	if (!Quiet) {
-		fprintf(stderr,"---------------------\n");
-		fprintf(stderr,"Create Directory Vol %d did : 0x%x <%s>\n\n", vol, ntohl(did), name);
+		fprintf(stdout,"---------------------\n");
+		fprintf(stdout,"Create Directory Vol %d did : 0x%x <%s>\n\n", vol, ntohl(did), name);
 	}
 	did = ntohl(did);
 	
@@ -213,8 +213,8 @@ struct stat st;
 unsigned int local_delete(CONN *conn, u_int16_t vol, int did , char *name)
 {
 	if (!Quiet) {
-		fprintf(stderr,"---------------------\n");
-		fprintf(stderr,"FPDelete Vol %d did : 0x%x <%s>\n\n", vol, ntohl(did), name);
+		fprintf(stdout,"---------------------\n");
+		fprintf(stdout,"FPDelete Vol %d did : 0x%x <%s>\n\n", vol, ntohl(did), name);
 	}
 	did = ntohl(did);
 	if (local_chdir(vol, did) < 0) {
@@ -237,8 +237,8 @@ unsigned int local_createfile(CONN *conn, u_int16_t vol, char type, int did , ch
 int fd;
 
 	if (!Quiet) {
-		fprintf(stderr,"---------------------\n");
-		fprintf(stderr,"Create File %s Vol %d did : 0x%x <%s>\n\n", (type )?"HARD":"SOFT", vol, ntohl(did), name);
+		fprintf(stdout,"---------------------\n");
+		fprintf(stdout,"Create File %s Vol %d did : 0x%x <%s>\n\n", (type )?"HARD":"SOFT", vol, ntohl(did), name);
 	}
 	did = ntohl(did);
 	if (local_chdir(vol, did) < 0) {
@@ -264,8 +264,8 @@ int fd;
 int flags = O_RDWR;
 
 	if (!Quiet) {
-		fprintf(stderr,"---------------------\n");
-		fprintf(stderr,"Open Fork %s Vol %d did : 0x%x <%s> access %x\n\n", (type == OPENFORK_DATA)?"data":"resource", 
+		fprintf(stdout,"---------------------\n");
+		fprintf(stdout,"Open Fork %s Vol %d did : 0x%x <%s> access %x\n\n", (type == OPENFORK_DATA)?"data":"resource", 
 						vol, ntohl(did), name, access);
 	}
 	if (Direct) {
@@ -286,8 +286,8 @@ int flags = O_RDWR;
 unsigned int local_writeheader(DSI *dsi, u_int16_t fork, int offset, int size, char *data, char whence)
 {
 	if (!Quiet) {
-		fprintf(stderr,"---------------------\n");
-		fprintf(stderr,"send write header fork %d  offset %d size %d from 0x%x\n\n", fork , offset, size, (unsigned)whence);
+		fprintf(stdout,"---------------------\n");
+		fprintf(stdout,"send write header fork %d  offset %d size %d from 0x%x\n\n", fork , offset, size, (unsigned)whence);
 	}
 	if (lseek(fork, offset, SEEK_SET) == (off_t)-1) {
 		return ntohl(AFPERR_EOF);
@@ -302,8 +302,8 @@ unsigned int local_writeheader(DSI *dsi, u_int16_t fork, int offset, int size, c
 unsigned int local_writefooter(DSI *dsi, u_int16_t fork, int offset, int size, char *data, char whence)
 {
 	if (!Quiet) {
-		fprintf(stderr,"---------------------\n");
-		fprintf(stderr,"get write footer fork %d  offset %d size %d from 0x%x\n\n", fork , offset, size, (unsigned)whence);
+		fprintf(stdout,"---------------------\n");
+		fprintf(stdout,"get write footer fork %d  offset %d size %d from 0x%x\n\n", fork , offset, size, (unsigned)whence);
 	}
 	return ntohl(AFP_OK);
 }
@@ -312,8 +312,8 @@ unsigned int local_writefooter(DSI *dsi, u_int16_t fork, int offset, int size, c
 unsigned int local_flushfork(CONN *conn, u_int16_t fork)
 {
 	if (!Quiet) {
-		fprintf(stderr,"---------------------\n");
-		fprintf(stderr,"Flush fork %d\n\n", fork);
+		fprintf(stdout,"---------------------\n");
+		fprintf(stdout,"Flush fork %d\n\n", fork);
 	}
 	if (fsync(fork) <0 ) {
 		return ntohl(AFPERR_PARAM);
@@ -325,8 +325,8 @@ unsigned int local_flushfork(CONN *conn, u_int16_t fork)
 unsigned int local_closefork(CONN *conn, u_int16_t fork)
 {
 	if (!Quiet) {
-		fprintf(stderr,"---------------------\n");
-		fprintf(stderr,"Close Fork %d\n\n", fork);
+		fprintf(stdout,"---------------------\n");
+		fprintf(stdout,"Close Fork %d\n\n", fork);
 	}
 	if (close(fork)) {
 		return ntohl(AFPERR_PARAM);
@@ -338,8 +338,8 @@ unsigned int local_closefork(CONN *conn, u_int16_t fork)
 unsigned int local_setforkparam(CONN *conn, u_int16_t fork,  u_int16_t bitmap, off_t size)
 {
 	if (!Quiet) {
-		fprintf(stderr,"---------------------\n");
-		fprintf(stderr,"Set Fork param fork %d bitmap 0x%x size %lld\n\n", fork, bitmap,size);
+		fprintf(stdout,"---------------------\n");
+		fprintf(stdout,"Set Fork param fork %d bitmap 0x%x size %lld\n\n", fork, bitmap,size);
 	}
 	if (ftruncate(fork, size)) {
 		return ntohl(AFPERR_PARAM);
@@ -351,8 +351,8 @@ unsigned int local_setforkparam(CONN *conn, u_int16_t fork,  u_int16_t bitmap, o
 unsigned int local_write(CONN *conn, u_int16_t fork, int offset, int size, char *data, char whence)
 {
 	if (!Quiet) {
-		fprintf(stderr,"---------------------\n");
-		fprintf(stderr,"write fork %d  offset %d size %d from 0x%x\n\n", fork , offset, size, (unsigned)whence);
+		fprintf(stdout,"---------------------\n");
+		fprintf(stdout,"write fork %d  offset %d size %d from 0x%x\n\n", fork , offset, size, (unsigned)whence);
 	}
 	if (lseek(fork, offset, SEEK_SET) == (off_t)-1) {
 		return ntohl(AFPERR_EOF);
@@ -367,8 +367,8 @@ unsigned int local_write(CONN *conn, u_int16_t fork, int offset, int size, char 
 unsigned int local_read(CONN *conn, u_int16_t fork, int offset, int size, char *data)
 {
 	if (!Quiet) {
-		fprintf(stderr,"---------------------\n");
-		fprintf(stderr,"read fork %d  offset %d size %d\n\n", fork , offset, size);
+		fprintf(stdout,"---------------------\n");
+		fprintf(stdout,"read fork %d  offset %d size %d\n\n", fork , offset, size);
 	}
 	if (lseek(fork, offset, SEEK_SET) == (off_t)-1) {
 		return ntohl(AFPERR_EOF);
@@ -383,8 +383,8 @@ unsigned int local_read(CONN *conn, u_int16_t fork, int offset, int size, char *
 unsigned int local_readheader(DSI *dsi, u_int16_t fork, int offset, int size, char *data)
 {
 	if (!Quiet) {
-		fprintf(stderr,"---------------------\n");
-		fprintf(stderr,"send read header fork %d  offset %d size %d\n\n", fork , offset, size);
+		fprintf(stdout,"---------------------\n");
+		fprintf(stdout,"send read header fork %d  offset %d size %d\n\n", fork , offset, size);
 	}
 	return ntohl(AFP_OK);
 }
@@ -393,8 +393,8 @@ unsigned int local_readheader(DSI *dsi, u_int16_t fork, int offset, int size, ch
 unsigned int local_readfooter(DSI *dsi, u_int16_t fork, int offset, int size, char *data)
 {
 	if (!Quiet) {
-		fprintf(stderr,"---------------------\n");
-		fprintf(stderr,"get read reply fork %d  offset %d size %d\n\n", fork , offset, size);
+		fprintf(stdout,"---------------------\n");
+		fprintf(stdout,"get read reply fork %d  offset %d size %d\n\n", fork , offset, size);
 	}
 	if (lseek(fork, offset, SEEK_SET) == (off_t)-1) {
 		return ntohl(AFPERR_EOF);
@@ -440,8 +440,8 @@ static void press_enter(char *s)
 	return;
 	
     if (s) 
-	fprintf(stderr, "--> Performing: %s\n", s);
-    fprintf(stderr, "Press <ENTER> to continue.\n");
+	fprintf(stdout, "--> Performing: %s\n", s);
+    fprintf(stdout, "Press <ENTER> to continue.\n");
     
     while (fgetc(stdin) != '\n') 
 	;
@@ -450,7 +450,7 @@ static void press_enter(char *s)
 /* ------------------------- */
 void failed(void)
 {
-	fprintf(stderr,"\tFAILED\n");
+	fprintf(stdout,"\tFAILED\n");
 	if (!ExitCode)
 		ExitCode = 1;
 }
@@ -458,13 +458,13 @@ void failed(void)
 /* ------------------------- */
 void fatal_failed(void)
 {
-	fprintf(stderr,"\tFAILED\n");
+	fprintf(stdout,"\tFAILED\n");
 	exit(1);
 }
 /* ------------------------- */
 void nottested(void)
 {
-	fprintf(stderr,"\tNOT TESTED\n");
+	fprintf(stdout,"\tNOT TESTED\n");
 	if (!ExitCode)
 		ExitCode = 2;
 }
@@ -498,7 +498,7 @@ unsigned long long s, e;
 /* ------------------ */
 static void header(void)
 {
-	fprintf(stderr, "run\t microsec\t  KB/s\n");
+	fprintf(stdout, "run\t microsec\t  KB/s\n");
 }
 
 /* ------------------ */
@@ -508,7 +508,7 @@ unsigned long long d;
 
 	gettimeofday(&Timer_end, NULL);
 	d = delta();
-	fprintf(stderr, "%9lld\t%.2f\n", d, ((float)Size*MEGABYTE/(float)d)/KILOBYTE);
+	fprintf(stdout, "%9lld\t%.2f\n", d, ((float)Size*MEGABYTE/(float)d)/KILOBYTE);
 }
 
 /* ------------------ */
@@ -529,7 +529,7 @@ int i;
 int push;
 DSI *dsi;
 
-	fprintf(stderr, "Write quantum %d, size %lld\n", Quantum, Size);
+	fprintf(stdout, "Write quantum %d, size %lld\n", Quantum, Size);
 	header();
 
 	sprintf(temp,"WriteTest-%d", id);
@@ -554,7 +554,7 @@ DSI *dsi;
 			failed();
 			goto fin1;
 		}
-		fprintf(stderr,"%d\t", i);
+		fprintf(stdout,"%d\t", i);
 		gettimeofday(&Timer_start, NULL);
 		nbe = nbe_r = Quantum;
 		written = written_r = Size;
@@ -620,7 +620,7 @@ fin1:
 	if (VFS.delete(Conn, vol,  dir, "File")) {failed();}
 fin:
 	if (VFS.delete(Conn, vol,  dir, "")) {failed();}
-    fprintf(stderr, "\n");
+    fprintf(stdout, "\n");
 	return;
 }
 
@@ -719,7 +719,7 @@ int max = Request;
 int cnt = 0;
 
 	dsi = &Conn->dsi;
-	fprintf(stderr, "Copy qantum %d, size %lld %s\n", Quantum, Size, Sparse?"sparse file":"");
+	fprintf(stdout, "Copy qantum %d, size %lld %s\n", Quantum, Size, Sparse?"sparse file":"");
 	header();
 
 	sprintf(temp,"CopyTest-%d", id);
@@ -787,7 +787,7 @@ int cnt = 0;
 		fork_fd = getfd(Conn, fork);
 		fork2_fd = getfd(Conn, fork2);
 		
-		fprintf(stderr,"%d\t", i);
+		fprintf(stdout,"%d\t", i);
 		
 		gettimeofday(&Timer_start, NULL);
 		nbe = nbe_r = nbe_w = Quantum;
@@ -920,7 +920,7 @@ int vol = VolID;
 int vol2 = VolID2;
 int i;
 
-	fprintf(stderr, "ServerCopy qantum %d, size %lld %s\n", Quantum, Size, Sparse?"sparse file":"");
+	fprintf(stdout, "ServerCopy qantum %d, size %lld %s\n", Quantum, Size, Sparse?"sparse file":"");
 	header();
 
 	sprintf(temp,"ServerCopyTest-%d", id);
@@ -966,7 +966,7 @@ int i;
 			goto fin1;
 		}
 		fork = 0;
-		fprintf(stderr,"%d\t", i);
+		fprintf(stdout,"%d\t", i);
 		gettimeofday(&Timer_start, NULL);
 		if (VFS.copyfile(Conn, vol, dir, vol2, dir2, "Source", "", "Destination")) {
 			failed();
@@ -1018,7 +1018,7 @@ DSI *dsi;
 int i;
 int push;
 
-	fprintf(stderr, "Read qantum %d, size %lld %s\n", Quantum, Size, Sparse?"sparse file":"");
+	fprintf(stdout, "Read qantum %d, size %lld %s\n", Quantum, Size, Sparse?"sparse file":"");
 	header();
 
 	if (!Filename) {
@@ -1066,7 +1066,7 @@ int push;
 		offset = 0;
 		offset_r = 0;
 		push = 0;
-		fprintf(stderr,"%d\t", i);
+		fprintf(stdout,"%d\t", i);
 		gettimeofday(&Timer_start, NULL);
 		while (written ) {
 		    if (written < Quantum) {
@@ -1176,11 +1176,11 @@ void (*fn)(void) = NULL;
     if (handle) {
 		fn = dlsym(handle, token);
 		if ((error = dlerror()) != NULL)  {
-			fprintf (stderr, "%s\n", error);
+			fprintf (stdout, "%s\n", error);
 		}
     }
     else {
-        fprintf (stderr, "%s\n", dlerror());
+        fprintf (stdout, "%s\n", dlerror());
     }
     if (!handle || !fn) {
 	    nottested();
@@ -1209,7 +1209,7 @@ void (*fn)(void) = NULL;
 	    Quantum = dsi->server_quantum;
 	}
 	else if (Quantum > dsi->server_quantum) {
-		fprintf(stderr,"\t server quantum (%d) too small\n", dsi->server_quantum);
+		fprintf(stdout,"\t server quantum (%d) too small\n", dsi->server_quantum);
 		return;
 	}
 	if (Direct) {
@@ -1220,7 +1220,7 @@ void (*fn)(void) = NULL;
 		Buffer = malloc(Quantum);
 	}
 	if (!Buffer) {
-		fprintf(stderr,"\t can't allocate (%d) bytes\n", Quantum);
+		fprintf(stdout,"\t can't allocate (%d) bytes\n", Quantum);
 		return;
 	}
 
@@ -1250,14 +1250,14 @@ void (*fn)(void) = NULL;
 		if (token) {
 			fn = test_to_run(token);
 			if (fn == -1) {
-				fprintf (stderr, "%s undefined test\n", token);
+				fprintf (stdout, "%s undefined test\n", token);
 			}
 		}
 #else
 	    if (token && handle) {
 			fn = dlsym(handle, token);
 			if ((error = dlerror()) != NULL)  {
-				fprintf (stderr, "%s\n", error);
+				fprintf (stdout, "%s\n", error);
 			}
 	    }
 #endif	    
@@ -1276,38 +1276,38 @@ void (*fn)(void) = NULL;
 /* =============================== */
 void usage( char * av0 )
 {
-    fprintf( stderr, "usage:\t%s [-h host] [-p port] [-s vol] [-S Vol2] [-u user] [-w password] [-f test] [-c count] "
+    fprintf( stdout, "usage:\t%s [-h host] [-p port] [-s vol] [-S Vol2] [-u user] [-w password] [-f test] [-c count] "
     "[-d size] [-q quantum] [-F file] [-234LvViyea] \n", av0 );
-    fprintf( stderr,"\t-h\tserver host name (default localhost)\n");
-    fprintf( stderr,"\t-p\tserver port (default 548)\n");
-    fprintf( stderr,"\t-s\tvolume to mount (default home)\n");
-    fprintf( stderr,"\t-S\tsecond volume to mount (default none)\n");
-    fprintf( stderr,"\t-u\tuser name (default uid)\n");
+    fprintf( stdout,"\t-h\tserver host name (default localhost)\n");
+    fprintf( stdout,"\t-p\tserver port (default 548)\n");
+    fprintf( stdout,"\t-s\tvolume to mount (default home)\n");
+    fprintf( stdout,"\t-S\tsecond volume to mount (default none)\n");
+    fprintf( stdout,"\t-u\tuser name (default uid)\n");
     
-    fprintf( stderr,"\t-L\tuse posix calls (default AFP calls)\n");
-    fprintf( stderr,"\t-D\twith -L use O_DIRECT in open flags (default no)\n");
+    fprintf( stdout,"\t-L\tuse posix calls (default AFP calls)\n");
+    fprintf( stdout,"\t-D\twith -L use O_DIRECT in open flags (default no)\n");
     
-    fprintf( stderr,"\t-w\tpassword (default none)\n");
-    fprintf( stderr,"\t-2\tAFP 2.2 version (default 2.1)\n");
-    fprintf( stderr,"\t-3\tAFP 3.0 version\n");
-    fprintf( stderr,"\t-4\tAFP 3.1 version\n");
-    fprintf( stderr,"\t-5\tAFP 3.2 version\n");
+    fprintf( stdout,"\t-w\tpassword (default none)\n");
+    fprintf( stdout,"\t-2\tAFP 2.2 version (default 2.1)\n");
+    fprintf( stdout,"\t-3\tAFP 3.0 version\n");
+    fprintf( stdout,"\t-4\tAFP 3.1 version\n");
+    fprintf( stdout,"\t-5\tAFP 3.2 version\n");
 
-    fprintf( stderr,"\t-c\trun test count times\n");
-    fprintf( stderr,"\t-d\tfile size (Mbytes, default 64)\n");
-    fprintf( stderr,"\t-q\tpacket size (Kbytes, default server quantum)\n");
-    fprintf( stderr,"\t-r\tnumber of outstanding requests (default 1)\n");
-    fprintf( stderr,"\t-R\tnumber of not interleaved outstanding requests (default 1)\n");
-    fprintf( stderr,"\t-y\tuse a new file for each run (default same file)\n");
-    fprintf( stderr,"\t-e\tsparse file (default no)\n");
-    fprintf( stderr,"\t-a\tdon't flush to disk after write (default yes)\n");
-    fprintf( stderr,"\t-F\tread from file in volume root folder (default create a temporary file)\n");
+    fprintf( stdout,"\t-c\trun test count times\n");
+    fprintf( stdout,"\t-d\tfile size (Mbytes, default 64)\n");
+    fprintf( stdout,"\t-q\tpacket size (Kbytes, default server quantum)\n");
+    fprintf( stdout,"\t-r\tnumber of outstanding requests (default 1)\n");
+    fprintf( stdout,"\t-R\tnumber of not interleaved outstanding requests (default 1)\n");
+    fprintf( stdout,"\t-y\tuse a new file for each run (default same file)\n");
+    fprintf( stdout,"\t-e\tsparse file (default no)\n");
+    fprintf( stdout,"\t-a\tdon't flush to disk after write (default yes)\n");
+    fprintf( stdout,"\t-F\tread from file in volume root folder (default create a temporary file)\n");
     
-    fprintf( stderr,"\t-v\tverbose (default no)\n");
-    fprintf( stderr,"\t-V\tvery verbose (default no)\n");
+    fprintf( stdout,"\t-v\tverbose (default no)\n");
+    fprintf( stdout,"\t-V\tvery verbose (default no)\n");
 
-    fprintf( stderr,"\t-f\ttest to run (Read, Write, Copy, ServerCopy, default Write)  \n");
-    fprintf( stderr,"\t-i\tinteractive mode, prompts before every test (debug purposes)\n");
+    fprintf( stdout,"\t-f\ttest to run (Read, Write, Copy, ServerCopy, default Write)  \n");
+    fprintf( stdout,"\t-i\tinteractive mode, prompts before every test (debug purposes)\n");
     exit (1);
 }
 
@@ -1397,7 +1397,7 @@ int cc;
         case 'p' :
             Port = atoi( optarg );
             if (Port <= 0) {
-                fprintf(stderr, "Bad port.\n");
+                fprintf(stdout, "Bad port.\n");
                 exit(1);
             }
             break;

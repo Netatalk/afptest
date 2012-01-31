@@ -96,8 +96,8 @@ u_int32_t flen;
 unsigned int ret;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"Read only volume\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"Read only volume\n");
 	VolID = FPOpenVol(Conn, Vol);
 	if (VolID == 0xffff) {
 		nottested();
@@ -120,7 +120,7 @@ unsigned int ret;
 		nottested();
 		goto fin;
 	}
-	fprintf(stderr,"Directory %s\n", dir);
+	fprintf(stdout,"Directory %s\n", dir);
 	/* get a file */
 	bitmap = (1 << FILPBIT_LNAME);
 	ret = FPEnumerateFull(Conn, VolID, 1, 1, 800,  DIRDID_ROOT, "", bitmap, 0);
@@ -135,7 +135,7 @@ unsigned int ret;
 		nottested();
 		goto fin;
 	}
-	fprintf(stderr,"File %s\n", file);
+	fprintf(stdout,"File %s\n", file);
 
 	/* get a second file */
 	bitmap = (1 << FILPBIT_LNAME);
@@ -151,7 +151,7 @@ unsigned int ret;
 		nottested();
 		goto fin;
 	}
-	fprintf(stderr,"Second file %s\n", file1);
+	fprintf(stdout,"Second file %s\n", file1);
 
 	/* TESTS */
 	/* -- file.c -- */
@@ -174,7 +174,7 @@ unsigned int ret;
 	FAIL (ntohl(AFPERR_VLOCK) != FPCopyFile(Conn, VolID, DIRDID_ROOT, VolID, DIRDID_ROOT, file, "", nfile)) 
 
 	if (!(get_vol_attrib(VolID) & VOLPBIT_ATTR_FILEID) ) {
-		fprintf(stderr,"FileID calls Not supported\n");
+		fprintf(stdout,"FileID calls Not supported\n");
 	}
 	else {
 		/* with cnid db, if the volume isn't define as readonly in AppleVolumes.default
@@ -245,7 +245,7 @@ unsigned int ret;
 				failed();
 			}
 			else {
-				fprintf(stderr,"\tWARNING \"%s\", not empty FPDelete skipped\n", dir);
+				fprintf(stdout,"\tWARNING \"%s\", not empty FPDelete skipped\n", dir);
 			}
 		}
 	}
@@ -346,21 +346,21 @@ test_exit:
 /* =============================== */
 void usage( char * av0 )
 {
-    fprintf( stderr,"%s test a read only volume\n", av0);
-    fprintf( stderr, "usage:\t%s [-m] [-n] [-t] [-h host] [-p port] [-s vol] [-u user] [-w password] -f [call]\n", av0 );
+    fprintf( stdout,"%s test a read only volume\n", av0);
+    fprintf( stdout, "usage:\t%s [-m] [-n] [-t] [-h host] [-p port] [-s vol] [-u user] [-w password] -f [call]\n", av0 );
     
-    fprintf( stderr,"\t-m\tserver is a Mac\n");
-    fprintf( stderr,"\t-h\tserver host name (default localhost)\n");
-    fprintf( stderr,"\t-p\tserver port (default 548)\n");
-    fprintf( stderr,"\t-u\tuser name (default uid)\n");
-    fprintf( stderr,"\t-s\tvolume to mount (default home)\n");
+    fprintf( stdout,"\t-m\tserver is a Mac\n");
+    fprintf( stdout,"\t-h\tserver host name (default localhost)\n");
+    fprintf( stdout,"\t-p\tserver port (default 548)\n");
+    fprintf( stdout,"\t-u\tuser name (default uid)\n");
+    fprintf( stdout,"\t-s\tvolume to mount (default home)\n");
     
-    fprintf( stderr,"\t-w\tpassword (default none)\n");
-    fprintf( stderr,"\t-2\tAFP 2.2 version (default 2.1)\n");
-    fprintf( stderr,"\t-3\tAFP 3.0 version\n");
-    fprintf( stderr,"\t-4\tAFP 3.1 version\n");
-    fprintf( stderr,"\t-5\tAFP 3.2 version\n");
-    fprintf( stderr,"\t-v\tverbose\n");
+    fprintf( stdout,"\t-w\tpassword (default none)\n");
+    fprintf( stdout,"\t-2\tAFP 2.2 version (default 2.1)\n");
+    fprintf( stdout,"\t-3\tAFP 3.0 version\n");
+    fprintf( stdout,"\t-4\tAFP 3.1 version\n");
+    fprintf( stdout,"\t-5\tAFP 3.2 version\n");
+    fprintf( stdout,"\t-v\tverbose\n");
 
     exit (1);
 }
@@ -409,7 +409,7 @@ static char *uam = "Cleartxt Passwrd";
         case 'p' :
             Port = atoi( optarg );
             if (Port <= 0) {
-                fprintf(stderr, "Bad port.\n");
+                fprintf(stdout, "Bad port.\n");
                 exit(1);
             }
             break;

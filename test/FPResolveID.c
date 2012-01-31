@@ -17,8 +17,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPResolveID:test76: Resolve ID\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPResolveID:test76: Resolve ID\n");
 
     nottested();
     goto test_exit;
@@ -71,8 +71,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPResolveID:test91: Resolve ID errors\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPResolveID:test91: Resolve ID errors\n");
 
 	if (!(get_vol_attrib(vol) & VOLPBIT_ATTR_FILEID) ) {
 		test_skipped(T_ID);
@@ -143,8 +143,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPResolveID:test310: Resolve ID after rename\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPResolveID:test310: Resolve ID after rename\n");
 
 	if (!(get_vol_attrib(vol) & VOLPBIT_ATTR_FILEID) ) {
 		test_skipped(T_ID);
@@ -187,8 +187,8 @@ DSI *dsi;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPResolveID:test311: Resolve ID after rename\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPResolveID:test311: Resolve ID after rename\n");
 
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
@@ -235,8 +235,8 @@ u_int16_t vol2;
 DSI *dsi2;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPResolveID:test362: Resolve ID two users interactions\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPResolveID:test362: Resolve ID two users interactions\n");
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
@@ -285,8 +285,8 @@ test_exit:
 /* ----------- */
 void FPResolveID_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPResolveID page 252\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPResolveID page 252\n");
 	test76();
 	test91();
 	test310();

@@ -19,8 +19,8 @@ DSI *dsi2;
 int dt;
 		
 	enter_test();
-    fprintf(stderr,"===================\n");
-	fprintf(stderr, "FPRemoveComment:test54: remove comment\n");
+    fprintf(stdout,"===================\n");
+	fprintf(stdout, "FPRemoveComment:test54: remove comment\n");
 
 	if (!Conn2) {
 		test_skipped(T_CONN2);
@@ -82,7 +82,7 @@ int dt;
 	FPCloseFork(Conn,fork);
 #if 0
 	if (ntohl(AFPERR_NOITEM) != FPRemoveComment(Conn, vol,  DIRDID_ROOT , "bogus folder")) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 	}
 #endif
 fin:
@@ -108,8 +108,8 @@ int  dt;
 
 		
 	enter_test();
-    fprintf(stderr,"===================\n");
-	fprintf(stderr, "FPRemoveComment:test379: remove comment\n");
+    fprintf(stdout,"===================\n");
+	fprintf(stdout, "FPRemoveComment:test379: remove comment\n");
 
 	FAIL (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name1))
 
@@ -132,8 +132,8 @@ fin:
 /* ----------- */
 void FPRemoveComment_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPRemoveComment page 247\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPRemoveComment page 247\n");
 	test54();
 	test379();
 }

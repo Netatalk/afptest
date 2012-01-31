@@ -18,8 +18,8 @@ DSI *dsi;
 
 		
 	enter_test();
-    fprintf(stderr,"===================\n");
-	fprintf(stderr, "FPOpenDir:test57: OpenDir call\n");
+    fprintf(stdout,"===================\n");
+	fprintf(stdout, "FPOpenDir:test57: OpenDir call\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
 		goto test_exit;
@@ -87,8 +87,8 @@ test_exit:
 /* ----------- */
 void FPOpenDir_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPOpenDir page 227\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenDir page 227\n");
 	test57();
 }
 

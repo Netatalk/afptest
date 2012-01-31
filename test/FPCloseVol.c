@@ -9,8 +9,8 @@ u_int16_t vol = VolID;
 int ret;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCloseVol:test204: Close Volume call\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCloseVol:test204: Close Volume call\n");
 
 	FAIL (FPCloseVol(Conn,vol))
 	/* double close */
@@ -31,8 +31,8 @@ int ret;
 /* ----------- */
 void FPCloseVol_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPCloseVol page 130\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPCloseVol page 130\n");
 	test204();
 }
 

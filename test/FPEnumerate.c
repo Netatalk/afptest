@@ -15,8 +15,8 @@ DSI *dsi;
 
 	dsi = &Conn->dsi;
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPEnumerate:test38: enumerate folder with no write access\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPEnumerate:test38: enumerate folder with no write access\n");
 	if (!Conn2) {
 		test_skipped(T_CONN2);
 		goto test_exit;
@@ -61,14 +61,14 @@ DSI *dsi;
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap , did, "toto.txt",OPENACC_WR | OPENACC_RD);
 
 	if (fork) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		goto test_exit;
 	}		
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap, did, "toto.txt", OPENACC_RD);
 
 	if (!fork) {
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		goto test_exit;
 	}		
 	FPCloseFork(Conn,fork);
@@ -86,14 +86,14 @@ STATIC void test34()
 char *name = "essai permission";
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPEnumerate:test34: folder with --rwx-- perm\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPEnumerate:test34: folder with --rwx-- perm\n");
 
 	if (ntohl(AFPERR_ACCESS) != FPGetFileDirParams(Conn, vol, DIRDID_ROOT, name, 0, 
 	    (1 <<  DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<< DIRPBIT_DID) |
 	    (1 << DIRPBIT_ACCESS))) 
 	{
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		goto test_exit;
 	}
 
@@ -107,7 +107,7 @@ char *name = "essai permission";
 	     (1 << DIRPBIT_ACCESS))
 	   ) 
 	{
-		fprintf(stderr,"\tFAILED\n");
+		fprintf(stdout,"\tFAILED\n");
 		goto test_exit;
 	}
 fin:
@@ -125,8 +125,8 @@ unsigned int ret;
 int  dir;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPEnumerate:test40: enumerate deleted folder\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPEnumerate:test40: enumerate deleted folder\n");
 
 	dir   = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!dir) {
@@ -185,8 +185,8 @@ char *name3 = "t41 dir/sub dir";
 unsigned int ret;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPEnumerate:test41: enumerate folder not there\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPEnumerate:test41: enumerate folder not there\n");
 
 	dir   = FPCreateDir(Conn,vol, DIRDID_ROOT , name);
 	if (!dir) {
@@ -267,8 +267,8 @@ int ret;
 u_int16_t vol = VolID;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPEnumerate:test93: enumerate error\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPEnumerate:test93: enumerate error\n");
 
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();
@@ -333,8 +333,8 @@ int isdir;
 	dsi = &Conn->dsi;
 
 	enter_test();
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPEnumerate:test218: enumerate arguments\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPEnumerate:test218: enumerate arguments\n");
 	if (Conn->afp_version < 30) {
 		test_skipped(T_AFP3);
 		goto test_exit;
@@ -411,8 +411,8 @@ test_exit:
 /* ----------- */
 void FPEnumerate_test()
 {
-    fprintf(stderr,"===================\n");
-    fprintf(stderr,"FPEnumerate page 150\n");
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPEnumerate page 150\n");
 
     test38();
     test40();
