@@ -875,7 +875,7 @@ void exit_test(char *name)
 	case 1:
 		s = "FAILED";
         fprintf(stderr, "%s - summary - ", name);
-        fprintf(stderr, "%s%s\n", s, Why);
+        fprintf(stderr, "%s%s (%d)\n", s, Why, CurTestResult);
 		return;
 	case 2:
 		s = "NOT TESTED";
@@ -885,5 +885,5 @@ void exit_test(char *name)
 		break;
 	}
 	fprintf(stdout, "%s - summary - ", name);
-	fprintf(stdout, "%s%s\n", s, Why);
+	fprintf(stdout, "%s%s (%d)\n", s, Why, CurTestResult);
 }
