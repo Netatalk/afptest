@@ -418,16 +418,17 @@ struct afp_filedir_parms filedir;
 		nottested();
 		goto fin;
     }
-    FAIL(ntohl(AFPERR_SESSCLOS) != FPDisconnectOldSession(loc_conn2, 0, len, token))
-    sleep(1);
-    ret = FPGetSessionToken(loc_conn2, 4, time, strlen(id1), id1);
-    sleep(1);
 
-	fork = FPOpenFork(loc_conn1, vol1, OPENFORK_RSCS , 0 , dir, name, OPENACC_WR |OPENACC_RD |OPENACC_DWR| OPENACC_DRD);
-    if ( fork ) {
-		FAIL (FPCloseFork(loc_conn1, fork))
-    	failed();
+    ret = FPDisconnectOldSession(loc_conn2, 0, len, token);
+    if (ret == AFP_OK) {
+        sleep(1);
+        FAIL( FPGetSessionToken(loc_conn2, 4, time, strlen(id1), id1) );
+    } else {
+        failed();
+        FAIL (FPLogOut(loc_conn1))
     }
+
+    FAIL( FPLogOut(loc_conn2) );
     action.sa_handler = SIG_DFL;
     sigemptyset(&action.sa_mask);
     action.sa_flags = SA_RESTART;
