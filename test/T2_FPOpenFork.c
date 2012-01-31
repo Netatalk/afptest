@@ -850,7 +850,7 @@ int dir;
 		goto fin;
 	}
 
-	if (!Mac) {
+	if (!Mac && volinfo.v_adouble != AD_VERSION_EA) {
 		sprintf(temp,"%s/%s/.AppleDouble/%s", Path, name, file);
 		if (unlink(temp)) {
 		    nottested();
