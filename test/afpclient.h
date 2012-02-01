@@ -212,7 +212,14 @@
 #define AFPFORK_ACCWR   (1<<5)
 #define AFPFORK_ACCMASK (AFPFORK_ACCRD | AFPFORK_ACCWR)
 
-   
+/* we use this so that we can use the same mechanism for both byte
+ * locks and file synchronization locks. */
+#if _FILE_OFFSET_BITS == 64
+#define AD_FILELOCK_BASE (UINT64_C(0x7FFFFFFFFFFFFFFF) - 9)
+#else
+#define AD_FILELOCK_BASE (UINT32_C(0x7FFFFFFF) - 9)
+#endif
+
 typedef struct CONN {
 	DSI	dsi;
 #if 0

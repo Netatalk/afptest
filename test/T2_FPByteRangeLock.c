@@ -2,6 +2,7 @@
 */
 #include "specs.h"
 #include "adoublehelper.h"
+#include "volinfo.h"
 
 static char temp[MAXPATHLEN];   
 
@@ -39,17 +40,22 @@ u_int16_t vol = VolID;
 	}
 
 	strcpy(temp, Path);
-	strcat(temp,(type == OPENFORK_RSCS)?"/.AppleDouble/":"/");
-	strcat(temp, name);
+    strcat(temp,(type == OPENFORK_RSCS && volinfo.v_adouble == AD_VERSION2) ? "/.AppleDouble/" : "/");
+    strcat(temp, name);
 	
 	fprintf(stdout," \n---------------------\n");
 	fprintf(stdout, "open(\"%s\", O_RDWR)\n", temp);
 	fd = open(temp, O_RDWR, 0);	
 	if (fd >= 0) {
-	  	lock.l_start = 0;		/* after meta data */
-    	lock.l_type = F_WRLCK;
-	    lock.l_whence = SEEK_SET;
-    	lock.l_len = 1024;
+        if (volinfo.v_adouble == AD_VERSION2) {
+            lock.l_start = 0;
+            lock.l_len = 1024;
+        } else {
+            lock.l_start = AD_FILELOCK_BASE;
+            lock.l_len = 8;
+        }
+        lock.l_type = F_WRLCK;
+        lock.l_whence = SEEK_SET;
          
     	if ((ret = fcntl(fd, F_SETLK, &lock)) >= 0 || (errno != EACCES && errno != EAGAIN)) {
     	    if (!ret >= 0) 
@@ -107,7 +113,7 @@ u_int16_t vol2;
 		nottested();
 		goto test_exit;
 	}
-	test_bytelock(vol2, name, OPENFORK_DATA);
+//	test_bytelock(vol2, name, OPENFORK_DATA);
 	name = "t117 exclusive open RF";	
 	test_bytelock(vol2, name, OPENFORK_RSCS);
 
