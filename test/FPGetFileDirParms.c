@@ -1139,7 +1139,9 @@ void FPGetFileDirParms_test()
 	test333();
 	test334();
 	test335();
-	test371();
-	test380();
+    if (Version <= 31) {
+        test371();
+        test380();
+    }
 }
 

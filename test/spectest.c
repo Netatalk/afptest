@@ -307,6 +307,7 @@ void usage( char * av0 )
     fprintf( stdout,"\t-3\tAFP 3.0 version\n");
     fprintf( stdout,"\t-4\tAFP 3.1 version\n");
     fprintf( stdout,"\t-5\tAFP 3.2 version\n");
+    fprintf( stdout,"\t-6\tAFP 3.3 version\n");
     fprintf( stdout,"\t-v\tverbose\n");
 
     fprintf( stdout,"\t-x\tdon't run tests known to kill some afpd versions\n");
@@ -325,7 +326,7 @@ char	**av;
 {
 int cc;
 
-    while (( cc = getopt( ac, av, "v2345h:H:p:s:S:u:d:w:c:f:Llmxi" )) != EOF ) {
+    while (( cc = getopt( ac, av, "v23456h:H:p:s:S:u:d:w:c:f:Llmxi" )) != EOF ) {
         switch ( cc ) {
         case '2':
 			vers = "AFP2.2";
@@ -342,6 +343,10 @@ int cc;
         case '5':
 			vers = "AFP3.2";
 			Version = 32;
+			break;
+        case '6':
+			vers = "AFP3.3";
+			Version = 33;
 			break;
 		case 'c':
 			Path = strdup(optarg);
