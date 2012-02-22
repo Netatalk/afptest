@@ -348,6 +348,49 @@ test_exit:
 }
 
 /* ------------------------- */
+STATIC void test157()
+{
+    char *name  = "t157.txt";
+    u_int16_t bitmap = 0;
+    int fork;
+    u_int16_t vol = VolID;
+
+	enter_test();
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:test157: open not existing ressource fork read-only\n");
+
+	if (!Mac && !Path) {
+		test_skipped(T_MAC_PATH);
+		goto test_exit;
+	}
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){ 
+		nottested();
+		goto test_exit;
+	}
+	if (!Mac && delete_unix_rf(Path, "", name)) {
+		nottested();
+		goto fin;	
+	}
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap ,DIRDID_ROOT, name, OPENACC_RD);
+
+	if (!fork) {
+		failed();
+		goto fin;
+	}		
+
+	if (FPRead(Conn, fork, 0, 2000, Data) != ntohl(AFPERR_EOF))
+        failed();
+
+	FAIL (FPCloseFork(Conn, fork)) 
+fin:
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name)) 
+test_exit:
+	exit_test("test157");
+}
+
+/* ------------------------- */
 STATIC void test156()
 {
 int dir;
@@ -1167,6 +1210,7 @@ void FPOpenFork_test()
 	test152();    
 	test153();
 	test156();
+	test157();
 	test321();
 	test372();
 	test392();

@@ -31,8 +31,12 @@ int delete_unix_rf(char *path, char *name, char *file)
             fprintf(stdout,"unlink(%s)\n", temp);
             unlink(temp);
         }
-        sprintf(temp, "%s/%s", path, name);
+        if (file)
+            sprintf(temp, "%s/%s/%s", path, name, file);
+        else
+            sprintf(temp, "%s/%s", path, name);
         sys_lremovexattr(temp, AD_EA_META);
+        sys_lremovexattr(temp, AD_EA_RESO);
     }
 
 	return 0;
