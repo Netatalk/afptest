@@ -1,5 +1,13 @@
 /* -------------------------------------
 */
+
+#ifndef SPECS_H
+#define SPECS_H
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <signal.h>  
 
 #include "afpclient.h"
@@ -74,3 +82,5 @@ extern void test_skipped(int why);
 
 /* ---------------------------------
 */
+
+#endif

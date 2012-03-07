@@ -796,8 +796,8 @@ DSI *dsi;
 
 	if (!Quiet) {
 		fprintf(stdout,"---------------------\n");
-		fprintf(stdout,"Byte lock ext fork %d end %d %s offset %lld size %lld\n\n", 
-	                         fork, end, mode?"unlock":"lock", offset, size);
+		fprintf(stdout,"FPByteLock_ext: fork: %d, end: %d, mode: %s, offset: %jd, size: %jd\n\n", 
+                fork, end, mode ? "unlock" : "lock", (intmax_t)offset, (intmax_t)size);
 	}
 	ret = AFPByteLock_ext(conn,fork, end, mode, offset, size);
 	dump_header(dsi);

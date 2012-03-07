@@ -1,3 +1,5 @@
+#include "specs.h"
+
 #include <sys/time.h>
 #include <time.h>
 
@@ -7,7 +9,7 @@
 
 #include "afpclient.h"
 #include "test.h"
-#include "specs.h"
+
 
 extern  int     Throttle;
 
