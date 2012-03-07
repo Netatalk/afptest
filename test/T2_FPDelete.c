@@ -2,7 +2,6 @@
 */
 #include "specs.h"
 #include "adoublehelper.h"
-#include "volinfo.h"
 
 static char temp[MAXPATHLEN];   
 static char temp1[MAXPATHLEN];   
@@ -79,7 +78,7 @@ int ret;
     filedir.access[3] = 7; 
  	FAIL (FPSetDirParms(Conn, vol, dir , "", bitmap, &filedir)) 
 	FAIL (ntohl(AFPERR_BUSY) != FPDelete(Conn2, vol2,  dir , name))  
-	if (!Mac && volinfo.v_adouble == AD_VERSION2) {
+	if (!Mac && adouble == AD_V2) {
 		sprintf(temp,"%s/%s/.AppleDouble/%s", Path, name1, name);
 		if (chmod(temp, 0644) <0) {
 			fprintf(stdout,"\tFAILED chmod(%s) %s\n", temp, strerror(errno));
@@ -98,7 +97,7 @@ int ret;
 			failed();
 		}
 	} else {
-        if (!Mac && volinfo.v_adouble == AD_VERSION2) {
+        if (!Mac && adouble == AD_V2) {
             if (chmod(temp, 0666) <0) {
                 fprintf(stdout,"\tFAILED chmod(%s) %s\n", temp, strerror(errno));
                 failed_nomsg();
@@ -158,7 +157,7 @@ DSI *dsi = &Conn->dsi;
 		FAIL ((FPResolveID(Conn, vol, filedir.did, bitmap)))
 	}
 
-    if (volinfo.v_adouble == AD_VERSION2) {
+    if (adouble == AD_V2) {
         sprintf(temp1, "%s/%s/.AppleDouble/%s", Path, name1, name);
         if (unlink(temp1) <0) {
             fprintf(stdout,"\tFAILED unlink %s %s\n", temp, strerror(errno));
@@ -291,7 +290,7 @@ DSI *dsi = &Conn->dsi;
 		FAIL ((FPResolveID(Conn, vol, filedir.did, bitmap)))
 	}
 
-    if (volinfo.v_adouble == AD_VERSION2) {
+    if (adouble == AD_V2) {
         sprintf(temp1, "%s/%s/.AppleDouble/%s", Path, name1, name);
         if (unlink(temp1) <0) {
             fprintf(stdout,"\tFAILED unlink %s %s\n", temp, strerror(errno));

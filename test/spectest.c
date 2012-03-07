@@ -3,7 +3,6 @@
  * MANIFEST
  */
 #include "specs.h"
-#include "volinfo.h"
 #include <dlfcn.h>
 
 int Verbose = 0;
@@ -286,11 +285,13 @@ int     Mac = 0;
 char    *Test;
 int     Exclude = 0;
 int		Locking;
+enum adouble adouble = AD_EA;
 
 /* =============================== */
 void usage( char * av0 )
 {
-    fprintf( stdout, "usage:\t%s [-L] [-m] [-n] [-t] [-h host] [-p port] [-s vol] [-u user] [-w password] -f [call]\n", av0 );
+    fprintf( stdout, "usage:\t%s [-aLmn] [-h host] [-p port] [-s vol] [-u user] [-w password] -f [call]\n", av0 );
+    fprintf( stdout,"\t-a\t\volume is adouble:v2 instead of default adouble:ean");
     fprintf( stdout,"\t-L\tserver without working fcntl locking, skip tests using it\n");
     fprintf( stdout,"\t-m\tserver is a Mac\n");
     fprintf( stdout,"\t-h\tserver host name (default localhost)\n");
@@ -326,7 +327,7 @@ char	**av;
 {
 int cc;
 
-    while (( cc = getopt( ac, av, "v23456h:H:p:s:S:u:d:w:c:f:Llmxi" )) != EOF ) {
+    while (( cc = getopt( ac, av, "v23456ah:H:p:s:S:u:d:w:c:f:Llmxi" )) != EOF ) {
         switch ( cc ) {
         case '2':
 			vers = "AFP2.2";
@@ -348,9 +349,11 @@ int cc;
 			vers = "AFP3.3";
 			Version = 33;
 			break;
+		case 'a':
+            adouble = AD_V2;
+			break;
 		case 'c':
 			Path = strdup(optarg);
-            loadvolinfo(Path);
 			break;
 		case 'L':
 			Locking = 1;

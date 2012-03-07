@@ -1,7 +1,6 @@
 /* ----------------------------------------------
 */
 #include "specs.h"
-#include "volinfo.h"
 
 /* ------------------------- */
 STATIC void test98()
@@ -62,7 +61,7 @@ DSI *dsi;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, 0, bitmap);
 		bitmap = (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE);
  		ret = FPSetFilDirParam(Conn, vol, DIRDID_ROOT , rodir, bitmap, &filedir);
-        if (volinfo.v_adouble == AD_VERSION_EA) {
+        if (adouble == AD_EA) {
             if (not_valid(ret, /* MAC */0, AFPERR_ACCESS))
                 failed();
         } else {
@@ -172,7 +171,7 @@ DSI *dsi;
 
 		fork = FPOpenFork(Conn, vol, OPENFORK_RSCS , 0 ,dir, name,OPENACC_WR | OPENACC_RD);
 		if (!fork) {
-            if (volinfo.v_adouble == AD_VERSION2)
+            if (adouble == AD_V2)
                 failed();
 		}
 		else {

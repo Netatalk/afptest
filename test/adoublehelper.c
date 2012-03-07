@@ -2,7 +2,6 @@
 */
 #include "specs.h"
 #include "adoublehelper.h"
-#include "volinfo.h"
 #include "ea.h"
 
 static char temp[MAXPATHLEN];   
@@ -12,7 +11,7 @@ static char temp[MAXPATHLEN];
 */
 int delete_unix_rf(char *path, char *name, char *file)
 {
-    if (!(volinfo.valid && volinfo.v_adouble == AD_VERSION_EA)) {
+    if (adouble == AD_V2) {
         if (!*file) {
             sprintf(temp, "%s/%s/.AppleDouble/.Parent", path, name);
         }
@@ -89,31 +88,33 @@ int symlink_unix_file(char *target, char *path, char *source)
 /* ----------------------------- */
 int delete_unix_adouble(char *path, char *name)
 {
-    if (volinfo.valid && volinfo.v_adouble == AD_VERSION_EA)
-        return 0;
-
-	fprintf(stdout,"rmdir(%s/.AppleDouble) \n", name);
-	sprintf(temp, "%s/%s/.AppleDouble/.Parent", path, name);
-	if (unlink(temp) <0) {
-		fprintf(stdout,"\tFAILED unlink(%s) %s\n", temp, strerror(errno));
-		failed_nomsg();
-		return -1;
-	}
-
-	sprintf(temp, "%s/%s/.AppleDouble", path, name);
-	if (rmdir(temp) <0) {
-		fprintf(stdout,"\tFAILED rmdir(%s) %s\n", temp, strerror(errno));
-		failed_nomsg();
-		return -1;
-	}
-	return 0;
+    if (adouble == AD_EA) {
+        sprintf(temp, "%s/%s", path, name);
+        sys_lremovexattr(temp, AD_EA_META);
+        sys_lremovexattr(temp, AD_EA_RESO);
+    } else {
+        fprintf(stdout,"rmdir(%s/.AppleDouble) \n", name);
+        sprintf(temp, "%s/%s/.AppleDouble/.Parent", path, name);
+        if (unlink(temp) <0) {
+            fprintf(stdout,"\tFAILED unlink(%s) %s\n", temp, strerror(errno));
+            failed_nomsg();
+            return -1;
+        }
+        sprintf(temp, "%s/%s/.AppleDouble", path, name);
+        if (rmdir(temp) <0) {
+            fprintf(stdout,"\tFAILED rmdir(%s) %s\n", temp, strerror(errno));
+            failed_nomsg();
+            return -1;
+        }
+    }
+    return 0;
 }
 
 /* --------------------
 */
 int chmod_unix_adouble(char *path,char *name, int mode)
 {
-    if (volinfo.valid && volinfo.v_adouble == AD_VERSION_EA)
+    if (adouble == AD_EA)
         return 0;
 
 	sprintf(temp, "%s/%s/.AppleDouble", path, name);
@@ -133,10 +134,9 @@ int delete_unix_dir(char *path, char *name)
 {
 	fprintf(stdout,"rmdir(%s)\n", name);
 
-    if (!(volinfo.valid && volinfo.v_adouble == AD_VERSION_EA))
-        if (delete_unix_adouble(path, name)) {
+    if (adouble == AD_V2)
+        if (delete_unix_adouble(path, name))
             return -1;
-        }
 	sprintf(temp, "%s/%s", path, name);
 	if (rmdir(temp) <0) {
 		fprintf(stdout,"\tFAILED rmdir %s %s\n", temp, strerror(errno));
@@ -171,7 +171,7 @@ u_int16_t bitmap =  (1 << DIRPBIT_ACCESS);
 		nottested();
 		goto fin;
 	}
-	if (!Mac && !(volinfo.valid && volinfo.v_adouble == AD_VERSION_EA)) {
+	if (!Mac && adouble == AD_V2) {
 		if (delete_unix_rf(Path, name, "")) {
 			nottested();
 		}

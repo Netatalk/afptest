@@ -1,7 +1,6 @@
 /* ----------------------------------------------
 */
 #include "specs.h"
-#include "volinfo.h"
 
 static char temp[MAXPATHLEN];   
 
@@ -19,7 +18,7 @@ int ret;
     fprintf(stdout,"===================\n");
 	fprintf(stdout, "FPCreateFile:test325:  recreate a file with dangling symlink and no right\n");
 
-	if ((!Path && !Mac) || (volinfo.v_adouble == AD_VERSION_EA)) {
+	if ((!Path && !Mac) || (adouble == AD_EA)) {
         test_skipped(T_MAC_PATH);
 		goto test_exit;
 	}

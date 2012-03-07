@@ -2,7 +2,6 @@
 */
 #include "specs.h"
 #include "adoublehelper.h"
-#include "volinfo.h"
 
 static char temp[MAXPATHLEN];   
 
@@ -40,14 +39,14 @@ u_int16_t vol = VolID;
 	}
 
 	strcpy(temp, Path);
-    strcat(temp,(type == OPENFORK_RSCS && volinfo.v_adouble == AD_VERSION2) ? "/.AppleDouble/" : "/");
+    strcat(temp,(type == OPENFORK_RSCS && adouble == AD_V2) ? "/.AppleDouble/" : "/");
     strcat(temp, name);
 	
 	fprintf(stdout," \n---------------------\n");
 	fprintf(stdout, "open(\"%s\", O_RDWR)\n", temp);
 	fd = open(temp, O_RDWR, 0);	
 	if (fd >= 0) {
-        if (volinfo.v_adouble == AD_VERSION2) {
+        if (adouble == AD_V2) {
             lock.l_start = 0;
             lock.l_len = 1024;
         } else {

@@ -1,20 +1,29 @@
 /* -------------------------------------
 */
+#include <signal.h>  
+
 #include "afpclient.h"
 #include "test.h"
 
-extern u_int16_t VolID;
-extern int Mac;
-
-extern int ExitCode;
-extern int Exclude;
-
-#include <signal.h>  
-
+/* Defines */
 #define FAIL(a) if ((a)) { failed();}
 #define FAILEXIT(a, label) if ((a)) { failed(); goto label;}
 #define STATIC 
 
+/* Types */
+enum adouble {
+    AD_EA = 1,
+    AD_V2 = 2
+};
+
+/* Globals */
+extern u_int16_t VolID;
+extern int Mac;
+extern int ExitCode;
+extern int Exclude;
+extern enum adouble adouble;
+
+/* Functions */
 extern void illegal_fork(DSI * dsi, char cmd, char *name);
 extern int no_access_folder(u_int16_t vol, int did, char *name);
 extern int read_only_folder(u_int16_t vol, int did, char *name);

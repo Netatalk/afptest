@@ -2,7 +2,6 @@
 */
 #include "specs.h"
 #include "adoublehelper.h"
-#include "volinfo.h"
 
 static char temp[MAXPATHLEN];   
 static char temp1[MAXPATHLEN];   
@@ -44,7 +43,7 @@ DSI *dsi = &Conn->dsi;
 		FAIL ((FPResolveID(Conn, vol, filedir.did, bitmap)))
 	}
 
-    if (volinfo.v_adouble == AD_VERSION2) {
+    if (adouble == AD_V2) {
         sprintf(temp1, "%s/%s/.AppleDouble/%s", Path, name1, name);
         if (unlink(temp1) <0) {
             fprintf(stdout,"\tFAILED unlink %s %s\n", temp, strerror(errno));
@@ -109,7 +108,7 @@ int ret;
 		FAIL (FPResolveID(Conn, vol, filedir.did, bitmap)) 
 	}
 
-    if (volinfo.v_adouble == AD_VERSION2) {
+    if (adouble == AD_V2) {
         sprintf(temp1, "%s/%s/.AppleDouble/%s", Path, name1, name);
         if (unlink(temp1) <0) {
             fprintf(stdout,"\tFAILED unlink %s %s\n", temp, strerror(errno));
@@ -174,7 +173,7 @@ DSI *dsi = &Conn->dsi;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 		FAIL (FPResolveID(Conn, vol, filedir.did, bitmap)) 
 	}
-    if (volinfo.v_adouble == AD_VERSION2) {
+    if (adouble == AD_V2) {
         sprintf(temp1, "%s/%s/.AppleDouble/%s", Path, name1, name);
         if (unlink(temp1) <0) {
             fprintf(stdout,"\tFAILED unlink %s %s\n", temp, strerror(errno));
@@ -253,7 +252,7 @@ DSI *dsi = &Conn->dsi;
 			failed_nomsg();
 		}
 
-        if (volinfo.v_adouble == AD_VERSION2) {
+        if (adouble == AD_V2) {
             sprintf(temp, "%s/%s/.AppleDouble/%s", Path, name1, name);
             sprintf(temp1,"%s/%s/.AppleDouble/%s", Path, name1, name2);
             fprintf(stdout,"rename %s %s\n", temp, temp1);
@@ -298,7 +297,7 @@ static int get_fs_lock(char *folder, char *file)
     struct flock lock;
     int ret;
 
-    if (volinfo.v_adouble == AD_VERSION2)
+    if (adouble == AD_V2)
         sprintf(temp, "%s/%s/.AppleDouble/%s", Path, folder, file);
     else
         sprintf(temp, "%s/%s/%s", Path, folder, file);
@@ -403,7 +402,7 @@ DSI *dsi = &Conn->dsi;
 			failed_nomsg();
 		}
 
-        if (volinfo.v_adouble == AD_VERSION2) {
+        if (adouble == AD_V2) {
             sprintf(temp, "%s/%s/.AppleDouble/%s", Path, name1, name);
             sprintf(temp1,"%s/%s/.AppleDouble/%s", Path, name1, name2);
             fprintf(stdout,"rename %s %s\n", temp, temp1);
@@ -481,7 +480,7 @@ DSI *dsi = &Conn->dsi;
 		FAIL ((FPResolveID(Conn, vol, filedir.did, bitmap)))
 	}
 
-    if (volinfo.v_adouble == AD_VERSION2) {
+    if (adouble == AD_V2) {
         sprintf(temp1, "%s/.AppleDouble/%s", Path, name);
         if (unlink(temp1) <0) {
             fprintf(stdout,"\tFAILED unlink %s %s\n", temp, strerror(errno));
@@ -655,7 +654,7 @@ DSI *dsi = &Conn->dsi;
 			failed_nomsg();
 		}
 		
-        if (volinfo.v_adouble == AD_VERSION2) {
+        if (adouble == AD_V2) {
             sprintf(temp, "%s/%s/.AppleDouble/%s", Path, name1, name);
             sprintf(temp1,"%s/%s/.AppleDouble/%s", Path, name2, name);
             fprintf(stdout,"rename %s %s\n", temp, temp1);

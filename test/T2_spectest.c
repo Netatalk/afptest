@@ -1,10 +1,6 @@
-/*
- * $Id: T2_spectest.c,v 1.10 2010-01-21 08:35:34 didg Exp $
- * MANIFEST
- */
+#include "specs.h"
 #include "afpclient.h"
 #include "test.h"
-#include "volinfo.h"
 #include <dlfcn.h>
 
 int Verbose = 0;
@@ -262,11 +258,12 @@ int     List = 0;
 int     Mac = 0;
 char    *Test;
 int     Manuel = 0;
+enum adouble adouble = AD_EA;
 
 /* =============================== */
 void usage( char * av0 )
 {
-    fprintf( stdout, "usage:\t%s [-m] [-n] [-t] [-h host] [-p port] [-s vol] [-u user] [-w password] -f [call]\n", av0 );
+    fprintf( stdout, "usage:\t%s [-aLmn] [-h host] [-p port] [-s vol] [-u user] [-w password] -f [call]\n", av0 );
     fprintf( stdout,"\t-L\tserver without working fcntl locking, skip tests using it\n");
     fprintf( stdout,"\t-m\tserver is a Mac\n");
     fprintf( stdout,"\t-h\tserver host name (default localhost)\n");
@@ -301,7 +298,7 @@ int cc;
 static char *vers = "AFPVersion 2.1";
 static char *uam = "Cleartxt Passwrd";
 
-    while (( cc = getopt( ac, av, "iv23456h:H:p:s:u:d:w:c:f:lmMS:L" )) != EOF ) {
+    while (( cc = getopt( ac, av, "iv23456ah:H:p:s:u:d:w:c:f:lmMS:L" )) != EOF ) {
         switch ( cc ) {
         case '2':
 			vers = "AFP2.2";
@@ -323,9 +320,11 @@ static char *uam = "Cleartxt Passwrd";
 			vers = "AFP3.3";
 			Version = 33;
 			break;
+		case 'a':
+            adouble = AD_V2;
+			break;
 		case 'c':
 			Path = strdup(optarg);
-            loadvolinfo(Path);
 			break;
 		case 'm':
 			Mac = 1;

@@ -2,7 +2,6 @@
 */
 #include "specs.h"
 #include "adoublehelper.h"
-#include "volinfo.h"
 
 static char temp[MAXPATHLEN];   
 
@@ -277,7 +276,7 @@ unsigned int ret;
     fprintf(stdout,"===================\n");
     fprintf(stdout,"FPOpenFork:test152: Error when no write access to .AppleDouble\n");
 
-	if ((!Mac && !Path) || (volinfo.v_adouble == AD_VERSION_EA)) {
+	if ((!Mac && !Path) || (adouble == AD_EA)) {
 		test_skipped(T_MAC_PATH);
 		goto test_exit;
 	}
@@ -449,7 +448,7 @@ int fd;
     fprintf(stdout,"===================\n");
     fprintf(stdout,"FPOpenFork:test321: Bogus (empty) resource fork\n");
 
-	if ((!Mac && !Path) || (volinfo.v_adouble == AD_VERSION_EA)) {
+	if ((!Mac && !Path) || (adouble == AD_EA)) {
 		test_skipped(T_MAC_PATH);
 		goto test_exit;
 	}
@@ -893,7 +892,7 @@ int dir;
 		goto fin;
 	}
 
-	if (!Mac && volinfo.v_adouble != AD_VERSION_EA) {
+	if (!Mac && adouble == AD_V2) {
 		sprintf(temp,"%s/%s/.AppleDouble/%s", Path, name, file);
 		if (unlink(temp)) {
 		    nottested();

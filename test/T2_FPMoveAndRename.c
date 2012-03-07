@@ -2,7 +2,6 @@
 */
 #include "specs.h"
 #include "adoublehelper.h"
-#include "volinfo.h"
 
 static char temp[MAXPATHLEN];   
 static char temp1[MAXPATHLEN];
@@ -313,7 +312,7 @@ u_int16_t vol = VolID;
 			failed_nomsg();
 		}
 
-        if (volinfo.v_adouble == AD_VERSION2) {
+        if (adouble == AD_V2) {
             sprintf(temp,"%s/%s/.AppleDouble/%s", Path, name, file);
             sprintf(temp1,"%s/%s/.AppleDouble/%s", Path, name1, file);
             fprintf (stdout, "rename %s --> %s\n", temp, temp1);
