@@ -2,10 +2,11 @@
 
 #include <sys/time.h>
 #include <time.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <sys/types.h>
+#include <pwd.h>
 
 #include "afpclient.h"
 #include "test.h"
@@ -16,7 +17,6 @@ extern  int     Throttle;
 int Verbose = 0;
 int Quirk = 0;
 CONN *Conn;
-CONN *Conn2;
 int ExitCode = 0;
 char Data[300000] = "";
 char    *Vol = "";
@@ -90,12 +90,12 @@ static void addresult(int test, int iteration)
     unsigned long long avg;
 
     t = timediff();
-    printf("Run %u => %s%6lu ms", iteration, resultstrings[test], t);
+    fprintf(stderr, "Run %u => %s%6lu ms", iteration, resultstrings[test], t);
     if ((test == TEST_WRITE100MB) || (test == TEST_READ100MB)) {
         avg = (READ_WRITE_SIZE * 1000) / t;
-        printf(" (avg. %llu MB/s)", avg);
+        fprintf(stderr, " (avg. %llu MB/s)", avg);
     }
-    printf("\n");
+    fprintf(stderr, "\n");
     (*results)[iteration][test] = t;
 }
 
@@ -125,8 +125,8 @@ static void displayresults(void)
         }
     }
 
-    printf("\nNetatalk Lantest Results (averages)\n");
-    printf("===================================\n\n");
+    fprintf(stderr, "\nNetatalk Lantest Results (averages)\n");
+    fprintf(stderr, "===================================\n\n");
 
     unsigned long long avg, thrput;
 
@@ -136,13 +136,13 @@ static void displayresults(void)
         for (i=0, sum=0; i < Iterations_save; i++)
             sum += (*results)[i][test];
         avg = sum / (Iterations_save - divsub);
-        printf("%s%6llu ms", resultstrings[test], avg);
+        fprintf(stderr, "%s%6llu ms", resultstrings[test], avg);
         if ((test == TEST_WRITE100MB) || (test == TEST_READ100MB)) {
             thrput = (READ_WRITE_SIZE * 1000) / avg;
-            printf(" (avg. %llu MB/s)", thrput);
+            fprintf(stderr, " (avg. %llu MB/s)", thrput);
         }
 
-        printf("\n");
+        fprintf(stderr, "\n");
     }
 
 }
@@ -195,7 +195,7 @@ void test143()
 
     /* Configure the tests */
     int smallfiles = 1000;                     /* 1000 files */
-    int numread = (READ_WRITE_SIZE*1024*1024) / (64*1024); /* 100 MB in blocks of 64k */
+    int numread = (READ_WRITE_SIZE*1024*1024) / (dsi->server_quantum); /* 100 MB in blocks of 64k */
     int locking = 10000 / 40;                  /* 10000 times */
     int create_enum_files = 2000;              /* 2000 files */
 #define DIRNUM 10                              /* 10^3 nested dirs. This is a define because we
@@ -206,8 +206,9 @@ void test143()
         sprintf(temp,"LanTest-%d", id);
         ndir = strdup(temp);
     }
+
     if (!data)
-        data = calloc(1, 65536);
+        data = calloc(1, dsi->server_quantum);
     
     if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, "", 0, (1<< DIRPBIT_DID)))
         fatal_failed();
@@ -355,7 +356,7 @@ void test143()
 
         starttimer();
         for (i=0; i <= numread ; i++) {
-            if (FPWrite(Conn, fork, i*65536, 65536, data, 0 )) {
+            if (FPWrite(Conn, fork, i*dsi->server_quantum, dsi->server_quantum, data, 0 )) {
                 fatal_failed();
             }
         }
@@ -385,7 +386,7 @@ void test143()
 
         starttimer();
         for (i=0; i <= numread ; i++) {
-            if (FPRead(Conn, fork, i*65536, 65536, data)) {
+            if (FPRead(Conn, fork, i*dsi->server_quantum, dsi->server_quantum, data)) {
                 fatal_failed();
             }
         }
@@ -485,11 +486,11 @@ void test143()
         starttimer();
         for (i=1; i <= create_enum_files; i++) {
             sprintf(temp, "File.0k%d", i);
-            if (FPCreateFile(Conn2, vol2,  0, dir , temp)){
+            if (FPCreateFile(Conn, vol2,  0, dir , temp)){
                 fatal_failed();
                 break;
             }
-            if (FPGetFileDirParams(Conn2, vol2,  dir, temp,
+            if (FPGetFileDirParams(Conn, vol2,  dir, temp,
                                    (1<<FILPBIT_FNUM )|(1<<FILPBIT_PDID)|(1<<FILPBIT_FINFO)|
                                    (1<<FILPBIT_CDATE)|(1<<FILPBIT_DFLEN)|(1<<FILPBIT_RFLEN)
                                    , 0) != AFP_OK)
@@ -546,7 +547,7 @@ void test143()
     if (teststorun[TEST_CREATE2000FILES]) {
         for (i=1; i < maxi; i++) {
             sprintf(temp, "File.0k%d", i);
-            if (FPDelete(Conn2, vol2, dir, temp))
+            if (FPDelete(Conn, vol2, dir, temp))
                 fatal_failed();
         }
     }
@@ -611,16 +612,15 @@ static void run_one()
 void usage( char * av0 )
 {
     int i=0;
-    fprintf( stdout, "usage:\t%s -h host [-m|v|V] [-3|4|5] [-p port] [-s vol] [-u user] [-w password] [-n iterations] [-t tests to run]\n", av0 );
-    fprintf( stdout,"\t-m\tserver is a Mac (ignore this too!)\n");
-    fprintf( stdout,"\t-h\tserver host name (default localhost)\n");
+    fprintf( stdout, "usage:\t%s -h host [-v|-V] [-3|-4|-5] [-p port] [-s vol] [-u user] [-w password] [-n iterations] [-t tests to run]\n", av0 );
+    fprintf( stdout,"\t-h\tserver host name\n");
     fprintf( stdout,"\t-p\tserver port (default 548)\n");
     fprintf( stdout,"\t-s\tvolume to mount (default home)\n");
     fprintf( stdout,"\t-u\tuser name (default uid)\n");
     fprintf( stdout,"\t-w\tpassword (default none)\n");
     fprintf( stdout,"\t-3\tAFP 3.0 version\n");
-    fprintf( stdout,"\t-4\tAFP 3.1 version (default)\n");
-    fprintf( stdout,"\t-5\tAFP 3.2 version\n");
+    fprintf( stdout,"\t-4\tAFP 3.1 version\n");
+    fprintf( stdout,"\t-5\tAFP 3.2 version (default)\n");
     fprintf( stdout,"\t-n\thow often to run (default: 1)\n");
     fprintf( stdout,"\t-v\tverbose\n");
     fprintf( stdout,"\t-V\tvery verbose\n");
@@ -637,10 +637,14 @@ int main(int ac, char **av)
     int cc, i, t;
     int Debug = 0;
     char *tests = NULL;
-    static char *vers = "AFP3.1";
+    static char *vers = "AFP3.2";
     static char *uam = "Cleartxt Passwrd";
+    struct passwd *pw = getpwuid(getuid());
 
-    while (( cc = getopt( ac, av, "t:mvV345h:n:p:s:u:w:c:" )) != EOF ) {
+    if (pw)
+        User = strdup(pw->pw_name);
+
+    while (( cc = getopt( ac, av, "t:vV345h:n:p:s:u:w:c:" )) != EOF ) {
         switch ( cc ) {
         case 't':
             tests = strdup(optarg);
@@ -657,9 +661,6 @@ int main(int ac, char **av)
             vers = "AFP3.2";
             Version = 32;
             break;
-        case 'm':
-            Mac = 1;
-            break;
         case 'n':
             Iterations = atoi(optarg);
             break;
@@ -670,6 +671,8 @@ int main(int ac, char **av)
             Vol = strdup(optarg);
             break;
         case 'u':
+            if (User)
+                free(User);
             User = strdup(optarg);
             break;
         case 'w':
@@ -750,36 +753,6 @@ int main(int ac, char **av)
     else
       	ExitCode = ntohs(FPopenLogin(Conn, vers, uam, User, Password));
 
-    /************************************
-     *                                  *
-     * Connection 2                     *
-     *                                  *
-     ************************************/
-
-    if ((Conn2 = (CONN *)calloc(1, sizeof(CONN))) == NULL)
-        goto exit;
-
-    Conn2->type = Proto;
-    if (!Proto) {
-        int sock;
-        dsi = &Conn2->dsi;
-        sock = OpenClientSocket(Server, Port);
-        if ( sock < 0) {
-            return 2;
-        }
-        dsi->protocol = DSI_TCPIP;
-        dsi->socket = sock;
-    }
-    Conn2->afp_version = Version;
-
-    /* login */
-    if (Version >= 30)
-      	ExitCode = ntohs(FPopenLoginExt(Conn2, vers, uam, User, Password));
-    else
-      	ExitCode = ntohs(FPopenLogin(Conn2, vers, uam, User, Password));
-    if ((vol2  = FPOpenVol(Conn2, Vol)) == 0xffff)
-        goto exit;
-
     /* ----------------------------------- */
     run_one();
 
@@ -793,7 +766,6 @@ int main(int ac, char **av)
 
 exit:
     if (Conn) FPLogOut(Conn);
-    if (Conn2) FPLogOut(Conn2);
 
     return ExitCode;
 }
