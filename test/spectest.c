@@ -291,7 +291,7 @@ enum adouble adouble = AD_EA;
 void usage( char * av0 )
 {
     fprintf( stdout, "usage:\t%s [-aLmn] [-h host] [-p port] [-s vol] [-u user] [-w password] -f [call]\n", av0 );
-    fprintf( stdout,"\t-a\t\volume is adouble:v2 instead of default adouble:ean");
+    fprintf( stdout,"\t-a\t\volume is adouble:v2 instead of default adouble:ea\n");
     fprintf( stdout,"\t-L\tserver without working fcntl locking, skip tests using it\n");
     fprintf( stdout,"\t-m\tserver is a Mac\n");
     fprintf( stdout,"\t-h\tserver host name (default localhost)\n");
