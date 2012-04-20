@@ -25,7 +25,7 @@ char    *Path;
 int     Version = 21;
 int     Mac = 0;
 
-static u_int16_t vol, vol2;
+static u_int16_t vol;
 static DSI *dsi;
 static char    *Server = NULL;
 static int     Proto = 0;
@@ -486,11 +486,11 @@ void test143()
         starttimer();
         for (i=1; i <= create_enum_files; i++) {
             sprintf(temp, "File.0k%d", i);
-            if (FPCreateFile(Conn, vol2,  0, dir , temp)){
+            if (FPCreateFile(Conn, vol,  0, dir , temp)){
                 fatal_failed();
                 break;
             }
-            if (FPGetFileDirParams(Conn, vol2,  dir, temp,
+            if (FPGetFileDirParams(Conn, vol,  dir, temp,
                                    (1<<FILPBIT_FNUM )|(1<<FILPBIT_PDID)|(1<<FILPBIT_FINFO)|
                                    (1<<FILPBIT_CDATE)|(1<<FILPBIT_DFLEN)|(1<<FILPBIT_RFLEN)
                                    , 0) != AFP_OK)
@@ -547,7 +547,7 @@ void test143()
     if (teststorun[TEST_CREATE2000FILES]) {
         for (i=1; i < maxi; i++) {
             sprintf(temp, "File.0k%d", i);
-            if (FPDelete(Conn, vol2, dir, temp))
+            if (FPDelete(Conn, vol, dir, temp))
                 fatal_failed();
         }
     }
