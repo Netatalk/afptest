@@ -74,7 +74,6 @@ EXT_FN(FPSetForkParms);
 EXT_FN(FPSetVolParms);
 EXT_FN(FPWrite);
 EXT_FN(FPWriteExt);
-EXT_FN(FPzzz);
 EXT_FN(Error);
 EXT_FN(Utf8);
 EXT_FN(FPGetACL);
@@ -149,7 +148,6 @@ FN_N(FPSetForkParms)
 FN_N(FPSetVolParms)
 FN_N(FPWrite)
 FN_N(FPWriteExt)
-FN_N(FPzzz)
 FN_N(Error)
 FN_N(Utf8)
 FN_N(FPGetACL)
