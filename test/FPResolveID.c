@@ -20,10 +20,7 @@ DSI *dsi;
     fprintf(stdout,"===================\n");
     fprintf(stdout,"FPResolveID:test76: Resolve ID\n");
 
-    nottested();
-    goto test_exit;
-
-	if (!(get_vol_attrib(vol) & VOLPBIT_ATTR_FILEID) ) {
+	if (get_vol_attrib(vol) & VOLPBIT_ATTR_FILEID) {
 		test_skipped(T_ID);
 		goto test_exit;
 	}
