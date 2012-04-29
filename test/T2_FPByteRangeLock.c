@@ -3,6 +3,8 @@
 #include "specs.h"
 #include "adoublehelper.h"
 
+#include <inttypes.h>
+
 static char temp[MAXPATHLEN];   
 
 /* ------------------------- */

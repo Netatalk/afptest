@@ -6,6 +6,8 @@
 #include "test.h"
 
 #include <pwd.h> 
+#include <stdint.h>
+
 int Quiet;
 
 /* -------------------------------------------*/
