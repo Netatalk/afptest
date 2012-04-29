@@ -14,6 +14,7 @@ postmark
 rotest
 spectest
 speedtest
+sleeptest
 lantest
 *.o
 *.lo

@@ -1,7 +1,7 @@
 dist_check_SCRIPTS = spectest.sh
 noinst_HEADERS = adoublehelper.h afp.h afpclient.h cdefs.h dsi.h specs.h test.h ea.h compat.h
 bin_PROGRAMS = afparg afp_ls lantest spectest postmark fail_spectest T2_spectest logintest rotest \
-               encoding_test speedtest
+               encoding_test speedtest sleeptest
 noinst_LTLIBRARIES = libafptest.la
 TESTS = spectest.sh
 CLEANFILES = spectest.conf
@@ -46,6 +46,9 @@ spectest_SOURCES = spectest.c FPAddAPPL.c FPAddComment.c FPAddIcon.c \
         FPWrite.c FPWriteExt.c FPzzz.c Error.c Utf8.c FPGetACL.c \
 		FPSync.c
 spectest_LDADD = libafptest.la
+
+sleeptest_SOURCES = sleeptest.c FPzzz.c
+sleeptest_LDADD = libafptest.la
 
 fail_spectest_SOURCES = fail_spectest.c failed_FPEnumerate.c failed_FPExchangeFiles.c \
 	failed_FPMoveAndRename.c failed_Error.c

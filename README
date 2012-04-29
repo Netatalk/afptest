@@ -19,6 +19,9 @@ Spec conformance tests:
 ./spectest:
 AFP spec test. Assume exported volumes are only modified with netatalk.
 
+./sleeptest:
+AFP spec tests for sleeping (FPZzz), no included in spectest
+
 ./logintest:
 AFP spec tests for DSI and login. Not included in spectest.
 
