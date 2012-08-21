@@ -27,20 +27,26 @@ STATIC void test3()
 		nottested();
 		goto test_exit;
 	}
-	if (!Mac && delete_unix_rf(Path, "", name)) {
-		nottested();
-		goto fin;	
-	}
 
 	if ((fork1 = FPOpenFork(Conn, vol, OPENFORK_DATA, bitmap, DIRDID_ROOT, name, OPENACC_WR|OPENACC_RD)) == 0) {
 		failed();
 		goto fin;
 	}
-
 	FAIL (FPWrite(Conn, fork1, 0, 2000, Data, 0 ))
 	FAIL (FPRead(Conn, fork1, 0, 2000, Data)) 
+	FAIL (FPCloseFork(Conn, fork1))
 
-	if ((fork2 = FPOpenFork(Conn, vol, OPENFORK_DATA, bitmap, DIRDID_ROOT, name, OPENACC_WR|OPENACC_RD)) == 0) {
+	if (!Mac && delete_unix_rf(Path, "", name)) {
+		nottested();
+		goto fin;	
+	}
+
+	if ((fork1 = FPOpenFork(Conn, vol, OPENFORK_DATA, bitmap, DIRDID_ROOT, name, OPENACC_RD)) == 0) {
+		failed();
+		goto fin;
+	}
+
+	if ((fork2 = FPOpenFork(Conn, vol, OPENFORK_DATA, bitmap, DIRDID_ROOT, name, OPENACC_RD)) == 0) {
         FPCloseFork(Conn, fork1);
 		failed();
 		goto fin;
@@ -78,6 +84,15 @@ STATIC void test4()
 		nottested();
 		goto test_exit;
 	}
+
+	if ((fork1 = FPOpenFork(Conn, vol, OPENFORK_RSCS, bitmap, DIRDID_ROOT, name, OPENACC_WR|OPENACC_RD)) == 0) {
+		failed();
+		goto fin;
+	}
+	FAIL (FPWrite(Conn, fork1, 0, 2000, Data, 0 ))
+	FAIL (FPRead(Conn, fork1, 0, 2000, Data)) 
+	FAIL (FPCloseFork(Conn, fork1))
+
 	if (!Mac && delete_unix_rf(Path, "", name)) {
 		nottested();
 		goto fin;	
@@ -87,9 +102,6 @@ STATIC void test4()
 		failed();
 		goto fin;
 	}
-
-	FAIL (FPWrite(Conn, fork1, 0, 2000, Data, 0 ))
-	FAIL (FPRead(Conn, fork1, 0, 2000, Data)) 
 
 	if ((fork2 = FPOpenFork(Conn, vol, OPENFORK_RSCS, bitmap, DIRDID_ROOT, name, OPENACC_WR|OPENACC_RD)) == 0) {
         FPCloseFork(Conn, fork1);
@@ -105,6 +117,63 @@ fin:
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name)) 
 test_exit:
 	exit_test("test4");
+}
+
+/* ------------------------- */
+STATIC void test7()
+{
+    char *name  = "t7.txt";
+    u_int16_t bitmap = 0;
+    int fork1, fork2;
+    u_int16_t vol = VolID;
+
+	enter_test();
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:test7: open data fork without metadata, then open and close resource fork\n");
+    fprintf(stdout,"                  Checks fork / adouble metadata refcounting\n");
+
+	if (!Mac && !Path) {
+		test_skipped(T_MAC_PATH);
+		goto test_exit;
+	}
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)){ 
+		nottested();
+		goto test_exit;
+	}
+
+	if ((fork1 = FPOpenFork(Conn, vol, OPENFORK_DATA, bitmap, DIRDID_ROOT, name, OPENACC_WR|OPENACC_RD)) == 0) {
+		failed();
+		goto fin;
+	}
+
+	FAIL (FPWrite(Conn, fork1, 0, 2000, Data, 0 ))
+	FAIL (FPRead(Conn, fork1, 0, 2000, Data)) 
+	FAIL (FPCloseFork(Conn, fork1))
+
+	if (!Mac && delete_unix_rf(Path, "", name)) {
+		nottested();
+		goto fin;	
+	}
+
+	if ((fork1 = FPOpenFork(Conn, vol, OPENFORK_DATA, bitmap, DIRDID_ROOT, name, OPENACC_WR|OPENACC_RD)) == 0) {
+		failed();
+		goto fin;
+	}
+	if ((fork2 = FPOpenFork(Conn, vol, OPENFORK_RSCS, bitmap, DIRDID_ROOT, name, OPENACC_RD|OPENACC_WR)) == 0) {
+        FPCloseFork(Conn, fork1);
+		failed();
+		goto fin;
+	}
+	FAIL (FPCloseFork(Conn, fork2))
+
+	FAIL (FPRead(Conn, fork1, 0, 2000, Data)) 
+	FAIL (FPCloseFork(Conn, fork1))
+
+fin:
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name)) 
+test_exit:
+	exit_test("test7");
 }
 
 /* ------------------------- */
@@ -1306,6 +1375,7 @@ void FPOpenFork_test()
     fprintf(stdout,"FPOpenFork page 230\n");
     test3();
     test4();
+    test7();
 #if 0
     test47();
 #endif    
