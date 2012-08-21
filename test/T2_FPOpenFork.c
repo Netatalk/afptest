@@ -93,7 +93,7 @@ STATIC void test4()
 	FAIL (FPRead(Conn, fork1, 0, 2000, Data)) 
 	FAIL (FPCloseFork(Conn, fork1))
 
-	if (!Mac && delete_unix_rf(Path, "", name)) {
+	if (!Mac && delete_unix_md(Path, "", name)) {
 		nottested();
 		goto fin;	
 	}

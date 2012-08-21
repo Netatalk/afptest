@@ -7,6 +7,20 @@
 static char temp[MAXPATHLEN];   
 
 /* -------------------- 
+   delete metadata
+*/
+int delete_unix_md(char *path, char *name, char *file)
+{
+    if (adouble == AD_V2) {
+        return 0;
+    } else {
+        sys_lremovexattr(temp, AD_EA_META);
+    }
+
+	return 0;
+}
+
+/* -------------------- 
    delete a resource fork
 */
 int delete_unix_rf(char *path, char *name, char *file)
