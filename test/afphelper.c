@@ -810,6 +810,9 @@ char *s;
 	case T_EA:
 		s = "volume with extendend attribute support";
 		break;
+	case T_ADEA:
+		s = "Netatalk 3 and volume with adouble:ea";
+		break;
 	}
 	fprintf(stdout,"\tSKIPPED (need %s)\n",s);
 	CurTestResult = 3;

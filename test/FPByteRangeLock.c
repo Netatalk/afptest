@@ -521,6 +521,11 @@ STATIC void test410()
 		test_skipped(T_LOCKING);
 		goto test_exit;
 	}
+
+    if (adouble = AD_V2) {
+		test_skipped(T_ADEA);
+		goto test_exit;
+    }
 	
 	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) {
 		nottested();

@@ -79,6 +79,7 @@ extern void test_skipped(int why);
 #define T_ACL        14
 #define T_EA         15
 #define T_UNIX_GROUP 16
+#define T_ADEA       17
 
 /* ---------------------------------
 */
