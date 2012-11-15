@@ -47,6 +47,10 @@ int len = (type == OPENFORK_RSCS)?(1<<FILPBIT_RFLEN):(1<<FILPBIT_DFLEN);
 	}
 
 	/* fin */
+
+    /* Netatalk 2 doesn't drop locks when a fork is closed, 3 does */
+    FPByteLock_ext(Conn, fork, 0, 1 /* clear */ , 0, 100);
+
 	FAIL (htonl(AFPERR_NORANGE) != FPByteLock_ext(Conn, fork, 0, 1 /* clear */ , 0, 50))
 	FAIL (FPSetForkParam(Conn, fork, len , 200))
 

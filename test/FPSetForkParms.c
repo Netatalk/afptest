@@ -67,6 +67,10 @@ DSI *dsi;
 	FAIL (htonl(AFPERR_LOCK) != FPSetForkParam(Conn, fork1, (1<<FILPBIT_DFLEN), 0)) 
 	FAIL (FPCloseFork(Conn,fork1))
 	fork1 = 0;
+
+    /* Netatalk 2 doesn't drop locks when a fork is closed, 3 does */
+    FPByteLock(Conn, fork, 0, 1 /* clear */ , 0, 100);
+
 	FAIL (FPSetForkParam(Conn, fork, (1<<FILPBIT_DFLEN), 200)) 
 	FAIL (FPByteLock(Conn, fork, 0, 0 , 0 /* set */, 100)) 
 	FAIL (FPSetForkParam(Conn, fork, (1<<FILPBIT_DFLEN), 50))
