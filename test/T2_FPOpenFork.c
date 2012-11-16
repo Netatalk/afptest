@@ -1292,7 +1292,6 @@ STATIC void test237()
         goto fin;
     }
 
-    /* DIRPBIT_UNIXPR */
     /* Check if the volume uses option 'followsymlinks' */
 	if (FPGetFileDirParams(Conn, vol, testdir, name2, 1<< FILPBIT_UNIXPR, 0))
 		failed();
@@ -1338,8 +1337,11 @@ STATIC void test238()
     char *name3 = "t238 dir/link";
     char *verylonglinkname = "verylonglinkname";
     int  testdir;
-    int fork;
+    int fork = 0;
     u_int16_t vol = VolID, bitmap;
+    struct afp_filedir_parms filedir;
+    DSI *dsi = &Conn->dsi;
+    int  ofs =  3 * sizeof( u_int16_t );
 
 	enter_test();
     fprintf(stdout,"===================\n");
@@ -1361,11 +1363,25 @@ STATIC void test238()
 		nottested();
 		goto test_exit;
 	}
+	if (FPCreateFile(Conn, vol, 0, testdir, verylonglinkname)){ 
+		nottested();
+		goto fin;
+	}
 
     if (symlink_unix_file(verylonglinkname, Path, name3)) {
         failed();
         goto fin;
     }
+
+    /* Check if the volume uses option 'followsymlinks' */
+	if (FPGetFileDirParams(Conn, vol, testdir, name2, 1<< FILPBIT_UNIXPR, 0))
+		failed();
+    filedir.isdir = 0;
+    afp_filedir_unpack(&filedir, dsi->data + ofs, 1<< FILPBIT_UNIXPR, 0);
+    if (!(S_ISLNK(filedir.unix_priv))) {
+		test_skipped(T_NOSYML);
+		goto fin;
+	}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap, testdir, name2, OPENACC_RD);
 	if (!fork) {
@@ -1394,6 +1410,7 @@ STATIC void test238()
 fin:
 	FAIL (fork && FPCloseFork(Conn,fork))
     FAIL (unlink_unix_file(Path, name1, name2))
+	FAIL (testdir && FPDelete(Conn, vol,  testdir, verylonglinkname)) 
 	FAIL (testdir && FPDelete(Conn, vol,  testdir, "")) 
 test_exit:
 	exit_test("test238");
