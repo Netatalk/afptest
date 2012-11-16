@@ -310,17 +310,35 @@ STATIC void test426()
     DSI *dsi;
     int fork = 0;
     unsigned int ret;
+    char temp[MAXPATHLEN];   
+    struct stat st;
 
 	dsi = &Conn->dsi;
 
 	enter_test();
     fprintf(stdout,"===================\n");
     fprintf(stdout,"FPSetFileParms:t426: Create a dangling symlink\n");
+
+	if (!Path) {
+		test_skipped(T_MAC_PATH);
+		goto test_exit;
+	}
     
     if (afp_symlink("t426 dest", name)) {
 		nottested();
 		goto test_exit;
 	}
+
+    /* Check if volume uses option 'followsymlinks' */
+    sprintf(temp, "%s/%s", Path, name);
+    if (lstat(temp, &st)) {
+        fprintf(stdout,"\tFAILED stat( %s ) %s\n", temp, strerror(errno));
+        failed_nomsg();
+    }
+    if (!S_ISLNK(st.st_mode)) {
+		test_skipped(T_NOSYML);
+		goto test_exit;
+    }
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0 ,DIRDID_ROOT, name , OPENACC_WR | OPENACC_RD);
 	if (!fork) {
@@ -329,6 +347,7 @@ STATIC void test426()
 	else {
         char *ln2 = "t426 dest 2";
         ret = FPWrite_ext(Conn, fork, 0, strlen(ln2), ln2, 0);
+
         if (not_valid_bitmap(ret, BITERR_ACCESS | BITERR_MISC, AFPERR_MISC))
             failed();
 	    FPCloseFork(Conn,fork);

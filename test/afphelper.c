@@ -813,6 +813,9 @@ char *s;
 	case T_ADEA:
 		s = "Netatalk 3 and volume with adouble:ea";
 		break;
+	case T_NOSYML:
+		s = "volume without option 'followsymlinks'";
+		break;
 	}
 	fprintf(stdout,"\tSKIPPED (need %s)\n",s);
 	CurTestResult = 3;
