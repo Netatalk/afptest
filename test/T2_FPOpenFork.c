@@ -3,6 +3,11 @@
 #include "specs.h"
 #include "adoublehelper.h"
 
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <inttypes.h>
+
 static char temp[MAXPATHLEN];   
 
 /* ------------------------- */
@@ -1166,8 +1171,11 @@ STATIC void test236()
     char *name3 = "t236 dir/etc";
     char *name4 = "passwd";
     int  testdir, etcdir;
-    int fork;
+    int fork = 0;
     u_int16_t vol = VolID, bitmap;
+    struct afp_filedir_parms filedir;
+    DSI *dsi = &Conn->dsi;
+    int  ofs =  3 * sizeof( u_int16_t );
 
 	enter_test();
     fprintf(stdout,"===================\n");
@@ -1222,6 +1230,15 @@ STATIC void test236()
     /* Ok, we've malicously prepared the dircache and filesystem, now confront afpd with it */
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap, etcdir, name4, OPENACC_RD);
 	if (fork) {
+        /* Check if the volume uses option 'followsymlinks' */
+        if (FPGetFileDirParams(Conn, vol,  etcdir, "", 1 << FILPBIT_UNIXPR, 0))
+            failed();
+        afp_filedir_unpack(&filedir, dsi->data + ofs, 1 << FILPBIT_UNIXPR, 0);
+        if (!(S_ISLNK(filedir.unix_priv))) {
+            test_skipped(T_NOSYML);
+            goto fin;
+        }
+
 		failed();
 		goto fin;
 	}
@@ -1242,8 +1259,11 @@ STATIC void test237()
     char *name3 = "t237 dir/passwd";
     char *name4 = "/etc/passwd";
     int  testdir;
-    int fork;
+    int fork = 0;
     u_int16_t vol = VolID, bitmap;
+    struct afp_filedir_parms filedir;
+    DSI *dsi = &Conn->dsi;
+    int  ofs =  3 * sizeof( u_int16_t );
 
 	enter_test();
     fprintf(stdout,"===================\n");
@@ -1259,7 +1279,7 @@ STATIC void test237()
 		     (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID);
 
 
-    /* create "t236 dir" */
+    /* create "t237 dir" */
 	testdir  = FPCreateDir(Conn, vol, DIRDID_ROOT , name1);
 	if (!testdir) {
 		nottested();
@@ -1271,6 +1291,17 @@ STATIC void test237()
         failed();
         goto fin;
     }
+
+    /* DIRPBIT_UNIXPR */
+    /* Check if the volume uses option 'followsymlinks' */
+	if (FPGetFileDirParams(Conn, vol, testdir, name2, 1<< FILPBIT_UNIXPR, 0))
+		failed();
+    filedir.isdir = 0;
+    afp_filedir_unpack(&filedir, dsi->data + ofs, 1<< FILPBIT_UNIXPR, 0);
+    if (!(S_ISLNK(filedir.unix_priv))) {
+		test_skipped(T_NOSYML);
+		goto fin;
+	}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap, testdir, name2, OPENACC_RD);
 	if (!fork) {
