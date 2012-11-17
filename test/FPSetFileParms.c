@@ -521,6 +521,43 @@ test_exit:
 	exit_test("test429");
 }
 
+/* ------------------------- */
+STATIC void test430()
+{
+    char *name = "t430 Symlink";
+    char *dest = "t430 dest";
+    int  ofs =  sizeof( u_int16_t );
+    struct afp_filedir_parms filedir;
+    u_int16_t bitmap = (1<<FILPBIT_FNUM );
+    u_int16_t vol = VolID;
+    DSI *dsi;
+    int fork = 0;
+    int id;
+
+	dsi = &Conn->dsi;
+
+	enter_test();
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileParms:t430: set creation date on symlink\n");
+    
+    if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , dest)) {
+		nottested();
+		goto test_exit;
+	}
+
+    if (afp_symlink(dest, name)) {
+		nottested();
+		goto test_exit;
+	}
+
+    FAIL (FPSetFileParams(Conn, vol, DIRDID_ROOT, name, 1<<FILPBIT_CDATE, &filedir))
+
+test_exit:
+    FAIL (FPDelete(Conn, vol, DIRDID_ROOT, dest))
+    FAIL (FPDelete(Conn, vol, DIRDID_ROOT, name))
+	exit_test("test430");
+}
+
 
 /* ----------- */
 void FPSetFileParms_test()
@@ -536,5 +573,6 @@ void FPSetFileParms_test()
     test427();
     test428();
     test429();
+    test430();
 }
 
