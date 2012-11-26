@@ -522,7 +522,7 @@ STATIC void test410()
 		goto test_exit;
 	}
 
-    if (adouble = AD_V2) {
+    if (adouble == AD_V2) {
 		test_skipped(T_ADEA);
 		goto test_exit;
     }
