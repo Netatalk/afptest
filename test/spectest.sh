@@ -48,7 +48,7 @@ if [ ! -z "$VOLUME" -a ! -z "$LOCALVOLPATH" ] ; then
 
 ##
     printf "Running spectest with one user ..."
-    ./spectest -a -"$AFPVERSION" -h "$AFPSERVER" -p "$AFPPORT" -u "$USER1" -w "$PASSWD" -s "$VOLUME" -c "$LOCALVOLPATH" > spectest.log 2>&1
+    ./spectest -a -"$AFPVERSION" -h "$AFPSERVER" -p "$AFPPORT" -u "$USER1" -w "$PASSWD" -s "$VOLUME" -c "$LOCALVOLPATH" >> spectest.log 2>&1
     check_return
 
 ##
@@ -77,14 +77,12 @@ fi
 
 if [ ! -z "$EA_VOLUME" -a ! -z "$EA_LOCALVOLPATH" ] ; then
 
-    rm -f spectest.log
-
     echo "Running tests with adouble:ea"
     echo "============================="
 
 ##
     printf "Running spectest with one user ..."
-    ./spectest -"$AFPVERSION" -h "$AFPSERVER" -p "$AFPPORT" -u "$USER1" -w "$PASSWD" -s "$EA_VOLUME" -c "$EA_LOCALVOLPATH" > spectest.log 2>&1
+    ./spectest -"$AFPVERSION" -h "$AFPSERVER" -p "$AFPPORT" -u "$USER1" -w "$PASSWD" -s "$EA_VOLUME" -c "$EA_LOCALVOLPATH" >> spectest.log 2>&1
     check_return
 
 ##
