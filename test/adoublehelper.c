@@ -14,6 +14,7 @@ int delete_unix_md(char *path, char *name, char *file)
     if (adouble == AD_V2) {
         return 0;
     } else {
+        sprintf(temp, "%s/%s/%s", path, name, file);
         sys_lremovexattr(temp, AD_EA_META);
     }
 
@@ -126,7 +127,7 @@ int delete_unix_adouble(char *path, char *name)
 
 /* --------------------
 */
-int chmod_unix_adouble(char *path,char *name, int mode)
+static int chmod_unix_adouble(char *path,char *name, int mode)
 {
     if (adouble == AD_EA)
         return 0;
@@ -139,6 +140,71 @@ int chmod_unix_adouble(char *path,char *name, int mode)
 		return -1;
 	}
 	return 0;
+}
+
+/* --------------------
+*/
+int chmod_unix_meta(char *path, char *name, char *file, int mode)
+{
+    if (adouble == AD_EA) {
+#ifdef HAVE_EAFD
+        sprintf(temp, "runat %s/%s/%s chmod %s %d", path, name, file, AD_EA_META, mode);
+        fprintf(stdout, "%s\n", temp);
+        if (sysem(temp) != 0) {
+            fprintf(stdout,"\tFAILED %s\n", strerror(errno));
+            failed_nomsg();
+            return -1;
+        }        
+        return 0;
+#else
+        return 0;
+#endif
+    } else {
+        sprintf(temp, "%s/%s/.AppleDouble/%s", path, name, file);
+        fprintf(stdout, "chmod (%s, %o)\n", temp, mode);
+        if (chmod(temp, mode)) {
+            fprintf(stdout,"\tFAILED %s\n", strerror(errno));
+            failed_nomsg();
+            return -1;
+        }
+        return 0;
+    }
+}
+
+/* --------------------
+*/
+int chmod_unix_rfork(char *path, char *name, char *file, int mode)
+{
+    if (adouble == AD_EA) {
+#ifdef HAVE_EAFD
+        sprintf(temp, "runat %s/%s/%s chmod %s %d", path, name, file, AD_EA_RESO, mode);
+        fprintf(stdout, "%s\n", temp);
+        if (sysem(temp) != 0) {
+            fprintf(stdout,"\tFAILED %s\n", strerror(errno));
+            failed_nomsg();
+            return -1;
+        }        
+        return 0;
+#else
+        sprintf(temp, "%s/%s/._%s", path, name, file);
+        fprintf(stdout, "chmod(%s, %d)\n", temp, mode);
+        if (chmod(temp, mode)) {
+            fprintf(stdout,"\tFAILED %s\n", strerror(errno));
+            failed_nomsg();
+            return -1;
+        }        
+        return 0;
+#endif
+    } else {
+        sprintf(temp, "%s/%s/.AppleDouble/%s", path, name, file);
+        fprintf(stdout, "chmod (%s, %o)\n", temp, mode);
+        if (chmod(temp, mode)) {
+            fprintf(stdout,"\tFAILED %s\n", strerror(errno));
+            failed_nomsg();
+            return -1;
+        }
+        return 0;
+    }
 }
 
 /* -------------------- 

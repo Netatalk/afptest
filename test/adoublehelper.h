@@ -12,5 +12,7 @@ extern int delete_unix_file(char *path, char *name, char *file);
 extern int unlink_unix_file(char *path, char *name, char *file);
 extern int symlink_unix_file(char *target, char *path, char *source);
 
+extern int chmod_unix_meta(char *path, char *name, char *file, int mode);
+extern int chmod_unix_rfork(char *path, char *name, char *file, int mode);
 /* -------------------
 */

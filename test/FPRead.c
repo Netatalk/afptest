@@ -230,6 +230,7 @@ DSI *dsi;
 	else if (FPRead(Conn, fork, 110, 10, Data)) {
 		failed();
 	}
+
 fin1:
 	FPCloseFork(Conn,fork1);
 fin:
@@ -861,4 +862,3 @@ void FPRead_test()
 	test343();
 	test344();
 }
-
