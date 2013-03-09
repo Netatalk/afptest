@@ -148,9 +148,9 @@ int chmod_unix_meta(char *path, char *name, char *file, int mode)
 {
     if (adouble == AD_EA) {
 #ifdef HAVE_EAFD
-        sprintf(temp, "runat %s/%s/%s chmod %s %d", path, name, file, AD_EA_META, mode);
+        sprintf(temp, "runat '%s/%s/%s' chmod 0%o %s", path, name, file, mode, AD_EA_META);
         fprintf(stdout, "%s\n", temp);
-        if (sysem(temp) != 0) {
+        if (system(temp) != 0) {
             fprintf(stdout,"\tFAILED %s\n", strerror(errno));
             failed_nomsg();
             return -1;
@@ -177,9 +177,9 @@ int chmod_unix_rfork(char *path, char *name, char *file, int mode)
 {
     if (adouble == AD_EA) {
 #ifdef HAVE_EAFD
-        sprintf(temp, "runat %s/%s/%s chmod %s %d", path, name, file, AD_EA_RESO, mode);
+        sprintf(temp, "runat '%s/%s/%s' chmod 0%o %s", path, name, file, mode, AD_EA_RESO);
         fprintf(stdout, "%s\n", temp);
-        if (sysem(temp) != 0) {
+        if (system(temp) != 0) {
             fprintf(stdout,"\tFAILED %s\n", strerror(errno));
             failed_nomsg();
             return -1;

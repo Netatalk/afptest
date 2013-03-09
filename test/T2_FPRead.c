@@ -41,10 +41,12 @@ STATIC void test109()
 		failed();
 	}
     FPCloseFork(Conn,fork);
-    
+    fork = 0;
+
     /* ----------------- */
     if (chmod_unix_rfork(Path, "", name, 0400) != 0) {
         failed();
+        exit(1);
         goto fin;
     }
 	fork = FPOpenFork(Conn, vol, OPENFORK_RSCS , bitmap ,DIRDID_ROOT, name, OPENACC_RD);
