@@ -523,6 +523,7 @@ STATIC void test410()
 	}
 
     if (adouble == AD_V2) {
+        /* this fails on adouble v2, because in Netatalk 3 we now close locks on file close */
 		test_skipped(T_ADEA);
 		goto test_exit;
     }
