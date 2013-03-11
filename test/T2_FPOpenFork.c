@@ -41,7 +41,7 @@ STATIC void test3()
 	FAIL (FPRead(Conn, fork1, 0, 2000, Data)) 
 	FAIL (FPCloseFork(Conn, fork1))
 
-	if (!Mac && delete_unix_rf(Path, "", name)) {
+	if (!Mac && delete_unix_md(Path, "", name)) {
 		nottested();
 		goto fin;	
 	}
@@ -115,7 +115,9 @@ STATIC void test4()
 	}
 	FAIL (FPCloseFork(Conn, fork2))
 
+	FAIL (FPWrite(Conn, fork1, 0, 2000, Data, 0 ))
 	FAIL (FPRead(Conn, fork1, 0, 2000, Data)) 
+
 	FAIL (FPCloseFork(Conn, fork1))
 
 fin:
@@ -156,7 +158,7 @@ STATIC void test7()
 	FAIL (FPRead(Conn, fork1, 0, 2000, Data)) 
 	FAIL (FPCloseFork(Conn, fork1))
 
-	if (!Mac && delete_unix_rf(Path, "", name)) {
+	if (!Mac && delete_unix_md(Path, "", name)) {
 		nottested();
 		goto fin;	
 	}
@@ -501,7 +503,7 @@ u_int16_t vol = VolID;
 		nottested();
 		goto test_exit;
 	}
-	if (!Mac && delete_unix_rf(Path, "", name)) {
+	if (!Mac && delete_unix_md(Path, "", name)) {
 		nottested();
 		goto fin;	
 	}
@@ -543,7 +545,7 @@ STATIC void test157()
 		nottested();
 		goto test_exit;
 	}
-	if (!Mac && delete_unix_rf(Path, "", name)) {
+	if (!Mac && delete_unix_md(Path, "", name)) {
 		nottested();
 		goto fin;	
 	}
@@ -1068,12 +1070,8 @@ int dir;
 		goto fin;
 	}
 
-	if (!Mac && adouble == AD_V2) {
-		sprintf(temp,"%s/%s/.AppleDouble/%s", Path, name, file);
-		if (unlink(temp)) {
-		    nottested();
-		    goto fin;
-		}
+	if (!Mac) {
+		delete_unix_md(Path, name, file);
 	}
 
 	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , bitmap ,dir, file, OPENACC_RD);
@@ -1085,7 +1083,7 @@ int dir;
 
 	FAIL (FPCloseFork(Conn,fork))
 
-	if (!Mac && !unlink(temp)) {
+    if (!Mac && (delete_unix_md(Path, name, file) == 0)) {
 		fprintf(stdout,"\tFAILED Ressource fork there!\n");
 		failed_nomsg();
 	}

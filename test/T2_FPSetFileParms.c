@@ -87,7 +87,7 @@ DSI *dsi = &Conn->dsi;
 		filedir.isdir = 0;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 		if (!Mac) {
-            delete_unix_rf(Path,"", name);
+            delete_unix_md(Path,"", name);
 		}
  		FAIL (FPSetFileParams(Conn, vol, DIRDID_ROOT , name, bitmap, &filedir))
 	}

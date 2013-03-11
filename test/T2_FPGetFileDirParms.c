@@ -697,9 +697,8 @@ int fd;
 			goto fin;
 		}
 		close(fd);
-		if (delete_unix_file(Path, name, name1)) {
-			failed();
-		}
+		delete_unix_file(Path, name, name1);
+
 		sprintf(temp1,"%s/%s/%s", Path, name, name1);
 		if (rename(temp, temp1) < 0) {
 			fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
@@ -1010,23 +1009,10 @@ DSI *dsi = &Conn->dsi;
 		FAIL (FPResolveID(Conn, vol, filedir.did, bitmap)) 
 	}
 	if (!Mac) {
-		sprintf(temp, "%s/%s/%s", Path, name1, name);
-		sprintf(temp1,"%s/%s/%s", Path, name1, name2);
-		fprintf(stdout,"rename %s %s\n", temp, temp1);
-		if (rename(temp, temp1) < 0) {
-			fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
+		if (rename_unix_file(Path, name1, name, name2) < 0) {
+			fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", name, name2, strerror(errno));
 			failed_nomsg();
 		}
-
-        if (adouble == AD_V2) {
-            sprintf(temp, "%s/%s/.AppleDouble/%s", Path, name1, name);
-            sprintf(temp1,"%s/%s/.AppleDouble/%s", Path, name1, name2);
-            fprintf(stdout,"rename %s %s\n", temp, temp1);
-            if (rename(temp, temp1) < 0) {
-                fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
-                failed_nomsg();
-            }
-        }
 	}
 	else {
 		FAIL (FPMoveAndRename(Conn, vol, DIRDID_ROOT, dir, name, name2))

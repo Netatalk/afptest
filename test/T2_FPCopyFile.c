@@ -30,7 +30,7 @@ u_int32_t mdate = 0;
 		goto fin;
 	}
 
-	if (!Mac && delete_unix_rf(Path, "", name)) {
+	if (!Mac && delete_unix_md(Path, "", name)) {
 		nottested();
 		goto fin;	
 	}

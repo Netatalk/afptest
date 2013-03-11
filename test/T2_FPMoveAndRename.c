@@ -142,7 +142,7 @@ u_int16_t vol = VolID;
 	FAIL (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , name)) 
 	
 	if (!Mac) {
-		delete_unix_rf(Path,"", name);
+		delete_unix_md(Path,"", name);
 	}
 	FAIL (FPMoveAndRename(Conn, vol, DIRDID_ROOT, dir, name, "")) 
 

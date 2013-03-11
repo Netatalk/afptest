@@ -121,12 +121,12 @@ test_exit:
 }
 
 /* -------------------------- */
-STATIC void test362()
+STATIC void test507()
 {
 int  dir;
 u_int16_t vol = VolID;
-char *name = "t362 Resolve ID file";
-char *name1 = "t362 Resolve ID dir";
+char *name = "t507 Resolve ID file";
+char *name1 = "t507 Resolve ID dir";
 int  ofs =  3 * sizeof( u_int16_t );
 u_int16_t bitmap = (1<<FILPBIT_FNUM );
 struct afp_filedir_parms filedir;
@@ -134,7 +134,7 @@ DSI *dsi = &Conn->dsi;
 
 	enter_test();
     fprintf(stdout,"===================\n");
-    fprintf(stdout,"FPDelete:test362: Resolve ID in a deleted folder\n");
+    fprintf(stdout,"FPDelete:test507: Resolve ID in a deleted folder\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -157,29 +157,15 @@ DSI *dsi = &Conn->dsi;
 		FAIL ((FPResolveID(Conn, vol, filedir.did, bitmap)))
 	}
 
-    if (adouble == AD_V2) {
-        sprintf(temp1, "%s/%s/.AppleDouble/%s", Path, name1, name);
-        if (unlink(temp1) <0) {
-            fprintf(stdout,"\tFAILED unlink %s %s\n", temp, strerror(errno));
-            failed_nomsg();
-        }
-    }
-	sprintf(temp1, "%s/%s/%s", Path, name1, name);
-	if (unlink(temp1) <0) {
-		fprintf(stdout,"\tFAILED unlink %s %s\n", temp, strerror(errno));
-		failed_nomsg();
-	}
-
-	if (delete_unix_dir(Path, name1)) {
-		failed();
-	}
+    delete_unix_file(Path, name1, name);
+	delete_unix_dir(Path, name1);
 
 	FAIL (ntohl(AFPERR_NOID ) != FPResolveID(Conn, vol, filedir.did, bitmap))
 	FPCloseVol(Conn,vol);
 	vol  = FPOpenVol(Conn, Vol);
 	FAIL (ntohl(AFPERR_NOID ) != FPResolveID(Conn, vol, filedir.did, bitmap)) 
 test_exit:
-	exit_test("test362");
+	exit_test("test507");
 }
 
 /* -------------------------- */
@@ -290,22 +276,9 @@ DSI *dsi = &Conn->dsi;
 		FAIL ((FPResolveID(Conn, vol, filedir.did, bitmap)))
 	}
 
-    if (adouble == AD_V2) {
-        sprintf(temp1, "%s/%s/.AppleDouble/%s", Path, name1, name);
-        if (unlink(temp1) <0) {
-            fprintf(stdout,"\tFAILED unlink %s %s\n", temp, strerror(errno));
-            failed_nomsg();
-        }
-    }
-	sprintf(temp1, "%s/%s/%s", Path, name1, name);
-	if (unlink(temp1) <0) {
-		fprintf(stdout,"\tFAILED unlink %s %s\n", temp, strerror(errno));
-		failed_nomsg();
-	}
+	delete_unix_file(Path, name1, name);
+	delete_unix_dir(Path, name1);
 
-	if (delete_unix_dir(Path, name1)) {
-		failed();
-	}
 	FAIL (ntohl(AFPERR_NOOBJ) != FPDeleteID(Conn, vol, filedir.did)) 
 
 fin:
@@ -322,7 +295,7 @@ void FPDelete_test()
     fprintf(stdout,"===================\n");
     fprintf(stdout,"FPDelete page 143\n");
     test146();
-    test362();
+    test507();
 #if 0    
     test363();
 #endif
