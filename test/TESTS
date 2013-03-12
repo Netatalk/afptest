@@ -1,8 +1,11 @@
 # nm encoding_test fail_spectest speedtest spectest T2_spectest logintest rotest | cut -d " " -f 3 | egrep "^test[[:digit:]]+" | sort -n -k 1.5 > TESTS
 test1
 test2
+test3
+test4
 test5
 test6
+test7
 test13
 test14
 test15
@@ -88,6 +91,7 @@ test106
 test107
 test108
 test108
+test109
 test111
 test111
 test115
@@ -116,6 +120,7 @@ test151
 test152
 test153
 test156
+test157
 test158
 test162
 test166
@@ -248,7 +253,6 @@ test359
 test360
 test361
 test362
-test362
 test363
 test364
 test365
@@ -296,10 +300,12 @@ test406
 test407
 test408
 test409
+test410
 test411
 test412
 test413
 test414
+test415
 test416
 test417
 test418
@@ -320,3 +326,4 @@ test503
 test504
 test505
 test506
+test507

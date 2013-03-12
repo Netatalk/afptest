@@ -1099,10 +1099,10 @@ test_exit:
 /* ------------------------- 
    Didn't fail but help when tracing afpd
 */
-STATIC void test430()
+STATIC void test415()
 {
-char *name = "t430 folder";
-char *file = "t430 file.txt";
+char *name = "t415 folder";
+char *file = "t415 file.txt";
 u_int16_t bitmap = 0;
 int fork;
 int fork1;
@@ -1111,7 +1111,7 @@ int dir;
 
 	enter_test();
     fprintf(stdout,"===================\n");
-    fprintf(stdout,"FPOpenFork:test430: don't set the name again in the resource fork if file open twice\n");
+    fprintf(stdout,"FPOpenFork:test415: don't set the name again in the resource fork if file open twice\n");
 
 	if (!Mac && !Path) {
 		test_skipped(T_MAC_PATH);
@@ -1158,7 +1158,7 @@ fin:
 	FAIL (FPDelete(Conn, vol,  dir , file))
 	FAIL (FPDelete(Conn, vol,  dir , ""))
 test_exit:
-	exit_test("test430");
+	exit_test("test415");
 }
 
 /* ------------------------- */
