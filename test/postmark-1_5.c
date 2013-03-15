@@ -155,6 +155,13 @@ int bias_read=5;                /* chance of picking read over append */
 int bias_create=5;              /* chance of picking create over delete */
 int report=0;                   /* 0=verbose, 1=terse report format */
 
+char *vers = "AFP3.2";
+char *uam = "Cleartxt Passwrd";
+char *usr;
+char *pwd;
+char *server;
+char *Volume;
+
 /* Working Storage */
 char *file_source; /* pointer to buffer of random text */
 
@@ -995,10 +1002,6 @@ void delete_subdirectories(dir_list,base_dir,subdirs)
 int cli_run(param) /* none */
     char *param; /* unused */
 {
-    static char *vers = "AFPVersion 2.1";
-    static char *uam = "Cleartxt Passwrd";
-    static char *usr = "didier";   /* FIXME username */
-    static char *pwd = "";  /* FIXME password */
     u_int16_t dt;
     int  dir;
 
@@ -1030,19 +1033,22 @@ int cli_run(param) /* none */
 
     /* create files in specified directory until simultaneous number */
 
-    if ((Dsi = (DSI *) calloc(1, sizeof(DSI))) == NULL) {
-        return  0;
+    if ((Conn = (CONN *)calloc(1, sizeof(CONN))) == NULL) {
+    	return 0;
     }
-    Dsi->socket = OpenClientSocket("192.168.2.123", 548);  /* FIXME */
+    Dsi = &Conn->dsi;
+    Dsi->socket = OpenClientSocket(server, 548);  /* FIXME */
     if ( Dsi->socket < 0) {
         return 0;
     }
     Dsi->protocol = DSI_TCPIP;
 
-    if (AFPopenLogin(Conn, vers, uam, usr, pwd) != AFP_OK) {
+    if (FPopenLoginExt(Conn, vers, uam, usr, pwd) != AFP_OK) {
         return 0;
     }
-    Vol = AFPOpenVol(Conn, "test",(1<<VOLPBIT_VID)| (1<<VOLPBIT_ATTR) );
+    Conn->afp_version = 33;
+
+    Vol = FPOpenVol(Conn, Volume);
     if (Vol == 0xffff) {
         return 0;
     }
@@ -1279,14 +1285,41 @@ int read_config_file(filename,buffer)
     return(result);
 }
 
+static void usage(char *n)
+{
+    printf("usage: %s -s SERVERADDRESS -v VOLUME -u USER -p PASSWORD\n", n);
+
+    exit(1);
+}
+
 /* main function - reads config files then enters get line/parse line loop */
-main(argc,argv)
-int argc;
-char *argv[];
+int main(int argc, char **argv)
 {
     char buffer[MAX_LINE+1]; /* storage for input command line */
+    int c;
 
-    printf("PostMark v1.5 : 3/27/01\n");
+    while ((c = getopt(argc, argv, ":u:p:s:v:" )) != EOF) {
+        switch (c) {
+        case 's':
+            server = strdup(optarg);
+            break;
+        case 'u':
+            usr = strdup(optarg);
+            break;
+        case 'p':
+            pwd = strdup(optarg);
+            break;
+        case 'v':
+            Volume = strdup(optarg);
+            break;
+        default:
+            usage(argv[0]);
+        }
+    }
+
+    if (!server || !usr || !pwd || !Volume)
+        usage(argv[0]);
+
     if (read_config_file((argc==2)?argv[1]:".pmrc",buffer))
         while (cli_read_line(buffer,MAX_LINE) && cli_parse_line(buffer))
             ;
