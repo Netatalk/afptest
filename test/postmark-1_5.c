@@ -95,7 +95,6 @@ extern int cli_set_location();
 extern int cli_set_subdirs();
 extern int cli_set_read();
 extern int cli_set_write();
-extern int cli_set_buffering();
 extern int cli_set_bias_read();
 extern int cli_set_bias_create();
 extern int cli_set_report();
@@ -114,7 +113,6 @@ cmd command_list[]={ /* table of CLI commands */
    {"set subdirectories",cli_set_subdirs,"Sets number of subdirectories"},
    {"set read",cli_set_read,"Sets read block size"},
    {"set write",cli_set_write,"Sets write block size"},
-   {"set buffering",cli_set_buffering,"Sets usage of buffered I/O"},
    {"set bias read",cli_set_bias_read,
       "Sets the chance of choosing read over append"},
    {"set bias create",cli_set_bias_create,
@@ -155,7 +153,6 @@ int read_block_size=512;        /* I/O block sizes */
 int write_block_size=512;
 int bias_read=5;                /* chance of picking read over append */
 int bias_create=5;              /* chance of picking create over delete */
-int buffered_io=1;              /* use C library buffered I/O */
 int report=0;                   /* 0=verbose, 1=terse report format */
 
 /* Working Storage */
@@ -450,19 +447,6 @@ char *param; /* remainder of command line */
    else
       fprintf(stdout,"Error: no block size specified\n");
 
-   return(1);
-}
-
-/* UI callback for 'set buffering' - sets buffering mode on or off
-   - true = buffered I/O (default), false = raw I/O */
-int cli_set_buffering(param)
-char *param; /* remainder of command line */
-{
-   if (param && (!strcmp(param,"true") || !strcmp(param,"false")))
-      buffered_io=(!strcmp(param,"true"))?1:0;
-   else
-      fprintf(stdout,"Error: no buffering mode (true/false) specified\n");
-      
    return(1);
 }
 
@@ -948,11 +932,10 @@ int weight;
 }
 
 /* --------------------------------- */
-void create_subdirectories(dir_list,base_dir,subdirs, buffered)
+void create_subdirectories(dir_list,base_dir,subdirs)
 file_system *dir_list;
 char *base_dir;
 int subdirs;
-int buffered;
 {
    char dir_name[MAX_LINE+1]; /* buffer holding subdirectory names */
    char save_dir[MAX_LINE+1];
@@ -961,7 +944,7 @@ int buffered;
    if (dir_list)
       {
       for (; dir_list; dir_list=dir_list->next)
-         create_subdirectories(NULL,dir_list->system.name,subdirs, buffered);
+         create_subdirectories(NULL,dir_list->system.name,subdirs);
       }
    else
       { 
@@ -973,21 +956,16 @@ int buffered;
       for (i=0; i<subdirs; i++)
          {
          sprintf(dir_name,"%ss%d",save_dir,i);
-			if (buffered)
-	         MKDIR(dir_name); 
-	      else
-				AFPCreateDir(Conn,Vol, DIRDID_ROOT , dir_name);
-	      
+         AFPCreateDir(Conn,Vol, DIRDID_ROOT , dir_name);
          }
       }
 }
 
 /* --------------------------------- */
-void delete_subdirectories(dir_list,base_dir,subdirs, buffered)
+void delete_subdirectories(dir_list,base_dir,subdirs)
 file_system *dir_list;
 char *base_dir;
 int subdirs;
-int buffered;
 {
    char dir_name[MAX_LINE+1]; /* buffer holding subdirectory names */
    char save_dir[MAX_LINE+1];
@@ -996,7 +974,7 @@ int buffered;
    if (dir_list)
       {
       for (; dir_list; dir_list=dir_list->next)
-         delete_subdirectories(NULL,dir_list->system.name,subdirs,buffered);
+         delete_subdirectories(NULL,dir_list->system.name,subdirs);
       }
    else
       { 
@@ -1008,10 +986,7 @@ int buffered;
       for (i=0; i<subdirs; i++)
          {
          sprintf(dir_name,"%ss%d",save_dir,i);
-			if (buffered)
-         	rmdir(dir_name); 
-         else 
-				AFPDelete(Conn, Vol,  DIRDID_ROOT , dir_name);
+         AFPDelete(Conn, Vol,  DIRDID_ROOT , dir_name);
          }
       }
 }
@@ -1077,7 +1052,7 @@ int  dir;
       {
       printf("Creating subdirectories...");
       fflush(stdout);
-      create_subdirectories(file_systems,NULL,subdirectories,buffered_io);
+      create_subdirectories(file_systems,NULL,subdirectories);
       printf("Done\n");
       }
 
@@ -1087,13 +1062,13 @@ int  dir;
    printf("Creating files...");
    fflush(stdout);
    for (i=0; i<simultaneous; i++)
-      create_file(buffered_io);
+      create_file();
    printf("Done\n");
 
    printf("Performing transactions");
    fflush(stdout);
    time(&t_start_time);
-   incomplete=run_transactions(buffered_io);
+   incomplete=run_transactions();
    time(&t_end_time);
    if (!incomplete)
       printf("Done\n");
@@ -1114,7 +1089,7 @@ int  dir;
       {
       printf("Deleting subdirectories...");
       fflush(stdout);
-      delete_subdirectories(file_systems,NULL,subdirectories,buffered_io);
+      delete_subdirectories(file_systems,NULL,subdirectories);
       printf("Done\n");
       }
 
@@ -1191,8 +1166,7 @@ char *param; /* optional: name of output file */
    fprintf(fp,"write=%s\n",scale(write_block_size));
    fprintf(fp,"Biases are: read/append=%d, create/delete=%d\n",bias_read,
       bias_create);
-   fprintf(fp,"%ssing Unix buffered file I/O\n",buffered_io?"U":"Not u");
-   fprintf(fp,"Random number generator seed is %d\n",seed);
+      fprintf(fp,"Random number generator seed is %d\n",seed);
 
    fprintf(fp,"Report format is %s.\n",report?"terse":"verbose");
 

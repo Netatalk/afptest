@@ -21,3 +21,4 @@ lantest
 *.la
 spectest.log
 spectest.conf
+TAGS
