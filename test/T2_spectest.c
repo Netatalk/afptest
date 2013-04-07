@@ -52,6 +52,7 @@ EXT_FN(FPSetDirParms);
 EXT_FN(FPSetFileParms);
 EXT_FN(FPResolveID);
 EXT_FN(FPRead);
+EXT_FN(FPSetForkParms);
 EXT_FN(Dircache_attack);
 
 struct test_fn {
@@ -103,6 +104,7 @@ FN_N(FPSetDirParms)
 FN_N(FPSetFileParms)
 FN_N(FPResolveID)
 FN_N(FPRead)
+FN_N(FPSetForkParms)
 FN_N(Dircache_attack)
 
 {NULL, NULL},
