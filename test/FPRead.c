@@ -846,6 +846,104 @@ test_exit:
 	exit_test("test344");
 }
 
+/* ------------------------- */
+STATIC void test8()
+{
+    u_int16_t bitmap = 0;
+    int dfork = 0, rfork = 0;
+    char *name1 = "t8 file1.txt";
+    char *name2 = "t8 file2.txt";
+    u_int16_t vol = VolID;
+    int rsize = 65000, dsize = 12000;
+    DSI *dsi;
+    int ret;
+
+	dsi = &Conn->dsi;
+
+	enter_test();
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPRead:test8: open data and rfork, datafork size is 0, rfork is 65k, read from datafork after EOF\n");
+
+	if (Locking) {
+		test_skipped(T_LOCKING);
+		goto test_exit;
+	}		
+
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT, name1)) {
+		failed();
+		goto fin;
+	}
+	if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT, name2)) {
+		failed();
+		goto fin;
+	}
+
+    /*****/
+
+	rfork = FPOpenFork(Conn, vol, OPENFORK_RSCS, bitmap ,DIRDID_ROOT, name1, OPENACC_RD|OPENACC_WR);
+	if (!rfork) {
+		failed();
+		goto fin;
+	}
+	if (FPSetForkParam(Conn, rfork, (1<<FILPBIT_RFLEN), rsize)) {
+		failed();
+		goto fin;
+	}
+    if (FPCloseFork(Conn, rfork)) {
+		failed();
+		goto fin;
+    }
+
+    /*****/
+
+	dfork = FPOpenFork(Conn, vol, OPENFORK_DATA, bitmap ,DIRDID_ROOT, name2, OPENACC_RD|OPENACC_WR);
+	if (!dfork) {
+		failed();
+		goto fin;
+	}
+	if (FPSetForkParam(Conn, dfork, (1<<FILPBIT_DFLEN), dsize)) {
+		failed();
+		goto fin;
+	}
+    if (FPCloseFork(Conn, dfork)) {
+		failed();
+		goto fin;
+    }
+
+    /******/
+
+	rfork = FPOpenFork(Conn, vol, OPENFORK_RSCS, bitmap ,DIRDID_ROOT, name1, OPENACC_RD);
+	if (!rfork) {
+		failed();
+		goto fin;
+	}		
+
+	dfork = FPOpenFork(Conn, vol, OPENFORK_DATA, bitmap ,DIRDID_ROOT, name2, OPENACC_RD);
+	if (!dfork) {
+		failed();
+		goto fin;
+	}		
+
+	if (ntohl(AFP_OK) != FPRead(Conn, rfork, 0, rsize, Data)) {
+		failed();
+		goto fin;
+	}
+
+	if (ntohl(AFP_OK) != FPRead(Conn, dfork, 0, dsize, Data)) {
+		failed();
+		goto fin;
+	}
+
+fin:
+	if (dfork) FPCloseFork(Conn, dfork);
+	if (rfork) FPCloseFork(Conn, rfork);
+
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name1))
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name2))
+test_exit:
+	exit_test("test8");
+}
+
 
 /* ----------- */
 void FPRead_test()
@@ -853,6 +951,7 @@ void FPRead_test()
     fprintf(stdout,"===================\n");
     fprintf(stdout,"FPRead page 238\n");
 	test5();
+	test8();
 	test46();
 	test59();
 	test61();
