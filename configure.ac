@@ -2,6 +2,7 @@ AC_INIT([afptest], [1.0.5])
 AC_CONFIG_SRCDIR([test/spectest.c])
 AM_INIT_AUTOMAKE(foreign)
 AM_CONFIG_HEADER(config.h)
+AM_MAINTAINER_MODE([enable])
 AC_CANONICAL_HOST
 AC_PROG_CC
 AM_PROG_LIBTOOL
