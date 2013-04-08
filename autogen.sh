@@ -10,4 +10,4 @@ libtoolize --copy --force && \
 # just in case automake generated errors...
 autoconf
 
-LDFLAGS=-rdynamic ./configure --enable-maintainer-mode "$@"
+LDFLAGS=-rdynamic ./configure --enable-maintainer-mode -C "$@"
