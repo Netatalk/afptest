@@ -16,7 +16,7 @@ postmark_LDFLAGS = -export-dynamic
 postmark_LDADD = libafptest.la
 
 lantest_SOURCES = lantest.c
-lantest_LDADD = libafptest.la
+lantest_LDADD = libafptest.la -lpthread
 
 afp_ls_SOURCES = afp_ls.c
 afp_ls_LDADD = libafptest.la

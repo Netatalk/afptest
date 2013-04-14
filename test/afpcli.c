@@ -1658,6 +1658,38 @@ unsigned char *ptr;
 	return dsi->header.dsi_code;
 }
 
+/* ------------------------------- */
+int AFPWrite_ext_async(CONN *conn, u_int16_t fork, off_t offset, off_t size, char *data, char whence)
+{
+    int ofs;
+    DSI *dsi = &conn->dsi;
+    off_t last;
+    unsigned char *ptr;
+
+	memset(dsi->commands, 0, DSI_CMDSIZ);
+	memset(&dsi->header, 0, sizeof(dsi->header));
+	dsi->header.dsi_flags = DSIFL_REQUEST;     
+	dsi->header.dsi_command = DSIFUNC_WRITE;
+	dsi->header.dsi_requestID = htons(dsi_clientID(dsi));
+	ofs = 0;
+	dsi->commands[ofs++] = AFP_WRITE_EXT;
+	dsi->commands[ofs++] = whence;			/* 0 SEEK_SET, 0x80 SEEK_END */
+	
+	memcpy(dsi->commands + ofs, &fork, sizeof(fork));	/* fork num */
+	ofs += sizeof(fork);
+
+	ofs += set_off_t(offset, dsi->commands + ofs,1);
+	ofs += set_off_t(size, dsi->commands + ofs,1);
+
+	dsi->datalen = ofs;
+	dsi->header.dsi_len = htonl(dsi->datalen +size);
+	dsi->header.dsi_code = htonl(ofs); 
+ 
+   	my_dsi_stream_send(dsi, dsi->commands, ofs);
+	my_dsi_stream_write(dsi, data, size);
+
+	return 0;
+}
 
 /* ------------------------------- 
 	type : ressource or data

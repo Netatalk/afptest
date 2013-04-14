@@ -7,6 +7,7 @@
 #include <stdarg.h>
 #include <sys/types.h>
 #include <pwd.h>
+#include <pthread.h> 
 
 #include "afpclient.h"
 #include "test.h"
@@ -36,8 +37,10 @@ static int     Iterations_save;
 static struct timeval tv_start;
 static struct timeval tv_end;
 static struct timeval tv_dif;
+static pthread_t tid;
 
-#define READ_WRITE_SIZE 100
+#define FPWRITE_RPLY_SIZE 24
+#define FPWRITE_RQST_SIZE 36
 
 #define TEST_OPENSTATREAD    0
 #define TEST_WRITE100MB      1
@@ -58,6 +61,15 @@ static char *resultstrings[] = {
     "Enumerate dir with 2000 files                          ",
     "Create directory tree with 10^3 dirs                   "
 };
+
+/* Configure the tests */
+#define DIRNUM 10                                 /* 10^3 nested dirs */
+#define READ_WRITE_SIZE 1000
+static int smallfiles = 1000;                     /* 1000 files */
+static off_t rwsize = READ_WRITE_SIZE * 1024 * 1024;          /* 100 MB */
+static int locking = 10000 / 40;                  /* 10000 times */
+static int create_enum_files = 2000;              /* 2000 files */
+static unsigned long long numrw;
 
 static char teststorun[NUMTESTS];
 static unsigned long (*results)[][NUMTESTS];
@@ -179,6 +191,34 @@ int is_there(CONN *conn, int did, char *name)
         );
 }
 
+static void *rply_thread(void *p)
+{
+    unsigned long long n = numrw;
+    char buf[FPWRITE_RPLY_SIZE];
+
+    while (n--) {        
+        size_t stored;
+        ssize_t len;
+
+        fprintf(stdout, "rply_thread(%d)\n", n);
+ 
+        stored = 0;
+        while (stored < FPWRITE_RPLY_SIZE) {
+            if ((len = read(dsi->socket, (u_int8_t *)buf + stored,
+                            FPWRITE_RPLY_SIZE - stored)) == -1 && errno == EINTR)
+                continue;
+            if (len > 0) {
+                stored += len;
+            } else {
+                fprintf(stdout, "dsi_stream_read(%d): %s\n", len, (len < 0)?strerror(errno):"EOF");
+                return NULL;
+            }
+        }
+    }
+
+    return NULL;
+}
+
 /* ------------------------- */
 void test143()
 {
@@ -192,14 +232,9 @@ void test143()
     char *data = NULL;
     int nowrite;
     static char temp[MAXPATHLEN];
+    off_t offset;
 
-    /* Configure the tests */
-    int smallfiles = 1000;                     /* 1000 files */
-    int numread = (READ_WRITE_SIZE*1024*1024) / (dsi->server_quantum); /* 100 MB in blocks of 64k */
-    int locking = 10000 / 40;                  /* 10000 times */
-    int create_enum_files = 2000;              /* 2000 files */
-#define DIRNUM 10                              /* 10^3 nested dirs. This is a define because we
-                                                  currently create static arrays based on it*/
+    numrw = rwsize / (dsi->server_quantum - FPWRITE_RQST_SIZE);
 
     id = getpid();
     if (!ndir) {
@@ -354,14 +389,18 @@ void test143()
         if (FPGetForkParam(Conn, fork, (1<<FILPBIT_PDID)))
             fatal_failed();
 
+        (void)pthread_create(&tid, NULL, rply_thread, NULL);
+
         starttimer();
-        for (i=0; i <= numread ; i++) {
-            if (FPWrite(Conn, fork, i*dsi->server_quantum, dsi->server_quantum, data, 0 )) {
+        for (offset = 0; offset <= rwsize; offset += (dsi->server_quantum - FPWRITE_RQST_SIZE)) {
+            if (FPWrite_ext_async(Conn, fork, offset, dsi->server_quantum - FPWRITE_RQST_SIZE, data, 0))
                 fatal_failed();
-            }
         }
         if (FPCloseFork(Conn,fork))
             fatal_failed();
+
+        pthread_join(tid, NULL);
+
         stoptimer();
         addresult(TEST_WRITE100MB, Iterations);
     }
@@ -385,7 +424,7 @@ void test143()
             fatal_failed();
 
         starttimer();
-        for (i=0; i <= numread ; i++) {
+        for (i=0; i <= numrw ; i++) {
             if (FPRead(Conn, fork, i*dsi->server_quantum, dsi->server_quantum, data)) {
                 fatal_failed();
             }

@@ -2236,6 +2236,23 @@ DSI *dsi;
 	return ret;
 }
 
+/* ------------------------------- */
+unsigned int FPWrite_ext_async(CONN *conn, u_int16_t fork, off_t  offset, off_t size, char *data, char whence)
+{
+    int ret;
+    DSI *dsi;
+
+	dsi = &conn->dsi;
+
+	if (!Quiet) {
+		fprintf(stdout,"---------------------\n");
+		fprintf(stdout,"write_ext fork %d  offset %lld size %lld\n\n", fork , offset, size);
+	}
+
+	ret = AFPWrite_ext_async(conn,fork, offset, size, data, whence);
+	return ret;
+}
+
 unsigned int FPGetACL(CONN *conn, u_int16_t vol, int did, u_int16_t bitmap, char *name)
 {
 int ret;

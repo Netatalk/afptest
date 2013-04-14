@@ -57,6 +57,7 @@ extern unsigned int FPWriteHeader(DSI *dsi, u_int16_t fork, int offset, int size
 extern unsigned int FPWriteFooter(DSI *dsi, u_int16_t fork, int offset, int size, char *data, char whence);
 extern unsigned int FPWrite(CONN *conn, u_int16_t fork, int offset, int size, char *data, char whence);
 extern unsigned int FPWrite_ext(CONN *conn, u_int16_t fork, off_t  offset, off_t size, char *data, char whence);
+extern unsigned int FPWrite_ext_async(CONN *conn, u_int16_t fork, off_t  offset, off_t size, char *data, char whence);
 
 extern unsigned int FPSetForkParam(CONN *conn, u_int16_t fork,  u_int16_t bitmap, off_t size);
 

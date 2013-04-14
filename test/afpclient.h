@@ -298,6 +298,7 @@ size_t my_dsi_stream_read(DSI *dsi, void *data, const size_t length);
 int my_dsi_stream_receive(DSI *dsi, void *buf, const size_t ilength, size_t *rlength);
 size_t my_dsi_stream_write(DSI *dsi, void *data, const size_t length);
 int my_dsi_stream_send(DSI *dsi, void *buf, size_t length);
+uint16_t my_dsi_cmd_nwriterply_async(CONN *conn, uint64_t n);
 
 int DSIOpenSession(CONN *conn);
 int DSIGetStatus(CONN *conn);
@@ -341,6 +342,7 @@ int AFPWriteHeader(DSI *dsi, u_int16_t fork, int offset, int size, char *data, c
 int AFPWriteFooter(DSI *dsi, u_int16_t fork, int offset, int size, char *data, char whence);
 int AFPWrite(CONN *conn, u_int16_t fork, int offset, int size, char *data, char whence);
 int AFPWrite_ext(CONN *conn, u_int16_t fork, off_t offset, off_t size, char *data, char whence);
+int AFPWrite_ext_async(CONN *conn, u_int16_t fork, off_t offset, off_t size, char *data, char whence);
 
 int AFPReadHeader(DSI *dsi, u_int16_t fork, int offset, int size, char *data);
 int AFPReadFooter(DSI *dsi, u_int16_t fork, int offset, int size, char *data);
