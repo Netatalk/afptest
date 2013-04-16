@@ -52,6 +52,7 @@ extern unsigned int FPReadFooter(DSI *dsi, u_int16_t fork, int offset, int size,
 extern unsigned int FPRead(CONN *conn, u_int16_t fork, int offset, int size, char *data);
 
 extern unsigned int FPRead_ext (CONN *conn, u_int16_t fork, off_t offset, off_t size, char *data);
+extern unsigned int FPRead_ext_async(CONN *conn, u_int16_t fork, off_t offset, off_t size, char *data);
 
 extern unsigned int FPWriteHeader(DSI *dsi, u_int16_t fork, int offset, int size, char *data, char whence);
 extern unsigned int FPWriteFooter(DSI *dsi, u_int16_t fork, int offset, int size, char *data, char whence);

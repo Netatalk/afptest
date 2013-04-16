@@ -2171,6 +2171,25 @@ DSI *dsi;
 }
 
 /* ------------------------------- */
+unsigned int FPRead_ext_async(CONN *conn, u_int16_t fork, off_t offset, off_t size, char *data)
+{
+    int ret;
+    DSI *dsi;
+
+	dsi = &conn->dsi;
+
+	if (!Quiet) {
+		fprintf(stdout,"---------------------\n");
+		fprintf(stdout,"read ext fork %d  offset %lld size %lld\n\n", fork , offset, size);
+	}
+
+	ret = AFPRead_ext_async(conn,fork, offset, size, data);
+
+	dump_header(dsi);
+	return ret;
+}
+
+/* ------------------------------- */
 unsigned int FPWriteHeader(DSI *dsi, u_int16_t fork, int offset, int size, char *data, char whence)
 {
 int ret;

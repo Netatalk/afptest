@@ -202,7 +202,9 @@ static void *rply_thread(void *p)
     unsigned long long n = air->air_count;
     size_t stored;
     ssize_t len;
-    char *buf = malloc(size);
+    char *buf = NULL;
+
+    buf = malloc(size);
 
     while (n--) {
         stored = 0;
@@ -214,11 +216,14 @@ static void *rply_thread(void *p)
                 stored += len;
             } else {
                 fprintf(stdout, "dsi_stream_read(%d): %s\n", len, (len < 0)?strerror(errno):"EOF");
-                return NULL;
+                goto exit;
             }
         }
     }
 
+exit:
+    if (buf)
+        free(buf);
     return NULL;
 }
 
@@ -410,12 +415,12 @@ void run_test(const int dir)
             fatal_failed();
 
         air.air_count = numrw;
-        air.air_size = dsi->server_quantum;
+        air.air_size = (dsi->server_quantum - FPWRITE_RQST_SIZE) + 16;
         (void)pthread_create(&tid, NULL, rply_thread, &air);
 
         starttimer();
-        for (i=0; i <= numrw ; i++) {
-            if (AFPRead_ext_async(Conn, fork, i * (dsi->server_quantum - FPWRITE_RQST_SIZE), dsi->server_quantum - FPWRITE_RQST_SIZE, data)) {
+        for (i=0; i < numrw ; i++) {
+            if (FPRead_ext_async(Conn, fork, i * (dsi->server_quantum - FPWRITE_RQST_SIZE), dsi->server_quantum - FPWRITE_RQST_SIZE, data)) {
                 fatal_failed();
             }
         }
