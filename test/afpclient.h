@@ -348,6 +348,7 @@ int AFPReadHeader(DSI *dsi, u_int16_t fork, int offset, int size, char *data);
 int AFPReadFooter(DSI *dsi, u_int16_t fork, int offset, int size, char *data);
 int AFPRead(CONN *conn, u_int16_t fork, int offset, int size, char *data);
 int AFPRead_ext(CONN *conn, u_int16_t fork, off_t offset, off_t size, char *data);
+int AFPRead_ext_async(CONN *conn, u_int16_t fork, off_t offset, off_t size, char *data);
 
 int AFPGetForkParam(CONN *conn, u_int16_t fork, u_int16_t bitmap);
 

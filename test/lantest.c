@@ -190,19 +190,25 @@ int is_there(CONN *conn, int did, char *name)
         );
 }
 
+struct async_io_req {
+    unsigned long long air_count;
+    size_t air_size;
+};
+
 static void *rply_thread(void *p)
 {
-    unsigned long long n = numrw;
-    char buf[FPWRITE_RPLY_SIZE];
+    struct async_io_req *air = p;
+    size_t size = air->air_size;
+    unsigned long long n = air->air_count;
+    size_t stored;
+    ssize_t len;
+    char *buf = malloc(size);
 
-    while (n--) {        
-        size_t stored;
-        ssize_t len;
-
+    while (n--) {
         stored = 0;
-        while (stored < FPWRITE_RPLY_SIZE) {
+        while (stored < size) {
             if ((len = read(dsi->socket, (u_int8_t *)buf + stored,
-                            FPWRITE_RPLY_SIZE - stored)) == -1 && errno == EINTR)
+                            size - stored)) == -1 && errno == EINTR)
                 continue;
             if (len > 0) {
                 stored += len;
@@ -226,6 +232,7 @@ void run_test(const int dir)
     int test = 0;
     int nowrite;
     off_t offset;
+    struct async_io_req air;
     static char temp[MAXPATHLEN];
 
     numrw = rwsize / (dsi->server_quantum - FPWRITE_RQST_SIZE);
@@ -365,7 +372,9 @@ void run_test(const int dir)
         if (FPGetForkParam(Conn, fork, (1<<FILPBIT_PDID)))
             fatal_failed();
 
-        (void)pthread_create(&tid, NULL, rply_thread, NULL);
+        air.air_count = numrw;
+        air.air_size = FPWRITE_RPLY_SIZE;
+        (void)pthread_create(&tid, NULL, rply_thread, &air);
 
         starttimer();
         for (i = 0, offset = 0; i < numrw; offset += (dsi->server_quantum - FPWRITE_RQST_SIZE), i++) {
@@ -400,12 +409,19 @@ void run_test(const int dir)
         if (FPGetFileDirParams(Conn, vol,  dir, temp, 0x72d,0))
             fatal_failed();
 
+        air.air_count = numrw;
+        air.air_size = dsi->server_quantum;
+        (void)pthread_create(&tid, NULL, rply_thread, &air);
+
         starttimer();
         for (i=0; i <= numrw ; i++) {
-            if (FPRead(Conn, fork, i*dsi->server_quantum, dsi->server_quantum, data)) {
+            if (AFPRead_ext_async(Conn, fork, i * (dsi->server_quantum - FPWRITE_RQST_SIZE), dsi->server_quantum - FPWRITE_RQST_SIZE, data)) {
                 fatal_failed();
             }
         }
+
+        pthread_join(tid, NULL);
+
         if (FPCloseFork(Conn,fork))
             fatal_failed();
         stoptimer();

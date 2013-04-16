@@ -2093,6 +2093,31 @@ DSI *dsi;
 	return dsi->header.dsi_code?dsi->header.dsi_code:(rsize +dsi->cmdlen== size)?0:-1;
 }
 
+int AFPRead_ext_async(CONN *conn, u_int16_t fork, off_t offset, off_t size, char *data)
+{
+    int ofs;
+    int rsize;
+    DSI *dsi;
+
+	dsi = &conn->dsi;
+
+	SendInit(dsi);
+	ofs = 0;
+	dsi->commands[ofs++] = AFP_READ_EXT;
+	dsi->commands[ofs++] = 0;
+	
+	memcpy(dsi->commands +ofs, &fork, sizeof(fork));	/* fork num */
+	ofs += sizeof(fork);
+	ofs += set_off_t(offset, dsi->commands + ofs, 1);
+	ofs += set_off_t(size, dsi->commands + ofs, 1);
+
+	SetLen(dsi, ofs);
+ 
+   	my_dsi_stream_send(dsi, dsi->commands, dsi->datalen);
+
+	return 0;
+}
+
 /* -------------------------------- */
 int  AFPCreateDir(CONN *conn, u_int16_t vol, int did , char *name)
 {
