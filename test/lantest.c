@@ -54,8 +54,8 @@ static pthread_t tid;
 
 static char *resultstrings[] = {
     "Opening, stating and reading 512 bytes from 1000 files ",
-    "Writing 100 MB to one file                             ",
-    "Reading 100 MB from one file                           ",
+    "Writing one large file                                 ",
+    "Reading one large file                                 ",
     "Locking/Unlocking 10000 times each                     ",
     "Creating dir with 2000 files                           ",
     "Enumerate dir with 2000 files                          ",
@@ -64,9 +64,8 @@ static char *resultstrings[] = {
 
 /* Configure the tests */
 #define DIRNUM 10                                 /* 10^3 nested dirs */
-#define READ_WRITE_SIZE 1000
 static int smallfiles = 1000;                     /* 1000 files */
-static off_t rwsize = READ_WRITE_SIZE * 1024 * 1024;          /* 100 MB */
+static off_t rwsize = 100 * 1024 * 1024;          /* 100 MB */
 static int locking = 10000 / 40;                  /* 10000 times */
 static int create_enum_files = 2000;              /* 2000 files */
 static unsigned long long numrw;
@@ -104,8 +103,8 @@ static void addresult(int test, int iteration)
     t = timediff();
     fprintf(stderr, "Run %u => %s%6lu ms", iteration, resultstrings[test], t);
     if ((test == TEST_WRITE100MB) || (test == TEST_READ100MB)) {
-        avg = (READ_WRITE_SIZE * 1000) / t;
-        fprintf(stderr, " (avg. %llu MB/s)", avg);
+        avg = (rwsize / 1000) / t;
+        fprintf(stderr, " for %llu MB (avg. %llu MB/s)", rwsize / (1024 * 1024), avg);
     }
     fprintf(stderr, "\n");
     (*results)[iteration][test] = t;
@@ -150,8 +149,8 @@ static void displayresults(void)
         avg = sum / (Iterations_save - divsub);
         fprintf(stderr, "%s%6llu ms", resultstrings[test], avg);
         if ((test == TEST_WRITE100MB) || (test == TEST_READ100MB)) {
-            thrput = (READ_WRITE_SIZE * 1000) / avg;
-            fprintf(stderr, " (avg. %llu MB/s)", thrput);
+            thrput = (rwsize / 1000) / avg;
+            fprintf(stderr, " for %llu MB (avg. %llu MB/s)", rwsize / (1024 * 1024), thrput);
         }
 
         fprintf(stderr, "\n");
@@ -200,8 +199,6 @@ static void *rply_thread(void *p)
         size_t stored;
         ssize_t len;
 
-        fprintf(stdout, "rply_thread(%d)\n", n);
- 
         stored = 0;
         while (stored < FPWRITE_RPLY_SIZE) {
             if ((len = read(dsi->socket, (u_int8_t *)buf + stored,
@@ -220,44 +217,21 @@ static void *rply_thread(void *p)
 }
 
 /* ------------------------- */
-void test143()
+void run_test(const int dir)
 {
-    int id;
-    char *ndir = NULL;
-    int dir;
+    static char *data;
     int i,maxi = 0;
     int j, k;
     int fork;
     int test = 0;
-    char *data = NULL;
     int nowrite;
-    static char temp[MAXPATHLEN];
     off_t offset;
+    static char temp[MAXPATHLEN];
 
     numrw = rwsize / (dsi->server_quantum - FPWRITE_RQST_SIZE);
 
-    id = getpid();
-    if (!ndir) {
-        sprintf(temp,"LanTest-%d", id);
-        ndir = strdup(temp);
-    }
-
     if (!data)
         data = calloc(1, dsi->server_quantum);
-    
-    if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, "", 0, (1<< DIRPBIT_DID)))
-        fatal_failed();
-
-    if (is_there(Conn, DIRDID_ROOT, ndir) == AFP_OK)
-        fatal_failed();
-
-    if (!(dir = FPCreateDir(Conn,vol, DIRDID_ROOT , ndir)))
-        fatal_failed();
-    if (FPGetFileDirParams(Conn, vol, dir, "", 0 , (1<< DIRPBIT_DID)))
-        fatal_failed();
-
-    if (is_there(Conn, DIRDID_ROOT, ndir) != AFP_OK)
-        fatal_failed();
 
     /* --------------- */
     /* Test (1)        */
@@ -376,8 +350,10 @@ void test143()
             failed();
             goto fin1;
         }
+
         if (FPGetFileDirParams(Conn, vol,  dir, temp, 0x72d,0))
             fatal_failed();
+
         if (FPGetFileDirParams(Conn, vol,  dir, temp, 0x73f, 0x133f ))
             fatal_failed();
 
@@ -392,14 +368,15 @@ void test143()
         (void)pthread_create(&tid, NULL, rply_thread, NULL);
 
         starttimer();
-        for (offset = 0; offset <= rwsize; offset += (dsi->server_quantum - FPWRITE_RQST_SIZE)) {
+        for (i = 0, offset = 0; i < numrw; offset += (dsi->server_quantum - FPWRITE_RQST_SIZE), i++) {
             if (FPWrite_ext_async(Conn, fork, offset, dsi->server_quantum - FPWRITE_RQST_SIZE, data, 0))
                 fatal_failed();
         }
-        if (FPCloseFork(Conn,fork))
-            fatal_failed();
 
         pthread_join(tid, NULL);
+
+        if (FPCloseFork(Conn,fork))
+            fatal_failed();
 
         stoptimer();
         addresult(TEST_WRITE100MB, Iterations);
@@ -628,30 +605,15 @@ void test143()
     }
 
 fin1:
-    FPDelete(Conn, vol,  dir, "");
 fin:
     return;
-}
-
-/* ------------------ */
-static void run_one()
-{
-    dsi = &Conn->dsi;
-    vol  = FPOpenVol(Conn, Vol);
-    if (vol == 0xffff) {
-        nottested();
-        return;
-    }
-    while (Iterations--) {
-        test143();
-    }
 }
 
 /* =============================== */
 void usage( char * av0 )
 {
     int i=0;
-    fprintf( stdout, "usage:\t%s -h host [-v|-V] [-3|-4|-5] [-p port] [-s vol] [-u user] [-w password] [-n iterations] [-t tests to run]\n", av0 );
+    fprintf( stdout, "usage:\t%s -h host [-vVgG] [-3|-4|-5] [-p port] [-s vol] [-u user] [-w password] [-n iterations] [-t tests to run]\n", av0 );
     fprintf( stdout,"\t-h\tserver host name\n");
     fprintf( stdout,"\t-p\tserver port (default 548)\n");
     fprintf( stdout,"\t-s\tvolume to mount (default home)\n");
@@ -663,6 +625,8 @@ void usage( char * av0 )
     fprintf( stdout,"\t-n\thow often to run (default: 1)\n");
     fprintf( stdout,"\t-v\tverbose\n");
     fprintf( stdout,"\t-V\tvery verbose\n");
+    fprintf( stdout,"\t-g\tfast network (Gbit, file testsize 1 GB)\n");
+    fprintf( stdout,"\t-G\tridiculously fast network (10 Gbit, file testsize 10 GB)\n");
     fprintf( stdout,"\t-t\ttests to run, eg 134 for tests 1, 3 and 4\n");
     fprintf( stdout,"\tAvailable tests:\n");
     for (i = 0; i < NUMTESTS; i++)
@@ -683,7 +647,7 @@ int main(int ac, char **av)
     if (pw)
         User = strdup(pw->pw_name);
 
-    while (( cc = getopt( ac, av, "t:vV345h:n:p:s:u:w:c:" )) != EOF ) {
+    while (( cc = getopt( ac, av, "t:vVgG345h:n:p:s:u:w:c:" )) != EOF ) {
         switch ( cc ) {
         case 't':
             tests = strdup(optarg);
@@ -730,6 +694,12 @@ int main(int ac, char **av)
         case 'V':
             Verbose = 1;
             break;
+        case 'g':
+            rwsize *= 10;
+            break;
+        case 'G':
+            rwsize *= 100;
+            break;
         default :
             usage( av[ 0 ] );
         }
@@ -764,12 +734,6 @@ int main(int ac, char **av)
             teststorun[TEST_CREATE2000FILES] = 1;
     }
 
-    /************************************
-     *                                  *
-     * Connection 1                     *
-     *                                  *
-     ************************************/
-
     if ((Conn = (CONN *)calloc(1, sizeof(CONN))) == NULL)
         return 1;
 
@@ -792,8 +756,36 @@ int main(int ac, char **av)
     else
       	ExitCode = ntohs(FPopenLogin(Conn, vers, uam, User, Password));
 
-    /* ----------------------------------- */
-    run_one();
+    vol  = FPOpenVol(Conn, Vol);
+    if (vol == 0xffff) {
+        nottested();
+    }
+
+    int dir;
+    char testdir[MAXPATHLEN];
+
+    sprintf(testdir, "LanTest-%d", getpid());
+
+    if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, "", 0, (1<< DIRPBIT_DID)))
+        fatal_failed();
+
+    if (is_there(Conn, DIRDID_ROOT, testdir) == AFP_OK)
+        fatal_failed();
+
+    if (!(dir = FPCreateDir(Conn, vol, DIRDID_ROOT, testdir)))
+        fatal_failed();
+
+    if (FPGetFileDirParams(Conn, vol, dir, "", 0 , (1<< DIRPBIT_DID)))
+        fatal_failed();
+
+    if (is_there(Conn, DIRDID_ROOT, testdir) != AFP_OK)
+        fatal_failed();
+
+    while (Iterations--) {
+        run_test(dir);
+    }
+
+    FPDelete(Conn, vol, dir, "");
 
     if (ExitCode != AFP_OK && ! Debug) {
         if (!Debug)
