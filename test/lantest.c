@@ -8,36 +8,10 @@
 #include <sys/types.h>
 #include <pwd.h>
 #include <pthread.h> 
+#include <sys/socket.h>
 
 #include "afpclient.h"
 #include "test.h"
-
-
-extern  int     Throttle;
-
-int Verbose = 0;
-int Quirk = 0;
-CONN *Conn;
-int ExitCode = 0;
-char Data[300000] = "";
-char    *Vol = "";
-char    *User = "";
-char    *Path;
-int     Version = 21;
-int     Mac = 0;
-
-static u_int16_t vol;
-static DSI *dsi;
-static char    *Server = NULL;
-static int     Proto = 0;
-static int     Port = 548;
-static char    *Password = "";
-static int     Iterations = 1;
-static int     Iterations_save;
-static struct timeval tv_start;
-static struct timeval tv_end;
-static struct timeval tv_dif;
-static pthread_t tid;
 
 #define FPWRITE_RPLY_SIZE 24
 #define FPWRITE_RQST_SIZE 36
@@ -52,6 +26,43 @@ static pthread_t tid;
 #define LASTTEST TEST_DIRTREE
 #define NUMTESTS (LASTTEST+1)
 
+extern  int     Throttle;
+
+int Verbose = 0;
+int Quirk = 0;
+CONN *Conn;
+int ExitCode = 0;
+char Data[300000] = "";
+char    *Vol = "";
+char    *User = "";
+char    *Path;
+int     Version = 21;
+int     Mac = 0;
+
+/* Configure the tests */
+#define DIRNUM 10                                 /* 10^3 nested dirs */
+static int smallfiles = 1000;                     /* 1000 files */
+static off_t rwsize = 100 * 1024 * 1024;          /* 100 MB */
+static int locking = 10000 / 40;                  /* 10000 times */
+static int create_enum_files = 2000;              /* 2000 files */
+
+static u_int16_t vol;
+static DSI *dsi;
+static char    *Server = NULL;
+static int     Proto = 0;
+static int     Port = 548;
+static char    *Password = "";
+static int     Iterations = 1;
+static int     Iterations_save;
+static struct timeval tv_start;
+static struct timeval tv_end;
+static struct timeval tv_dif;
+static pthread_t tid;
+static unsigned long long numrw;
+static char teststorun[NUMTESTS];
+static unsigned long (*results)[][NUMTESTS];
+static char *bigfilename;
+
 static char *resultstrings[] = {
     "Opening, stating and reading 512 bytes from 1000 files ",
     "Writing one large file                                 ",
@@ -61,17 +72,6 @@ static char *resultstrings[] = {
     "Enumerate dir with 2000 files                          ",
     "Create directory tree with 10^3 dirs                   "
 };
-
-/* Configure the tests */
-#define DIRNUM 10                                 /* 10^3 nested dirs */
-static int smallfiles = 1000;                     /* 1000 files */
-static off_t rwsize = 100 * 1024 * 1024;          /* 100 MB */
-static int locking = 10000 / 40;                  /* 10000 times */
-static int create_enum_files = 2000;              /* 2000 files */
-static unsigned long long numrw;
-
-static char teststorun[NUMTESTS];
-static unsigned long (*results)[][NUMTESTS];
 
 static void starttimer(void)
 {
@@ -209,8 +209,7 @@ static void *rply_thread(void *p)
     while (n--) {
         stored = 0;
         while (stored < size) {
-            if ((len = read(dsi->socket, (u_int8_t *)buf + stored,
-                            size - stored)) == -1 && errno == EINTR)
+            if ((len = recv(dsi->socket, (u_int8_t *)buf + stored, size - stored, 0)) == -1 && errno == EINTR)
                 continue;
             if (len > 0) {
                 stored += len;
@@ -399,19 +398,24 @@ void run_test(const int dir)
     /* -------- */
     /* Test (3) */
     if (teststorun[TEST_READ100MB]) {
-        if (is_there(Conn, dir, temp) != AFP_OK)
-            fatal_failed();
-        if (FPGetFileDirParams(Conn, vol,  dir, temp, 0x72d, 0))
-            fatal_failed();
+        if (!bigfilename) {
+            if (is_there(Conn, dir, temp) != AFP_OK)
+                fatal_failed();
 
-        fork = FPOpenFork(Conn, vol, OPENFORK_DATA, 0x342, dir, temp,
-                          OPENACC_RD|OPENACC_DWR);
+            fork = FPOpenFork(Conn, vol, OPENFORK_DATA, 0x342, dir, temp,
+                              OPENACC_RD|OPENACC_DWR);
+        } else {
+            if (is_there(Conn, DIRDID_ROOT, bigfilename) != AFP_OK)
+                fatal_failed();
+
+            fork = FPOpenFork(Conn, vol, OPENFORK_DATA, 0x342, DIRDID_ROOT, bigfilename,
+                              OPENACC_RD|OPENACC_DWR);
+        }
+
         if (!fork)
             fatal_failed();
 
         if (FPGetForkParam(Conn, fork, 0x242))
-            fatal_failed();
-        if (FPGetFileDirParams(Conn, vol,  dir, temp, 0x72d,0))
             fatal_failed();
 
         air.air_count = numrw;
@@ -433,7 +437,8 @@ void run_test(const int dir)
         addresult(TEST_READ100MB, Iterations);
     }
 
-    if (teststorun[TEST_WRITE100MB] || teststorun[TEST_READ100MB])
+    /* Remove test 2+3 testfile */
+    if (teststorun[TEST_WRITE100MB])
         FPDelete(Conn, vol,  dir, "File.big");
 
     /* -------- */
@@ -634,7 +639,7 @@ fin:
 void usage( char * av0 )
 {
     int i=0;
-    fprintf( stdout, "usage:\t%s -h host [-vVgG] [-3|-4|-5] [-p port] [-s vol] [-u user] [-w password] [-n iterations] [-t tests to run]\n", av0 );
+    fprintf( stdout, "usage:\t%s -h host [-vVgG] [-3|-4|-5] [-p port] [-s vol] [-u user] [-w password] [-n iterations] [-t tests to run] [-F bigfile]\n", av0 );
     fprintf( stdout,"\t-h\tserver host name\n");
     fprintf( stdout,"\t-p\tserver port (default 548)\n");
     fprintf( stdout,"\t-s\tvolume to mount (default home)\n");
@@ -649,6 +654,7 @@ void usage( char * av0 )
     fprintf( stdout,"\t-g\tfast network (Gbit, file testsize 1 GB)\n");
     fprintf( stdout,"\t-G\tridiculously fast network (10 Gbit, file testsize 10 GB)\n");
     fprintf( stdout,"\t-t\ttests to run, eg 134 for tests 1, 3 and 4\n");
+    fprintf( stdout,"\t-F\tuse this file located in the volume root for the read test (size must match -g and -G options)\n");
     fprintf( stdout,"\tAvailable tests:\n");
     for (i = 0; i < NUMTESTS; i++)
         fprintf( stdout,"\t(%u) %s\n", i+1, resultstrings[i]);
@@ -668,7 +674,7 @@ int main(int ac, char **av)
     if (pw)
         User = strdup(pw->pw_name);
 
-    while (( cc = getopt( ac, av, "t:vVgG345h:n:p:s:u:w:c:" )) != EOF ) {
+    while (( cc = getopt( ac, av, "t:vVgG345h:n:p:s:u:w:c:F:" )) != EOF ) {
         switch ( cc ) {
         case 't':
             tests = strdup(optarg);
@@ -721,6 +727,9 @@ int main(int ac, char **av)
         case 'G':
             rwsize *= 100;
             break;
+        case 'F':
+            bigfilename = strdup(optarg);
+            break;
         default :
             usage( av[ 0 ] );
         }
@@ -749,7 +758,7 @@ int main(int ac, char **av)
             if ((t >= 0) && (t <= NUMTESTS))
                 teststorun[t] = 1;
         }
-        if (teststorun[TEST_READ100MB])
+        if (teststorun[TEST_READ100MB] && !bigfilename)
             teststorun[TEST_WRITE100MB] = 1;
         if (teststorun[TEST_ENUM2000FILES])
             teststorun[TEST_CREATE2000FILES] = 1;
