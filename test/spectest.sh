@@ -41,6 +41,14 @@ fi
 . ./spectest.conf
 rm -f spectest.log
 
+# cleanup
+if test ! -z "$LOCALVOLPATH" ; then
+    rm -rf "$LOCALVOLPATH"/t*
+fi
+if test ! -z "$EA_LOCALVOLPATH" ; then
+    rm -rf "$EA_LOCALVOLPATH"/t*
+fi
+
 if [ ! -z "$VOLUME" -a ! -z "$LOCALVOLPATH" ] ; then
 
     echo "Running tests with adouble:v2"
@@ -110,6 +118,14 @@ if [ ! -z "$EA_VOLUME" -a ! -z "$EA_LOCALVOLPATH" ] ; then
     grep "NOT TESTED" spectest-ea.log | sed s/test//g | sort -n | uniq
     echo =====================================
 
+fi
+
+# cleanup
+if test ! -z "$LOCALVOLPATH" ; then
+    rm -rf "$LOCALVOLPATH"/t*
+fi
+if test ! -z "$EA_LOCALVOLPATH" ; then
+    rm -rf "$EA_LOCALVOLPATH"/t*
 fi
 
 exit $ret
