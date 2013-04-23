@@ -4,11 +4,11 @@ ret=0
 
 check_return() {
     ERRNO=$?
-    if test $ERRNO -ne 0 ; then
+    if test $ERRNO -eq 0 -o $ERRNO -eq 3 ; then
+        echo "[OK]"
+    else
         echo "[error: $ERRNO]"
         ret=1
-    else
-        echo "[OK]"
     fi
 }
 
