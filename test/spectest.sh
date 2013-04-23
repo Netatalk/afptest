@@ -4,7 +4,7 @@ ret=0
 
 check_return() {
     ERRNO=$?
-    if test $ERRNO -eq 1 -o $ERRNO -eq 4 ; then
+    if test $ERRNO -ne 0 ; then
         echo "[error: $ERRNO]"
         ret=1
     else
