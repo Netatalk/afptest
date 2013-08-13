@@ -211,6 +211,11 @@ int fid_name;
 int fid_name1;
 int temp;
 u_int16_t vol = VolID;
+struct afp_filedir_parms filedir;
+char finder_info[32];
+uint16_t bitmap;
+DSI *dsi = &Conn->dsi; 
+int  ofs =  3 * sizeof( u_int16_t );
 
 	enter_test();
     fprintf(stdout,"===================\n");
@@ -223,14 +228,35 @@ u_int16_t vol = VolID;
 	dir = DIRDID_ROOT;
 	FAIL (FPCreateFile(Conn, vol,  0, dir, name1))
 
-	fid_name  = get_fid(Conn, vol, DIRDID_ROOT , name);
+    /* set some metadata, MUST NOT be exchanged */
+	bitmap = (1 << FILPBIT_FINFO);
+	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, name, bitmap, 0)) {
+		failed();
+	}
+    filedir.isdir = 0;
+    afp_filedir_unpack(&filedir, dsi->data + ofs, bitmap, 0);
+    memcpy(filedir.finder_info, "TESTTEST", 8);
+    memcpy(finder_info, filedir.finder_info, 32);
+    FAIL (FPSetFileParams(Conn, vol, DIRDID_ROOT , name, bitmap, &filedir)) 
 
+	fid_name  = get_fid(Conn, vol, DIRDID_ROOT , name);
 	fid_name1 = get_fid(Conn, vol, dir , name1);
 
 	write_fork( Conn, vol, DIRDID_ROOT , name, "blue");
 	write_fork( Conn, vol, dir , name1, "red");
 	/* ok */
 	FAIL (FPExchangeFile(Conn, vol, DIRDID_ROOT, dir, name, name1)) 
+
+    /* test whether FinderInfo was preserved */
+	if (FPGetFileDirParams(Conn, vol, DIRDID_ROOT, name, bitmap, 0)) {
+		failed();
+	}
+    filedir.isdir = 0;
+    afp_filedir_unpack(&filedir, dsi->data + ofs, bitmap, 0);
+    if (memcmp(finder_info, filedir.finder_info, 32) != 0) {
+		fprintf(stdout,"\tFAILED: metadata wasn't preserved\n");
+		failed_nomsg();
+    }
 
 	/* test remove of no cnid db */
 	if ((temp = get_fid(Conn, vol, DIRDID_ROOT , name)) != fid_name) {
