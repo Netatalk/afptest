@@ -1062,7 +1062,7 @@ u_int16_t bitmap1 =  (1<<FILPBIT_ATTR) | (1<<FILPBIT_FINFO)| (1<<FILPBIT_CDATE) 
 		filedir.isdir = 0;
 		afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
 		if (memcmp(filedir.finder_info, "WDBNMSWD", 8)) {
-			fprintf(stdout,"FAILED not PDF\n");
+			fprintf(stdout,"FAILED not WDBNMSWD\n");
 			failed_nomsg();
 		}
 	}
