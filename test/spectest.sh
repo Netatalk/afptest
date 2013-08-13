@@ -120,13 +120,6 @@ if [ ! -z "$EA_VOLUME" -a ! -z "$EA_LOCALVOLPATH" ] ; then
 
 fi
 
-if test -f spectest.log ; then
-    echo
-    echo List of test results
-    echo ====================
-    grep summary spectest.log | grep -v PASSED
-fi
-
 # cleanup
 if test ! -z "$LOCALVOLPATH" ; then
     rm -rf "$LOCALVOLPATH"/t*
