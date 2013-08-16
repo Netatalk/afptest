@@ -3,6 +3,54 @@
 #include "specs.h"
 #include "adoublehelper.h"
 
+/* ------------------------ */
+static int afp_symlink(char *oldpath, char *newpath)
+{
+int  ofs =  3 * sizeof( u_int16_t );
+struct afp_filedir_parms filedir;
+u_int16_t bitmap;
+u_int16_t vol = VolID;
+DSI *dsi;
+int fork = 0;
+
+	dsi = &Conn->dsi;
+
+    if (FPCreateFile(Conn, vol,  0, DIRDID_ROOT , newpath)) {
+	    return -1;
+	}
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0 ,DIRDID_ROOT, newpath , OPENACC_WR | OPENACC_RD);
+	if (!fork) {
+	    return -1;
+	}
+
+	if (FPWrite(Conn, fork, 0, strlen(oldpath), oldpath, 0 )) {
+	    return -1;
+	}
+
+    if (FPCloseFork(Conn,fork)) {
+	    return -1;
+    }
+    fork = 0;
+
+	bitmap = (1<< DIRPBIT_ATTR) |  (1<<FILPBIT_FINFO) |
+	         (1<<DIRPBIT_CDATE) |  (1<<DIRPBIT_MDATE) |
+		     (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID) | (1<<FILPBIT_FNUM );
+    
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , newpath, bitmap,0 )) {
+	    return -1;
+    }
+
+    filedir.isdir = 0;
+    afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+    memcpy(filedir.finder_info, "slnkrhap", 8);
+	bitmap = (1<<FILPBIT_FINFO);
+    
+    if (FPSetFileParams(Conn, vol, DIRDID_ROOT , newpath, bitmap, &filedir))
+        return -1;
+    return 0;
+}
+
 /* ------------------------- */
 STATIC void test89()
 {
