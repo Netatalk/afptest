@@ -97,6 +97,74 @@ test_exit:
 	exit_test("test120");
 }
 
+/* ------------------------- */
+STATIC void test426()
+{
+    char *name = "t426 Symlink";
+    int  ofs =  3 * sizeof( u_int16_t );
+    struct afp_filedir_parms filedir;
+    u_int16_t bitmap;
+    u_int16_t vol = VolID;
+    DSI *dsi;
+    int fork = 0;
+    unsigned int ret;
+    char temp[MAXPATHLEN];   
+    struct stat st;
+
+	dsi = &Conn->dsi;
+
+	enter_test();
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPSetFileParms:t426: Create a dangling symlink\n");
+
+	if (!Path) {
+		test_skipped(T_MAC_PATH);
+		goto test_exit;
+	}
+    
+    if (afp_symlink("t426 dest", name)) {
+		nottested();
+		goto test_exit;
+	}
+
+    /* Check if volume uses option 'followsymlinks' */
+    sprintf(temp, "%s/%s", Path, name);
+    if (lstat(temp, &st)) {
+        fprintf(stdout,"\tFAILED stat( %s ) %s\n", temp, strerror(errno));
+        failed_nomsg();
+    }
+    if (!S_ISLNK(st.st_mode)) {
+		test_skipped(T_NOSYML);
+		goto test_exit;
+    }
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0 ,DIRDID_ROOT, name , OPENACC_WR | OPENACC_RD);
+	if (!fork) {
+		failed();
+	}
+	else {
+        char *ln2 = "t426 dest 2";
+        ret = FPWrite_ext(Conn, fork, 0, strlen(ln2), ln2, 0);
+
+        if (not_valid_bitmap(ret, BITERR_ACCESS | BITERR_MISC, AFPERR_MISC))
+            failed();
+	    FPCloseFork(Conn,fork);
+    }
+
+	fork = FPOpenFork(Conn, vol, OPENFORK_DATA , 0 ,DIRDID_ROOT, name , OPENACC_RD);
+	if (!fork) {
+	    /* Trying to open the linked file? */
+		failed();
+	}
+
+test_exit:
+    if (fork) {
+	    FPCloseFork(Conn,fork);
+    }
+    FAIL (FPDelete(Conn, vol,  DIRDID_ROOT , name))
+	exit_test("test426");
+}
+
 /* ----------- */
 void FPSetFileParms_test()
 {
@@ -104,5 +172,6 @@ void FPSetFileParms_test()
     fprintf(stdout,"FPSetFileParms page 262\n");
     test89();
     test120();
+    test426();
 }
 
