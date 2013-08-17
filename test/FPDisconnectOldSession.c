@@ -34,8 +34,8 @@ struct sigaction action;
     fprintf(stdout,"===================\n");
     fprintf(stdout,"FPDisconnectOldSession :test222: AFP 3.x disconnect old session\n");
 
-	if (Conn->afp_version < 30 || Conn2) {
-		test_skipped(T_AFP3_CONN2);
+	if (Conn->afp_version < 30) {
+		test_skipped(T_AFP3);
 		goto test_exit;
 	}
 	if (Locking) {
@@ -177,8 +177,8 @@ u_int32_t time= 12345;
     fprintf(stdout,"===================\n");
     fprintf(stdout,"FPDisconnectOldSession :test338: AFP 3.x disconnect old session\n");
     
-	if (Conn->afp_version < 30 || Conn2) {
-    	test_skipped(T_AFP3_CONN2);
+	if (Conn->afp_version < 30) {
+    	test_skipped(T_AFP3);
 		goto test_exit;
 	}
     if (Locking) {
@@ -286,6 +286,7 @@ STATIC void test339()
 char *name = "t339 file";
 char *ndir = "t339 dir";
 char *no_user_uam = "No User Authent";
+
 u_int16_t vol1, vol2;
 unsigned int ret;
 char *token;
@@ -311,8 +312,8 @@ struct afp_filedir_parms filedir;
     fprintf(stdout,"===================\n");
     fprintf(stdout,"FPDisconnectOldSession :test339: AFP 3.x No auth disconnect old session\n");
 
-	if (Conn->afp_version < 30 || Conn2) {
-    	test_skipped(T_AFP3_CONN2);
+	if (Conn->afp_version < 30) {
+    	test_skipped(T_AFP3);
 		goto test_exit;
 	}
     if (Locking) {
@@ -473,8 +474,8 @@ struct afp_filedir_parms filedir;
     fprintf(stdout,"===================\n");
     fprintf(stdout,"FPDisconnectOldSession :test370: AFP 3.x disconnect different user\n");
 
-	if (Conn->afp_version < 30 || Conn2) {
-    	test_skipped(T_AFP3_CONN2);
+	if (Conn->afp_version < 30) {
+    	test_skipped(T_AFP3);
 		goto test_exit;
 	}
     if (Locking) {
