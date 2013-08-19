@@ -454,8 +454,13 @@ unsigned int ret;
     fprintf(stdout,"===================\n");
     fprintf(stdout,"FPOpenFork:test152: Error when no write access to .AppleDouble\n");
 
-	if ((!Mac && !Path) || (adouble == AD_EA)) {
+	if ((!Mac && !Path)) {
 		test_skipped(T_MAC_PATH);
+		goto test_exit;
+	}
+
+	if (adouble == AD_EA) {
+		test_skipped(T_ADV2);
 		goto test_exit;
 	}
 
@@ -626,8 +631,13 @@ int fd;
     fprintf(stdout,"===================\n");
     fprintf(stdout,"FPOpenFork:test321: Bogus (empty) resource fork\n");
 
-	if ((!Mac && !Path) || (adouble == AD_EA)) {
+	if ((!Mac && !Path)) {
 		test_skipped(T_MAC_PATH);
+		goto test_exit;
+	}
+
+	if (adouble == AD_EA) {
+		test_skipped(T_ADV2);
 		goto test_exit;
 	}
 	

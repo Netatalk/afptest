@@ -18,8 +18,13 @@ int ret;
     fprintf(stdout,"===================\n");
 	fprintf(stdout, "FPCreateFile:test325:  recreate a file with dangling symlink and no right\n");
 
-	if ((!Path && !Mac) || (adouble == AD_EA)) {
+	if ((!Path && !Mac)) {
         test_skipped(T_MAC_PATH);
+		goto test_exit;
+	}
+
+	if (adouble == AD_EA) { 
+       test_skipped(T_ADV2);
 		goto test_exit;
 	}
 

@@ -154,63 +154,6 @@ test_exit:
 }
 
 /* ------------------------- */
-STATIC void test322()
-{
-char *name1 = "t322 file.tif";
-char *name2 = "t322 file.TIF";
-int  dir;
-u_int16_t vol = VolID, vol2;
-int id,id1;
-
-	enter_test();
-    fprintf(stdout,"===================\n");
-    fprintf(stdout,"FPMoveAndRename:test322: file across multiple device\n");
-    fprintf(stdout,"Names and devices differ but inodes are the same\n");
-
-	if (!Mac && (!Path || !Vol2 || !Conn2)) {
-		test_skipped(T_MAC_PATH);
-		goto test_exit;
-	}
-	vol2  = FPOpenVol(Conn2, Vol2);
-	if (vol2 == 0xffff) {
-		nottested();
-		goto test_exit;
-	}
-	
-	dir = DIRDID_ROOT;
-	FAIL (FPCreateFile(Conn, vol,  0, dir , name1))
-
-	id = get_fid(Conn, vol, dir , name1);     
-	fprintf (stdout, "ID for %s --> %x\n", name1, ntohl(id));
-
-	if (!Mac) {
-		sprintf(temp, "%s/%s", Path, name1);
-		sprintf(temp1,"%s/%s", Path, name2);
-		fprintf (stdout, "rename %s --> %s\n", temp, temp1);
-		if (rename(temp, temp1) < 0) {
-			fprintf(stdout,"\tFAILED unable to rename %s to %s :%s\n", temp, temp1, strerror(errno));
-			failed_nomsg();
-		}
-	}
-	else {
-		FAIL (FPMoveAndRename(Conn2, vol2, DIRDID_ROOT, dir, name1, name2))
-	}
-	id1 = get_fid(Conn2, vol2, dir , name2);
-	if (id != id1) {
-		fprintf(stdout,"\tFAILED id are not the same %x %x\n", ntohl(id), ntohl(id1));
-		failed_nomsg();
-	}
-	id1 = get_fid(Conn, vol, dir , name2);
-
-	FAIL (FPDelete(Conn2, vol2,  dir , name2))
-	FAIL (FPCloseVol(Conn2, vol2))
-	/* play safe ? */
-	FPDelete(Conn, vol,  dir, name1);
-test_exit:
-	exit_test("test322");
-}
-
-/* ------------------------- */
 STATIC void test323()
 {
 char *name  = "t323 dir";
@@ -347,7 +290,6 @@ void FPMoveAndRename_test()
     test136();
     test137();
     test139();
-    test322();
     test323();
     test365();
 }

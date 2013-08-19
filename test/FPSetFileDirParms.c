@@ -606,8 +606,7 @@ DSI *dsi;
     fprintf(stdout,"FPSetFileDirParms:t347: no unix access privilege \n");
 
 	if ((get_vol_attrib(vol) & VOLPBIT_ATTR_UNIXPRIV)) {
-		fprintf(stdout,"\tSKIPPED (need %s)\n","a no unix priv vol");
-		skipped_nomsg();
+		test_skipped(T_NO_UNIX_PREV);
 		goto test_exit;
 	}
 

@@ -42,6 +42,7 @@ struct sigaction action;
 		test_skipped(T_LOCKING);
 		goto test_exit;
 	}
+
 	fprintf(stdout,"\tSKIPPED, FIXME need to recheck GetSessionToken 0\n");
 	skipped_nomsg();
 	goto test_exit;
@@ -483,9 +484,12 @@ struct afp_filedir_parms filedir;
 		goto test_exit;
 	}
 
+#if 0
 	fprintf(stdout,"\tSKIPPED, FIXME need to recheck GetSessionToken 0\n");
 	skipped_nomsg();
 	goto test_exit;
+#endif
+
     /* setup 2 new connections for testing */
 
     if ((loc_conn1 = (CONN *)calloc(1, sizeof(CONN))) == NULL) {
@@ -585,22 +589,27 @@ struct afp_filedir_parms filedir;
 		nottested();
 		goto fin;
     }
-    FAIL(ntohl(AFPERR_SESSCLOS) != FPDisconnectOldSession(loc_conn2, 0, len, token))
-    sleep(1);
-    ret = FPGetSessionToken(loc_conn2, 4, time, strlen(id1), id1);
-    sleep(1);
 
-	fork = FPOpenFork(loc_conn1, vol1, OPENFORK_RSCS , 0 , dir, name, OPENACC_WR |OPENACC_RD |OPENACC_DWR| OPENACC_DRD);
-    if ( fork ) {
-		FAIL (FPCloseFork(loc_conn1, fork))
-    	failed();
-    }
+    FAIL(ntohl(AFPERR_MISC) != FPDisconnectOldSession(loc_conn2, 0, len, token))
+
     action.sa_handler = SIG_DFL;
     sigemptyset(&action.sa_mask);
     action.sa_flags = SA_RESTART;
     if ((sigaction(SIGPIPE, &action, NULL) < 0)) {
 		nottested();
     }
+
+    sleep(1);
+    ret = FPGetSessionToken(loc_conn2, 4, time, strlen(id1), id1);
+    sleep(1);
+
+	fork = FPOpenFork(loc_conn1, vol1, OPENFORK_RSCS , 0 , dir, name, OPENACC_WR |OPENACC_RD |OPENACC_DWR| OPENACC_DRD);
+    if ( !fork )
+    	failed();
+
+	FAIL (FPCloseFork(loc_conn1, fork))
+
+
 fin:
     FAIL (FPDelete(Conn, vol,  dir, name))
     FAIL (FPDelete(Conn, vol,  dir, ""))
@@ -614,7 +623,7 @@ void FPDisconnectOldSession_test()
 {
     fprintf(stdout,"===================\n");
     fprintf(stdout,"FPDisconnectOldSession page 148\n");
-    test222();
+//    test222();
     test338();
     test339();
     test370();

@@ -773,6 +773,9 @@ void test_skipped(int why)
 	case T_AFP2:
 		s = "< AFP 3.0";
 		break;
+	case T_AFP30:
+		s = "AFP 3.0";
+		break;
 	case T_AFP3:
 		s = "AFP 3.x";
 		break;
@@ -783,13 +786,16 @@ void test_skipped(int why)
 		s = "-m (Mac server) or the volume path";
 		break;
 	case T_UNIX_PREV:
-		s =" Volume with unix privilege";
+		s ="volume with unix privilege";
+		break;
+	case T_NO_UNIX_PREV:
+		s ="volume without UNIX privileges";
 		break;
 	case T_UNIX_GROUP:
-		s =" server and client same groups mapping";
+		s ="server and client same groups mapping";
 		break;
 	case T_UTF8:
-		s = "Volume with UTF8 encoding";
+		s = "volume with UTF8 encoding";
 		break;
 	case T_VOL2:
 		s = "a second volume";
@@ -814,6 +820,9 @@ void test_skipped(int why)
 		break;
 	case T_ADEA:
 		s = "Netatalk 3 and volume with adouble:ea";
+		break;
+	case T_ADV2:
+		s = "adouble:v2 volume";
 		break;
 	case T_NOSYML:
 		s = "volume without option 'followsymlinks'";

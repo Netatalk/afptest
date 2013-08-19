@@ -28,7 +28,7 @@ u_int16_t vol = VolID;
     fprintf(stdout,"===================\n");
     fprintf(stdout,"FPGetSessionToken:test220: AFP 3.0 get session token\n");
 	if (Conn->afp_version != 30) {
-		test_skipped(T_AFP3);
+		test_skipped(T_AFP30);
 		goto test_exit;
 	}
 

@@ -375,6 +375,7 @@ int offset;
 int quantum;
 struct sigaction action;    
 struct itimerval    it;     
+CONN *myconn;
 
 	dsi = &Conn->dsi;
 	sock = -1;
@@ -384,11 +385,6 @@ struct itimerval    it;
 	if (quantum < size) {
 		fprintf(stdout,"\t server quantum (%d) too small\n", quantum);
 		nottested();
-		return;
-	}
-	if (Conn2) {
-		fprintf(stdout,"\tSKIPPED (need %s)\n"," only one client");
-		skipped_nomsg();
 		return;
 	}
 
@@ -413,12 +409,12 @@ struct itimerval    it;
 		nottested();
 		goto fin;
 	}
-    if ((Conn2 = (CONN *)calloc(1, sizeof(CONN))) == NULL) {
+    if ((myconn = (CONN *)calloc(1, sizeof(CONN))) == NULL) {
     	nottested();
     	goto fin;
 	}
-	Conn2->type = Proto;
-    dsi2 = &Conn2->dsi;
+	myconn->type = Proto;
+    dsi2 = &myconn->dsi;
 	sock = OpenClientSocket(Server, Port);
     if ( sock < 0) {
     	nottested();
@@ -426,27 +422,27 @@ struct itimerval    it;
     }
     dsi2->protocol = DSI_TCPIP; 
 	dsi2->socket = sock;
-	ret = FPopenLogin(Conn2, vers, uam, User, Password);
+	ret = FPopenLogin(myconn, vers, uam, User, Password);
 	if (ret) {
     	nottested();
     	goto fin;
 	}
-	vol2 = VolID  = FPOpenVol(Conn2, Vol);
+	vol2 = VolID  = FPOpenVol(myconn, Vol);
 	if (vol2 == 0xffff) {
     	nottested();
 	    goto fin;
 	}
-	fork = FPOpenFork(Conn2, vol2, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR|OPENACC_RD );
+	fork = FPOpenFork(myconn, vol2, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name,OPENACC_WR|OPENACC_RD );
 	if (!fork) {
 		failed();
 		goto fin;
 	}
-	fork1 = FPOpenFork(Conn2, vol2, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name1,OPENACC_WR|OPENACC_RD );
+	fork1 = FPOpenFork(myconn, vol2, OPENFORK_DATA , bitmap ,DIRDID_ROOT, name1,OPENACC_WR|OPENACC_RD );
 	if (!fork1) {
 		failed();
 		goto fin;
 	}
- 	FAIL (FPSetForkParam(Conn2, fork, (1<<FILPBIT_DFLEN), 10*128*1024))
+ 	FAIL (FPSetForkParam(myconn, fork, (1<<FILPBIT_DFLEN), 10*128*1024))
 
 	offset = 0;
 	FAIL (FPReadHeader(dsi2, fork, offset, size, Data))
@@ -516,11 +512,11 @@ fin:
 		sleep(5);
 	}
 	else {
-		if (fork1) FPCloseFork(Conn2,fork1);
-		if (fork) FPCloseFork(Conn2,fork);
+		if (fork1) FPCloseFork(myconn,fork1);
+		if (fork) FPCloseFork(myconn,fork);
 	}
-	free(Conn2);
-	Conn2 = NULL;
+	free(myconn);
+	myconn = NULL;
 	
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name1))
 	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))

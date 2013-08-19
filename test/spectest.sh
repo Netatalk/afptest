@@ -22,9 +22,10 @@ if [ ! -f spectest.conf ] ; then
 # USER2=
 # PASSWD=
 #
-# *** volume with adouble:ea
-# VOLUME=
-# LOCALVOLPATH=
+# *** volumes with adouble:ea
+# VOLUME1=
+# LOCALVOL1PATH=
+# VOLUME2=
 
 # AFPVERSION: 3 = AFP 3.0, 4 = AFP 3.1, 5 = AFP 3.2
 # AFPVERSION=5
@@ -38,44 +39,46 @@ fi
 . ./spectest.conf
 
 # cleanup
-if test ! -z "$LOCALVOLPATH" ; then
-    rm -rf "$LOCALVOLPATH"/t*
+if test ! -z "$LOCALVOL1PATH" ; then
+    rm -rf "$LOCALVOL1PATH"/t*
 fi
 
-if [ ! -z "$VOLUME" -a ! -z "$LOCALVOLPATH" ] ; then
-
-    rm -f spectest.log
-
-##
-    printf "Running spectest with two users..."
-    ./spectest -"$AFPVERSION" -h "$AFPSERVER" -p "$AFPPORT" -u "$USER1" -d "$USER2" -w "$PASSWD" -s "$VOLUME"  >> spectest.log 2>&1
-    check_return
-
-##
-    printf "Running spectest with local filesystem modifications..."
-    ./T2_spectest -"$AFPVERSION" -h "$AFPSERVER" -p "$AFPPORT" -u "$USER1" -d "$USER2" -w "$PASSWD" -s "$VOLUME" -c "$LOCALVOLPATH" >> spectest.log 2>&1
-    check_return
-
-    echo
-    echo Failed tests
-    grep "summary.*FAIL" spectest.log | sed s/test//g | sort -n | uniq
-    echo =====================================
-
-    echo
-    echo Skipped tests
-    egrep 'summary.*NOT TESTED|summary.*SKIPPED' spectest.log | sed s/test//g | sort -n | uniq
-    echo =====================================
-
-    echo
-    echo Successfull tests
-    grep "summary.*PASSED" spectest.log | sed s/test//g | sort -n | uniq
-    echo =====================================
-
+if [ -z "$VOLUME1" -o -z "$VOLUME2" -o -z "$LOCALVOL1PATH" ] ; then
+    echo Need two volumes and the local path to volume1
+    exit 1
 fi
+
+rm -f spectest.log
+
+##
+printf "Running spectest with two users..."
+./spectest -"$AFPVERSION" -h "$AFPSERVER" -p "$AFPPORT" -u "$USER1" -d "$USER2" -w "$PASSWD" -s "$VOLUME1"  -S "$VOLUME2" >> spectest.log 2>&1
+check_return
+
+##
+printf "Running spectest with local filesystem modifications..."
+./T2_spectest -"$AFPVERSION" -h "$AFPSERVER" -p "$AFPPORT" -u "$USER1" -d "$USER2" -w "$PASSWD" -s "$VOLUME1" -S "$VOLUME2" -c "$LOCALVOL1PATH" >> spectest.log 2>&1
+check_return
+
+echo =====================================
+echo Failed tests
+echo ––––––––––––
+grep "summary.*FAIL" spectest.log | sed s/test//g | sort -n | uniq
+echo =====================================
+
+echo Skipped tests
+echo –––––––––––––
+egrep 'summary.*NOT TESTED|summary.*SKIPPED' spectest.log | sed s/test//g | sort -n | uniq
+echo =====================================
+
+echo Successfull tests
+echo –––––––––––––––––
+grep "summary.*PASSED" spectest.log | sed s/test//g | sort -n | uniq
+echo =====================================
 
 # cleanup
-if test ! -z "$LOCALVOLPATH" ; then
-    rm -rf "$LOCALVOLPATH"/t*
+if test ! -z "$LOCALVOL1PATH" ; then
+    rm -rf "$LOCALVOL1PATH"/t*
 fi
 
 exit $ret
