@@ -756,11 +756,13 @@ int not_valid_bitmap(unsigned int ret, unsigned int bitmap, int netatalk_error)
 
 static int CurTestResult;
 static char *Why;
+#define SKIPPED_MSG_BUFSIZE 256
+static char skipped_msg_buf[SKIPPED_MSG_BUFSIZE];
 
 /* ------------------------- */
 void test_skipped(int why) 
 {
-char *s;
+    char *s;
 	switch(why) {
 	case T_CONN2:
 		s = "second user";
@@ -817,7 +819,7 @@ char *s;
 		s = "volume without option 'followsymlinks'";
 		break;
 	}
-	fprintf(stdout,"\tSKIPPED (need %s)\n",s);
+	snprintf(skipped_msg_buf, sizeof(skipped_msg_buf), "SKIPPED (need %s)", s);
 	CurTestResult = 3;
 }
 
@@ -891,7 +893,7 @@ void exit_test(char *name)
 		s = "NOT TESTED";
 		break;
 	case 3:
-		s = "SKIPPED";
+		s = skipped_msg_buf;
 		break;
 	}
 	fprintf(stdout, "%s - summary - ", name);
