@@ -1428,13 +1428,12 @@ test_exit:
 STATIC void test431()
 {
     char *name  = "resource_fork_conversion_test";
-    u_int16_t bitmap = 0;
     int fork1 = 0;
     u_int16_t vol = VolID;
     char cmd[8192];
     char *teststring = "test\n";
     int  ofs =  3 * sizeof( u_int16_t );
-    struct afp_filedir_parms filedir;
+    struct afp_filedir_parms filedir = { 0 };
     DSI *dsi = &Conn->dsi;
 
 	enter_test();
@@ -1487,7 +1486,7 @@ STATIC void test431()
 		goto fin;
     }
 
-	if ((fork1 = FPOpenFork(Conn, vol, OPENFORK_RSCS, bitmap, DIRDID_ROOT, name, OPENACC_WR|OPENACC_RD)) == 0) {
+	if ((fork1 = FPOpenFork(Conn, vol, OPENFORK_RSCS, (1<<FILPBIT_FINFO), DIRDID_ROOT, name, OPENACC_WR|OPENACC_RD)) == 0) {
 		failed();
 		goto fin;
 	}
@@ -1500,15 +1499,11 @@ STATIC void test431()
 		goto fin;
     }
 
-	bitmap = (1<< DIRPBIT_ATTR) |  (1<<DIRPBIT_ATTR) | (1<<FILPBIT_FINFO) |
-	         (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE) |
-		     (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID);
-
-	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, bitmap,0)) {
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, (1<<FILPBIT_FINFO), 0)) {
 		failed();
 	}
 
-    afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+    afp_filedir_unpack(&filedir, dsi->data + 6, (1<<FILPBIT_FINFO), 0);
     if (memcmp(filedir.finder_info, "TEXTTEST", 8)) {
         fprintf(stdout,"FAILED - bad type/creator\n");
         failed_nomsg();
