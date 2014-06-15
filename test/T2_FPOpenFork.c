@@ -1424,6 +1424,87 @@ test_exit:
 	exit_test("test238");
 }
 
+/* ------------------------- */
+STATIC void test431()
+{
+    char *name  = "resource_fork_conversion_test";
+    u_int16_t bitmap = 0;
+    int fork1 = 0;
+    u_int16_t vol = VolID;
+    char cmd[8192];
+
+	enter_test();
+    fprintf(stdout,"===================\n");
+    fprintf(stdout,"FPOpenFork:test431: check AppleDouble conversion from v2 to ea\n");
+
+	if (!Mac && !Path) {
+		test_skipped(T_MAC_PATH);
+		goto test_exit;
+	}
+
+    /* touch resource_fork_conversion_test base file */
+    if (snprintf(cmd, sizeof(cmd), "touch %s/resource_fork_conversion_test", Path) > sizeof(cmd)) {
+        fprintf(stdout,"FPOpenFork:test431: path too long\n");
+		failed();
+		goto fin;
+    }
+    if (system(cmd) != 0) {
+		failed();
+		goto fin;
+    }
+
+    /* Create .AppleDouble directory */
+    if (snprintf(cmd, sizeof(cmd), "%s/.AppleDouble", Path) > sizeof(cmd)) {
+        fprintf(stdout,"FPOpenFork:test431: path too long\n");
+		failed();
+		goto fin;
+    }
+    if (mkdir(cmd, 0777) != 0 && errno != EEXIST) {
+		failed();
+		goto fin;
+    }
+
+    /* Copy resource fork */
+    if (snprintf(cmd, sizeof(cmd), "cp data/resource_fork_conversion_test %s/.AppleDouble/", Path) > sizeof(cmd)) {
+        fprintf(stdout,"FPOpenFork:test431: path too long\n");
+		failed();
+		goto fin;
+    }
+    if (system(cmd) != 0) {
+		failed();
+		goto fin;
+    }
+
+    /* Enumerating should convert it */
+	if (FPEnumerate_ext2(Conn, vol,  DIRDID_ROOT , "",
+                         (1 << FILPBIT_EXTDFLEN) | (1 << FILPBIT_EXTRFLEN),
+                         (1 << DIRPBIT_PDINFO ) | (1 << DIRPBIT_OFFCNT))) {
+		failed();
+		goto fin;
+    }
+
+	if ((fork1 = FPOpenFork(Conn, vol, OPENFORK_RSCS, bitmap, DIRDID_ROOT, name, OPENACC_WR|OPENACC_RD)) == 0) {
+		failed();
+		goto fin;
+	}
+
+	FAIL (FPRead(Conn, fork1, 0, 32, Data))
+
+    if (memcmp(Data, "Fri Jun 13 11:24:42 EDT 2014 rsc", 32) != 0) {
+        fprintf(stdout,"FPOpenFork:test431: conversion failed\n");
+		failed();
+		goto fin;
+    }
+
+fin:
+    if (fork1)
+        FPCloseFork(Conn, fork1);
+	FAIL (FPDelete(Conn, vol,  DIRDID_ROOT, name))
+test_exit:
+	exit_test("test431");
+}
+
+
 /* ----------- */
 void FPOpenFork_test()
 {
@@ -1447,4 +1528,5 @@ void FPOpenFork_test()
     test236();
     test237();
     test238();
+    test431();
 }
