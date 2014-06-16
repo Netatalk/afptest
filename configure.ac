@@ -26,6 +26,7 @@ AC_CHECK_HEADERS([byteswap.h fcntl.h strings.h sys/fcntl.h unistd.h sys/cdefs.h]
 AC_CHECK_LIB(dl, dlopen)
 AC_CHECK_LIB(nsl, main)
 AC_CHECK_LIB(socket, socket)
+AC_CHECK_LIB(pthread, pthread_create)
 AC_CHECK_FUNC(attropen, AC_DEFINE(HAVE_EAFD, 1, [Platform has seekable extended attributes fds]))
 AC_CHECK_FUNCS(strlcpy strlcat)
 
