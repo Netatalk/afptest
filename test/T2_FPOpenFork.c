@@ -1432,6 +1432,7 @@ STATIC void test431()
     int fork1 = 0;
     u_int16_t vol = VolID;
     char cmd[8192];
+    char *teststring = "test\n";
 
 	enter_test();
     fprintf(stdout,"===================\n");
@@ -1488,9 +1489,9 @@ STATIC void test431()
 		goto fin;
 	}
 
-	FAIL (FPRead(Conn, fork1, 0, 32, Data))
+	FAIL (FPRead(Conn, fork1, 0, strlen(teststring), Data))
 
-    if (memcmp(Data, "Fri Jun 13 11:24:42 EDT 2014 rsc", 32) != 0) {
+    if (memcmp(Data, teststring, strlen(teststring)) != 0) {
         fprintf(stdout,"FPOpenFork:test431: conversion failed\n");
 		failed();
 		goto fin;
