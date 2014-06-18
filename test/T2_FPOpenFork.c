@@ -1433,6 +1433,9 @@ STATIC void test431()
     u_int16_t vol = VolID;
     char cmd[8192];
     char *teststring = "test\n";
+    int  ofs =  3 * sizeof( u_int16_t );
+    struct afp_filedir_parms filedir;
+    DSI *dsi = &Conn->dsi;
 
 	enter_test();
     fprintf(stdout,"===================\n");
@@ -1495,6 +1498,20 @@ STATIC void test431()
         fprintf(stdout,"FPOpenFork:test431: conversion failed\n");
 		failed();
 		goto fin;
+    }
+
+	bitmap = (1<< DIRPBIT_ATTR) |  (1<<DIRPBIT_ATTR) | (1<<FILPBIT_FINFO) |
+	         (1<<DIRPBIT_CDATE) | (1<<DIRPBIT_BDATE) | (1<<DIRPBIT_MDATE) |
+		     (1<< DIRPBIT_LNAME) | (1<< DIRPBIT_PDID);
+
+	if (FPGetFileDirParams(Conn, vol,  DIRDID_ROOT , name, bitmap,0)) {
+		failed();
+	}
+
+    afp_filedir_unpack(&filedir, dsi->data +ofs, bitmap, 0);
+    if (memcmp(filedir.finder_info, "TEXTTEST", 8)) {
+        fprintf(stdout,"FAILED - bad type/creator\n");
+        failed_nomsg();
     }
 
 fin:
