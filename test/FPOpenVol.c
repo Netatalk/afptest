@@ -40,7 +40,7 @@ char *tp;
 	*tp = *tp +1;
     ret = FPOpenVol(Conn, tp);
 	free(tp);
-    if (ret != 0xffff || dsi->header.dsi_code != htonl(AFPERR_PARAM)) {
+    if (ret != 0xffff || dsi->header.dsi_code != htonl(AFPERR_NOOBJ)) {
 		failed();    
     }
 	if (ret != 0xffff) {
