@@ -15,6 +15,7 @@
 
 /* Defines */
 #define FAIL(a) if ((a)) { failed();}
+#define EXPECT_FAIL(a, b) do { int _experr;  _experr = (a); if (htonl(_experr) != (b)) { failed(); } } while(0);
 #define FAILEXIT(a, label) if ((a)) { failed(); goto label;}
 #define STATIC 
 
