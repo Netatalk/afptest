@@ -1,6 +1,7 @@
 /* ----------------------------------------------
 */
 #include "specs.h"
+#include <inttypes.h>
 
 /* ------------------------- */
 STATIC void test398()
@@ -107,6 +108,8 @@ STATIC void test432()
 	char *file="test432_file";
 	char *attr_name="test432_attribute";
 	int ret;
+	uint32_t attrlen;
+	char *attrdata = "1234567890";
 
 	dsi = &Conn->dsi;
 
@@ -130,7 +133,7 @@ STATIC void test432()
 		goto test_exit;
 	}
 
-	FAIL(FPSetExtAttr(Conn,vol, DIRDID_ROOT, 2, file, attr_name, "1234567890"))
+	FAIL(FPSetExtAttr(Conn,vol, DIRDID_ROOT, 2, file, attr_name, attrdata))
 
 	/*
 	 * The xattr we set is 10 bytes large. The req_count must be
@@ -148,7 +151,13 @@ STATIC void test432()
 	EXPECT_FAIL( FPGetExtAttr(Conn,vol, DIRDID_ROOT , 0, 15, file, attr_name), AFPERR_PARAM );
 
 	FAIL( FPGetExtAttr(Conn,vol, DIRDID_ROOT , 0, 16, file, attr_name) );
+
 	FAIL( FPGetExtAttr(Conn,vol, DIRDID_ROOT , 0, 17, file, attr_name) );
+	memcpy(&attrlen, dsi->data + 2, 4);
+	attrlen = ntohl(attrlen);
+	if (attrlen != strlen(attrdata)) {
+		failed;
+	}
 
 	FPDelete(Conn, vol,  DIRDID_ROOT , file);
 
