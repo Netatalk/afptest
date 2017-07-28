@@ -410,6 +410,9 @@ int cc;
             usage( av[ 0 ] );
         }
     }
+	Loglevel = AFP_LOG_INFO;
+	Color = 1;
+
 	if (List) {
 		list_tests();
 		exit (2);

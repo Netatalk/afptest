@@ -11,6 +11,7 @@
 #include <signal.h>  
 
 #include "afpclient.h"
+#include "afphelper.h"
 #include "test.h"
 
 /* Defines */
@@ -54,6 +55,7 @@ extern ssize_t get_sessiontoken(const char *buf, char **token);
 
 extern void failed_nomsg(void);
 extern void skipped_nomsg(void);
+extern void nottested_nomsg(void);
 extern void failed(void);
 extern void known_failure(char *why);
 extern void enter_test(void);

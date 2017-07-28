@@ -1,6 +1,9 @@
 /* ----------------------------------------------
 */
+#include <stdarg.h>
+
 #include "specs.h"
+#include "afphelper.h"
 
 /* -------------------------- */
 #if 0
@@ -14,6 +17,9 @@ AFP_FLUSHFORK,
 AFP_WRITE,
 };
 #endif
+
+int Loglevel = AFP_LOG_INFO;
+int Color = 1;
 
 /*!
  * Helper for FPGetSessionToken, extracts token from reply buffer
@@ -846,6 +852,13 @@ void skipped_nomsg(void)
 		ExitCode = 3;
 	CurTestResult = 3;
 }
+/* ------------------------- */
+void nottested_nomsg(void)
+{
+	if (!ExitCode)
+		ExitCode = 2;
+	CurTestResult = 2;
+}
 
 /* ------------------------- */
 void failed(void)
@@ -858,9 +871,7 @@ void failed(void)
 void nottested(void)
 {
 	fprintf(stdout,"\tNOT TESTED\n");
-	if (!ExitCode)
-		ExitCode = 2;
-	CurTestResult = 2;
+	nottested_nomsg();
 }
 
 /* ------------------------- */
@@ -886,11 +897,19 @@ void exit_test(char *name)
 
 	switch (CurTestResult) {
 	case 0:
-		s = "PASSED";
+		if (Color) {
+			s = ANSI_BGREEN "PASSED" ANSI_NORMAL;
+		} else {
+			s = "PASSED";
+		}
 		break;
 	case 4:
 	case 1:
-		s = "FAILED";
+		if (Color) {
+			s = ANSI_BRED "FAILED" ANSI_NORMAL;
+		} else {
+			s = "FAILED";
+		}
         fprintf(stderr, "%s - summary - ", name);
         fprintf(stderr, "%s%s (%d)\n", s, Why, CurTestResult);
         fflush(stderr);
@@ -899,7 +918,11 @@ void exit_test(char *name)
         fflush(stdout);
 		return;
 	case 2:
-		s = "NOT TESTED";
+		if (Color) {
+			s = ANSI_BYELLOW "NOT TESTED" ANSI_NORMAL;
+		} else {
+			s = "NOT TESTED";
+		}
 		break;
 	case 3:
 		s = skipped_msg_buf;
@@ -908,4 +931,118 @@ void exit_test(char *name)
 	fprintf(stdout, "%s - summary - ", name);
 	fprintf(stdout, "%s%s (%d)\n", s, Why, CurTestResult);
     fflush(stdout);
+}
+
+static void afp_print_prefix(int level, int color)
+{
+	if (color) {
+		switch(level) {
+		case AFP_LOG_WARNING:
+			printf(ANSI_BYELLOW);
+			break;
+		case AFP_LOG_ERROR:
+		case AFP_LOG_CRITICAL:
+			printf(ANSI_BRED);
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+static void afp_print_postfix(int level, int color)
+{
+	if (color) {
+		switch(level) {
+		case AFP_LOG_WARNING:
+		case AFP_LOG_ERROR:
+		case AFP_LOG_CRITICAL:
+			printf(ANSI_NORMAL);
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+void afp_printf(int level, int loglevel, int color, const char* fmt, ...)
+{
+	va_list arg;
+	if ((level >= AFP_LOG_MAX) || (level < AFP_LOG_DEBUG)) {
+		return;
+	}
+	if (level < loglevel) {
+		return;
+	}
+
+	afp_print_prefix(level, color);
+	va_start(arg, fmt);
+	vfprintf(stdout, fmt, arg);
+	va_end(arg);
+
+	afp_print_postfix(level, color);
+}
+
+void assert_equal(intmax_t expect, intmax_t real, const char *file, int line, void (*fn)(), int log_level)
+{
+	if (expect != real) {
+		AFP_PRINTF(log_level, "%s:%d expected %" PRIdMAX ", got %" PRIdMAX "\n", file, line, expect, real);
+		fn();
+	}
+}
+
+void assert_equal_u(uintmax_t expect, uintmax_t real, const char *file, int line, void (*fn)(), int log_level)
+{
+	if (expect != real) {
+		AFP_PRINTF(log_level, "%s:%d expected %" PRIuMAX ", got %" PRIuMAX "\n", file, line, expect, real);
+		fn();
+	}
+}
+
+void assert_not_equal(intmax_t expect, intmax_t real, const char *file, int line, void (*fn)(), int log_level)
+{
+	if (expect == real) {
+		AFP_PRINTF(log_level, "%s:%d should not be %" PRIdMAX "\n", file, line, real);
+		fn();
+	}
+}
+
+void assert_not_equal_u(uintmax_t expect, intmax_t real, const char *file, int line, void (*fn)(), int log_level)
+{
+	if (expect == real) {
+		AFP_PRINTF(log_level, "%s:%d should not be %" PRIuMAX "\n", file, line, real);
+		fn();
+	}
+}
+
+void assert_null(const void *real, const char *file, int line, void (*fn)(), int log_level)
+{
+	if (real != NULL) {
+		AFP_PRINTF(log_level, "%s:%d should be NULL\n", file, line);
+		fn();
+	}
+}
+
+void assert_not_null(const void *real, char *file, int line, void (*fn)(), int log_level)
+{
+	if (real == NULL) {
+		AFP_PRINTF(log_level, "%s:%d should not be NULL\n", file, line);
+		fn();
+	}
+}
+
+void assert_true(int real, char *file, int line, void (*fn)(), int log_level)
+{
+	if (!real) {
+		AFP_PRINTF(log_level, "%s:%d should be true\n", file, line);
+		fn();
+	}
+}
+
+void assert_false(int real, char *file, int line, void (*fn)(), int log_level)
+{
+	if (real) {
+		AFP_PRINTF(log_level, "%s:%d should be false\n", file, line);
+		fn();
+	}
 }

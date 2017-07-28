@@ -137,3 +137,5 @@ extern int Quirk;
 extern int Verbose;
 extern int Quiet;
 extern int Locking;
+extern int Loglevel;
+extern int Color;
