@@ -8,6 +8,7 @@
 int Verbose = 0;
 int Interactive = 0;
 int Quirk = 0;
+int Quiet = 1;
 
 u_int16_t VolID;
 static DSI *dsi;
@@ -401,6 +402,7 @@ int cc;
             break;
 	case 'v':
 		Verbose = 1;
+		Quiet = 0;
 		break;
 	case 'i':
 		Interactive = 1;
