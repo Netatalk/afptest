@@ -59,6 +59,8 @@ Versions:
 #include <stdlib.h>
 #include <time.h>
 #include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
 
 #define PM_VERSION "v1.51 : 8/14/01"
 
