@@ -944,6 +944,63 @@ int subdirs;
       }
 }
 
+/* parse CLI input line */
+int cli_parse_line(buffer)
+char *buffer; /* line of user input */
+{
+   int result=1; /* default return status */
+   int len; /* length of parsed command */
+   int i; /* traversal variable for command table */
+
+   if (*buffer=='!') /* check for shell escape */
+      system((strlen(buffer)>1)?buffer+1:getenv("SHELL"));
+   else
+      {
+      for (i=0; command_list[i].name; i++) /* walk command table */
+         if (!strncmp(command_list[i].name,buffer,
+            len=strlen(command_list[i].name)))
+            { /* if command matches... */
+            result=(command_list[i].func)
+               (((int)strlen(buffer)>len)?buffer+len+1:NULL);
+            break; /* call function and pass remainder of line as parameter */
+            }
+
+      if (!command_list[i].name) /* if no commands were called... */
+         printf("Eh?\n"); /* tribute to Canadian diction */
+      }
+
+   return(result); /* return 1 unless exit requested, then return 0 */
+}
+
+/* read config file if present and process it line by line
+   - if 'quit' is in file then function returns 0 */
+int read_config_file(filename,buffer,ignore)
+char *filename; /* file name of config file */
+char *buffer;   /* temp storage for each line read from file */
+int ignore;     /* ignore file not found */
+{
+   int result=1; /* default exit value - proceed with UI */
+   FILE *fp;
+
+   if (fp=fopen(filename,"r")) /* open config file */
+      {
+      printf("Reading configuration from file '%s'\n",filename);
+      while (fgets(buffer,MAX_LINE,fp) && result) /* read lines until 'quit' */
+         {
+         buffer[strlen(buffer)-1]='\0'; /* delete final CR */
+         result=cli_parse_line(buffer); /* process line as typed in */
+         }
+
+      fclose(fp);
+      }
+   else
+      if (!ignore)
+         fprintf(stderr,"Error: cannot read configuration file '%s'\n",
+            filename); 
+
+   return(result);
+}
+
 /* CLI callback for 'run' - benchmark execution loop */
 int cli_run(param) /* none */
 char *param; /* unused */
@@ -1163,63 +1220,6 @@ int size;
       }
 
    return(result);                      /* return success of fgets */
-}
-
-/* parse CLI input line */
-int cli_parse_line(buffer)
-char *buffer; /* line of user input */
-{
-   int result=1; /* default return status */
-   int len; /* length of parsed command */
-   int i; /* traversal variable for command table */
-
-   if (*buffer=='!') /* check for shell escape */
-      system((strlen(buffer)>1)?buffer+1:getenv("SHELL"));
-   else
-      {
-      for (i=0; command_list[i].name; i++) /* walk command table */
-         if (!strncmp(command_list[i].name,buffer,
-            len=strlen(command_list[i].name)))
-            { /* if command matches... */
-            result=(command_list[i].func)
-               (((int)strlen(buffer)>len)?buffer+len+1:NULL);
-            break; /* call function and pass remainder of line as parameter */
-            }
-
-      if (!command_list[i].name) /* if no commands were called... */
-         printf("Eh?\n"); /* tribute to Canadian diction */
-      }
-
-   return(result); /* return 1 unless exit requested, then return 0 */
-}
-
-/* read config file if present and process it line by line
-   - if 'quit' is in file then function returns 0 */
-int read_config_file(filename,buffer,ignore)
-char *filename; /* file name of config file */
-char *buffer;   /* temp storage for each line read from file */
-int ignore;     /* ignore file not found */
-{
-   int result=1; /* default exit value - proceed with UI */
-   FILE *fp;
-
-   if (fp=fopen(filename,"r")) /* open config file */
-      {
-      printf("Reading configuration from file '%s'\n",filename);
-      while (fgets(buffer,MAX_LINE,fp) && result) /* read lines until 'quit' */
-         {
-         buffer[strlen(buffer)-1]='\0'; /* delete final CR */
-         result=cli_parse_line(buffer); /* process line as typed in */
-         }
-
-      fclose(fp);
-      }
-   else
-      if (!ignore)
-         fprintf(stderr,"Error: cannot read configuration file '%s'\n",
-            filename); 
-
-   return(result);
 }
 
 /* main function - reads config files then enters get line/parse line loop */
