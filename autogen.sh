@@ -1,7 +1,13 @@
 #!/bin/sh
 
+LIBTOOLIZE=libtoolize
+SYSNAME=`uname`
+if [ "x$SYSNAME" = "xDarwin" ] ; then
+  LIBTOOLIZE=glibtoolize
+fi
+
 # build it all.
-libtoolize --copy --force && \
+$LIBTOOLIZE --copy --force && \
 	aclocal -I macros $ACLOCAL_FLAGS && \
 	autoheader && \
 	automake --include-deps --add-missing --foreign && \

@@ -11,7 +11,7 @@ libafptest_la_SOURCES = afpcli.c afpcmd.c afphelper.c adoublehelper.c extattr.c 
 afparg_SOURCES = afparg.c afparg_FPfuncs.c
 afparg_LDADD = libafptest.la
 
-postmark_SOURCES = postmark-1_5.c
+postmark_SOURCES = postmark.c
 postmark_LDFLAGS = -export-dynamic
 postmark_LDADD = libafptest.la
 
