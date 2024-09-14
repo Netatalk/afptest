@@ -139,3 +139,4 @@ extern int Quiet;
 extern int Locking;
 extern int Loglevel;
 extern int Color;
+extern int Interactive;

@@ -9,7 +9,7 @@
 #include <stdint.h>
 
 
-int Quiet;
+// int Quiet;
 
 /* -------------------------------------------*/
 static char *dsi_command2str[] =
