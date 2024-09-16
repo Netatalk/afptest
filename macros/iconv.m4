@@ -51,7 +51,7 @@ dnl	###########
 dnl	# check if iconv needs const
   	if test x"$cv_HAVE_USABLE_ICONV" = x"yes"; then
     		AC_CACHE_VAL(am_cv_proto_iconv, [
-      		AC_TRY_COMPILE([
+    		AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 		#include <stdlib.h>
 		#include <iconv.h>
 		extern
@@ -63,7 +63,7 @@ dnl	# check if iconv needs const
 		#else
 		size_t iconv();
 		#endif
-		], [], am_cv_proto_iconv_arg1="", am_cv_proto_iconv_arg1="const")
+		]],[[]])],[am_cv_proto_iconv_arg1=""],[am_cv_proto_iconv_arg1="const"])
 	      	am_cv_proto_iconv="extern size_t iconv (iconv_t cd, $am_cv_proto_iconv_arg1 char * *inbuf, size_t *inbytesleft, char * *outbuf, size_t *outbytesleft);"])
     		AC_DEFINE_UNQUOTED(ICONV_CONST, $am_cv_proto_iconv_arg1,
       			[Define as const if the declaration of iconv() needs const.])

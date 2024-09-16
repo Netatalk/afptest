@@ -2,6 +2,7 @@ Makefile
 Makefile.in
 aclocal.m4
 autom4te.cache
+compile
 config.guess
 config.h
 config.h.in
@@ -11,10 +12,17 @@ config.sub
 config.cache
 configure
 libtool
+libtool.m4
 ltmain.sh
+ltoptions.m4
+ltsugar.m4
+ltversion.m4
+lt~obsolete.m4
 stamp-h1
 depcomp
 install-sh
 missing
 *.in~
 spectest-ea.log
+test-driver
+updated

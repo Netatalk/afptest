@@ -1,11 +1,12 @@
-AC_INIT([afptest], [1.0.6])
+AC_INIT([afptest],[1.0.6])
 AC_CONFIG_SRCDIR([test/spectest.c])
 AM_INIT_AUTOMAKE(foreign)
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS(config.h)
+AC_CONFIG_MACRO_DIRS([macros])
 AM_MAINTAINER_MODE([enable])
 AC_CANONICAL_HOST
 AC_PROG_CC
-AM_PROG_LIBTOOL
+LT_INIT
 
 case "$host_os" in
 	*aix*)				this_os=aix ;;
@@ -31,11 +32,11 @@ AC_CHECK_FUNC(attropen, AC_DEFINE(HAVE_EAFD, 1, [Platform has seekable extended 
 AC_CHECK_FUNCS(strlcpy strlcat)
 
 AC_MSG_CHECKING(for bswap_64)
-AC_TRY_LINK([#if HAVE_BYTESWAP_H
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#if HAVE_BYTESWAP_H
 		 #include <byteswap.h>
-		 #endif]
-           ,[bswap_64(37);]
-           ,neta_cv_bswap_64=yes,neta_cv_bswap_64=no)
+		 #endif
+           ]], [[bswap_64(37);
+           ]])],[neta_cv_bswap_64=yes],[neta_cv_bswap_64=no])
 AC_MSG_RESULT($neta_cv_bswap_64)
 if test x"$neta_cv_bswap_64" = xyes; then
   AC_DEFINE(HAVE_BSWAP_64,1,[Define to 1 if bswap_64 is available via byteswap.h])
@@ -118,18 +119,16 @@ if test x"$ac_cv_func_getxattr" = x"yes" ; then
 	AC_CACHE_CHECK([whether xattr interface takes additional options], smb_attr_cv_xattr_add_opt, [
 		old_LIBS=$LIBS
 		LIBS="$LIBS $ACL_LIBS"
-		AC_TRY_COMPILE([
+		AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 			#include <sys/types.h>
 			#if HAVE_ATTR_XATTR_H
 			#include <attr/xattr.h>
 			#elif HAVE_SYS_XATTR_H
 			#include <sys/xattr.h>
 			#endif
-		],[
+		]], [[
 			getxattr(0, 0, 0, 0, 0, 0);
-		],
-	        [smb_attr_cv_xattr_add_opt=yes],
-		[smb_attr_cv_xattr_add_opt=no;LIBS=$old_LIBS])
+		]])],[smb_attr_cv_xattr_add_opt=yes],[smb_attr_cv_xattr_add_opt=no;LIBS=$old_LIBS])
 	])
 	if test x"$smb_attr_cv_xattr_add_opt" = x"yes"; then
 		AC_DEFINE(XATTR_ADD_OPT, 1, [xattr functions have additional options])
@@ -142,7 +141,8 @@ if test "x$neta_cv_eas_sys_found" = "xyes" ; then
    fi
 fi
 
-AC_OUTPUT([Makefile
+AC_CONFIG_FILES([Makefile
 	macros/Makefile
 	test/Makefile])
+AC_OUTPUT
 
