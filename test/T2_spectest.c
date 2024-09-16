@@ -281,11 +281,13 @@ void usage( char * av0 )
     fprintf( stdout,"\t-S\tsecond volume (default none)\n");
 
     fprintf( stdout,"\t-w\tpassword (default none)\n");
-    fprintf( stdout,"\t-2\tAFP 2.2 version (default 2.1)\n");
+    fprintf( stdout,"\t-1\tAFP 2.1 version (default)\n");
+    fprintf( stdout,"\t-2\tAFP 2.2 version\n");
     fprintf( stdout,"\t-3\tAFP 3.0 version\n");
     fprintf( stdout,"\t-4\tAFP 3.1 version\n");
     fprintf( stdout,"\t-5\tAFP 3.2 version\n");
     fprintf( stdout,"\t-6\tAFP 3.3 version\n");
+    fprintf( stdout,"\t-7\tAFP 3.4 version\n");
     fprintf( stdout,"\t-v\tverbose\n");
 
     fprintf( stdout,"\t-f\ttest to run\n");
@@ -303,12 +305,16 @@ int cc;
 static char *vers = "AFPVersion 2.1";
 static char *uam = "Cleartxt Passwrd";
 
-    while (( cc = getopt( ac, av, "iv23456ah:H:p:s:u:d:w:c:f:lmMS:L" )) != EOF ) {
+    while (( cc = getopt( ac, av, "iv1234567ah:H:p:s:u:d:w:c:f:lmMS:L" )) != EOF ) {
         switch ( cc ) {
+        case '1':
+			vers = "AFPVersion 2.1";
+			Version = 21;
+			break;
         case '2':
 			vers = "AFP2.2";
 			Version = 22;
-			break;        
+			break;
         case '3':
 			vers = "AFPX03";
 			Version = 30;
@@ -324,6 +330,10 @@ static char *uam = "Cleartxt Passwrd";
         case '6':
 			vers = "AFP3.3";
 			Version = 33;
+			break;
+        case '7':
+			vers = "AFP3.4";
+			Version = 34;
 			break;
 		case 'a':
             adouble = AD_V2;

@@ -27,7 +27,7 @@ if [ ! -f spectest.conf ] ; then
 # LOCALVOL1PATH=
 # VOLUME2=
 
-# AFPVERSION: 3 = AFP 3.0, 4 = AFP 3.1, 5 = AFP 3.2
+# AFPVERSION: 1 = AFP 2.1, 2 = AFP 2.2, 3 = AFP 3.0, 4 = AFP 3.1, 5 = AFP 3.2, 6 = AFP 3.3, 7 = AFP 3.4
 # AFPVERSION=5
 EOF
     echo 'A template configuration file "spectest.conf" has been generated.'

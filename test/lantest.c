@@ -648,6 +648,8 @@ void usage( char * av0 )
     fprintf( stdout,"\t-3\tAFP 3.0 version\n");
     fprintf( stdout,"\t-4\tAFP 3.1 version\n");
     fprintf( stdout,"\t-5\tAFP 3.2 version (default)\n");
+    fprintf( stdout,"\t-6\tAFP 3.3 version\n");
+    fprintf( stdout,"\t-7\tAFP 3.4 version\n");
     fprintf( stdout,"\t-n\thow often to run (default: 1)\n");
     fprintf( stdout,"\t-v\tverbose\n");
     fprintf( stdout,"\t-V\tvery verbose\n");
@@ -674,7 +676,7 @@ int main(int ac, char **av)
     if (pw)
         User = strdup(pw->pw_name);
 
-    while (( cc = getopt( ac, av, "t:vVgG345h:n:p:s:u:w:c:F:" )) != EOF ) {
+    while (( cc = getopt( ac, av, "t:vVgG34567h:n:p:s:u:w:c:F:" )) != EOF ) {
         switch ( cc ) {
         case 't':
             tests = strdup(optarg);
@@ -691,6 +693,14 @@ int main(int ac, char **av)
             vers = "AFP3.2";
             Version = 32;
             break;
+        case '6':
+			vers = "AFP3.3";
+			Version = 33;
+			break;
+        case '7':
+			vers = "AFP3.4";
+			Version = 34;
+			break;
         case 'n':
             Iterations = atoi(optarg);
             break;

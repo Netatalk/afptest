@@ -221,6 +221,8 @@ void usage( char * av0 )
     fprintf( stdout,"\t-3\tAFP 3.0 version\n");
     fprintf( stdout,"\t-4\tAFP 3.1 version\n");
     fprintf( stdout,"\t-5\tAFP 3.2 version\n");
+    fprintf( stdout,"\t-6\tAFP 3.3 version\n");
+    fprintf( stdout,"\t-7\tAFP 3.4 version\n");
     fprintf( stdout,"\t-v\tverbose\n");
 
     exit (1);
@@ -236,7 +238,7 @@ int cc;
 static char *vers = "AFPVersion 2.1";
 static char *uam = "Cleartxt Passwrd";
 
-    while (( cc = getopt( ac, av, "Rmlv345h:p:s:u:w:d:c:" )) != EOF ) {
+    while (( cc = getopt( ac, av, "Rmlv34567h:p:s:u:w:d:c:" )) != EOF ) {
         switch ( cc ) {
         case '3':
 			vers = "AFPX03";
@@ -249,6 +251,14 @@ static char *uam = "Cleartxt Passwrd";
         case '5':
 			vers = "AFP3.2";
 			Version = 32;
+			break;
+        case '6':
+			vers = "AFP3.3";
+			Version = 33;
+			break;
+        case '7':
+			vers = "AFP3.4";
+			Version = 34;
 			break;
 		case 'R':
 			Recurse = 1;
