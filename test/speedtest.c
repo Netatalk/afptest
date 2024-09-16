@@ -406,7 +406,7 @@ unsigned int local_readfooter(DSI *dsi, u_int16_t fork, int offset, int size, ch
 }
 
 /* ------------------------------- */
-unsigned int local_copyfile(CONN *conn, u_int16_t svol, int sdid, u_int16_t dvol, int ddid, char *src, char *dst)
+unsigned int local_copyfile(struct CONN *conn, u_int16_t svol, int sdid, u_int16_t dvol, int ddid, char *src, char *buf, char *dst)
 {
 	return ntohl(AFPERR_PARAM);
 }

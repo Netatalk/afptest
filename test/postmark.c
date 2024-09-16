@@ -1223,7 +1223,7 @@ int size;
 }
 
 /* main function - reads config files then enters get line/parse line loop */
-main(argc,argv)
+void main(argc,argv)
 int argc;
 char *argv[];
 {
