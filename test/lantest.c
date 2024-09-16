@@ -28,8 +28,8 @@
 
 extern  int     Throttle;
 
-int Verbose = 0;
-int Quirk = 0;
+// int Verbose = 0;
+// int Quirk = 0;
 CONN *Conn;
 int ExitCode = 0;
 char Data[300000] = "";

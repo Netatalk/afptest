@@ -11,10 +11,24 @@
 #include <signal.h>  
 
 #include "afpclient.h"
+#include "afphelper.h"
 #include "test.h"
 
 /* Defines */
+#if 0
 #define FAIL(a) if ((a)) { failed();}
+#else
+#define FAIL(a) \
+    if ((a)) { \
+        if (Color) { \
+            fprintf(stdout, ANSI_BRED"[%s:%d] " #a "\n" ANSI_NORMAL, __FILE__, __LINE__);\
+        } else {\
+            fprintf(stdout, "[%s:%d] " #a "\n", __FILE__, __LINE__); \
+        } \
+        failed_nomsg(); \
+    }
+
+#endif
 #define EXPECT_FAIL(a, b) do { int _experr;  _experr = (a); if (htonl(_experr) != (b)) { failed(); } } while(0);
 #define FAILEXIT(a, label) if ((a)) { failed(); goto label;}
 #define STATIC 
@@ -54,6 +68,7 @@ extern ssize_t get_sessiontoken(const char *buf, char **token);
 
 extern void failed_nomsg(void);
 extern void skipped_nomsg(void);
+extern void nottested_nomsg(void);
 extern void failed(void);
 extern void known_failure(char *why);
 extern void enter_test(void);

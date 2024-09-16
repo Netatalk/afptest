@@ -5,9 +5,10 @@
 #include "specs.h"
 #include <dlfcn.h>
 
-int Verbose = 0;
-int Interactive = 0;
-int Quirk = 0;
+// int Verbose = 0;
+// int Interactive = 0;
+// int Quirk = 0;
+// int Quiet = 1;
 
 u_int16_t VolID;
 static DSI *dsi;
@@ -411,6 +412,7 @@ int cc;
             break;
 	case 'v':
 		Verbose = 1;
+		Quiet = 0;
 		break;
 	case 'i':
 		Interactive = 1;
@@ -420,6 +422,9 @@ int cc;
             usage( av[ 0 ] );
         }
     }
+	Loglevel = AFP_LOG_INFO;
+	Color = 1;
+
 	if (List) {
 		list_tests();
 		exit (2);

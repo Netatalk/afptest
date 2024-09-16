@@ -8,8 +8,8 @@
 #include "specs.h"
 #include <time.h>
 
-int Verbose = 0;
-int Quirk = 0;
+// int Verbose = 0;
+// int Quirk = 0;
 char    *Dir = "";
 
 u_int16_t VolID;

@@ -6,8 +6,8 @@
 #include "specs.h"
 #include <dlfcn.h>
 
-int Verbose = 0;
-int Quirk = 0;
+// int Verbose = 0;
+// int Quirk = 0;
 
 u_int16_t VolID;
 static DSI *dsi;

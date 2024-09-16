@@ -150,7 +150,7 @@ FN_N(FPGetACL)
 };
 
 /* Some globals */
-int        Verbose = 0;
+// int        Verbose = 0;
 int        ExitCode = 0;
 uint16_t   VolID;
 static DSI *dsi;
