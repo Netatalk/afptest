@@ -82,18 +82,19 @@ drwxrwsr-x    5 user1   common         176 avr 27 23:56 test/
 - some tests need a small read write volume, I'm using a 2 MBytes loopback
 
 example for 
-afpd.conf:
+afp.conf:
 #<<<<<<
-- -uamlist uams_clrtxt.so,uams_guest.so 
-#<<<<<<<
+[Global]
+uam list = uams_clrtxt.so uams_guest.so
 
-AppleVolume.default
-#<<<<<<<<
-# volume mount read only 
+# volume mount read only
 # not empty at least 2 files and one folder (empty).
-/mnt/cdrom cdrom dbpath:/opt/var/afpd/cdrom 
+[cdrom]
+path = /mnt/cdrom
+vol dbpath = /opt/var/afpd/cdrom
 
-/u/test test
+[test]
+path = /u/test
 #<<<<<<<<
 
 For testing with a Mac, same config (user1 or user2 are not owner)
