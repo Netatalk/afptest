@@ -65,7 +65,7 @@ FPCopyFile <source> <dest>
 
 Compilation 
 ===========
-(from CVS: ./autogen.sh)
+(from Git: ./autogen.sh)
 ./configure
 make
 
